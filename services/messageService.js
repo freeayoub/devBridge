@@ -1,4 +1,3 @@
-
 const cloudinary = require("../config/cloudinaryConfig");
 const mime = require("mime-types");
 
@@ -40,4 +39,3 @@ const uploadFile = async (stream, filename) => {
 };
 
 module.exports = uploadFile;
-
