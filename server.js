@@ -20,8 +20,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Routes
-app.use("", (req, res) => {
-  res.json("hello devBridge");
+// Routes
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to DevBridge API!" });
 });
 // Create an HTTP server
 const httpServer = createServer(app);
