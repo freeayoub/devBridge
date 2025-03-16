@@ -1,18 +1,19 @@
-
 // routes/messageRoutes.js
 const express = require("express");
 const router = express.Router();
-const  upload  = require("../middlewares/uploadMessageMiddleware");
+const upload = require("../middlewares/uploadMessageMiddleware");
 const {
   sendMessage,
-  uploadSingleFile,getMessage,markMessageAsRead
+  uploadSingleFile,
+  getMessage,
+  markMessageAsRead,
 } = require("../controllers/messageController");
 const { body, validationResult } = require("express-validator");
 
 // Route pour téléverser un fichier
 router.post("/upload", upload.single("file"), uploadSingleFile);
-router.get('/get/:id', getMessage);
-router.put('/update/:id',markMessageAsRead);
+router.get("/get/:id", getMessage);
+router.put("/update/:id", markMessageAsRead);
 router.post(
   "/msg",
   [
