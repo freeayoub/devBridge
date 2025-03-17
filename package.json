@@ -22,7 +22,7 @@
     "graphql-subscriptions": "^3.0.0",
     "graphql-tag": "^2.12.6",
     "graphql-upload": "^15.0.0",
-    "graphql-ws": "^5.0.0",
+    "graphql-ws": "^5.16.2",
     "jsonwebtoken": "^9.0.2",
     "mime-types": "^2.1.35",
     "mongodb": "^6.14.0",
