@@ -2,7 +2,7 @@ const { PubSub } = require("graphql-subscriptions");
 const GraphQLUpload = require("graphql-upload/GraphQLUpload.js");
 const {User,Message,Conversation} = require("../models/Models")
 const uploadFile = require("../services/messageService");
-
+const {messageSchema} =require('../utils/validators')
 const { isValidObjectId } = require("mongoose");
 const pubsub = new PubSub();
 // Validate user IDs
@@ -19,7 +19,6 @@ const validateUserIds = async (senderId, receiverId) => {
     throw new Error("Sender or receiver does not exist");
   }
 };
-
 const resolvers = {
   Query: {
     getMessages: async (
@@ -89,7 +88,7 @@ const resolvers = {
       try {
        
         await validateUserIds(senderId, receiverId);
-       
+        await messageSchema.validate({ senderId, receiverId, content });
         let fileUrl = null;
         if (file) {
           const { createReadStream, filename } = await file;
@@ -120,17 +119,72 @@ const resolvers = {
 
         // Publier un événement pour la subscription
         pubsub.publish("MESSAGE_SENT", { messageSent: message });
+        pubsub.publish(`UNREAD_MESSAGES_${receiverId}`, { unreadMessages: [message] });
         return message;
       } catch (error) {
         console.error("Error sending message:", error);
         throw new Error("Failed to send message");
       }
     },
+    markMessageAsRead: async (_, { messageId }, context) => {
+      if (!context.userId) throw new Error("Unauthorized");
+      try {
+          const message = await Message.findById(messageId);
+          if (!message) throw new Error("Message not found");
+          if (message.receiverId !== context.userId) throw new Error("Unauthorized");
+
+          message.isRead = true;
+          await message.save();
+          return message;
+      } catch (error) {
+          console.error("Error marking message as read:", error);
+          throw new Error("Failed to mark message as read");
+      }
+  },
+    setUserOnline: async (_, { userId }, context) => {
+    if (!context.userId) throw new Error("Unauthorized");
+    try {
+        const user = await User.findById(userId);
+        if (!user) throw new Error("User not found");
+
+        user.isOnline = true;
+        await user.save();
+        pubsub.publish("USER_STATUS_CHANGED", { userStatusChanged: user });
+        return user;
+    } catch (error) {
+        console.error("Error setting user online:", error);
+        throw new Error("Failed to set user online");
+    }
+},
+    setUserOffline: async (_, { userId }, context) => {
+    if (!context.userId) throw new Error("Unauthorized");
+    try {
+        const user = await User.findById(userId);
+        if (!user) throw new Error("User not found");
+
+        user.isOnline = false;
+        await user.save();
+        pubsub.publish("USER_STATUS_CHANGED", { userStatusChanged: user });
+        return user;
+    } catch (error) {
+        console.error("Error setting user offline:", error);
+        throw new Error("Failed to set user offline");
+    }
+}
   },
 
   Subscription: {
     messageSent: {
       subscribe: () => pubsub.asyncIterator(["MESSAGE_SENT"]),
+    },
+    unreadMessages: {
+      subscribe: (_, { userId }, context) => {
+          if (!context.userId) throw new Error("Unauthorized");
+          return pubsub.asyncIterator(`UNREAD_MESSAGES_${userId}`);
+      },
+  },
+    userStatusChanged: {
+        subscribe: () => pubsub.asyncIterator("USER_STATUS_CHANGED"),
     },
   },
 };

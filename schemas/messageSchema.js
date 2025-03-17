@@ -31,9 +31,14 @@ const typeDefs = gql`
 
   type Mutation {
     sendMessage(senderId: ID!, receiverId: ID!, content: String!, file: Upload): Message
-  }
+    markMessageAsRead(messageId: ID!): Message
+    setUserOnline(userId: ID!): User
+    setUserOffline(userId: ID!): User
+    }
       type Subscription {
     messageSent(senderId: ID!, receiverId: ID!): Message
+    unreadMessages(userId: ID!): [Message]
+    userStatusChanged: User
   }
 `;
 

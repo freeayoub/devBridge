@@ -6,7 +6,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 // Registration Handler
 const register = async (req, res) => {
     try {
-        const { username, password, email } = req.body;
+        const { username, password, email,role } = req.body;
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
@@ -22,6 +22,7 @@ const register = async (req, res) => {
             username,
             email,
             password: hashedPassword,
+            role
         });
 
         await newUser.save();
@@ -58,7 +59,6 @@ const login = async (req, res) => {
         res.status(500).json({ message: 'Error logging in', error: err.message });
     }
 };
-
 module.exports = {
     register,
     login,
