@@ -18,8 +18,8 @@ const userRoutes = require("./routes/userRoutes");
 const typeDefs = require("./schemas/messageSchema");
 const resolvers = require("./resolvers/messageResolvers");
 const connectDB = require("./config/connection");
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const config = require("./config/config.js");
 
 const app = express();
@@ -38,7 +38,6 @@ const corsOptions = {
 
 // Middleware
 app.use(cors(corsOptions));
-app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
@@ -48,7 +47,7 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limite chaque IP à 100 requêtes par fenêtre
 });
-app.use(limiter)
+app.use(limiter);
 // RESTful Routes
 app.use("/message", messageRoutes);
 app.use("/user", userRoutes);
@@ -63,6 +62,11 @@ app.get("/enable-graphql", (req, res) => {
 // Initialize GraphQL if activated
 
 if (config.USE_GRAPHQL) {
+  // Middleware pour GraphQL (gestion des fichiers)
+  app.use(
+    "/graphql",
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })
+  );
   let apolloServer;
   const schema = makeExecutableSchema({ typeDefs, resolvers });
   const wsServer = new WebSocketServer({
