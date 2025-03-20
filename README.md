@@ -33,6 +33,3 @@ Remplis les détails et clique sur "Create pull request".
 # d'apres OpenAI et bon travail
 ---------------------------------------------------
 
-=======
-# DevBridge 
-
