@@ -3,6 +3,38 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
 
+const setUserOnline = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.isOnline = true;
+    await user.save();
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error setting user online:', error);
+    res.status(500).json({ message: 'Failed to set user online' });
+  }
+};
+
+const setUserOffline = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.isOnline = false;
+    await user.save();
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error setting user offline:', error);
+    res.status(500).json({ message: 'Failed to set user offline' });
+  }
+};
+
 // Registration Handler
 const register = async (req, res) => {
     try {
@@ -33,7 +65,6 @@ const register = async (req, res) => {
         res.status(500).json({ message: 'Error registering user', error: err.message });
     }
 };
-
 // Login Handler
 const login = async (req, res) => {
     try {
@@ -60,8 +91,7 @@ const login = async (req, res) => {
         res.status(500).json({ message: 'Error logging in', error: err.message });
     }
 };
-
 module.exports = {
     register,
-    login,
+    login, setUserOnline, setUserOffline 
 };

@@ -14,12 +14,33 @@ const User = mongoose.model('User', UserSchema);
 
 // Message Model using Mongoose
 const MessageSchema = new mongoose.Schema({
-    senderId: { type: String, required: true, trim: true },
-    receiverId: { type: String, required: true, trim: true },
-    content: { type: String, required: true, trim: true },
-    timestamp: { type: Date, default: Date.now },
-    fileUrl: { type: String },
-    isRead: { type: Boolean, default: false },
+    senderId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
+    receiverId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
+    content: { 
+        type: String, 
+        required: true, 
+        trim: true 
+    },
+    timestamp: { 
+        type: Date, 
+        default: Date.now 
+    },
+    fileUrl: { 
+        type: String, 
+        default: null 
+    },
+    isRead: { 
+        type: Boolean, 
+        default: false 
+    },
 });
 
 const Message = mongoose.model('Message', MessageSchema);

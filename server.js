@@ -21,7 +21,7 @@ const connectDB = require("./config/connection");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const config = require("./config/config.js");
-
+const pubsub = require("./config/pubsub");
 const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 3000;
@@ -31,9 +31,13 @@ connectDB();
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:4200",
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: [
+    process.env.FRONTEND_URL || "http://localhost:4200",
+    "https://studio.apollographql.com",
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
 
 // Middleware
@@ -49,25 +53,19 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 // RESTful Routes
-app.use("/message", messageRoutes);
+app.use("/message", authUserMiddleware, messageRoutes);
 app.use("/user", userRoutes);
 // Endpoint to activate GraphQL
 app.get("/", (req, res) => {
   res.json({ message: "welcome to devBridge project" });
 });
-app.get("/enable-graphql", (req, res) => {
-  process.env.USE_GRAPHQL = "true";
-  res.json({ message: "GraphQL activated" });
-});
-// Initialize GraphQL if activated
 
+// Initialize GraphQL if activated
 if (config.USE_GRAPHQL) {
-  // Middleware pour GraphQL (gestion des fichiers)
   app.use(
     "/graphql",
     graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })
   );
-  let apolloServer;
   const schema = makeExecutableSchema({ typeDefs, resolvers });
   const wsServer = new WebSocketServer({
     server: httpServer,
@@ -78,14 +76,16 @@ if (config.USE_GRAPHQL) {
     {
       schema,
       context: (ctx) => {
-        return { userId: ctx.connectionParams?.userId };
+        return {
+          userId: ctx.connectionParams?.userId,
+          pubsub,
+        };
       },
     },
-    wsServer,
-    10000
+    wsServer
   );
 
-  apolloServer = new ApolloServer({
+  const apolloServer = new ApolloServer({
     schema,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -99,6 +99,10 @@ if (config.USE_GRAPHQL) {
         },
       },
     ],
+    context: async ({ req }) => ({
+      userId: req.userId,
+      pubsub,
+    }),
     formatError: (error) => ({
       message: error.message,
       code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
@@ -110,8 +114,12 @@ if (config.USE_GRAPHQL) {
       app.use(
         "/graphql",
         authUserMiddleware,
+        cors(corsOptions),
         expressMiddleware(apolloServer, {
-          context: async ({ req }) => ({ userId: req.userId }),
+          context: async ({ req }) => ({
+            userId: req.userId,
+            pubsub,
+          }),
         })
       );
     })
@@ -127,6 +135,9 @@ httpServer.listen(PORT, () => {
   if (config.USE_GRAPHQL) {
     console.log(
       `🚀 GraphQL endpoint available at http://localhost:${PORT}/graphql`
+    );
+    console.log(
+      `🚀 SUbscription endpoint available at ws://localhost:${PORT}/graphql`
     );
   }
 });

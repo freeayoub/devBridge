@@ -1,10 +1,10 @@
-const { PubSub } = require("graphql-subscriptions");
+const pubsub = require("../config/pubsub");
 const GraphQLUpload = require("graphql-upload/GraphQLUpload.js");
-const {User,Message,Conversation} = require("../models/Models")
+const { User, Message, Conversation } = require("../models/Models");
 const uploadFile = require("../services/messageService");
-const {messageSchema} =require('../utils/validators')
+const { messageSchema } = require("../utils/validators");
 const { isValidObjectId } = require("mongoose");
-const pubsub = new PubSub();
+
 // Validate user IDs
 const validateUserIds = async (senderId, receiverId) => {
   if (!isValidObjectId(senderId)) throw new Error("Invalid senderId");
@@ -49,7 +49,6 @@ const resolvers = {
     getConversation: async (_, { conversationId }, context) => {
       if (!context.userId) throw new Error("Unauthorized");
       try {
-        // Récupérer la conversation par son ID
         const conversation = await Conversation.findById(conversationId)
           .populate("participants") // Remplir les participants
           .populate("messages"); // Remplir les messages
@@ -71,6 +70,20 @@ const resolvers = {
         throw new Error("Failed to fetch conversation");
       }
     },
+    getUnreadMessages: async (_, { userId }, context) => {
+      if (!context.userId || context.userId !== userId)
+        throw new Error("Unauthorized");
+      try {
+        const unreadMessages = await Message.find({
+          receiverId: userId,
+          isRead: false,
+        });
+        return unreadMessages;
+      } catch (error) {
+        console.error("Error fetching unread messages:", error);
+        throw new Error("Failed to fetch unread messages");
+      }
+    },
   },
   Upload: GraphQLUpload,
 
@@ -86,20 +99,19 @@ const resolvers = {
           "Unauthorized: You cannot send messages on behalf of others"
         );
       try {
-       
         await validateUserIds(senderId, receiverId);
         await messageSchema.validate({ senderId, receiverId, content });
         let fileUrl = null;
         if (file) {
           const { createReadStream, filename } = await file;
           const stream = createReadStream();
-         
+
           // Upload the file to Firebase Storage or any other storage service
           fileUrl = await uploadFile(stream, filename);
         }
         const message = new Message({ senderId, receiverId, content, fileUrl });
         await message.save();
-        
+
         // Trouver ou créer une conversation entre les deux utilisateurs
         let conversation = await Conversation.findOne({
           participants: { $all: [senderId, receiverId] },
@@ -118,8 +130,12 @@ const resolvers = {
         await conversation.save();
 
         // Publier un événement pour la subscription
-        pubsub.publish("MESSAGE_SENT", { messageSent: message });
-        pubsub.publish(`UNREAD_MESSAGES_${receiverId}`, { unreadMessages: [message] });
+        pubsub.publish(`MESSAGE_SENT_${senderId}_${receiverId}`, {
+          messageSent: message,
+        });
+        pubsub.publish(`UNREAD_MESSAGES_${receiverId}`, {
+          unreadMessages: [message],
+        });
         return message;
       } catch (error) {
         console.error("Error sending message:", error);
@@ -129,21 +145,22 @@ const resolvers = {
     markMessageAsRead: async (_, { messageId }, context) => {
       if (!context.userId) throw new Error("Unauthorized");
       try {
-          const message = await Message.findById(messageId);
-          if (!message) throw new Error("Message not found");
-          if (message.receiverId !== context.userId) throw new Error("Unauthorized");
+        const message = await Message.findById(messageId);
+        if (!message) throw new Error("Message not found");
+        if (message.receiverId.toString() !== context.userId)
+          throw new Error("Unauthorized");
 
-          message.isRead = true;
-          await message.save();
-          return message;
+        message.isRead = true;
+        await message.save();
+        return message;
       } catch (error) {
-          console.error("Error marking message as read:", error);
-          throw new Error("Failed to mark message as read");
+        console.error("Error marking message as read:", error);
+        throw new Error("Failed to mark message as read");
       }
-  },
+    },
     setUserOnline: async (_, { userId }, context) => {
-    if (!context.userId) throw new Error("Unauthorized");
-    try {
+      if (!context.userId) throw new Error("Unauthorized");
+      try {
         const user = await User.findById(userId);
         if (!user) throw new Error("User not found");
 
@@ -151,14 +168,14 @@ const resolvers = {
         await user.save();
         pubsub.publish("USER_STATUS_CHANGED", { userStatusChanged: user });
         return user;
-    } catch (error) {
+      } catch (error) {
         console.error("Error setting user online:", error);
         throw new Error("Failed to set user online");
-    }
-},
+      }
+    },
     setUserOffline: async (_, { userId }, context) => {
-    if (!context.userId) throw new Error("Unauthorized");
-    try {
+      if (!context.userId) throw new Error("Unauthorized");
+      try {
         const user = await User.findById(userId);
         if (!user) throw new Error("User not found");
 
@@ -166,25 +183,28 @@ const resolvers = {
         await user.save();
         pubsub.publish("USER_STATUS_CHANGED", { userStatusChanged: user });
         return user;
-    } catch (error) {
+      } catch (error) {
         console.error("Error setting user offline:", error);
         throw new Error("Failed to set user offline");
-    }
-}
+      }
+    },
   },
 
   Subscription: {
     messageSent: {
-      subscribe: () => pubsub.asyncIterator(["MESSAGE_SENT"]),
+      subscribe: (_, { senderId, receiverId }) => {
+       
+        return pubsub.asyncIterator([`MESSAGE_SENT_${senderId}_${receiverId}`]);
+      },
     },
     unreadMessages: {
-      subscribe: (_, { userId }, context) => {
-          if (!context.userId) throw new Error("Unauthorized");
-          return pubsub.asyncIterator(`UNREAD_MESSAGES_${userId}`);
-      },
-  },
+          subscribe: (_, { receiverId }) => {
+            return pubsub.asyncIterator(`UNREAD_MESSAGES_${receiverId}`);
+          },
+        },
     userStatusChanged: {
-        subscribe: () => pubsub.asyncIterator("USER_STATUS_CHANGED"),
+      subscribe: () => 
+     pubsub.asyncIterator(["USER_STATUS_CHANGED"]),
     },
   },
 };

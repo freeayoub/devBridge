@@ -1,19 +1,19 @@
 // routes/messageRoutes.js
 const express = require("express");
-const messageRouter = express.Router();
+const router = express.Router();
 const  upload  = require("../middlewares/uploadMessageMiddleware");
 const {
   sendMessage,
-  uploadSingleFile,
+  uploadSingleFile,getMessage,markMessageAsRead
 } = require("../controllers/messageController");
 const { body, validationResult } = require("express-validator");
 
 // Route pour téléverser un fichier
-messageRouter.post("/upload", upload.single("file"), uploadSingleFile);
-
-// Route pour envoyer un message
-messageRouter.post(
-  "/",
+router.post("/upload", upload.single("file"), uploadSingleFile);
+router.get('/get/:id', getMessage);
+router.put('/update/:id',markMessageAsRead);
+router.post(
+  "/msg",
   [
     body("senderId")
       .isString()
@@ -42,4 +42,4 @@ messageRouter.post(
   }
 );
 
-module.exports = messageRouter;
+module.exports = router;
