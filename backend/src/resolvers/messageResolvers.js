@@ -193,18 +193,16 @@ const resolvers = {
   Subscription: {
     messageSent: {
       subscribe: (_, { senderId, receiverId }) => {
-       
         return pubsub.asyncIterator([`MESSAGE_SENT_${senderId}_${receiverId}`]);
       },
     },
     unreadMessages: {
-          subscribe: (_, { receiverId }) => {
-            return pubsub.asyncIterator(`UNREAD_MESSAGES_${receiverId}`);
-          },
-        },
+      subscribe: (_, { receiverId }) => {
+        return pubsub.asyncIterator(`UNREAD_MESSAGES_${receiverId}`);
+      },
+    },
     userStatusChanged: {
-      subscribe: () => 
-     pubsub.asyncIterator(["USER_STATUS_CHANGED"]),
+      subscribe: () => pubsub.asyncIterator(["USER_STATUS_CHANGED"]),
     },
   },
 };

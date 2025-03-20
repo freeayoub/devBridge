@@ -12,16 +12,16 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
 const {
   ApolloServerPluginDrainHttpServer,
 } = require("@apollo/server/plugin/drainHttpServer");
-const authUserMiddleware = require("./middlewares/authUserMiddleware");
+const authUserMiddleware = require("../middlewares/authUserMiddleware.js");
 const messageRoutes = require("./routes/messageRoutes.js");
-const userRoutes = require("./routes/userRoutes");
-const typeDefs = require("./schemas/messageSchema");
-const resolvers = require("./resolvers/messageResolvers");
-const connectDB = require("./config/connection");
+const userRoutes = require("./routes/userRoutes.js");
+const typeDefs = require("./schemas/messageSchema.js");
+const resolvers = require("./resolvers/messageResolvers.js");
+const connectDB = require("./config/connection.js");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const config = require("./config/config.js");
-const pubsub = require("./config/pubsub");
+const pubsub = require("./config/pubsub.js");
 const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 3000;
