@@ -1,0 +1,11 @@
+# Node.js
+node_modules/
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# System files
+Thumbs.db
+desktop.ini
