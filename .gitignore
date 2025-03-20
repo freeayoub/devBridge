@@ -2,3 +2,11 @@
 .env
 node_modules/
 uploads/
+
+# IDEs
+.vscode/
+.idea/
+
+# System files
+Thumbs.db
+desktop.ini
