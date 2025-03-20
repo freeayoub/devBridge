@@ -9,3 +9,7 @@ node_modules/
 # System files
 Thumbs.db
 desktop.ini
+# Logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
