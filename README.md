@@ -2,6 +2,31 @@
 # PI // application de gestion de projet intégrée // 
 # devBridge
 
+## Description
+DevBridge est une application de gestion de projets académiques, développée avec Angular (frontend) et Node.js (backend). Ce projet est conçu pour faciliter la gestion des projets, la communication et la planification des équipes académiques.
+
+## Structure du Projet
+
+Le projet utilise une structure **monorepo** avec un seul dépôt Git qui contient à la fois le **frontend** (Angular) et le **backend** (Node.js). Voici la structure des dossiers :
+##### 
+devBridge/
+├── backend/
+│   ├── src/
+│   ├── package.json
+│   └── ...
+├── frontend/
+├── src/
+│   ├── app/
+│   │   ├── modules/
+│   │   ├── components/
+│   │   └── services/
+│   ├── assets/
+│   └── ...
+├── angular.json
+├── package.json
+└── ...
+└── README.md 
+------------------------------------------------------------------------
 #.env
 #PORT=3000
 #MONGO_URI='mongodb://127.0.0.1:27017/project_management'
