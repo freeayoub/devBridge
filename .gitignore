@@ -1,15 +1,4 @@
-# Node.js
-node_modules/
+# .gitignore
 .env
-
-# IDEs
-.vscode/
-.idea/
-
-# System files
-Thumbs.db
-desktop.ini
-# Logs
-npm-debug.log
-yarn-debug.log
-yarn-error.log
+node_modules/
+uploads/
