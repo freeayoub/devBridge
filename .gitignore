@@ -1,4 +1,37 @@
-# .gitignore
+# Environment files
 .env
+backend/.env
+backend/.env.local
+
+# Node.js
 node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Backend specific (Node.js, Apollo Server)
+backend/node_modules/
+backend/dist/
+
+# Frontend specific (Angular)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Uploads
 uploads/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.iml
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
