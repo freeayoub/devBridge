@@ -13,11 +13,6 @@ yarn-error.log
 backend/node_modules/
 backend/dist/
 
-# Frontend specific (Angular)
-frontend/node_modules/
-frontend/dist/
-frontend/.angular/
-
 # Uploads
 uploads/
 
@@ -42,7 +37,12 @@ yarn-error.log
 /out-tsc
 /bazel-out
 
-# IDEs and editors (other common configurations)
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
 .idea/
 .project
 .classpath
@@ -51,7 +51,7 @@ yarn-error.log
 .settings/
 *.sublime-workspace
 
-# Visual Studio Code - specific files to keep
+# Visual Studio Code
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -67,3 +67,7 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+
+# System files
+.DS_Store
+Thumbs.db
