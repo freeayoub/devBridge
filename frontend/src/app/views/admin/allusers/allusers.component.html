@@ -28,21 +28,97 @@
             </tr>
           </tfoot>
           <tbody>
-            <tr *ngFor="let user of users">
-              <td>{{ user.username }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.role }}</td>
+            <tr *ngFor="let item of dataArray;index as i">
+              <td>{{ item.username }}</td>
+              <td>{{ item.email }}</td>
+              <td>{{ item.role }}</td>
               <td>
                 <!-- Bouton Details -->
-                <button class="btn btn-info btn-sm" (click)="viewDetails(user)">Details</button>
+                <button class="btn btn-info btn-sm" (click)="viewDetails(item)">Details</button>
               </td>
               <td>
                 <!-- Bouton Delete -->
-                <button class="btn btn-danger btn-sm" (click)="deleteuser(user._id)">Delete</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteUsr(item._id,i)">Delete</button>
+              </td>
+              <td>
+                <!-- Bouton update -->
+                <button class="btn btn-success btn-sm" (click)="getData(item.username,item.role,item.email,item._id)" data-toggle="modal" data-target="#exampleModal">Update</button>
+                             
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- form update start here -->
+        <form #f="ngForm" (ngSubmit)="updateNewUser(f)">
+          <!-- username validation start here -->
+              <div class="form-group">
+          
+                <label for="exampleFormControlInput1">UserName</label>
+                <input type="text" class="form-control" placeholder="firstName" [(ngModel)]="dataUser.username" required name="username" #username="ngModel" ngModel minlength="2" maxlength="20">
+              </div>
+              <div class="alert alert-danger" *ngIf="username.errors?.['required'] && username.touched">
+                username is required
+              </div>
+              <div class="alert alert-danger" *ngIf="username.errors?.['minlength'] && username.touched">
+                username must be minimum 2 caractere
+              </div>
+          <!-- username validation end here -->
+          
+          <!-- role validation start here -->
+              <div class="form-group">
+                  <label for="exampleFormControlInput1">Role</label>
+                  <input type="text" class="form-control" placeholder="lastname" [(ngModel)]="dataUser.role" required name="role" #role="ngModel" minlength="2" maxlength="20" ngModel>
+                </div>
+                <div class="alert alert-danger" *ngIf="role.errors?.['required'] && role.touched">
+                  role is required
+                </div>
+                <div class="alert alert-danger" *ngIf="role.errors?.['minlength'] && role.touched">
+                  role must be minimum 2 caractere
+                </div>
+          <!-- role validation end here -->
+          
+          <!-- Email validation start here -->
+          
+                <div class="form-group">
+                  <label for="exampleFormControlInput1">email</label>
+                  <input type="email" class="form-control" placeholder="email" [(ngModel)]="dataUser.email" email required name="email" #email="ngModel" ngModel>
+                </div>
+                <div class="alert alert-danger" *ngIf="email.errors?.['required'] && email.touched">
+                  email is required
+                </div>
+          
+                <div class="alert alert-danger" *ngIf="email.errors?.['email'] && email.touched">
+                  the input must be email not string
+                </div>
+          <!-- Email validation end here -->
+        
+              <div class="alert alert-success" *ngIf="messageSuccess">
+                  {{messageSuccess}}
+              </div>      
+
+             <button class="btn btn-primary" [disabled]="f.invalid">Update User</button>
+            </form>
+
+        <!-- form update end here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

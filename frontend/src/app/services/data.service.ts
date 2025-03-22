@@ -26,7 +26,28 @@ export class DataService {
       catchError(this.handleError)
     );
   }
+  ///delete user 
+  deleteUser(id:any): Observable<any> {
+    // Optional: if you need headers for the request
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
+    return this.http.delete<any>(`${this.apiUrl}/deleteuser`+ id, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+// update Student 
+
+updateUser(id:string,newprofile:any){
+    // Optional: if you need headers for the request
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  return this.http.patch(`${this.apiUrl}/updateuser`+id,newprofile,{headers})
+
+}
+
+getOnestUser(id:any){
+    
+  return this.http.get(`${this.apiUrl}/oneuser`+id)
+}
   // Centralized error handling method
   private handleError(error: any): Observable<never> {
     console.error('API Error:', error);
@@ -38,4 +59,7 @@ export class DataService {
     }
     return throwError(errorMessage);
   }
+
+
+
 }
