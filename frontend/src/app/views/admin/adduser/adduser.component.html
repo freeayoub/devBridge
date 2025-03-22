@@ -100,12 +100,11 @@
         name="password"
         ngModel
         required
-        pattern="[0-9]{8}"
         #password="ngModel"
-        placeholder="Entrez le numéro de téléphone (8 chiffres)"
+        placeholder="Entrez le mot de pass"
       />
       <div *ngIf="password.invalid && password.touched" class="text-danger">
-        Le password est requis et doit contenir mix caractères
+        Le password est requis 
       </div>
     </div> 
      <!-- Age -->

@@ -20,6 +20,7 @@ const routes: Routes = [
     {path:'dashboard',loadChildren:()=>(import('./views/admin/dashboard/dashboard.module').then(m=>m.DashboardModule))},
     {path:'allusers',loadChildren:()=>(import('./views/admin/allusers/allusers.module').then(m=>m.AllusersModule))},
     {path:'adduser',loadChildren:()=>(import('./views/admin/adduser/adduser.module').then(m=>m.AdduserModule))},
+    {path:'userdetails/:id',loadChildren:()=>(import('./views/admin/userdetails/userdetails.module').then(m=>m.UserdetailsModule))},
   ]
 },
 {path:'admin/login',component:AuthAdminLayoutComponent},

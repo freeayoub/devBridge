@@ -1,0 +1,34 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg rounded-3 border-0">
+                <div class="card-header text-white bg-primary">
+                    <h2 class="mb-0">Détails de l'utilisateur</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group" *ngIf="dataObject">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Nom d'utilisateur :</strong> {{dataObject.username}}
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Rôle :</strong> {{dataObject.role}}
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Email :</strong> {{dataObject.email}}
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Status :</strong>
+                            <span [class.text-success]="dataObject.isOnline" [class.text-danger]="!dataObject.isOnline">
+                                {{ dataObject.isOnline ? 'En ligne' : 'Hors ligne' }}
+                            </span>
+                        </li>
+                    </ul>
+                    
+                    <div class="alert alert-danger mt-3" *ngIf="messageErr">
+                        {{messageErr}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

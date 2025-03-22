@@ -23,7 +23,6 @@ export class AllusersComponent  implements OnInit{
       .getAllUser()
       .subscribe(
         (data) => {
-          console.log(data)
           this.dataArray=data
         }
       );
@@ -35,9 +34,6 @@ export class AllusersComponent  implements OnInit{
       console.log(response)
       this.dataArray.splice(i,1)
     })
-  }
-  viewDetails(id:any){
-    this.route.navigate(['/admin/userdetails/'+id])
   }
   getData(username:string,role:string,email:string,id:any){
     this.messageSuccess=''
@@ -61,5 +57,8 @@ export class AllusersComponent  implements OnInit{
       },(err:HttpErrorResponse)=>{
         console.log(err.message)
       })
+  }
+  viewDetails(id:any){
+    this.route.navigate(['/admin/userdetails/'+id])
   }
 }
