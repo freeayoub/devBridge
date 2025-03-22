@@ -3,38 +3,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY;
 
-const setUserOnline = async (req, res) => {
-  const { userId } = req.body;
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    user.isOnline = true;
-    await user.save();
-    res.status(200).json(user);
-  } catch (error) {
-    console.error("Error setting user online:", error);
-    res.status(500).json({ message: "Failed to set user online" });
-  }
-};
-
-const setUserOffline = async (req, res) => {
-  const { userId } = req.body;
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    user.isOnline = false;
-    await user.save();
-    res.status(200).json(user);
-  } catch (error) {
-    console.error("Error setting user offline:", error);
-    res.status(500).json({ message: "Failed to set user offline" });
-  }
-};
-
 // Registration Handler
 const register = async (req, res) => {
   try {
@@ -103,9 +71,93 @@ const login = async (req, res) => {
     res.status(500).json({ message: "Error logging in", error: err.message });
   }
 };
+// Get all users
+const getAllUsers = async (req, res) => {
+  try {
+      const users = await User.find();  // Fetch all users from MongoDB
+      res.json(users);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching users', error: error.message });
+  }
+};
+// Get one user by ID
+const getOneUser = async (req, res) => {
+  try {
+      const user = await User.findById(req.params.id);  // Find user by ID
+      if (!user) return res.status(404).json({ message: 'User not found' });
+      res.json(user);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching user', error: error.message });
+  }
+};
+// Create a new user
+const createUser = async (req, res) => {
+  try {
+      const { username, email, password, role } = req.body;
+
+      // Check if user with the same email already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+          return res.status(400).json({ message: 'User with this email already exists' });
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create new user
+      const newUser = new User({
+          username,
+          email,
+          password: hashedPassword,
+          role
+      });
+
+      // Save user to the database
+      await newUser.save();
+
+      // Respond with the created user data
+      res.status(201).json({
+          message: 'User created successfully',
+          user: newUser
+      });
+  } catch (error) {
+      res.status(500).json({ message: 'Error creating user', error: error.message });
+  }
+};
+// Update a user by ID
+const updateUser = async (req, res) => {
+  try {
+      const { username, email, role } = req.body;
+      const user = await User.findById(req.params.id);  
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      // Update user fields if provided
+      if (username) user.username = username;
+      if (email) user.email = email;
+      if (role) user.role = role;
+
+      await user.save();  // Save updated user data to MongoDB
+      res.json({ message: 'User updated successfully', user });
+  } catch (error) {
+      res.status(500).json({ message: 'Error updating user', error: error.message });
+  }
+};
+// Delete a user by ID
+const deleteUser = async (req, res) => {
+  try {
+      const user = await User.findByIdAndDelete(req.params.id);  // Delete user by ID
+      if (!user) return res.status(404).json({ message: 'User not found' });
+      res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+      res.status(500).json({ message: 'Error deleting user', error: error.message });
+  }
+};
 module.exports = {
   register,
   login,
-  setUserOnline,
-  setUserOffline,
+  getAllUsers,
+  getOneUser,
+  createUser,
+  updateUser,
+  deleteUser,
 };

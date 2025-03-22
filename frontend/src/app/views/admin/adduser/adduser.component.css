@@ -1,0 +1,9 @@
+/* Appliquer une bordure rouge lorsque le champ est invalide et touché */
+.ng-invalid.ng-touched {
+    border: 1px solid red;
+  }
+  
+  /* Optionnel : Ajouter un peu de marge pour les messages d'erreur */
+  .text-danger, .alert-danger {
+    margin-top: 5px;
+  }
