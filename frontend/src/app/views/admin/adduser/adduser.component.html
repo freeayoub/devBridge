@@ -1,0 +1,138 @@
+<form #userForm="ngForm" (ngSubmit)="add(userForm)" class="container mt-5">
+    <h2>Add User</h2>
+  
+    <!-- User Name -->
+    <div class="form-group">
+      <label for="username">User Name</label>
+      <input
+        type="text"
+        class="form-control"
+        name="username"
+        ngModel
+        required
+        minlength="2"
+        maxlength="20"
+        #username="ngModel"
+        placeholder="Entrez le username"
+      />
+      <div *ngIf="username.invalid && username.touched" class="text-danger">
+        Le prénom est requis.
+      </div>
+      <div *ngIf="username.errors?.['minlength'] && username.touched" class="text-danger">
+        Le prénom doit contenir au moins 2 caractères.
+      </div>
+      <div *ngIf="username.errors?.['maxlength'] && username.touched" class="text-danger">
+        Le prénom ne doit pas dépasser 20 caractères.
+      </div>
+    </div>
+    <!-- Last Name -->
+    <!-- <div class="form-group">
+      <label for="lastName">Nom</label>
+      <input
+        type="text"
+        class="form-control"
+        name="lastname"
+        ngModel
+        required
+        minlength="2"
+        maxlength="20"
+        #lastname="ngModel"
+        placeholder="Entrez le nom"
+      />
+      <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">
+        Le nom est requis.
+      </div>
+      <div *ngIf="lastname.errors?.['minlength'] && lastname.touched" class="text-danger">
+        Le nom doit contenir au moins 2 caractères.
+      </div>
+      <div *ngIf="lastname.errors?.['maxlength'] && lastname.touched" class="text-danger">
+        Le nom ne doit pas dépasser 20 caractères.
+      </div>
+    </div>
+   -->
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        name="email"
+        ngModel
+        required
+        email
+        #email="ngModel"
+        placeholder="Entrez l'email"
+      />
+      <div *ngIf="email.invalid && email.touched" class="text-danger">
+        Veuillez entrer un email valide (exemple : exemple&#64;domaine.com).
+      </div>
+    </div>
+    <!-- Role -->
+    <div class="form-group">
+      <label for="role">Role</label>
+      <input
+        type="text"
+        class="form-control"
+        name="role"
+        ngModel
+        required
+        minlength="2"
+        maxlength="20"
+        #role="ngModel"
+        placeholder="Entrez le role"
+      />
+      <div *ngIf="role.invalid && role.touched" class="text-danger">
+        Le role est requis.
+      </div>
+      <div *ngIf="role.errors?.['minlength'] && role.touched" class="text-danger">
+        Le role doit contenir au moins 2 caractères.
+      </div>
+      <div *ngIf="role.errors?.['maxlength'] && role.touched" class="text-danger">
+        Le role ne doit pas dépasser 20 caractères.
+      </div>
+    </div>
+       <!-- password  -->
+    <div class="form-group">
+      <label for="phone">Password</label>
+      <input
+        type="password"
+        class="form-control"
+        name="password"
+        ngModel
+        required
+        pattern="[0-9]{8}"
+        #password="ngModel"
+        placeholder="Entrez le numéro de téléphone (8 chiffres)"
+      />
+      <div *ngIf="password.invalid && password.touched" class="text-danger">
+        Le password est requis et doit contenir mix caractères
+      </div>
+    </div> 
+     <!-- Age -->
+    <!-- <div class="form-group">
+      <label for="age">Âge</label>
+      <input
+        type="number"
+        class="form-control"
+        name="age"
+        ngModel
+        required
+        min="1"
+        max="120"
+        #age="ngModel"
+        placeholder="Entrez l'âge"
+      />
+      <div *ngIf="age.invalid && age.touched" class="text-danger">
+        L'âge doit être un nombre positif entre 1 et 120.
+      </div>
+    </div> -->
+    <!-- Message d'erreur global -->
+    <div class="alert alert-danger" *ngIf="messageErr">
+      {{ messageErr }}
+    </div>
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">Add user</button>
+  </form>
+  
+  
+  
