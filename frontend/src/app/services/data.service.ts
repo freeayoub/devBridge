@@ -1,5 +1,7 @@
 import { HttpClient} from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,19 +15,18 @@ export class DataService {
   }
   // Add a new user
   addUser(userData: any){
-    return this.http.post<any>(`${this.apiUrl}/newuser`, userData)
+    return this.http.post(`${this.apiUrl}/newuser`, userData)
   }
   ///delete user 
   deleteUser(id:any){
     return this.http.delete<any>(`${this.apiUrl}/deleteuser/`+ id);
   }
-// update Student 
-updateUser(id:string,newprofile:any){
-  return this.http.put(`${this.apiUrl}/updateuser/`+id,newprofile)
-}
+  // Update the return type for update method
+  updateUser(id: string, data: Partial<User>): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/updateuser/${id}`, data);
+  }
 // Get One User
-getOnestUser(id:any){
-  return this.http.get(`${this.apiUrl}/oneuser/${id}`)
+getOnestUser(id: string): Observable<User> {
+  return this.http.get<User>(`${this.apiUrl}/oneuser/`+id)
 }
-
 }

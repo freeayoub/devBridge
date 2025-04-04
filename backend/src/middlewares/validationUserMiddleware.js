@@ -1,9 +1,16 @@
-const { userValidationSchema } = require('../utils/validators');
+// middlewares/validationUserMiddleware.js
+const { userValidationSchema, userUpdateSchema } = require('../utils/validators');
 
-function validationUserMiddleware(req, res, next) {
-    userValidationSchema.validate(req.body)
-        .then(() => next())
-        .catch(err => res.status(400).json({ error: err.errors }));
+function validationUserMiddleware(isUpdate = false) {
+    return (req, res, next) => {
+        const schema = isUpdate ? userUpdateSchema : userValidationSchema;
+        
+        schema.validate(req.body, { abortEarly: false })
+            .then(() => next())
+            .catch(err => {
+                res.status(400).json(err.errors);
+            });
+    };
 }
 
 module.exports = validationUserMiddleware;

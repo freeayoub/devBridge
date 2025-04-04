@@ -7,3 +7,19 @@
   .text-danger, .alert-danger {
     margin-top: 5px;
   }
+  .card {
+    border-radius: 10px;
+    border: none;
+  }
+  
+  .btn-primary {
+    background-color: #0d6efd;
+    border: none;
+    padding: 10px;
+    font-weight: 500;
+  }
+  
+  .form-control, .form-select {
+    padding: 10px;
+    border-radius: 5px;
+  }

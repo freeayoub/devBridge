@@ -1,137 +1,112 @@
-<form #userForm="ngForm" (ngSubmit)="add(userForm)" class="container mt-5">
-    <h2>Add User</h2>
-  
-    <!-- User Name -->
-    <div class="form-group">
-      <label for="username">User Name</label>
-      <input
-        type="text"
-        class="form-control"
-        name="username"
-        ngModel
-        required
-        minlength="2"
-        maxlength="20"
-        #username="ngModel"
-        placeholder="Entrez le username"
-      />
-      <div *ngIf="username.invalid && username.touched" class="text-danger">
-        Le prénom est requis.
-      </div>
-      <div *ngIf="username.errors?.['minlength'] && username.touched" class="text-danger">
-        Le prénom doit contenir au moins 2 caractères.
-      </div>
-      <div *ngIf="username.errors?.['maxlength'] && username.touched" class="text-danger">
-        Le prénom ne doit pas dépasser 20 caractères.
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <form #userForm="ngForm" (ngSubmit)="add(userForm)">
+            <h2 class="card-title text-center mb-4">Add User</h2>
+            
+            <!-- User Name -->
+            <div class="form-group mb-3">
+              <label for="username" class="form-label">User Name</label>
+              <input
+                type="text"
+                class="form-control"
+                name="username"
+                ngModel
+                required
+                minlength="3"
+                maxlength="30"
+                pattern="^[a-zA-Z0-9_ ]+$" 
+                #username="ngModel"
+                placeholder="Entrez le username"
+              />
+              <div *ngIf="username.invalid && username.touched" class="text-danger">
+                <div *ngIf="username.errors?.['required']">Le nom d'utilisateur est obligatoire</div>
+                <div *ngIf="username.errors?.['minlength']">Le nom d'utilisateur doit contenir au moins 3 caractères</div>
+                <div *ngIf="username.errors?.['maxlength']">Le nom d'utilisateur ne peut pas dépasser 30 caractères</div>
+                <div *ngIf="username.errors?.['pattern']">Le nom d'utilisateur ne peut contenir que des lettres, chiffres, underscores et espaces</div>
+              </div>
+            </div>
+            
+            <!-- Email -->
+            <div class="form-group mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                name="email"
+                ngModel
+                required
+                email
+                maxlength="100"
+                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|fr|tn|net)$"
+                #email="ngModel"
+                placeholder="Entrez l'email"
+              />
+              <div *ngIf="email.invalid && email.touched" class="text-danger">
+                <div *ngIf="email.errors?.['required']">L'email est obligatoire</div>
+                <div *ngIf="email.errors?.['email']">Veuillez entrer un email valide</div>
+                <div *ngIf="email.errors?.['maxlength']">L'email ne peut pas dépasser 100 caractères</div>
+                <div *ngIf="email.errors?.['pattern']">Seuls les domaines .com, .fr, .tn et .net sont acceptés</div>
+              </div>
+            </div>
+            
+            <!-- Role -->
+            <div class="form-group mb-3">
+              <label for="role" class="form-label">Role</label>
+              <select
+                class="form-select"
+                name="role"
+                ngModel
+                required
+                #role="ngModel"
+              >
+                <option value="">Sélectionnez un rôle</option>
+                <option value="student">Student</option>
+                <option value="tutor">Tutor</option>
+                <option value="admin">Admin</option>
+              </select>
+              <div *ngIf="role.invalid && role.touched" class="text-danger">
+                Le rôle est obligatoire
+              </div>
+            </div>
+            
+            <!-- Password -->
+            <div class="form-group mb-4">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                name="password"
+                ngModel
+                required
+                minlength="8"
+                maxlength="50"
+                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$"
+                #password="ngModel"
+                placeholder="Entrez le mot de passe"
+              />
+              <div *ngIf="password.invalid && password.touched" class="text-danger">
+                <div *ngIf="password.errors?.['required']">Le mot de passe est obligatoire</div>
+                <div *ngIf="password.errors?.['minlength']">Le mot de passe doit contenir au moins 8 caractères</div>
+                <div *ngIf="password.errors?.['maxlength']">Le mot de passe ne peut pas dépasser 50 caractères</div>
+                <div *ngIf="password.errors?.['pattern']">Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial</div>
+              </div>
+            </div>
+            
+            <!-- Message d'erreur global -->
+            <div class="alert alert-danger" *ngIf="messageErr">
+              {{ messageErr }}
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">Add user</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-    <!-- Last Name -->
-    <!-- <div class="form-group">
-      <label for="lastName">Nom</label>
-      <input
-        type="text"
-        class="form-control"
-        name="lastname"
-        ngModel
-        required
-        minlength="2"
-        maxlength="20"
-        #lastname="ngModel"
-        placeholder="Entrez le nom"
-      />
-      <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">
-        Le nom est requis.
-      </div>
-      <div *ngIf="lastname.errors?.['minlength'] && lastname.touched" class="text-danger">
-        Le nom doit contenir au moins 2 caractères.
-      </div>
-      <div *ngIf="lastname.errors?.['maxlength'] && lastname.touched" class="text-danger">
-        Le nom ne doit pas dépasser 20 caractères.
-      </div>
-    </div>
-   -->
-    <!-- Email -->
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input
-        type="email"
-        class="form-control"
-        name="email"
-        ngModel
-        required
-        email
-        #email="ngModel"
-        placeholder="Entrez l'email"
-      />
-      <div *ngIf="email.invalid && email.touched" class="text-danger">
-        Veuillez entrer un email valide (exemple : exemple&#64;domaine.com).
-      </div>
-    </div>
-    <!-- Role -->
-    <div class="form-group">
-      <label for="role">Role</label>
-      <input
-        type="text"
-        class="form-control"
-        name="role"
-        ngModel
-        required
-        minlength="2"
-        maxlength="20"
-        #role="ngModel"
-        placeholder="Entrez le role"
-      />
-      <div *ngIf="role.invalid && role.touched" class="text-danger">
-        Le role est requis.
-      </div>
-      <div *ngIf="role.errors?.['minlength'] && role.touched" class="text-danger">
-        Le role doit contenir au moins 2 caractères.
-      </div>
-      <div *ngIf="role.errors?.['maxlength'] && role.touched" class="text-danger">
-        Le role ne doit pas dépasser 20 caractères.
-      </div>
-    </div>
-       <!-- password  -->
-    <div class="form-group">
-      <label for="phone">Password</label>
-      <input
-        type="password"
-        class="form-control"
-        name="password"
-        ngModel
-        required
-        #password="ngModel"
-        placeholder="Entrez le mot de pass"
-      />
-      <div *ngIf="password.invalid && password.touched" class="text-danger">
-        Le password est requis 
-      </div>
-    </div> 
-     <!-- Age -->
-    <!-- <div class="form-group">
-      <label for="age">Âge</label>
-      <input
-        type="number"
-        class="form-control"
-        name="age"
-        ngModel
-        required
-        min="1"
-        max="120"
-        #age="ngModel"
-        placeholder="Entrez l'âge"
-      />
-      <div *ngIf="age.invalid && age.touched" class="text-danger">
-        L'âge doit être un nombre positif entre 1 et 120.
-      </div>
-    </div> -->
-    <!-- Message d'erreur global -->
-    <div class="alert alert-danger" *ngIf="messageErr">
-      {{ messageErr }}
-    </div>
-    <!-- Submit Button -->
-    <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">Add user</button>
-  </form>
-  
-  
-  
+  </div>
+</div>

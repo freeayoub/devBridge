@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
@@ -8,48 +9,29 @@ import { DataService } from 'src/app/services/data.service';
   templateUrl: './adduser.component.html',
   styleUrls: ['./adduser.component.css']
 })
-export class AdduserComponent {
-  messageErr: string | null = null;
+export class AdduserComponent implements OnInit {
+  messageErr:any= "";
 
   constructor(private ds: DataService, private route: Router) {}
 
-  add(userForm: NgForm) {
-    if (userForm.valid) {
-      const newuser = userForm.value;
+  ngOnInit(): void {
+  }
 
+  add(userForm: NgForm) {
+      const newuser = userForm.value;
       this.ds.addUser(newuser).subscribe({
         next: (data) => {
-          // Navigate to the 'allusers' route on success
           this.route.navigate(['/admin/allusers']);
-
-          // Reset the error message
           this.messageErr = null;
-
-          // Reset the form
           userForm.resetForm();
-
-          // Reset the error message after 3 seconds
-          setTimeout(() => {
-            this.messageErr = null;
-          }, 3000);  // 3000 ms = 3 seconds
         },
-        error: (error) => {
-          console.error('Error adding user:', error);
-          this.messageErr = 'Erreur lors de l\'ajout de l\'utilisateur. Veuillez réessayer.';
-
-          // Reset the error message after 3 seconds
+        error: (err:HttpErrorResponse ) => {
+          console.log(err.error)
+          this.messageErr = err.error[0];
           setTimeout(() => {
             this.messageErr = null;
-          }, 3000);  // 3000 ms = 3 seconds
+          }, 3000); 
         },
       });
-    } else {
-      this.messageErr = 'Veuillez corriger les erreurs dans le formulaire.';
-
-      // Reset the error message after 3 seconds
-      setTimeout(() => {
-        this.messageErr = null;
-      }, 3000);  // 3000 ms = 3 seconds
-    }
-  }
+}
 }

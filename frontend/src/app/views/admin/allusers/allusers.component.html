@@ -42,7 +42,7 @@
               </td>
               <td>
                 <!-- Bouton update -->
-                <button class="btn btn-success btn-sm" (click)="getData(item.username,item.role,item.email,item._id)" data-toggle="modal" data-target="#exampleModal">Update</button>
+                <button class="btn btn-success btn-sm" (click)="getData(item.username,item.role,item.email,item._id,i); openModal()" data-toggle="modal" data-target="#exampleModal">Update</button>
                              
               </td>
             </tr>
@@ -53,13 +53,14 @@
   </div>
 </div>
 
+   <!-- Modal start here -->
 
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" [attr.aria-hidden]="!modalVisible">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Update User</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-dismiss="modal"  (click)="closeModal()" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>

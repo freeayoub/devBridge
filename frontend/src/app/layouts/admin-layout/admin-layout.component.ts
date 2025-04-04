@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
+import { AuthadminService } from 'src/app/services/authadmin.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -7,9 +8,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./admin-layout.component.css']
 })
 export class AdminLayoutComponent {
-
-  constructor(private location: Location){
-
+username :any;
+  constructor(private location: Location,private authService: AuthadminService,){
+this.username=this.authService.getUserName()
   }
   scrollToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
