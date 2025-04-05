@@ -8,25 +8,14 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 })
 export class AuthadminService {
   private apiUrl = 'http://localhost:3000/user';
-  ProfilAdmin={
-    username:'',
-    role:''
-  }
-
   helper = new JwtHelperService();
-  constructor(private http:HttpClient) {
-   
-  }
+  constructor(private http:HttpClient) {}
     // login 
     login( data: Partial<User>): Observable<User> {
       return this.http.post<User>(`${this.apiUrl}/login`, data);
     }
     saveDataProfil(token:any){
-      const decodedToken = this.helper.decodeToken(token);
       localStorage.setItem('token',token)
-      localStorage.setItem('role',decodedToken.role)
-      
-   
       }
       getUserName(){
         let token:any=localStorage.getItem('token')
@@ -35,8 +24,16 @@ export class AuthadminService {
       }
       loggedIn(){
         let token:any=localStorage.getItem('token')
-        let decodedToken = this.helper.decodeToken(token);
-        let role =decodedToken.role
-       
+        if (!token) {
+          return false
+         }
+       if(this.helper.decodeToken(token).role!=="admin"){
+        return false
+       }
+       if(this.helper.isTokenExpired(token)){
+        return false
+       }
+       return true
       }
+
 }

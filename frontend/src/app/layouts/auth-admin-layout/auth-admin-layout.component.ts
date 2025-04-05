@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthadminService } from 'src/app/services/authadmin.service';
 
 @Component({
@@ -10,12 +10,16 @@ import { AuthadminService } from 'src/app/services/authadmin.service';
 })
 export class AuthAdminLayoutComponent implements OnInit {
   messageAuthError: string = '';
-
-  constructor(private authService: AuthadminService, private router: Router) {}
-
-  ngOnInit(): void {
+  url:any
+  constructor(private authService: AuthadminService, private router: Router,private act:ActivatedRoute) {
+    if(this.authService.loggedIn()==true){
+      this.router.navigateByUrl('/admin')
+    }
   }
 
+  ngOnInit(): void {
+    this.url=this.act.snapshot.queryParams['returnUrl'] || '/admin/'
+  }
   loginadmin(form: any): void {
     if (!form.valid) {
       this.messageAuthError = 'Veuillez remplir correctement le formulaire.';
@@ -26,13 +30,12 @@ export class AuthAdminLayoutComponent implements OnInit {
       next: (response: any) => {
         const dataReceived = response;
           this.authService.saveDataProfil(dataReceived.token);
-          this.router.navigateByUrl('/admin/dashboard');
+          this.router.navigate([this.url]);
       },
       error: (err: HttpErrorResponse) => {
-        console.error('Erreur de connexion:', err.message);
-        this.messageAuthError =
-          'Échec de la connexion. Vérifiez vos identifiants.';
+        this.messageAuthError =err.error;
       },
     });
   }
+  
 }

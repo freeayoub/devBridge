@@ -1,7 +1,7 @@
 const { User } = require("../models/Models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = process.env.SECRET_KEY;
+const privatekey = process.env.JWT_SECRET;
 
 // Registration Handler
 const register = async (req, res) => {
@@ -22,7 +22,7 @@ const register = async (req, res) => {
       username,
       email,
       password: hashedPassword,
-      role,
+      role:role || 'student',
     });
 
     await newUser.save();
@@ -45,19 +45,19 @@ const login = async (req, res) => {
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json( "Invalid password and email");
     }
 
     // Validate the password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid password and email" });
+      return res.status(400).json("Invalid password and email" );
     }
 
     // Generate a JWT token
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role ,email: user.email},
-      SECRET_KEY,
+      privatekey,
       { expiresIn: "200h" }
     );
 
@@ -67,7 +67,6 @@ const login = async (req, res) => {
       role: user.role,
     });
   } catch (err) {
-    console.error("Error in login:", err);
     res.status(500).json({ message: "Error logging in", error: err.message });
   }
 };

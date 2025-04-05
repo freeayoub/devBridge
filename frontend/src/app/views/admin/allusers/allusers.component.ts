@@ -21,7 +21,7 @@ export class AllusersComponent  implements OnInit{
   messageSuccess=''
   constructor(private ds:DataService,private route:Router) {
     this.ds
-      .getAllUser()
+      .getAllUsers()
       .subscribe(
         (data) => {
           this.dataArray=data

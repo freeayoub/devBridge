@@ -1,15 +1,58 @@
 const express = require("express");
 const router = express.Router();
 const validationUserMiddleware = require("../middlewares/validationUserMiddleware");
+const {
+  verifyTokenAdmin,
+  verifyToken,
+  verifySecretClient,
+} = require("../middlewares/authUserMiddleware");
 const userController = require("../controllers/userController");
-// Route pour créer un utilisateur
-router.post("/register",validationUserMiddleware(false),userController.register);
-router.post('/newuser',validationUserMiddleware(false),userController.createUser);
+
+// Public routes (no authentication required)
+router.post(
+  "/register",
+  validationUserMiddleware(false),
+  userController.register
+);
 router.post("/login", userController.login);
-router.get('/allusers', userController.getAllUsers);
-router.get('/oneuser/:id', userController.getOneUser);
-router.post('/newuser',userController.createUser);
-router.post('/newuser',userController.createUser);
-router.put('/updateuser/:id',validationUserMiddleware(true), userController.updateUser);
-router.delete('/deleteuser/:id', userController.deleteUser);
+
+// Authenticated user routes
+router.get(
+  "/allusers",
+  verifyToken,
+  verifySecretClient,
+  userController.getAllUsers
+);
+
+router.get(
+  "/oneuser/:id",
+  verifyToken,
+  verifySecretClient,
+  userController.getOneUser
+);
+
+// Admin-only routes
+router.post(
+  "/newuser",
+  verifyTokenAdmin,
+  verifySecretClient,
+  validationUserMiddleware(false),
+  userController.createUser
+);
+
+router.put(
+  "/updateuser/:id",
+  verifyTokenAdmin,
+  verifySecretClient,
+  validationUserMiddleware(true),
+  userController.updateUser
+);
+
+router.delete(
+  "/deleteuser/:id",
+  verifyTokenAdmin,
+  verifySecretClient,
+  userController.deleteUser
+);
+
 module.exports = router;

@@ -36,7 +36,7 @@ const corsOptions = {
     "https://studio.apollographql.com",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization",'role'],
   credentials: true,
 };
 
@@ -53,7 +53,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 // RESTful Routes
-app.use("/message", authUserMiddleware, messageRoutes);
+app.use("/message", authUserMiddleware.verifyToken, messageRoutes);
 app.use("/user", userRoutes);
 // Endpoint to activate GraphQL
 app.get("/", (req, res) => {
@@ -113,7 +113,7 @@ if (config.USE_GRAPHQL) {
     .then(() => {
       app.use(
         "/graphql",
-        authUserMiddleware,
+        authUserMiddleware.verifyToken,
         cors(corsOptions),
         expressMiddleware(apolloServer, {
           context: async ({ req }) => ({

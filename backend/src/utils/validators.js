@@ -33,7 +33,6 @@ const userValidationSchema = yup.object().shape({
         
     role: yup
         .string()
-        .required('Le rôle est obligatoire')
         .oneOf(
             ['student', 'tutor', 'admin'], 
             'Le rôle doit être soit "student", "tutor" ou "admin"'
