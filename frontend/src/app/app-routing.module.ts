@@ -8,32 +8,87 @@ import { guarduserGuard } from './views/guards/guarduser.guard';
 import { noguarduserGuard } from './views/guards/noguarduser.guard';
 
 const routes: Routes = [
-{path:'',component:FrontLayoutComponent,children:
-  [
-   
-    {path:'',loadChildren:()=>(import('./views/front/home/home.module').then(m=>m.HomeModule))},
-    {path:'loginuser',loadChildren:()=>(import('./views/front/loginuser/loginuser.module').then(m=>m.LoginuserModule)),canActivateChild:[noguarduserGuard]},
-    {path:'registeruser',loadChildren:()=>(import('./views/front/register/register.module').then(m=>m.RegisterModule))},
-    {path:'users',loadChildren:()=>(import('./views/front/users/users.module').then(m=>m.UsersModule)),canActivateChild:[guarduserGuard]},
-    {path:'userDetails/:id',loadChildren:()=>(import('./views/front/userdetails/userdetails.module').then(m=>m.UserdetailsModule)),canActivateChild:[guarduserGuard]},
-  ]
-},
+  {
+    path: '',
+    component: FrontLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./views/front/home/home.module').then((m) => m.HomeModule),
+      },
+      {
+        path: 'loginuser',
+        loadChildren: () =>
+          import('./views/front/loginuser/loginuser.module').then(
+            (m) => m.LoginuserModule
+          ),
+        canActivateChild: [noguarduserGuard],
+      },
+      {
+        path: 'registeruser',
+        loadChildren: () =>
+          import('./views/front/register/register.module').then(
+            (m) => m.RegisterModule
+          ),
+      },
+      {
+        path: 'profile',
+        loadChildren: () =>
+          import('./views/front/profile/profile.module').then((m) => m.ProfileModule),
+        canActivateChild: [guarduserGuard],
+      },
 
-{path:'admin',component:AdminLayoutComponent,canActivate:[guardadminGuard],children:
-  [
-    {path:'',loadChildren:()=>(import('./views/admin/dashboard/dashboard.module').then(m=>m.DashboardModule))},
-    {path:'dashboard',loadChildren:()=>(import('./views/admin/dashboard/dashboard.module').then(m=>m.DashboardModule))},
-    {path:'allusers',loadChildren:()=>(import('./views/admin/allusers/allusers.module').then(m=>m.AllusersModule))},
-    {path:'adduser',loadChildren:()=>(import('./views/admin/adduser/adduser.module').then(m=>m.AdduserModule))},
-    {path:'userdetails/:id',loadChildren:()=>(import('./views/admin/userdetails/userdetails.module').then(m=>m.UserdetailsModule))},
-  ]
-},
-{path:'admin/login',component:AuthAdminLayoutComponent},
+    ],
+  },
 
+  {
+    path: 'admin',
+    component: AdminLayoutComponent,
+    canActivate: [guardadminGuard],
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./views/admin/dashboard/dashboard.module').then(
+            (m) => m.DashboardModule
+          ),
+      },
+      {
+        path: 'dashboard',
+        loadChildren: () =>
+          import('./views/admin/dashboard/dashboard.module').then(
+            (m) => m.DashboardModule
+          ),
+      },
+      {
+        path: 'allusers',
+        loadChildren: () =>
+          import('./views/admin/allusers/allusers.module').then(
+            (m) => m.AllusersModule
+          ),
+      },
+      {
+        path: 'adduser',
+        loadChildren: () =>
+          import('./views/admin/adduser/adduser.module').then(
+            (m) => m.AdduserModule
+          ),
+      },
+      {
+        path: 'userdetails/:id',
+        loadChildren: () =>
+          import('./views/admin/userdetails/userdetails.module').then(
+            (m) => m.UserdetailsModule
+          ),
+      },
+    ],
+  },
+  { path: 'admin/login', component: AuthAdminLayoutComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

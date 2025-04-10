@@ -6,7 +6,7 @@ export const environment = {
     production: false,
     secret:'2cinfo1',
     client:'esprit',
-    urlBackend:'http://localhost:3000/'
+    urlBackend:'http://localhost:3000/api/'
   };
   
   /*

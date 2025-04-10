@@ -34,4 +34,49 @@ export class AuthuserService {
      }
      return true
   }
+  getCurrentUserId(): string | null {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    
+    const decoded = this.helper.decodeToken(token);
+    return decoded?.id || null;
+  }
+  getCurrentUser(): any {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    
+    const decoded = this.helper.decodeToken(token);
+    return {
+      id: decoded?.id,
+      username: decoded?.username,
+      email: decoded?.email,
+      role: decoded?.role
+    };
+  }
+  getCurrentUserRole(): string | null {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    
+    const decoded = this.helper.decodeToken(token);
+    return decoded?.role || null;
+  }
+
+  updateSelf(data: any) {
+    const userId = this.getCurrentUserId();
+    if (!userId) throw new Error('User not logged in');
+    
+    return this.http.put(`${environment.urlBackend}user/updateself/${userId}`, data);
+  }
+
+  deactivateSelf() {
+    const userId = this.getCurrentUserId();
+    if (!userId) throw new Error('User not logged in');
+    
+    return this.http.put(`${environment.urlBackend}user/deactivateself`, {});
+  }
+
+  changePassword(currentPassword: string, newPassword: string) {
+    return this.updateSelf({ currentPassword, newPassword });
+  }
+
 }

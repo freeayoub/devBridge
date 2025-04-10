@@ -30,7 +30,7 @@ export class UserdetailsComponent implements OnInit,OnDestroy {
   loadUser(id: string): void {
     this.isLoading = true;
     this.messageErr = '';
-    this.subscription = this.ds.getOnestUser(id).subscribe({
+    this.subscription = this.ds.getOneUser(id).subscribe({
       next: (response:User) => {
         this.userObject = response;
         this.isLoading = false;

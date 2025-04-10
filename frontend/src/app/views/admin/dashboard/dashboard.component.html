@@ -1,94 +1,98 @@
-  <!-- Begin Page Content -->
-  <div class="container-fluid">
+<!-- Begin Page Content -->
+<div class="container-fluid p-4 md:p-6 bg-[#edf1f4] min-h-screen">
 
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <h1 class="text-2xl font-bold text-[#4f5fad] mb-2 md:mb-0">Dashboard</h1>
+        <a href="#" class="inline-flex items-center bg-[#7826b5] hover:bg-[#5f1d8f] text-white px-4 py-2 rounded-lg shadow transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Generate Report
+        </a>
     </div>
 
     <!-- Content Row -->
-    <div class="row">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Earnings (Monthly)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+        <!-- Earnings (Monthly) Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-[#4f5fad]">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-[#6d6870] uppercase tracking-wider">
+                            Earnings (Monthly)
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                        </div>
+                        <div class="mt-1 text-2xl font-semibold text-[#4f5fad]">$40,000</div>
+                    </div>
+                    <div class="ml-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#bdc6cc]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Earnings (Annual)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+        <!-- Earnings (Annual) Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-[#afcf75]">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-[#6d6870] uppercase tracking-wider">
+                            Earnings (Annual)
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
+                        <div class="mt-1 text-2xl font-semibold text-[#4f5fad]">$215,000</div>
+                    </div>
+                    <div class="ml-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#bdc6cc]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
-                            </div>
-                            <div class="row no-gutters align-items-center">
-                                <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
-                                </div>
-                                <div class="col">
-                                    <div class="progress progress-sm mr-2">
-                                        <div class="progress-bar bg-info" role="progressbar"
-                                            style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                                            aria-valuemax="100"></div>
-                                    </div>
+        <!-- Tasks Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-[#4a89ce]">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-[#6d6870] uppercase tracking-wider">
+                            Tasks
+                        </div>
+                        <div class="mt-2">
+                            <div class="flex items-center">
+                                <div class="text-xl font-semibold text-[#4f5fad] mr-3">50%</div>
+                                <div class="w-full bg-[#edf1f4] rounded-full h-2.5">
+                                    <div class="bg-[#4a89ce] h-2.5 rounded-full" style="width: 50%"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#bdc6cc]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Pending Requests Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Pending Requests</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+        <!-- Pending Requests Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-[#ff6b69]">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-[#6d6870] uppercase tracking-wider">
+                            Pending Requests
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
+                        <div class="mt-1 text-2xl font-semibold text-[#4f5fad]">18</div>
+                    </div>
+                    <div class="ml-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#bdc6cc]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -96,235 +100,178 @@
     </div>
 
     <!-- Content Row -->
-
-    <div class="row">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
         <!-- Area Chart -->
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div
-                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                    <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                            aria-labelledby="dropdownMenuLink">
-                            <div class="dropdown-header">Dropdown Header:</div>
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </div>
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-5 border-b border-[#bdc6cc] flex items-center justify-between">
+                <h6 class="font-bold text-[#4f5fad]">Earnings Overview</h6>
+                <div class="relative">
+                    <button class="text-[#6d6870] hover:text-[#4f5fad]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"/>
+                        </svg>
+                    </button>
                 </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="myAreaChart"></canvas>
-                    </div>
+            </div>
+            <div class="p-5">
+                <div class="chart-area">
+                    <canvas id="myAreaChart"></canvas>
                 </div>
             </div>
         </div>
 
         <!-- Pie Chart -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div
-                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-                    <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                            aria-labelledby="dropdownMenuLink">
-                            <div class="dropdown-header">Dropdown Header:</div>
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </div>
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-5 border-b border-[#bdc6cc] flex items-center justify-between">
+                <h6 class="font-bold text-[#4f5fad]">Revenue Sources</h6>
+                <div class="relative">
+                    <button class="text-[#6d6870] hover:text-[#4f5fad]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"/>
+                        </svg>
+                    </button>
                 </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div class="chart-pie pt-4 pb-2">
-                        <canvas id="myPieChart"></canvas>
-                    </div>
-                    <div class="mt-4 text-center small">
-                        <span class="mr-2">
-                            <i class="fas fa-circle text-primary"></i> Direct
-                        </span>
-                        <span class="mr-2">
-                            <i class="fas fa-circle text-success"></i> Social
-                        </span>
-                        <span class="mr-2">
-                            <i class="fas fa-circle text-info"></i> Referral
-                        </span>
-                    </div>
+            </div>
+            <div class="p-5">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+                <div class="mt-4 text-center text-sm">
+                    <span class="inline-flex items-center mr-4">
+                        <span class="inline-block w-3 h-3 rounded-full bg-[#4f5fad] mr-1"></span> Direct
+                    </span>
+                    <span class="inline-flex items-center mr-4">
+                        <span class="inline-block w-3 h-3 rounded-full bg-[#afcf75] mr-1"></span> Social
+                    </span>
+                    <span class="inline-flex items-center">
+                        <span class="inline-block w-3 h-3 rounded-full bg-[#4a89ce] mr-1"></span> Referral
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Content Row -->
-    <div class="row">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <!-- Content Column -->
-        <div class="col-lg-6 mb-4">
-
-            <!-- Project Card Example -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
+        <!-- Projects -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-5 border-b border-[#bdc6cc]">
+                <h6 class="font-bold text-[#4f5fad]">Projects</h6>
+            </div>
+            <div class="p-5">
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-[#6d6870] mb-1">
+                        <span>Server Migration</span>
+                        <span>20%</span>
+                    </div>
+                    <div class="w-full bg-[#edf1f4] rounded-full h-2">
+                        <div class="bg-[#ff6b69] h-2 rounded-full" style="width: 20%"></div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <h4 class="small font-weight-bold">Server Migration <span
-                            class="float-right">20%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: 20%"
-                            aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-[#6d6870] mb-1">
+                        <span>Sales Tracking</span>
+                        <span>40%</span>
                     </div>
-                    <h4 class="small font-weight-bold">Sales Tracking <span
-                            class="float-right">40%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 40%"
-                            aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="w-full bg-[#edf1f4] rounded-full h-2">
+                        <div class="bg-[#dac4ea] h-2 rounded-full" style="width: 40%"></div>
                     </div>
-                    <h4 class="small font-weight-bold">Customer Database <span
-                            class="float-right">60%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar" role="progressbar" style="width: 60%"
-                            aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-[#6d6870] mb-1">
+                        <span>Customer Database</span>
+                        <span>60%</span>
                     </div>
-                    <h4 class="small font-weight-bold">Payout Details <span
-                            class="float-right">80%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: 80%"
-                            aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="w-full bg-[#edf1f4] rounded-full h-2">
+                        <div class="bg-[#4f5fad] h-2 rounded-full" style="width: 60%"></div>
                     </div>
-                    <h4 class="small font-weight-bold">Account Setup <span
-                            class="float-right">Complete!</span></h4>
-                    <div class="progress">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%"
-                            aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-[#6d6870] mb-1">
+                        <span>Payout Details</span>
+                        <span>80%</span>
+                    </div>
+                    <div class="w-full bg-[#edf1f4] rounded-full h-2">
+                        <div class="bg-[#4a89ce] h-2 rounded-full" style="width: 80%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm text-[#6d6870] mb-1">
+                        <span>Account Setup</span>
+                        <span>Complete!</span>
+                    </div>
+                    <div class="w-full bg-[#edf1f4] rounded-full h-2">
+                        <div class="bg-[#afcf75] h-2 rounded-full" style="width: 100%"></div>
                     </div>
                 </div>
             </div>
-
-            <!-- Color System -->
-            <div class="row">
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-primary text-white shadow">
-                        <div class="card-body">
-                            Primary
-                            <div class="text-white-50 small">#4e73df</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-success text-white shadow">
-                        <div class="card-body">
-                            Success
-                            <div class="text-white-50 small">#1cc88a</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-info text-white shadow">
-                        <div class="card-body">
-                            Info
-                            <div class="text-white-50 small">#36b9cc</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-warning text-white shadow">
-                        <div class="card-body">
-                            Warning
-                            <div class="text-white-50 small">#f6c23e</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-danger text-white shadow">
-                        <div class="card-body">
-                            Danger
-                            <div class="text-white-50 small">#e74a3b</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-secondary text-white shadow">
-                        <div class="card-body">
-                            Secondary
-                            <div class="text-white-50 small">#858796</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-light text-black shadow">
-                        <div class="card-body">
-                            Light
-                            <div class="text-black-50 small">#f8f9fc</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-dark text-white shadow">
-                        <div class="card-body">
-                            Dark
-                            <div class="text-white-50 small">#5a5c69</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <div class="col-lg-6 mb-4">
-
-            <!-- Illustrations -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
-                </div>
-                <div class="card-body">
-                    <div class="text-center">
-                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                            src="assets/admin/img/undraw_posting_photo.svg" alt="...">
-                    </div>
-                    <p>Add some quality, svg illustrations to your project courtesy of <a
-                            target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-                        constantly updated collection of beautiful svg images that you can use
-                        completely free and without attribution!</p>
-                    <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                        unDraw &rarr;</a>
-                </div>
+        <!-- Color System -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-[#4f5fad] text-white rounded-lg shadow-md p-4">
+                <div class="font-medium">Primary</div>
+                <div class="text-sm opacity-80">#4f5fad</div>
             </div>
-
-            <!-- Approach -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
-                </div>
-                <div class="card-body">
-                    <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                        CSS bloat and poor page performance. Custom CSS classes are used to create
-                        custom components and custom utility classes.</p>
-                    <p class="mb-0">Before working with this theme, you should become familiar with the
-                        Bootstrap framework, especially the utility classes.</p>
-                </div>
+            <div class="bg-[#7826b5] text-white rounded-lg shadow-md p-4">
+                <div class="font-medium">Violet</div>
+                <div class="text-sm opacity-80">#7826b5</div>
             </div>
-
+            <div class="bg-[#afcf75] text-[#2a5a03] rounded-lg shadow-md p-4">
+                <div class="font-medium">Success</div>
+                <div class="text-sm opacity-80">#afcf75</div>
+            </div>
+            <div class="bg-[#4a89ce] text-white rounded-lg shadow-md p-4">
+                <div class="font-medium">Info</div>
+                <div class="text-sm opacity-80">#4a89ce</div>
+            </div>
+            <div class="bg-[#dac4ea] text-[#7826b5] rounded-lg shadow-md p-4">
+                <div class="font-medium">Light Violet</div>
+                <div class="text-sm opacity-80">#dac4ea</div>
+            </div>
+            <div class="bg-[#ff6b69] text-white rounded-lg shadow-md p-4">
+                <div class="font-medium">Danger</div>
+                <div class="text-sm opacity-80">#ff6b69</div>
+            </div>
         </div>
     </div>
 
+    <!-- Additional Content Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+
+        <!-- Illustrations -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-5 border-b border-[#bdc6cc]">
+                <h6 class="font-bold text-[#4f5fad]">Illustrations</h6>
+            </div>
+            <div class="p-5">
+                <div class="text-center">
+                    <img class="img-fluid px-3 px-sm-4 mt-3 mb-4 mx-auto" style="max-width: 25rem;"
+                        src="assets/admin/img/undraw_posting_photo.svg" alt="...">
+                </div>
+                <p class="text-[#6d6870] mb-4">Add some quality, svg illustrations to your project courtesy of <a
+                        target="_blank" rel="nofollow" href="https://undraw.co/" class="text-[#4a89ce] hover:text-[#7826b5]">unDraw</a>, a
+                    constantly updated collection of beautiful svg images that you can use
+                    completely free and without attribution!</p>
+                <a target="_blank" rel="nofollow" href="https://undraw.co/" class="text-[#4a89ce] hover:text-[#7826b5] font-medium">Browse Illustrations on unDraw →</a>
+            </div>
+        </div>
+
+        <!-- Approach -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-5 border-b border-[#bdc6cc]">
+                <h6 class="font-bold text-[#4f5fad]">Development Approach</h6>
+            </div>
+            <div class="p-5">
+                <p class="text-[#6d6870] mb-4">DevBridge makes extensive use of modern utility classes in order to reduce
+                    CSS bloat and poor page performance. Custom components are created with
+                    a consistent design language.</p>
+                <p class="text-[#6d6870]">Before working with this theme, you should become familiar with the
+                    Tailwind CSS framework, especially the utility classes.</p>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- /.container-fluid -->

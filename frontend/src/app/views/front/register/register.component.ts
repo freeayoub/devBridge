@@ -19,8 +19,6 @@ export class RegisterComponent implements OnInit {
     let data=f.value
 
     this.aus.register(data).subscribe(data=>{
-      
-     console.log(data)
         this.router.navigate(['/loginuser'])
     },(err:HttpErrorResponse)=>{
       console.log(err)

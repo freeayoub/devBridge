@@ -1,0 +1,145 @@
+<div class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+  <!-- En-tête -->
+  <header class="mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Mon Profil</h2>
+    <p class="text-gray-600 mt-1">Gérez vos informations personnelles et votre compte</p>
+  </header>
+
+  <!-- Messages d'état -->
+  <div *ngIf="message || error" class="mb-6 transition-all duration-300">
+    <div *ngIf="message" class="p-3 bg-green-50 text-green-700 rounded-lg border border-green-200 flex items-start">
+      <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span>{{ message }}</span>
+    </div>
+    <div *ngIf="error" class="p-3 bg-red-50 text-red-700 rounded-lg border border-red-200 flex items-start">
+      <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+      </svg>
+      <span>{{ error }}</span>
+    </div>
+  </div>
+
+  <!-- Formulaire de profil -->
+  <section class="mb-8">
+    <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+      <div class="space-y-4">
+        <!-- Champ Nom d'utilisateur -->
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nom d'utilisateur</label>
+          <input id="username" type="text" formControlName="username"
+                 class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                 [class.border-red-300]="profileForm.get('username')?.invalid && profileForm.get('username')?.touched">
+          <div *ngIf="profileForm.get('username')?.invalid && profileForm.get('username')?.touched" class="mt-1 text-sm text-red-600">
+            <span *ngIf="profileForm.get('username')?.errors?.['required']">Ce champ est requis</span>
+            <span *ngIf="profileForm.get('username')?.errors?.['minlength']">Minimum 3 caractères</span>
+          </div>
+        </div>
+
+        <!-- Champ Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input id="email" type="email" formControlName="email"
+                 class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                 [class.border-red-300]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+          <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
+            <span *ngIf="profileForm.get('email')?.errors?.['required']">Ce champ est requis</span>
+            <span *ngIf="profileForm.get('email')?.errors?.['email']">Email invalide</span>
+          </div>
+        </div>
+
+        <!-- Bouton de soumission -->
+        <div class="pt-2">
+          <button type="submit" [disabled]="profileForm.invalid || isLoading"
+                  class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ isLoading ? 'Mise à jour en cours...' : 'Mettre à jour le profil' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- Formulaire de changement de mot de passe -->
+  <section class="border-t border-gray-200 pt-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Changer le mot de passe</h3>
+    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+      <div class="space-y-4">
+        <!-- Mot de passe actuel -->
+        <div>
+          <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe actuel</label>
+          <input id="currentPassword" type="password" formControlName="currentPassword"
+                 class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 [class.border-red-300]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched">
+          <div *ngIf="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched" class="mt-1 text-sm text-red-600">
+            Ce champ est requis
+          </div>
+        </div>
+
+        <!-- Nouveau mot de passe -->
+        <div>
+          <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">Nouveau mot de passe</label>
+          <input id="newPassword" type="password" formControlName="newPassword"
+                 class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 [class.border-red-300]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
+          <div *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched" class="mt-1 text-sm text-red-600">
+            <span *ngIf="passwordForm.get('newPassword')?.errors?.['required']">Ce champ est requis</span>
+            <span *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']">Minimum 6 caractères</span>
+          </div>
+        </div>
+
+        <!-- Confirmation mot de passe -->
+        <div>
+          <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirmer le nouveau mot de passe</label>
+          <input id="confirmPassword" type="password" formControlName="confirmPassword"
+                 class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 [class.border-red-300]="passwordForm.hasError('mismatch') && passwordForm.get('confirmPassword')?.touched">
+          <div *ngIf="passwordForm.hasError('mismatch') && passwordForm.get('confirmPassword')?.touched" class="mt-1 text-sm text-red-600">
+            Les mots de passe ne correspondent pas
+          </div>
+        </div>
+
+        <!-- Bouton de soumission -->
+        <div class="pt-2">
+          <button type="submit" [disabled]="passwordForm.invalid || isLoading"
+                  class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ isLoading ? 'Changement en cours...' : 'Changer le mot de passe' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- Section désactivation -->
+  <section class="border-t border-gray-200 pt-6 mt-6">
+    <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Zone dangereuse</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <p>La désactivation de votre compte est irréversible. Toutes vos données seront conservées mais vous ne pourrez plus vous connecter.</p>
+          </div>
+          <div class="mt-4">
+            <button (click)="deactivateAccount()" [disabled]="isLoading"
+                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ isLoading ? 'Désactivation en cours...' : 'Désactiver mon compte' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

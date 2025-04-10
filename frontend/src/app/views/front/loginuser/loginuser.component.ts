@@ -22,7 +22,7 @@ export class LoginuserComponent implements OnInit {
     this.aus.login(data).subscribe(data=>{
       this.datatoken=data
       this.aus.saveToken(this.datatoken.token)
-      this.route.navigate(['/users'])
+      this.route.navigate(['/'])
     },(err:HttpErrorResponse)=>{
       console.log(err)
       this.messageError=err.error})

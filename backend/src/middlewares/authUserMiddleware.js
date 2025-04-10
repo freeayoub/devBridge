@@ -9,18 +9,14 @@ if (!privatekey || !secretkey || !clientkey) {
 
 const verifyToken = (req, res, next) => {
   try {
-    // Extract token from the Authorization header
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader) {
-      return res.status(401).json({ message: "Authorization header missing" });
-    }
-    
-    if (!authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "Invalid token format - should be 'Bearer <token>'" });
-    }
-    
-    const token = authHeader.split(" ")[1];
+     // 1. Vérifier le header Authorization
+     const authHeader = req.headers.authorization;
+
+     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+         return res.status(401).json({ message: "Authentification requise" });
+     }
+      // 2. Extraire le token
+    const token = authHeader.split(' ')[1];
     
     if (!token) {
       return res.status(401).json({ message: "Token not provided" });
@@ -32,7 +28,14 @@ const verifyToken = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, privatekey);
-    req.userId = decoded.id;
+      // 4. Ajouter les infos utilisateur à la requête
+      req.userId = decoded.id;
+      req.user = {
+        id: decoded.id,
+        role: decoded.role,
+        email: decoded.email,
+        username: decoded.username
+    };
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
@@ -61,12 +64,18 @@ const verifyTokenAdmin = (req, res, next) => {
       return res.status(401).json({ message: "Token not provided" });
     }
     
-    if (role !== 'Admin') {
+    if (role !== 'admin') {
       return res.status(403).json({ message: "Admin privileges required" });
     }
 
     const decoded = jwt.verify(token, privatekey);
     req.userId = decoded.id;
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+      email: decoded.email,
+      username: decoded.username
+  };
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {

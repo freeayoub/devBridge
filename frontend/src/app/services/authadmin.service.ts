@@ -3,16 +3,16 @@ import { Injectable } from '@angular/core';
 import { User } from '../models/user.model';
 import { Observable } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthadminService {
-  private apiUrl = 'http://localhost:3000/user';
   helper = new JwtHelperService();
   constructor(private http:HttpClient) {}
     // login 
-    login( data: Partial<User>): Observable<User> {
-      return this.http.post<User>(`${this.apiUrl}/login`, data);
+    login( body: Partial<User>): Observable<User> {
+      return this.http.post<User>(`${environment.urlBackend}user/login`, body);
     }
     saveDataProfil(token:any){
       localStorage.setItem('token',token)

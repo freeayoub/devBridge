@@ -1,8 +1,10 @@
 const pubsub = require("../config/pubsub");
 const GraphQLUpload = require("graphql-upload/GraphQLUpload.js");
-const { User, Message, Conversation } = require("../models/Models");
+const { User } = require("../models/schemas/user.schema");
+const {Message} = require("../models/schemas/message.schema");
+const { Conversation } = require("../models/schemas/conversation.schema");
 const uploadFile = require("../services/messageService");
-const { messageSchema } = require("../utils/validators");
+const { messageSchema } = require("../models/validators/message.validators");
 const { isValidObjectId } = require("mongoose");
 
 // Validate user IDs
