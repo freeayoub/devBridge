@@ -17,24 +17,16 @@ Le projet utilise une structure **monorepo** avec un seul dépôt Git qui contie
 git clone https://github.com/freeayoub/devBridge.git
 ---------------------------------------------------
 #  .env:
-(
-# Configuration de base
 PORT=3000
 NODE_ENV=development
-# Base de données MongoDB
 MONGO_URI=mongodb://127.0.0.1:27017/project_management
-# Frontend
 FRONTEND_URL=http://localhost:4200
 CORS_ORIGIN=http://localhost:4200
-# Authentification
 JWT_SECRET=ayoub
 JWT_EXPIRES_IN=7d
 SECRET_KEY=2cinfo1
 CLIENT_KEY=esprit
-# GraphQL
 USE_GRAPHQL=true
-# Cloudinary
 CLOUDINARY_CLOUD_NAME=dhefwodjk
 CLOUDINARY_API_KEY=759654722199679
 CLOUDINARY_API_SECRET=RWqD45DPdUXvDN6Bf096EcVrPdA
-)
