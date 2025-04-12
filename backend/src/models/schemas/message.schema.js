@@ -27,13 +27,27 @@ const MessageSchema = new mongoose.Schema({
     default: false,
     index: true
   },
+  readAt: {
+    type: Date
+  },
   conversationId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Conversation',
     index: true
+  },
+  timestamp: {
+    type: Date,
+    required: true,
+    default: Date.now,
+    get: (timestamp) => timestamp?.toISOString()
   }
 }, {
-  timestamps: true
+  toJSON: { getters: true },
+  toObject: { getters: true }
 });
+
+// Add indexes
+MessageSchema.index({ senderId: 1, receiverId: 1, timestamp: 1 });
+MessageSchema.index({ conversationId: 1, timestamp: 1 });
 
 module.exports = mongoose.model('Message', MessageSchema);

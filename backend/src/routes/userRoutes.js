@@ -8,7 +8,21 @@ const {
 } = require("../middlewares/authUserMiddleware");
 const userController = require("../controllers/userController");
 const rateLimit = require('express-rate-limit');
-
+const multer = require('multer');
+// Configure Multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(), 
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
 // Configuration du rate limiting
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -29,10 +43,20 @@ router.put(
     validationUserMiddleware(true),
     userController.updateSelf
 );
+router.post(
+    '/upload-profile-image',
+    upload.single('image'),
+    userController.uploadProfileImage
+  );
+  router.delete(
+    '/remove-profile-image',
+    userController.removeProfileImage
+  );
 // Gestion compte utilisateur
 router.put("/deactivateself", userController.deactivateSelf);
 router.post("/logout", userController.logout);
 // ==================== Routes Admin ==================== 
+
 router.use(verifyTokenAdmin);
 // Gestion des utilisateurs
 router.get("/getall", userController.getAllUsers);

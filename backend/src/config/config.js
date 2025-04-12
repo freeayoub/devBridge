@@ -14,7 +14,7 @@ module.exports = {
   MONGO_URI: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/project_management',
   
   // Sécurité
-  JWT_SECRET: process.env.JWT_SECRET || 'votre_secret_par_defaut',
+  JWT_SECRET: process.env.JWT_SECRET || 'devbridge',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   SECRET_KEY: process.env.SECRET_KEY || '2cinfo1',
   CLIENT_KEY: process.env.CLIENT_KEY || 'esprit',

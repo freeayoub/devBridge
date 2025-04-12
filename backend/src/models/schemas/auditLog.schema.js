@@ -6,13 +6,17 @@ const AuditLogSchema = new mongoose.Schema({
     required: true,
     enum: [
       'USER_REGISTER',
-      'USER_LOGIN',
+      'USER_LOGIN', 
       'USER_LOGOUT',
-      'USER_UPDATE',
+      'USER_UPDATE', 
+      'ADMIN_USER_UPDATE', 
+      'USER_SELF_UPDATE',
       'USER_DEACTIVATION',
       'USER_REACTIVATION',
       'USER_DELETION',
-      'USER_CREATION'
+      'USER_CREATION',
+      'PROFILE_IMAGE_UPLOAD',
+      'PROFILE_IMAGE_REMOVED'
     ]
   },
   targetUserId: {

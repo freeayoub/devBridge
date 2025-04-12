@@ -2,14 +2,18 @@ const { gql } = require("graphql-tag");
 
 const typeDefs = gql`
   scalar Upload
-  type User {
-    id: ID!
-    username: String!
-    email: String!
-    role: String!
-    createdAt: String!
-    isOnline: Boolean!
-  }
+ type User {
+  id: ID!
+  username: String!
+  email: String!
+  role: String!
+  image: String
+  isActive: Boolean
+  isOnline: Boolean
+  lastActive: String
+  createdAt: String
+  updatedAt: String
+}
 
   type Message {
     id: ID!
@@ -19,11 +23,13 @@ const typeDefs = gql`
     timestamp: String!
     fileUrl: String
     isRead: Boolean!
+    conversationId: ID
   }
   type Conversation {
     id: ID!
     participants: [User!]!
     messages: [Message!]!
+    lastMessage: Message
     createdAt: String!
     updatedAt: String!
   }
@@ -36,7 +42,8 @@ const typeDefs = gql`
     ): [Message]
     getConversation(conversationId: ID!): Conversation
     getUnreadMessages(userId: ID!): [Message!]!
-  }
+    me: User
+    }
 
   type Mutation {
     sendMessage(
@@ -45,18 +52,15 @@ const typeDefs = gql`
       content: String!
       file: Upload
     ): Message
-    markMessageAsRead(messageId: ID!): Message
-    
-    setUserOnline(userId: ID!): User
-    setUserOffline(userId: ID!): User
+    markMessageAsRead(messageId: ID!): Message!
+    setUserOnline(userId: ID!): User!
+    setUserOffline(userId: ID!): User!
   }
     
   type Subscription {
-    messageSent(senderId: ID!, receiverId: ID!): Message
-    
-    unreadMessages(receiverId: ID!): [Message]
-
-    userStatusChanged: User
+    messageSent(senderId: ID!, receiverId: ID!): Message!
+    unreadMessages(receiverId: ID!): [Message]!
+    userStatusChanged: User!
   }
 `;
 

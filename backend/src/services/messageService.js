@@ -1,41 +1,40 @@
 const cloudinary = require("../config/cloudinaryConfig");
 const mime = require("mime-types");
 
-const uploadFile = async (stream, filename) => {
+// Helper pour générer un public_id sécurisé
+const generatePublicId = (filename, folder) => {
+  const sanitized = filename.replace(/[^\w.-]/g, '_');
+  return folder 
+    ? `${folder}/${Date.now()}-${sanitized}`
+    : `uploads/${Date.now()}-${sanitized}`;
+};
+
+const uploadFile = async (stream, filename, options = {}) => {
+  const uploadOptions = {
+    resource_type: "auto",
+    public_id: generatePublicId(filename, options.folder),
+    mime_type: options.mime_type || mime.lookup(filename) || "application/octet-stream",
+    allowed_formats: ['jpg', 'png', 'webp', 'pdf'],
+    format: 'webp',
+    quality: 'auto:good',
+    ...options
+  };
+
   try {
-    // Déterminer le type de contenu dynamiquement
-    const contentType = mime.lookup(filename) || "application/octet-stream";
-    // Chemin du fichier dans Firebase Storage
-    const filePath = `uploads/${Date.now()}-${filename}`;
-    // Fonction de retour pour le stream d'upload vers Cloudinary
-    const uploadPromise = new Promise((resolve, reject) => {
+    const { secure_url } = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: "auto", // Utilisation automatique du type de fichier (image, vidéo, etc.)
-          public_id: filePath, // Nom du fichier dans Cloudinary
-          mime_type: contentType, // Type MIME
-        },
-        (error, result) => {
-          if (error) {
-            return reject(error);
-          }
-          resolve(result); // Renvoie le résultat de l'upload
-        }
+        uploadOptions,
+        (error, result) => error ? reject(error) : resolve(result)
       );
-      // Envoi du flux vers Cloudinary
       stream.pipe(uploadStream);
     });
-    // Attente que le fichier soit téléchargé
-    const uploadResult = await uploadPromise;
-
-    // console.log("File uploaded successfully to Cloudinary:", uploadResult);
-
-    // Retourner l'URL sécurisé du fichier téléchargé
-    return uploadResult.secure_url; // URL accessible publiquement
+    
+    return secure_url;
   } catch (error) {
-    console.error("Error uploading file to Cloudinary:", error);
-    throw new Error("Failed to upload file to Cloudinary");
+    console.error(`Upload Error [${filename}]:`, error.message);
+    throw new Error(`Échec de l'upload: ${error.message}`);
   }
 };
 
+// Export pour compatibilité
 module.exports = uploadFile;

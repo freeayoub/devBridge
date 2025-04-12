@@ -3,8 +3,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const AuditLog = require("../models/schemas/auditLog.schema");
-const { userValidationSchema } = require("../models/validators/user.validators");
-
+const {
+  userValidationSchema,
+} = require("../models/validators/user.validators");
+const cloudinary = require("../config/cloudinaryConfig");
+const uploadFile = require('../services/messageService');
+const stream = require('stream');
 // Helpers
 const generateToken = (user) => {
   return jwt.sign(
@@ -12,29 +16,39 @@ const generateToken = (user) => {
       id: user._id,
       username: user.username,
       email: user.email,
-      role: user.role
+      role: user.role,
     },
     config.JWT_SECRET,
-    { expiresIn: config.JWT_EXPIRATION || '7d' }
+    { expiresIn: config.JWT_EXPIRATION || "7d" }
   );
 };
 
 const sanitizeUser = (user) => {
   if (!user) return null;
-  const userObj = user.toObject ? user.toObject() : user;
+
+  const userObj = user.toObject?.() || user;
   const { password, __v, refreshToken, ...userData } = userObj;
+
+  userData.image =
+    userData.image ||
+    process.env.DEFAULT_IMAGE ||
+    "https://ui-avatars.com/api/?name=" + encodeURIComponent(userData.username);
+
   return userData;
 };
 
 // Format Yup validation errors
 const formatYupErrors = (error) => {
   const errors = {};
-  error.inner.forEach(err => {
+  error.inner.forEach((err) => {
     errors[err.path] = err.message;
   });
   return errors;
 };
-
+const extractPublicId = (url) => {
+  const matches = url.match(/\/upload\/v\d+\/(.+)\./);
+  return matches ? matches[1] : null;
+};
 // Contrôleurs
 const userController = {
   /**
@@ -44,14 +58,17 @@ const userController = {
     try {
       // Validation avec Yup
       await userValidationSchema.validate(req.body, { abortEarly: false });
-      
+
       const { username, email, password, role } = req.body;
 
       // Vérification existence
-      const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+      const existingUser = await User.findOne({
+        $or: [{ email }, { username }],
+      });
       if (existingUser) {
-        return res.status(409).json({ 
-          error: 'Un utilisateur avec cet email ou nom d\'utilisateur existe déjà' 
+        return res.status(409).json({
+          error:
+            "Un utilisateur avec cet email ou nom d'utilisateur existe déjà",
         });
       }
 
@@ -61,40 +78,42 @@ const userController = {
         username,
         email,
         password: hashedPassword,
+        image: req.body.image || null,
         role,
         isActive: true,
-        isOnline: false
+        isOnline: false,
       });
 
       // Journalisation avec performedBy
       await new AuditLog({
-        action: 'USER_REGISTER',
+        action: "USER_REGISTER",
         targetUserId: newUser._id,
-        performedBy: newUser._id, // L'utilisateur lui-même comme performeur
-        details: 'Nouvel utilisateur enregistré'
+        performedBy: newUser._id, 
+        details: "Nouvel utilisateur enregistré",
       }).save();
 
       // Réponse
       const token = generateToken(newUser);
       res.status(201).json({
-        message: 'Utilisateur enregistré avec succès',
+        message: "Utilisateur enregistré avec succès",
         user: sanitizeUser(newUser),
-        token
+        token,
       });
-
     } catch (error) {
-      console.error('Register error:', error);
-      
-      if (error.name === 'ValidationError') {
+      console.error("Register error:", error);
+
+      if (error.name === "ValidationError") {
         return res.status(400).json({
-          error: 'Erreur de validation',
-          details: formatYupErrors(error)
+          error: "Erreur de validation",
+          details: formatYupErrors(error),
         });
       }
-      
-      res.status(500).json({ 
-        error: 'Erreur lors de l\'enregistrement',
-        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+
+      res.status(500).json({
+        error: "Erreur lors de l'enregistrement",
+        ...(process.env.NODE_ENV === "development" && {
+          details: error.message,
+        }),
       });
     }
   },
@@ -106,19 +125,21 @@ const userController = {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return res.status(400).json({ error: 'Email et mot de passe requis' });
+        return res.status(400).json({ error: "Email et mot de passe requis" });
       }
 
       // Vérification
-      const user = await User.findOne({ email, isActive: true }).select('+password');
+      const user = await User.findOne({ email, isActive: true }).select(
+        "+password"
+      );
       if (!user) {
-        return res.status(401).json({ error: 'Identifiants invalides' });
+        return res.status(401).json({ error: "Identifiants invalides" });
       }
 
       // Mot de passe
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(401).json({ error: 'Identifiants invalides' });
+        return res.status(401).json({ error: "Identifiants invalides" });
       }
 
       // Mise à jour du statut
@@ -128,25 +149,26 @@ const userController = {
 
       // Journalisation avec performedBy
       await new AuditLog({
-        action: 'USER_LOGIN',
+        action: "USER_LOGIN",
         targetUserId: user._id,
-        performedBy: user._id, // L'utilisateur lui-même comme performeur
-        details: 'Connexion réussie'
+        performedBy: user._id, 
+        details: "Connexion réussie",
       }).save();
 
       // Réponse
       const token = generateToken(user);
       res.json({
-        message: 'Connexion réussie',
+        message: "Connexion réussie",
         user: sanitizeUser(user),
-        token
+        token,
       });
-
     } catch (error) {
-      console.error('Login error:', error);
-      res.status(500).json({ 
-        error: 'Erreur lors de la connexion',
-        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+      console.error("Login error:", error);
+      res.status(500).json({
+        error: "Erreur lors de la connexion",
+        ...(process.env.NODE_ENV === "development" && {
+          details: error.message,
+        }),
       });
     }
   },
@@ -157,146 +179,160 @@ const userController = {
     try {
       const user = await User.findById(req.user.id);
       if (!user) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
       res.json(sanitizeUser(user));
     } catch (error) {
-      console.error('Get profile error:', error);
-      res.status(500).json({ error: 'Erreur lors de la récupération du profil' });
+      console.error("Get profile error:", error);
+      res
+        .status(500)
+        .json({ error: "Erreur lors de la récupération du profil" });
     }
   },
   async updateSelf(req, res) {
     try {
       const { username, email, currentPassword, newPassword } = req.body;
-      
+
       // Validation
       if (!username && !email && !newPassword) {
-        return res.status(400).json({ error: 'Aucune donnée à mettre à jour' });
+        return res.status(400).json({ error: "Aucune donnée à mettre à jour" });
       }
-  
+
       const user = await User.findById(req.user.id);
-      if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
-  
+      if (!user)
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
+
       const updates = {};
       const updatedFields = [];
-  
+
       if (username && username !== user.username) {
         // Vérifier si le nouveau username est déjà pris
         const existingUser = await User.findOne({ username });
         if (existingUser) {
-          return res.status(409).json({ error: 'Ce nom d\'utilisateur est déjà utilisé' });
+          return res
+            .status(409)
+            .json({ error: "Ce nom d'utilisateur est déjà utilisé" });
         }
         updates.username = username;
-        updatedFields.push('username');
+        updatedFields.push("username");
       }
-  
+
       if (email && email !== user.email) {
         // Vérifier si le nouvel email est déjà pris
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-          return res.status(409).json({ error: 'Cet email est déjà utilisé' });
+          return res.status(409).json({ error: "Cet email est déjà utilisé" });
         }
         updates.email = email;
-        updatedFields.push('email');
+        updatedFields.push("email");
       }
-  
+      if (req.body.image !== undefined) {
+        updates.image = req.body.image;
+        updatedFields.push("image");
+      }
       if (newPassword) {
         if (!currentPassword) {
-          return res.status(400).json({ error: 'Le mot de passe actuel est requis' });
+          return res
+            .status(400)
+            .json({ error: "Le mot de passe actuel est requis" });
         }
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
-          return res.status(401).json({ error: 'Mot de passe actuel incorrect' });
+          return res
+            .status(401)
+            .json({ error: "Mot de passe actuel incorrect" });
         }
         updates.password = await bcrypt.hash(newPassword, 12);
-        updatedFields.push('password');
+        updatedFields.push("password");
       }
-  
+
       if (Object.keys(updates).length === 0) {
-        return res.status(400).json({ error: 'Aucune modification détectée' });
+        return res.status(400).json({ error: "Aucune modification détectée" });
       }
-  
-      const updatedUser = await User.findByIdAndUpdate(
-        req.user.id,
-        updates,
-        { new: true }
-      );
-  
+
+      const updatedUser = await User.findByIdAndUpdate(req.user.id, updates, {
+        new: true,
+      });
+
       // Audit log
       await new AuditLog({
-        action: 'USER_SELF_UPDATE',
+        action: "USER_SELF_UPDATE",
         targetUserId: req.user.id,
         performedBy: req.user.id,
+        details: `Utilisateur a mis à jour: ${updatedFields.join(', ')}`,
         changes: updatedFields,
-        ipAddress: req.ip
+        ipAddress: req.ip,
       }).save();
-  
+
       res.json({
-        message: 'Profil mis à jour avec succès',
-        user: sanitizeUser(updatedUser)
+        message: "Profil mis à jour avec succès",
+        user: sanitizeUser(updatedUser),
       });
-  
     } catch (error) {
-      console.error('Update self error:', error);
-      res.status(500).json({ 
-        error: 'Erreur lors de la mise à jour du profil',
-        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+      console.error("Update self error:", error);
+      res.status(500).json({
+        error: "Erreur lors de la mise à jour du profil",
+        ...(process.env.NODE_ENV === "development" && {
+          details: error.message,
+        }),
       });
     }
   },
-// desactivate user by self
+  // desactivate user by self
   async deactivateSelf(req, res) {
     try {
       const user = await User.findByIdAndUpdate(
         req.user.id,
-        { 
+        {
           isActive: false,
           isOnline: false,
-          lastActive: new Date()
+          lastActive: new Date(),
         },
         { new: true }
       );
-  
+
       if (!user) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
-  
+
       // Journalisation
       await new AuditLog({
-        action: 'USER_DEACTIVATION',
+        action: "USER_DEACTIVATION",
         targetUserId: user._id,
         performedBy: user._id,
-        details: 'Auto-désactivation du compte',
+        details: "Auto-désactivation du compte",
         metadata: {
-          deactivationType: 'self_deactivation'
-        }
+          deactivationType: "self_deactivation",
+        },
       }).save();
-  
-      res.json({ 
-        message: 'Votre compte a été désactivé avec succès',
-        user: sanitizeUser(user)
+
+      res.json({
+        message: "Votre compte a été désactivé avec succès",
+        user: sanitizeUser(user),
       });
     } catch (error) {
-      console.error('Deactivate self error:', error);
-      res.status(500).json({ error: 'Erreur lors de la désactivation du compte' });
+      console.error("Deactivate self error:", error);
+      res
+        .status(500)
+        .json({ error: "Erreur lors de la désactivation du compte" });
     }
   },
-  // getAllUsers 
+  // getAllUsers
   async getAllUsers(req, res) {
     try {
       const filter = {};
-      
+
       if (req.query.search) {
         filter.$or = [
-          { username: { $regex: req.query.search, $options: 'i' } },
-          { email: { $regex: req.query.search, $options: 'i' } }
+          { username: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
         ];
       }
       const users = await User.find(filter).sort({ createdAt: -1 });
-      res.json(users.map(user => sanitizeUser(user)));
+      res.json(users.map((user) => sanitizeUser(user)));
     } catch (error) {
-      console.error('Get all users error:', error);
-      res.status(500).json({ error: 'Erreur serveur' });
+      console.error("Get all users error:", error);
+      res.status(500).json({ error: "Erreur serveur" });
     }
   },
   /**
@@ -305,114 +341,133 @@ const userController = {
   async getUserById(req, res) {
     try {
       const user = await User.findById(req.params.id);
-      
+
       if (!user) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
 
       // Autorisation
-      if (req.user.role !== 'admin' && req.user.id !== user.id) {
-        return res.status(403).json({ error: 'Accès non autorisé' });
+      if (req.user.role !== "admin" && req.user.id !== user.id) {
+        return res.status(403).json({ error: "Accès non autorisé" });
       }
 
       res.json(sanitizeUser(user));
     } catch (error) {
-      console.error('Get user error:', error);
-      res.status(500).json({ error: 'Erreur serveur' });
+      console.error("Get user error:", error);
+      res.status(500).json({ error: "Erreur serveur" });
     }
   },
- 
- /** Mise à jour polyvalente de l'utilisateur
- * - Admin peut tout modifier (sauf son propre rôle)
- * - User peut modifier ses infos personnelles et mot de passe
- */
-async updateUser(req, res) {
-  try {
-    const { id } = req.params;
-    const { username, email, currentPassword, newPassword, role } = req.body;
-    const isAdmin = req.user.role === 'admin';
-    const isSelfUpdate = req.user.id === id;
 
-    // 1. Vérifications préliminaires
-    const user = await User.findById(id);
-    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+  /** Mise à jour polyvalente de l'utilisateur
+   * - Admin peut tout modifier (sauf son propre rôle)
+   * - User peut modifier ses infos personnelles et mot de passe
+   */
+  async updateUser(req, res) {
+    try {
+      const { id } = req.params;
+      const { username, email, currentPassword, newPassword, role } = req.body;
+      const isAdmin = req.user.role === "admin";
+      const isSelfUpdate = req.user.id === id;
 
-    // 2. Autorisations
-    if (!isAdmin && !isSelfUpdate) {
-      return res.status(403).json({ error: 'Accès non autorisé' });
-    }
+      // 1. Vérifications préliminaires
+      const user = await User.findById(id);
+      if (!user)
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
 
-    // 3. Construction des updates
-    const updates = {};
-    const updatedFields = [];
-
-    // Champs modifiables par tous
-    if (username !== undefined) {
-      updates.username = username;
-      updatedFields.push('username');
-    }
-
-    if (email !== undefined) {
-      updates.email = email;
-      updatedFields.push('email');
-    }
-
-    // Gestion mot de passe (user seulement)
-    if (newPassword) {
-      if (!isSelfUpdate) {
-        return res.status(403).json({ error: 'Seul l\'utilisateur peut changer son mot de passe' });
-      }
-      
-      const isMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!isMatch) return res.status(401).json({ error: 'Mot de passe actuel incorrect' });
-      
-      updates.password = await bcrypt.hash(newPassword, 12);
-      updatedFields.push('password');
-    }
-
-    // Gestion rôle (admin seulement)
-    if (role !== undefined) {
-      if (!isAdmin) {
-        return res.status(403).json({ error: 'Modification du rôle réservée aux admins' });
+      // 2. Autorisations
+      if (!isAdmin && !isSelfUpdate) {
+        return res.status(403).json({ error: "Accès non autorisé" });
       }
 
-      if (isSelfUpdate) {
-        return res.status(403).json({ error: 'Un admin ne peut pas modifier son propre rôle' });
+      // 3. Construction des updates
+      const updates = {};
+      const updatedFields = [];
+
+      // Champs modifiables par tous
+      if (username !== undefined) {
+        updates.username = username;
+        updatedFields.push("username");
       }
 
-      if (!['admin', 'teacher', 'tutor'].includes(role)) {
-        return res.status(400).json({ error: 'Rôle invalide' });
+      if (email !== undefined) {
+        updates.email = email;
+        updatedFields.push("email");
+      }
+      if (req.body.image !== undefined) {
+        updates.image = req.body.image;
+        updatedFields.push("image");
+      }
+      // Gestion mot de passe (user seulement)
+      if (newPassword) {
+        if (!isSelfUpdate) {
+          return res
+            .status(403)
+            .json({
+              error: "Seul l'utilisateur peut changer son mot de passe",
+            });
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch)
+          return res
+            .status(401)
+            .json({ error: "Mot de passe actuel incorrect" });
+
+        updates.password = await bcrypt.hash(newPassword, 12);
+        updatedFields.push("password");
       }
 
-      updates.role = role;
-      updatedFields.push('role');
+      // Gestion rôle (admin seulement)
+      if (role !== undefined) {
+        if (!isAdmin) {
+          return res
+            .status(403)
+            .json({ error: "Modification du rôle réservée aux admins" });
+        }
+
+        if (isSelfUpdate) {
+          return res
+            .status(403)
+            .json({ error: "Un admin ne peut pas modifier son propre rôle" });
+        }
+
+        if (!["admin", "student", "tutor"].includes(role)) {
+          return res.status(400).json({ error: "Rôle invalide" });
+        }
+
+        updates.role = role;
+        updatedFields.push("role");
+      }
+
+      // 4. Application des modifications
+      const updatedUser = await User.findByIdAndUpdate(id, updates, {
+        new: true,
+      });
+
+      // 5. Journalisation différenciée
+      await AuditLog.create({
+        action: isAdmin ? "ADMIN_USER_UPDATE" : "USER_SELF_UPDATE",
+        targetUserId: id,
+        performedBy: req.user.id,
+        details: `Mise à jour des champs: ${updatedFields.join(', ')}`,
+        changes: updatedFields,
+        ipAddress: req.ip,
+      });
+
+      res.json({
+        message: "Mise à jour effectuée",
+        user: sanitizeUser(updatedUser),
+      });
+    } catch (error) {
+      console.error("Update error:", error);
+      res.status(500).json({
+        error: "Erreur lors de la mise à jour",
+        ...(process.env.NODE_ENV === "development" && {
+          details: error.message,
+        }),
+      });
     }
-
-    // 4. Application des modifications
-    const updatedUser = await User.findByIdAndUpdate(id, updates, { new: true });
-
-    // 5. Journalisation différenciée
-    await AuditLog.create({
-      action: isAdmin ? 'ADMIN_USER_UPDATE' : 'USER_SELF_UPDATE',
-      targetUserId: id,
-      performedBy: req.user.id,
-      changes: updatedFields,
-      ipAddress: req.ip
-    });
-
-    res.json({
-      message: 'Mise à jour effectuée',
-      user: sanitizeUser(updatedUser)
-    });
-
-  } catch (error) {
-    console.error('Update error:', error);
-    res.status(500).json({ 
-      error: 'Erreur lors de la mise à jour',
-      ...(process.env.NODE_ENV === 'development' && { details: error.message })
-    });
-  }
-},
+  },
   /**
    * Désactivation d'un utilisateur (soft delete)
    */
@@ -421,42 +476,43 @@ async updateUser(req, res) {
       const userId = req.params.id;
 
       // Autorisation
-      if (req.user.role !== 'admin' && req.user.id !== userId) {
-        return res.status(403).json({ error: 'Accès non autorisé' });
+      if (req.user.role !== "admin" && req.user.id !== userId) {
+        return res.status(403).json({ error: "Accès non autorisé" });
       }
 
       const user = await User.findByIdAndUpdate(
         userId,
-        { 
+        {
           isActive: false,
           isOnline: false,
-          lastActive: new Date()
+          lastActive: new Date(),
         },
         { new: true }
       );
 
       if (!user) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
 
       // Journalisation
       await new AuditLog({
-        action: 'USER_DEACTIVATION',
+        action: "USER_DEACTIVATION",
         targetUserId: user._id,
         performedBy: req.user.id,
         details: `Compte désactivé par ${req.user.role}`,
         metadata: {
-          deactivationType: req.user.role === 'admin' ? 'by_admin' : 'self_deactivation'
-        }
+          deactivationType:
+            req.user.role === "admin" ? "by_admin" : "self_deactivation",
+        },
       }).save();
 
-      res.json({ 
-        message: 'Compte désactivé avec succès',
-        user: sanitizeUser(user)
+      res.json({
+        message: "Compte désactivé avec succès",
+        user: sanitizeUser(user),
       });
     } catch (error) {
-      console.error('Deactivate user error:', error);
-      res.status(500).json({ error: 'Erreur lors de la désactivation' });
+      console.error("Deactivate user error:", error);
+      res.status(500).json({ error: "Erreur lors de la désactivation" });
     }
   },
   /**
@@ -464,38 +520,38 @@ async updateUser(req, res) {
    */
   async reactivateUser(req, res) {
     try {
-      if (req.user.role !== 'admin') {
-        return res.status(403).json({ error: 'Accès non autorisé' });
+      if (req.user.role !== "admin") {
+        return res.status(403).json({ error: "Accès non autorisé" });
       }
 
       const user = await User.findByIdAndUpdate(
         req.params.id,
-        { 
+        {
           isActive: true,
-          isOnline: false
+          isOnline: false,
         },
         { new: true }
       );
 
       if (!user) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
 
       // Journalisation
       await new AuditLog({
-        action: 'USER_REACTIVATION',
+        action: "USER_REACTIVATION",
         targetUserId: user._id,
         performedBy: req.user.id,
-        details: 'Compte réactivé par admin'
+        details: "Compte réactivé par admin",
       }).save();
 
-      res.json({ 
-        message: 'Compte réactivé avec succès',
-        user: sanitizeUser(user)
+      res.json({
+        message: "Compte réactivé avec succès",
+        user: sanitizeUser(user),
       });
     } catch (error) {
-      console.error('Reactivate user error:', error);
-      res.status(500).json({ error: 'Erreur lors de la réactivation' });
+      console.error("Reactivate user error:", error);
+      res.status(500).json({ error: "Erreur lors de la réactivation" });
     }
   },
   /**
@@ -503,31 +559,31 @@ async updateUser(req, res) {
    */
   async deleteUser(req, res) {
     try {
-      if (req.user.role !== 'admin') {
-        return res.status(403).json({ error: 'Accès non autorisé' });
+      if (req.user.role !== "admin") {
+        return res.status(403).json({ error: "Accès non autorisé" });
       }
 
       const user = await User.findByIdAndDelete(req.params.id);
       if (!user) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
 
       // Journalisation
       await new AuditLog({
-        action: 'USER_DELETION',
+        action: "USER_DELETION",
         targetUserId: user._id,
         performedBy: req.user.id,
-        details: 'Suppression définitive du compte',
+        details: "Suppression définitive du compte",
         metadata: {
           username: user.username,
-          email: user.email
-        }
+          email: user.email,
+        },
       }).save();
 
-      res.json({ message: 'Utilisateur supprimé définitivement' });
+      res.json({ message: "Utilisateur supprimé définitivement" });
     } catch (error) {
-      console.error('Delete user error:', error);
-      res.status(500).json({ error: 'Erreur lors de la suppression' });
+      console.error("Delete user error:", error);
+      res.status(500).json({ error: "Erreur lors de la suppression" });
     }
   },
   /**
@@ -537,29 +593,29 @@ async updateUser(req, res) {
     try {
       const user = await User.findByIdAndUpdate(
         req.user.id,
-        { 
+        {
           isOnline: false,
-          lastActive: new Date()
+          lastActive: new Date(),
         },
         { new: true }
       );
 
       if (!user) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
 
       // Journalisation
       await new AuditLog({
-        action: 'USER_LOGOUT',
+        action: "USER_LOGOUT",
         targetUserId: user._id,
         performedBy: user._id,
-        details: 'Déconnexion réussie'
+        details: "Déconnexion réussie",
       }).save();
 
-      res.json({ message: 'Déconnexion réussie' });
+      res.json({ message: "Déconnexion réussie" });
     } catch (error) {
-      console.error('Logout error:', error);
-      res.status(500).json({ error: 'Erreur lors de la déconnexion' });
+      console.error("Logout error:", error);
+      res.status(500).json({ error: "Erreur lors de la déconnexion" });
     }
   },
   /**
@@ -567,16 +623,25 @@ async updateUser(req, res) {
    */
   async createUser(req, res) {
     try {
-      const { username, email, password, role = 'student', sendWelcomeEmail = false } = req.body;
+      const {
+        username,
+        email,
+        password,
+        role = "student",
+        sendWelcomeEmail = false,
+      } = req.body;
 
       // Validation avec Yup
       await userValidationSchema.validate(req.body, { abortEarly: false });
 
       // Vérification existence
-      const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+      const existingUser = await User.findOne({
+        $or: [{ email }, { username }],
+      });
       if (existingUser) {
-        return res.status(409).json({ 
-          error: 'Un utilisateur avec cet email ou nom d\'utilisateur existe déjà' 
+        return res.status(409).json({
+          error:
+            "Un utilisateur avec cet email ou nom d'utilisateur existe déjà",
         });
       }
 
@@ -589,40 +654,224 @@ async updateUser(req, res) {
         role,
         isActive: true,
         isOnline: false,
-        createdBy: req.user?.id || 'system'
+        createdBy: req.user?.id || "system",
       });
 
       // Journalisation
       await new AuditLog({
-        action: 'USER_CREATION',
+        action: "USER_CREATION",
         targetUserId: newUser._id,
-        performedBy: req.user?.id || 'system',
-        details: 'Nouvel utilisateur créé par admin',
+        performedBy: req.user?.id || "system",
+        details: "Nouvel utilisateur créé par admin",
         metadata: {
-          method: 'manual',
-          sendWelcomeEmail
-        }
+          method: "manual",
+          sendWelcomeEmail,
+        },
       }).save();
 
       res.status(201).json({
-        message: 'Utilisateur créé avec succès',
-        user: sanitizeUser(newUser)
+        message: "Utilisateur créé avec succès",
+        user: sanitizeUser(newUser),
       });
     } catch (error) {
-      console.error('Create user error:', error);
-      
-      if (error.name === 'ValidationError') {
+      console.error("Create user error:", error);
+
+      if (error.name === "ValidationError") {
         return res.status(400).json({
-          error: 'Erreur de validation',
-          details: formatYupErrors(error)
+          error: "Erreur de validation",
+          details: formatYupErrors(error),
         });
       }
-      
-      res.status(500).json({ 
-        error: 'Erreur lors de la création de l\'utilisateur',
-        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+
+      res.status(500).json({
+        error: "Erreur lors de la création de l'utilisateur",
+        ...(process.env.NODE_ENV === "development" && {
+          details: error.message,
+        }),
       });
     }
+  },
+  /**
+   * Upload d'image de profil
+   */
+// In uploadProfileImage, ensure the file handling is correct:
+async uploadProfileImage(req, res) {
+  try {
+    // 1. Validate request contains a file
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: "No file uploaded",
+        code: "MISSING_FILE"
+      });
+    }
+
+    // 2. Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(req.file.mimetype)) {
+      return res.status(400).json({
+        success: false,
+        error: "Only JPEG, PNG, or WebP images are allowed",
+        code: "INVALID_FILE_TYPE"
+      });
+    }
+
+    // 3. Get user
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+        code: "USER_NOT_FOUND"
+      });
+    }
+
+    // 4. Convert buffer to stream
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(req.file.buffer);
+
+    // 5. Upload using your service
+    const imageUrl = await uploadFile(
+      bufferStream,
+      req.file.originalname,
+      {
+        folder: 'profile_images',
+        resource_type: 'image',
+        transformation: {
+          width: 500,
+          height: 500,
+          crop: 'fill',
+          quality: 'auto'
+        }
+      }
+    );
+
+    // 6. Delete old image if exists
+    if (user.image) {
+      try {
+        const publicId = extractPublicId(user.image);
+        if (publicId) {
+          await cloudinary.uploader.destroy(publicId);
+        }
+      } catch (cleanupError) {
+        console.error('Old image cleanup failed:', cleanupError);
+      }
+    }
+
+    // 7. Update user
+    user.image = imageUrl;
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: "Profile image updated successfully",
+      imageUrl
+    });
+
+  } catch (error) {
+    console.error("Upload error:", error);
+    
+    // Handle specific Cloudinary errors
+    let errorCode = "UPLOAD_FAILED";
+    let statusCode = 500;
+    
+    if (error.message.includes('File size too large')) {
+      statusCode = 413;
+      errorCode = "FILE_TOO_LARGE";
+    }
+
+    return res.status(statusCode).json({
+      success: false,
+      error: "Failed to upload image",
+      code: errorCode,
+      ...(process.env.NODE_ENV === "development" && {
+        details: error.message
+      })
+    });
   }
-};
+},
+  /**
+   * Suppression de l'image de profil
+   */
+  async removeProfileImage(req, res) {
+    try {
+      // 1. Input Validation
+      if (!req.user?.id) {
+        return res.status(401).json({ 
+          error: "Non autorisé",
+          code: "UNAUTHORIZED"
+        });
+      }
+  
+      // 2. Fetch User
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        return res.status(404).json({ 
+          error: "Utilisateur non trouvé",
+          code: "USER_NOT_FOUND"
+        });
+      }
+  
+      // 3. Check Existing Image
+      if (!user.image) {
+        return res.status(400).json({ 
+          error: "Aucune photo de profil à supprimer",
+          code: "NO_PROFILE_IMAGE"
+        });
+      }
+  
+      // 4. Extract and Validate Public ID
+      const publicId = extractPublicId(user.image);
+      if (!publicId) {
+        console.warn(`Invalid Cloudinary URL format: ${user.image}`);
+      }
+  
+      // 5. Cloudinary Deletion (with error handling)
+      try {
+        if (publicId) {
+          await cloudinary.uploader.destroy(publicId, {
+            invalidate: true 
+          });
+        }
+      } catch (cloudinaryError) {
+        console.error("Cloudinary deletion error:", cloudinaryError);
+        
+      }
+  
+      // 6. Database Update
+      user.image = null;
+      await user.save();
+  
+      // 7. Audit Log
+      await new AuditLog({
+        action: "PROFILE_IMAGE_REMOVED", 
+        targetUserId: user._id,
+        performedBy: req.user.id, 
+        details: "Suppression de la photo de profil",
+        metadata: {
+          oldImageUrl: user.image, 
+          cloudinaryPublicId: publicId
+        }
+      }).save();
+  
+      // 8. Response
+      return res.json({ 
+        success: true,
+        message: "Photo de profil supprimée avec succès",
+        timestamp: new Date().toISOString()
+      });
+  
+    } catch (error) {
+      console.error("Remove profile image error:", error);
+      return res.status(500).json({
+        error: "Erreur lors de la suppression de la photo de profil",
+        code: "PROFILE_IMAGE_DELETION_FAILED",
+        ...(process.env.NODE_ENV === "development" && {
+          details: error.message,
+          stack: error.stack
+        }),
+      });
+    }
+  },
+}
 module.exports = userController;

@@ -26,7 +26,6 @@ const verifyToken = (req, res, next) => {
     if (typeof token !== 'string' || token.length < 30) {
       return res.status(401).json({ message: "Invalid token format" });
     }
-
     const decoded = jwt.verify(token, privatekey);
       // 4. Ajouter les infos utilisateur à la requête
       req.userId = decoded.id;
@@ -106,9 +105,22 @@ const verifySecretClient = (req, res, next) => {
     return res.status(500).json({ message: "Authentication failed", error: error.message });
   }
 };
+const verifyTokenGraphql = async (token) => {
+  if (!token || typeof token !== "string" || token.length < 30) {
+    throw new Error("Invalid or missing token");
+  }
 
+  const decoded = jwt.verify(token, privatekey);
+  return {
+    id: decoded.id,
+    role: decoded.role,
+    email: decoded.email,
+    username: decoded.username,
+  };
+};
 module.exports = {
   verifyToken,
   verifyTokenAdmin,
-  verifySecretClient
+  verifySecretClient,
+  verifyTokenGraphql
 };

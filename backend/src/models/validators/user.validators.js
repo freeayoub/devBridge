@@ -45,7 +45,11 @@ const passwordSchema = yup
     '- Un chiffre\n' +
     '- Un caractère spécial (@$!%*?&)'
   );
-
+const imageSchema= yup
+    .string()
+    .nullable()
+    .url('URL d\'image invalide')
+    .max(500, 'L\'URL de l\'image ne peut pas dépasser 500 caractères')
 // Schéma pour le rôle avec valeur par défaut
 const roleSchema = yup
   .string()
@@ -58,6 +62,7 @@ exports.userValidationSchema = yup.object().shape({
   username: usernameSchema,
   email: emailSchema,
   password: passwordSchema,
+  image:imageSchema,
   role: roleSchema,
   isActive: yup.boolean().default(true),
   isOnline: yup.boolean().default(false)
