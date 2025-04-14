@@ -39,11 +39,19 @@ const MessageSchema = new mongoose.Schema({
     type: Date,
     required: true,
     default: Date.now,
-    get: (timestamp) => timestamp?.toISOString()
+    get: function(timestamp) {
+      return timestamp instanceof Date ? timestamp.toISOString() : new Date(timestamp).toISOString();
+    }
   }
 }, {
-  toJSON: { getters: true },
-  toObject: { getters: true }
+  toJSON: { 
+    getters: true,
+    virtuals: true 
+  },
+  toObject: { 
+    getters: true,
+    virtuals: true 
+  }
 });
 
 // Add indexes

@@ -86,23 +86,158 @@ const resolvers = {
         throw new Error(`Failed to fetch messages: ${error.message}`);
       }
     },
-    getUnreadMessages: async (_, { userId }, context) => {
-      if (!context.userId || context.userId !== userId)
-        throw new Error("Unauthorized");
+    getConversation: async (_, { conversationId }, context) => {
+      if (!context.userId) throw new Error("Unauthorized");
+      
       try {
+        // Validate conversation ID
+        if (!isValidObjectId(conversationId)) {
+          throw new Error("Invalid conversation ID");
+        }
+    
+        // Find the conversation with minimal population first
+        const conversation = await Conversation.findById(conversationId)
+          .populate('participants', 'id username email image isOnline')
+          .lean();
+    
+        if (!conversation) {
+          throw new Error("Conversation not found");
+        }
+    
+        // Check if current user is a participant
+        const isParticipant = conversation.participants.some(
+          p => p._id.toString() === context.userId
+        );
+    
+        if (!isParticipant) {
+          throw new Error("Unauthorized: You are not a participant in this conversation");
+        }
+    
+        // Now get messages separately with pagination
+        const messages = await Message.find({ conversationId: conversation._id })
+          .sort({ timestamp: -1 })
+          .limit(50) // Get last 50 messages
+          .populate('senderId receiverId', 'id username email image')
+          .lean();
+    
+        // Get last message separately if needed
+        const lastMessage = conversation.lastMessage 
+          ? await Message.findById(conversation.lastMessage)
+              .populate('senderId receiverId', 'id username email image')
+              .lean()
+          : null;
+    
+        // Safe date formatting function
+        const safeDate = (date) => {
+          if (!date) return null;
+          try {
+            return new Date(date).toISOString();
+          } catch {
+            return null;
+          }
+        };
+    
+        // Format the response
+        return {
+          ...conversation,
+          id: conversation._id.toString(),
+          createdAt: safeDate(conversation.createdAt),
+          updatedAt: safeDate(conversation.updatedAt),
+          messages: messages.map(msg => ({
+            ...msg,
+            id: msg._id.toString(),
+            timestamp: safeDate(msg.timestamp),
+            senderId: msg.senderId ? {
+              ...msg.senderId,
+              id: msg.senderId._id.toString()
+            } : null,
+            receiverId: msg.receiverId ? {
+              ...msg.receiverId,
+              id: msg.receiverId._id.toString()
+            } : null
+          })),
+          lastMessage: lastMessage ? {
+            ...lastMessage,
+            id: lastMessage._id.toString(),
+            timestamp: safeDate(lastMessage.timestamp),
+            senderId: lastMessage.senderId ? {
+              ...lastMessage.senderId,
+              id: lastMessage.senderId._id.toString()
+            } : null,
+            receiverId: lastMessage.receiverId ? {
+              ...lastMessage.receiverId,
+              id: lastMessage.receiverId._id.toString()
+            } : null
+          } : null
+        };
+    
+      } catch (error) {
+        console.error("Error fetching conversation:", error);
+        throw new Error(`Failed to fetch conversation: ${error.message}`);
+      }
+    },
+    getUnreadMessages: async (_, { userId }, context) => {
+      try {
+        // 1. Authentication check
+        if (!context.userId) {
+          throw new Error("Authentication required");
+        }
+    
+        // 2. Authorization check
+        if (context.userId !== userId) {
+          throw new Error("Unauthorized: You can only view your own unread messages");
+        }
+    
+        // 3. Fetch unread messages with sender info
         const unreadMessages = await Message.find({
           receiverId: userId,
-          isRead: false,
+          isRead: false
         })
+        .populate({
+          path: 'senderId',
+          select: 'id username email image'
+        })
+        .sort({ timestamp: -1 })
         .lean();
-        return unreadMessages.map(msg => ({
-          ...msg,
-          id: msg._id.toString(),
-          timestamp: msg.timestamp.toISOString()
-        }));
+    
+        // 4. Format response with safe date handling
+        return unreadMessages.map(msg => {
+          // Safely handle timestamp
+          let timestamp;
+          try {
+            timestamp = msg.timestamp?.toISOString?.() || 
+                       new Date(msg.timestamp).toISOString();
+          } catch (e) {
+            timestamp = new Date().toISOString(); // Fallback to current time
+            console.warn(`Invalid timestamp for message ${msg._id}`);
+          }
+    
+          return {
+            id: msg._id.toString(),
+            senderId: msg.senderId?._id.toString(), // Just the ID string
+            receiverId: msg.receiverId.toString(),
+            content: msg.content,
+            timestamp,
+            isRead: false, // Explicit since we're querying unread messages
+            sender: msg.senderId ? { // Full sender details
+              id: msg.senderId._id.toString(),
+              username: msg.senderId.username,
+              email: msg.senderId.email,
+              image: msg.senderId.image,
+              role: msg.senderId.role,
+              isOnline: msg.senderId.isOnline
+            } : null
+          };
+        });
+    
       } catch (error) {
-        console.error("Error fetching unread messages:", error);
-        throw new Error(`Failed to fetch unread messages: ${error.message}`);
+        console.error("Error in getUnreadMessages:", error);
+        throw new Error(
+          error.message.includes("Unauthorized") || 
+          error.message.includes("Authentication") 
+            ? error.message 
+            : "Failed to fetch unread messages"
+        );
       }
     },
   },
@@ -128,38 +263,49 @@ const resolvers = {
           fileUrl = await uploadFile(createReadStream(), filename);
         }
     
-        // Transaction-like operation for conversation and message
-        const message = new Message({
+        // Create message with explicit timestamp
+        const messageData = {
           senderId,
           receiverId,
           content,
-          fileUrl
-          // conversationId will be set after conversation is created/updated
-        });
+          fileUrl,
+          timestamp: new Date() // Explicitly set timestamp here
+        };
     
-        // Find or create conversation with proper error handling
+        // Find or create conversation
         let conversation = await Conversation.findOneAndUpdate(
           { participants: { $all: [senderId, receiverId] } },
-          { $setOnInsert: { participants: [senderId, receiverId], messages: [] } },
+          { 
+            $setOnInsert: { 
+              participants: [senderId, receiverId], 
+              messages: [] 
+            },
+            $set: {
+              updatedAt: new Date()
+            }
+          },
           { upsert: true, new: true, setDefaultsOnInsert: true }
         );
+    
+        // Create and save message
+        const message = new Message(messageData);
+        message.conversationId = conversation._id;
+        await message.save();
     
         // Update conversation with the new message
         conversation.messages.push(message._id);
         conversation.lastMessage = message._id;
-        conversation.updatedAt = new Date();
+        await conversation.save();
     
-        // Set the conversation reference on the message
-        message.conversationId = conversation._id;
+        // Get the fully populated message with proper timestamp formatting
+        const savedMessage = await Message.findById(message._id).lean();
     
-        // Save both in parallel for better performance
-        await Promise.all([message.save(), conversation.save()]);
-    
-        // Prepare the response object
+        // Format the response properly
         const responseMessage = {
-          ...message.toObject(),
-          id: message._id.toString(),
-          timestamp: message.timestamp.toISOString()
+          ...savedMessage,
+          id: savedMessage._id.toString(),
+          timestamp: new Date(savedMessage.timestamp).toISOString(),
+          isRead: savedMessage.isRead || false
         };
     
         // Publish events

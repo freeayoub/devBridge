@@ -1,7 +1,7 @@
 const { gql } = require("graphql-tag");
 
 const typeDefs = gql`
-  scalar Upload
+scalar Upload
  type User {
   id: ID!
   username: String!
@@ -33,6 +33,15 @@ const typeDefs = gql`
     createdAt: String!
     updatedAt: String!
   }
+  type UnreadMessage {
+  id: ID!
+  senderId: ID!
+  receiverId: ID!
+  content: String!
+  timestamp: String!
+  isRead: Boolean!
+  sender: User 
+}
   type Query {
     getMessages(
       senderId: ID!
@@ -41,7 +50,7 @@ const typeDefs = gql`
       limit: Int
     ): [Message]
     getConversation(conversationId: ID!): Conversation
-    getUnreadMessages(userId: ID!): [Message!]!
+    getUnreadMessages(userId: ID!): [UnreadMessage!]!
     me: User
     }
 

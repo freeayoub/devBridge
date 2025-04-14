@@ -11,10 +11,10 @@ export class AuthuserService {
   constructor(private http:HttpClient) { }
 
   register(body:any){
-    return this.http.post(`${environment.urlBackend}user/register`,body)
+    return this.http.post(`${environment.urlBackend}users/register`,body)
   }
   login(body:any){
-    return this.http.post(`${environment.urlBackend}user/login`,body)
+    return this.http.post(`${environment.urlBackend}users/login`,body)
   }
   saveToken(token:any){
     localStorage.setItem('token',token)
@@ -65,14 +65,14 @@ export class AuthuserService {
     const userId = this.getCurrentUserId();
     if (!userId) throw new Error('User not logged in');
     
-    return this.http.put(`${environment.urlBackend}user/updateself/${userId}`, data);
+    return this.http.put(`${environment.urlBackend}users/updateself/${userId}`, data);
   }
 
   deactivateSelf() {
     const userId = this.getCurrentUserId();
     if (!userId) throw new Error('User not logged in');
     
-    return this.http.put(`${environment.urlBackend}user/deactivateself`, {});
+    return this.http.put(`${environment.urlBackend}users/deactivateself`, {});
   }
 
   changePassword(currentPassword: string, newPassword: string) {

@@ -23,13 +23,17 @@ const ConversationSchema = new mongoose.Schema({
     default: 0
   }
 }, {
-  timestamps: true,
+ timestamp: {
+  type: Date,
+  required: true,
+  default: Date.now
+},
   toJSON: { 
     virtuals: false,
     getters: true 
   },
   toObject: { 
-    virtuals: false,
+    virtuals: true,
     getters: true 
   }
 });

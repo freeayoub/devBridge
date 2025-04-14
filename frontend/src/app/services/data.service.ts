@@ -40,7 +40,7 @@ export class DataService {
   
     if (shouldRefresh) {
       this.lastFetchTime = now;
-      return this.http.get<User[]>(`${environment.urlBackend}user/getall`, {
+      return this.http.get<User[]>(`${environment.urlBackend}users/getall`, {
         headers: this.getAdminHeaders(),
         params: this.getCommonParams(),
       }).pipe(
@@ -59,14 +59,14 @@ export class DataService {
 
   //Get One User
   getOneUser(id: string): Observable<User> {
-    return this.http.get<User>(`${environment.urlBackend}user/getone/` + id, {
+    return this.http.get<User>(`${environment.urlBackend}users/getone/` + id, {
       headers: this.getUserHeaders(),
       params: this.getCommonParams(),
     });
   }
   // Add a new user and update cache
   addUser(userData: any): Observable<any> {
-    return this.http.post(`${environment.urlBackend}user/add`, userData, {
+    return this.http.post(`${environment.urlBackend}users/add`, userData, {
       headers: this.getAdminHeaders(),
       params: this.getCommonParams(),
     }).pipe(
@@ -79,7 +79,7 @@ export class DataService {
   // Delete user and update cache
   deleteUser(id: any): Observable<any> {
     return this.http.delete<any>(
-      `${environment.urlBackend}user/delete/` + id,
+      `${environment.urlBackend}users/delete/` + id,
       {
         headers: this.getAdminHeaders(),
         params: this.getCommonParams(),
@@ -96,7 +96,7 @@ export class DataService {
 
   updateUserByAdmin(id: string, data: Partial<User>): Observable<User> {
     return this.http.put<User>(
-      `${environment.urlBackend}user/update/` + id,
+      `${environment.urlBackend}users/update/` + id,
       data,
       {
         headers: this.getAdminHeaders(),
@@ -110,7 +110,7 @@ export class DataService {
 
   deactivateUser(id: string): Observable<User> {  
     return this.http.put<User>(
-      `${environment.urlBackend}user/update/${id}/deactivate`, 
+      `${environment.urlBackend}users/update/${id}/deactivate`, 
       {},
       { 
         headers: this.getAdminHeaders(),
@@ -127,7 +127,7 @@ export class DataService {
   }
   // Reactivate User and update cache
   reactivateUser(id: string): Observable<any> {
-    return this.http.put(`${environment.urlBackend}user/update/${id}/reactivate`, {},
+    return this.http.put(`${environment.urlBackend}users/update/${id}/reactivate`, {},
       { 
         headers: this.getAdminHeaders(),
         params: this.getCommonParams(),
@@ -145,7 +145,7 @@ export class DataService {
     // Nouvelle méthode pour mise à jour self
     updateSelf(id: string, data: { username?: string, email?: string, currentPassword?: string, newPassword?: string }): Observable<User> {
       return this.http.put<User>(
-        `${environment.urlBackend}user/updateself/${id}`,
+        `${environment.urlBackend}users/updateself/${id}`,
         data,
         { 
           headers: this.getUserHeaders(),
