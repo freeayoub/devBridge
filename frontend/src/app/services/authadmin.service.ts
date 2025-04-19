@@ -8,8 +8,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class AuthadminService {
-  helper = new JwtHelperService();
-  constructor(private http:HttpClient) {}
+  constructor(private http:HttpClient,private jwtHelper: JwtHelperService ) {}
     // login 
     login( body: Partial<User>): Observable<User> {
       return this.http.post<User>(`${environment.urlBackend}users/login`, body);
@@ -17,23 +16,28 @@ export class AuthadminService {
     saveDataProfil(token:any){
       localStorage.setItem('token',token)
       }
-      getUserName(){
+      getUser(){
         let token:any=localStorage.getItem('token')
-        let decodedToken = this.helper.decodeToken(token);
-        return decodedToken.username
+        let decodedToken = this.jwtHelper.decodeToken(token);
+        return decodedToken
       }
+
       loggedIn(){
         let token:any=localStorage.getItem('token')
         if (!token) {
           return false
          }
-       if(this.helper.decodeToken(token).role!=="admin"){
+       if(this.jwtHelper.decodeToken(token).role!=="admin"){
         return false
        }
-       if(this.helper.isTokenExpired(token)){
+       if(this.jwtHelper.isTokenExpired(token)){
         return false
        }
        return true
       }
-
+      clearAuthData(): void {
+        localStorage.removeItem('token');
+      }
+    
+      
 }

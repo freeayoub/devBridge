@@ -9,6 +9,7 @@
           </ng-container>
           <ng-template #welcomeBack>
             Welcome Back, {{ authService.getCurrentUser()?.username }}!
+            <span *ngIf="isAdmin()" class="block text-sm text-[#dac4ea]">(Administrator)</span>
           </ng-template>
         </h1>
         
@@ -31,17 +32,24 @@
                class="border-2 border-white text-white hover:bg-white hover:text-[#4f5fad] font-bold py-3 px-6 rounded-lg text-center transition-all">
               Learn More
             </a>
+
           </ng-container>
-          <ng-template #dashboardLink>
-            <a routerLink="/admin/dashboard" 
-               class="bg-white text-[#4f5fad] hover:bg-[#edf1f4] font-bold py-3 px-6 rounded-lg text-center transition-all">
-              Go to Dashboard
-            </a>
-            <a routerLink="/projects" 
-               class="border-2 border-white text-white hover:bg-white hover:text-[#4f5fad] font-bold py-3 px-6 rounded-lg text-center transition-all">
-              View Projects
-            </a>
-          </ng-template>
+
+      <ng-template #dashboardLink>
+  <!-- Affiche le bouton Dashboard seulement pour les admins -->
+  <a *ngIf="isAdmin()" 
+     routerLink="/admin/dashboard" 
+     class="bg-white text-[#4f5fad] hover:bg-[#edf1f4] font-bold py-3 px-6 rounded-lg text-center transition-all">
+    Go to Dashboard
+  </a>
+  
+  <!-- Bouton View Projects pour tous les utilisateurs connectés -->
+  <a routerLink="/projects" 
+     class="border-2 border-white text-white hover:bg-white hover:text-[#4f5fad] font-bold py-3 px-6 rounded-lg text-center transition-all">
+    View Projects
+  </a>
+</ng-template>
+
         </div>
       </div>
       

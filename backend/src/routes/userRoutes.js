@@ -54,7 +54,7 @@ router.post(
   );
 // Gestion compte utilisateur
 router.put("/deactivateself", userController.deactivateSelf);
-router.post("/logout", userController.logout);
+router.put("/logout", userController.logout);
 // ==================== Routes Admin ==================== 
 
 router.use(verifyTokenAdmin);
@@ -62,7 +62,7 @@ router.use(verifyTokenAdmin);
 router.get("/getall", userController.getAllUsers);
 router.post(
     "/add",
-    validationUserMiddleware(true),
+    validationUserMiddleware(false),
     userController.createUser
 );
 // Opérations sur un utilisateur spécifique

@@ -1,4 +1,11 @@
+
+<!-- Notification message -->
+<div *ngIf="messageFromRedirect" class="notification notification-info notification-auto-hide">
+  <i class="notification-icon">ℹ️</i> <!-- Optionnel -->
+  {{ messageFromRedirect }}
+</div>
 <div class="min-h-screen bg-[#edf1f4] flex items-center justify-center p-4">
+  
     <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden">
       <div class="flex flex-col md:flex-row">
         <!-- Image Section -->
@@ -22,7 +29,7 @@
             <p class="text-[#6d6870] mt-2">Accédez à votre tableau de bord</p>
           </div>
   
-          <form #f="ngForm" (ngSubmit)="loginadmin(f)" class="space-y-6">
+          <form #f="ngForm" (ngSubmit)="loginAdmin(f)" class="space-y-6">
             <!-- Email Input -->
             <div>
               <label for="email" class="block text-sm font-medium text-[#6d6870] mb-1">Email</label>

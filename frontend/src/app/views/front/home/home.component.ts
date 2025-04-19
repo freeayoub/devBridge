@@ -31,4 +31,10 @@ export class HomeComponent {
   ];
 
   constructor(public authService: AuthuserService) {}
+
+  // Ajoutez cette méthode pour vérifier si l'utilisateur est admin
+  isAdmin(): boolean {
+    const user = this.authService.getCurrentUser();
+    return user && user.role === 'admin'; // Adaptez selon votre structure de données
+  }
 }

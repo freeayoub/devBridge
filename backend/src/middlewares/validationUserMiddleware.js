@@ -1,26 +1,59 @@
+// validationUserMiddleware.js
 const { userValidationSchema, userUpdateSchema } = require('../models/validators/user.validators');
 
 async function validateRequest(schema, req, res, next) {
     try {
-        const validatedData = await schema.validate(req.body, { 
+        // Clone the request body to avoid mutation
+        const dataToValidate = { ...req.body };
+        
+        // Special handling for updateSelf route
+        if (req.originalUrl.includes('updateself')) {
+            // Remove empty fields to avoid validation errors
+            Object.keys(dataToValidate).forEach(key => {
+                if (dataToValidate[key] === '' || dataToValidate[key] === null) {
+                    delete dataToValidate[key];
+                }
+            });
+        }
+
+        // Validate with Yup schema
+        const validatedData = await schema.validate(dataToValidate, { 
             abortEarly: false,
             stripUnknown: true
         });
         
+        // Attach validated data to request
         req.validatedBody = validatedData;
         next();
     } catch (err) {
-        const errors = err.inner.reduce((acc, curr) => {
-            // Gestion des chemins imbriqués si nécessaire
-            const path = curr.path.split('.').pop();
-            acc[path] = curr.message;
-            return acc;
-        }, {});
+        console.error('Validation error:', err);
         
-        res.status(400).json({ 
+        // Initialize errors object
+        const errors = {};
+        
+        // Handle Yup validation errors
+        if (err.name === 'ValidationError') {
+            if (err.inner && Array.isArray(err.inner)) {
+                // Process Yup validation errors with paths
+                err.inner.forEach(error => {
+                    if (error.path) {
+                        const field = error.path.split('.').pop();
+                        errors[field] = error.message;
+                    }
+                });
+            } else if (err.errors) {
+                // Fallback for simple Yup errors
+                errors.general = err.errors.join(', ');
+            }
+        } else {
+            // Handle other types of errors
+            errors.general = err.message;
+        }
+        
+        return res.status(400).json({
             success: false,
             message: 'Validation failed',
-            errors 
+            errors: Object.keys(errors).length ? errors : { general: 'Invalid request data' }
         });
     }
 }
@@ -28,7 +61,7 @@ async function validateRequest(schema, req, res, next) {
 function validationUserMiddleware(isUpdate = false) {
     return (req, res, next) => {
         const schema = isUpdate ? userUpdateSchema : userValidationSchema;
-        validateRequest(schema, req, res, next);
+        return validateRequest(schema, req, res, next);
     };
 }
 

@@ -33,7 +33,8 @@ const verifyToken = (req, res, next) => {
         id: decoded.id,
         role: decoded.role,
         email: decoded.email,
-        username: decoded.username
+        username: decoded.username,
+        image:decoded.image
     };
     next();
   } catch (error) {
@@ -73,7 +74,8 @@ const verifyTokenAdmin = (req, res, next) => {
       id: decoded.id,
       role: decoded.role,
       email: decoded.email,
-      username: decoded.username
+      username: decoded.username,
+      image:decoded.image
   };
     next();
   } catch (error) {

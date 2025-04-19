@@ -9,22 +9,32 @@ import { AuthuserService } from 'src/app/services/authuser.service';
   styleUrls: ['./loginuser.component.css']
 })
 export class LoginuserComponent implements OnInit {
-  datatoken:any
-  messageError:any
-  constructor(private aus:AuthuserService,private route:Router) { }
+  datatoken: any;
+  messageError: any;
+  isLoading = false;
+  constructor(private authService:AuthuserService,private route:Router) { }
 
   ngOnInit(): void {
   }
 
 
   login(f:any){
+    this.isLoading = true;
+    this.messageError = null;
     let data=f.value
-    this.aus.login(data).subscribe(data=>{
-      this.datatoken=data
-      this.aus.saveToken(this.datatoken.token)
-      this.route.navigate(['/'])
-    },(err:HttpErrorResponse)=>{
-      console.log(err)
-      this.messageError=err.error})
+    this.authService.login(data).subscribe({
+      next:(response)=> {
+      this.datatoken=response;
+      this.authService.saveToken(this.datatoken.token)
+      this.route.navigate(['/']);
+    },error: (err: HttpErrorResponse) => {
+    this.messageError = err.error;
+    this.isLoading = false;
+  },
+  complete: () => {
+    this.isLoading = false;
+  }
+});
 }
+
 }

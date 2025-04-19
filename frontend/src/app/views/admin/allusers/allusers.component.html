@@ -26,7 +26,7 @@
         </p>
       </div>
       <div class="flex flex-wrap gap-2 w-full md:w-auto">
-        <!-- Bouton de filtre mis à jour -->
+        <!-- Bouton de filtre -->
         <button 
           (click)="toggleFilter()"
           class="bg-white hover:bg-gray-100 text-[#4f5fad] px-3 py-2 rounded-lg flex items-center text-sm md:text-base border border-[#bdc6cc]"
@@ -76,41 +76,26 @@
         <table class="min-w-full divide-y divide-[#bdc6cc]">
           <thead class="bg-[#edf1f4]">
             <tr>
-              <th
-                class="px-4 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider"
-              >
+              <th class="px-4 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider">
                 Nom d'utilisateur
               </th>
-              <th
-                class="px-4 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider"
-              >
+              <th class="px-4 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider">
                 Email
               </th>
-              <th
-                class="px-4 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider"
-              >
+              <th class="px-4 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider">
                 Rôle
               </th>
-              <th
-                class="px-4 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider"
-              >
+              <th class="px-4 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider">
                 Statut
               </th>
-              <th
-                class="px-4 py-3 text-right text-xs font-medium text-[#6d6870] uppercase tracking-wider"
-              >
+              <th class="px-4 py-3 text-right text-xs font-medium text-[#6d6870] uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-[#bdc6cc]">
-            <tr
-              *ngFor="let item of filteredUsers; index as i"
-              class="hover:bg-[#edf1f4]/50"
-            >
-              <td
-                class="px-4 py-3 whitespace-nowrap text-sm font-medium text-[#4f5fad]"
-              >
+            <tr *ngFor="let item of filteredUsers; index as i" class="hover:bg-[#edf1f4]/50">
+              <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-[#4f5fad]">
                 {{ item.username }}
               </td>
               <td class="px-4 py-3 whitespace-nowrap text-sm text-[#6d6870]">
@@ -133,58 +118,34 @@
                   class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                   [ngClass]="{
                     'bg-green-100 text-green-800': item.isActive,
-                    'bg-red-100 text-red-800': !item.isActive,
-                    'opacity-60': !item.isActive
+                    'bg-red-100 text-red-800': !item.isActive
                   }"
-                  [title]="!item.isActive ? 'Compte inactif' : 'Compte actif'"
                 >
                   {{ item.isActive ? "Actif" : "Inactif" }}
-                  <span *ngIf="!item.isActive" class="ml-1">⏱️</span>
                 </span>
               </td>
-              <td
-                class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium space-x-1 md:space-x-2"
-              >
-                <!-- Bouton Voir détails -->
+              <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium space-x-1 md:space-x-2">
                 <button
                   (click)="viewDetails(item._id)"
                   class="text-[#4a89ce] hover:text-[#7826b5] p-1 rounded-full hover:bg-[#4a89ce]/10"
                   title="Voir détails"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                    <path
-                      fill-rule="evenodd"
-                      d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                      clip-rule="evenodd"
-                    />
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
                   </svg>
                 </button>
 
-                <!-- Bouton Modifier -->
                 <button
-                  (click)="prepareEditUser(item, i); openModal()"
+                  (click)="prepareEditUser(item)"
                   class="text-[#afcf75] hover:text-[#2a5a03] p-1 rounded-full hover:bg-[#afcf75]/10"
                   title="Modifier"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                   </svg>
                 </button>
 
-                <!-- Bouton Activer/Désactiver -->
                 <button
                   (click)="toggleUserStatus(item._id, i, item.isActive)"
                   class="p-1 rounded-full hover:bg-gray-200"
@@ -194,53 +155,25 @@
                   }"
                   [title]="item.isActive ? 'Désactiver' : 'Réactiver'"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      *ngIf="item.isActive"
-                      fill-rule="evenodd"
-                      d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                      clip-rule="evenodd"
-                    />
-                    <path
-                      *ngIf="!item.isActive"
-                      fill-rule="evenodd"
-                      d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                      clip-rule="evenodd"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path *ngIf="item.isActive" fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                    <path *ngIf="!item.isActive" fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
                   </svg>
                 </button>
 
-                <!-- Bouton Supprimer -->
                 <button
                   (click)="deleteUser(item._id, i)"
                   class="text-[#ff6b69] hover:text-[#cc0000] p-1 rounded-full hover:bg-[#ff6b69]/10"
                   title="Supprimer"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                      clip-rule="evenodd"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                   </svg>
                 </button>
               </td>
             </tr>
             <tr *ngIf="filteredUsers.length === 0">
-              <td
-                colspan="5"
-                class="px-4 py-3 text-center text-sm text-gray-500"
-              >
+              <td colspan="5" class="px-4 py-3 text-center text-sm text-gray-500">
                 {{
                   filterMode === 'active' ? 'Aucun utilisateur actif trouvé' :
                   filterMode === 'inactive' ? 'Aucun utilisateur inactif trouvé' : 'Aucun utilisateur trouvé'
@@ -254,97 +187,50 @@
   </div>
 
   <!-- Modal -->
-  <div
-    class="fixed inset-0 bg-[#6d6870]/50 z-50 flex items-center justify-center p-4"
-    *ngIf="modalVisible"
-  >
+  <div *ngIf="modalVisible" class="fixed inset-0 bg-[#6d6870]/50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
-      <div
-        class="bg-[#4f5fad] p-4 rounded-t-xl flex justify-between items-center"
-      >
-        <h3 class="text-lg font-medium text-white">Modifier l'utilisateur</h3>
+      <div class="bg-[#4f5fad] p-4 rounded-t-xl flex justify-between items-center">
+        <h3 class="text-lg font-medium text-white">
+          {{ isSelfUpdate ? 'Modifier mon profil' : 'Modifier le rôle' }}
+        </h3>
         <button (click)="closeModal()" class="text-white hover:text-[#dac4ea]">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
         </button>
       </div>
 
       <div class="p-4 md:p-6">
-        <form #f="ngForm" (ngSubmit)="updateNewUser(f)" class="space-y-4">
-          <!-- Username -->
-          <div>
-            <label class="block text-[#6d6870] text-sm font-medium mb-1"
-              >Nom d'utilisateur</label
-            >
-            <input
-              type="text"
-              class="w-full px-3 py-2 border border-[#bdc6cc] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7826b5]"
-              [(ngModel)]="dataUser.username"
-              name="username"
-              required
-              minlength="2"
-            />
-            <div
-              *ngIf="f.submitted && f.form.controls['username']?.errors"
-              class="text-[#ff6b69] text-xs mt-1"
-            >
-              <div *ngIf="f.form.controls['username']?.errors?.['required']">
-                Le nom d'utilisateur est requis
-              </div>
-              <div *ngIf="f.form.controls['username']?.errors?.['minlength']">
-                Minimum 2 caractères
-              </div>
-            </div>
-          </div>
+        <div *ngIf="isAdmin" class="flex border-b mb-4">
+          <button 
+            (click)="activeTab = 'role'" 
+            class="px-4 py-2 font-medium"
+            [ngClass]="{
+              'text-[#4f5fad] border-b-2 border-[#4f5fad]': activeTab === 'role',
+              'text-gray-500': activeTab !== 'role'
+            }"
+          >
+            Modifier rôle
+          </button>
+          <button 
+            *ngIf="isSelfUpdate"
+            (click)="activeTab = 'profile'" 
+            class="px-4 py-2 font-medium"
+            [ngClass]="{
+              'text-[#4f5fad] border-b-2 border-[#4f5fad]': activeTab === 'profile',
+              'text-gray-500': activeTab !== 'profile'
+            }"
+          >
+            Mon profil
+          </button>
+        </div>
 
-          <!-- Email -->
-          <div>
-            <label class="block text-[#6d6870] text-sm font-medium mb-1"
-              >Email</label
-            >
-            <input
-              type="email"
-              class="w-full px-3 py-2 border border-[#bdc6cc] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7826b5]"
-              [(ngModel)]="dataUser.email"
-              name="email"
-              required
-              email
-            />
-            <div
-              *ngIf="f.submitted && f.form.controls['email']?.errors"
-              class="text-[#ff6b69] text-xs mt-1"
-            >
-              <div *ngIf="f.form.controls['email']?.errors?.['required']">
-                L'email est requis
-              </div>
-              <div *ngIf="f.form.controls['email']?.errors?.['email']">
-                Format d'email invalide
-              </div>
-            </div>
-          </div>
-
-          <!-- Role (masqué pour self-update) -->
-          <div *ngIf="!isSelfUpdate">
-            <label class="block text-[#6d6870] text-sm font-medium mb-1"
-              >Rôle</label
-            >
+        <div *ngIf="activeTab === 'role' && !isSelfUpdate">
+          <div class="mb-4">
+            <label class="block text-[#6d6870] text-sm font-medium mb-1">Rôle</label>
             <select
               class="w-full px-3 py-2 border border-[#bdc6cc] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7826b5]"
-              [(ngModel)]="dataUser.role"
-              name="role"
-              required
+              [(ngModel)]="dataUserRole.role"
             >
               <option value="admin">Administrateur</option>
               <option value="tutor">Enseignant</option>
@@ -352,39 +238,6 @@
             </select>
           </div>
 
-          <!-- Mot de passe (pour self-update) -->
-          <div *ngIf="isSelfUpdate" class="border-t pt-4 mt-4">
-            <h4 class="text-sm font-medium text-[#6d6870] mb-3">
-              Changer le mot de passe
-            </h4>
-
-            <div class="mb-3">
-              <label class="block text-[#6d6870] text-xs font-medium mb-1"
-                >Mot de passe actuel</label
-              >
-              <input
-                type="password"
-                class="w-full px-3 py-2 border border-[#bdc6cc] rounded-lg"
-                [(ngModel)]="currentPassword"
-                name="currentPassword"
-              />
-            </div>
-
-            <div class="mb-3">
-              <label class="block text-[#6d6870] text-xs font-medium mb-1"
-                >Nouveau mot de passe</label
-              >
-              <input
-                type="password"
-                class="w-full px-3 py-2 border border-[#bdc6cc] rounded-lg"
-                [(ngModel)]="newPassword"
-                name="newPassword"
-                minlength="6"
-              />
-            </div>
-          </div>
-
-          <!-- Boutons -->
           <div class="flex justify-end space-x-3 pt-4">
             <button
               type="button"
@@ -394,14 +247,96 @@
               Annuler
             </button>
             <button
-              type="submit"
-              [disabled]="f.invalid || isLoading"
-              class="px-4 py-2 bg-[#7826b5] text-white rounded-lg hover:bg-[#5f1d8f] disabled:opacity-50 disabled:cursor-not-allowed"
+              (click)="updateUserRole()"
+              [disabled]="isLoading"
+              class="px-4 py-2 bg-[#7826b5] text-white rounded-lg hover:bg-[#5f1d8f] disabled:opacity-50"
             >
               {{ isLoading ? "Enregistrement..." : "Enregistrer" }}
             </button>
           </div>
-        </form>
+        </div>
+
+        <div *ngIf="activeTab === 'profile' || isSelfUpdate">
+          <form [formGroup]="profileForm" (ngSubmit)="updateUserProfile()" class="space-y-4">
+            <div>
+              <label class="block text-[#6d6870] text-sm font-medium mb-1">Nom d'utilisateur</label>
+              <input
+                type="text"
+                class="w-full px-3 py-2 border border-[#bdc6cc] rounded-lg"
+                formControlName="username"
+                [class.border-red-300]="profileForm.get('username')?.invalid && profileForm.get('username')?.touched"
+              >
+              <div *ngIf="profileForm.get('username')?.invalid && profileForm.get('username')?.touched" class="text-red-600 text-xs mt-1">
+                <span *ngIf="profileForm.get('username')?.errors?.['required']">Nom d'utilisateur requis</span>
+                <span *ngIf="profileForm.get('username')?.errors?.['minlength']">Minimum 3 caractères</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[#6d6870] text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                class="w-full px-3 py-2 border border-[#bdc6cc] rounded-lg"
+                formControlName="email"
+                [class.border-red-300]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
+              >
+              <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="text-red-600 text-xs mt-1">
+                <span *ngIf="profileForm.get('email')?.errors?.['required']">Email requis</span>
+                <span *ngIf="profileForm.get('email')?.errors?.['email']">Email invalide</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[#6d6870] text-sm font-medium mb-1">Mot de passe actuel</label>
+              <input
+                type="password"
+                class="w-full px-3 py-2 border border-[#bdc6cc] rounded-lg"
+                formControlName="currentPassword"
+              >
+            </div>
+
+            <div>
+              <label class="block text-[#6d6870] text-sm font-medium mb-1">Nouveau mot de passe</label>
+              <input
+                type="password"
+                class="w-full px-3 py-2 border border-[#bdc6cc] rounded-lg"
+                formControlName="newPassword"
+              >
+              <div *ngIf="profileForm.get('newPassword')?.invalid && profileForm.get('newPassword')?.touched" class="text-red-600 text-xs mt-1">
+                <span *ngIf="profileForm.get('newPassword')?.errors?.['minlength']">Minimum 6 caractères</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[#6d6870] text-sm font-medium mb-1">Confirmer le mot de passe</label>
+              <input
+                type="password"
+                class="w-full px-3 py-2 border border-[#bdc6cc] rounded-lg"
+                formControlName="confirmPassword"
+              >
+              <div *ngIf="profileForm.hasError('mismatch')" class="text-red-600 text-xs mt-1">
+                Les mots de passe ne correspondent pas
+              </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                (click)="closeModal()"
+                class="px-4 py-2 border border-[#bdc6cc] text-[#6d6870] rounded-lg hover:bg-[#edf1f4]"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                [disabled]="profileForm.invalid || isLoading"
+                class="px-4 py-2 bg-[#7826b5] text-white rounded-lg hover:bg-[#5f1d8f] disabled:opacity-50"
+              >
+                {{ isLoading ? "Enregistrement..." : "Enregistrer" }}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>

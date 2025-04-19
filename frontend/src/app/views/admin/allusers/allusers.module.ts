@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { AllusersRoutingModule } from './allusers-routing.module';
 import { AllusersComponent } from './allusers.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -13,7 +13,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     AllusersRoutingModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class AllusersModule { }

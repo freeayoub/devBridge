@@ -3,12 +3,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const AuditLog = require("../models/schemas/auditLog.schema");
-const {
-  userValidationSchema,
-} = require("../models/validators/user.validators");
+const {userValidationSchema} = require("../models/validators/user.validators");
 const cloudinary = require("../config/cloudinaryConfig");
-const uploadFile = require('../services/messageService');
-const stream = require('stream');
+const uploadFile = require("../services/messageService");
+const stream = require("stream");
 // Helpers
 const generateToken = (user) => {
   return jwt.sign(
@@ -17,6 +15,7 @@ const generateToken = (user) => {
       username: user.username,
       email: user.email,
       role: user.role,
+      image:user.image
     },
     config.JWT_SECRET,
     { expiresIn: config.JWT_EXPIRATION || "7d" }
@@ -88,7 +87,7 @@ const userController = {
       await new AuditLog({
         action: "USER_REGISTER",
         targetUserId: newUser._id,
-        performedBy: newUser._id, 
+        performedBy: newUser._id,
         details: "Nouvel utilisateur enregistré",
       }).save();
 
@@ -151,7 +150,7 @@ const userController = {
       await new AuditLog({
         action: "USER_LOGIN",
         targetUserId: user._id,
-        performedBy: user._id, 
+        performedBy: user._id,
         details: "Connexion réussie",
       }).save();
 
@@ -177,7 +176,7 @@ const userController = {
    */
   async getProfile(req, res) {
     try {
-      const user = await User.findById(req.user.id);
+      const user = await User.findById(req.userId);
       if (!user) {
         return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
@@ -191,93 +190,117 @@ const userController = {
   },
   async updateSelf(req, res) {
     try {
-      const { username, email, currentPassword, newPassword } = req.body;
+      const { username, email, currentPassword, newPassword, image } = req.body;
 
-      // Validation
-      if (!username && !email && !newPassword) {
-        return res.status(400).json({ error: "Aucune donnée à mettre à jour" });
+      // Validate at least one field is being updated
+      const updateFields = ['username', 'email', 'newPassword', 'image'].filter(field => req.body[field] !== undefined);
+      if (updateFields.length === 0) {
+        return res.status(400).json({ 
+          error: "No fields to update",
+          code: "NO_UPDATES"
+        });
       }
 
       const user = await User.findById(req.user.id);
-      if (!user)
-        return res.status(404).json({ error: "Utilisateur non trouvé" });
+      if (!user) {
+        return res.status(404).json({ 
+          error: "User not found",
+          code: "USER_NOT_FOUND" 
+        });
+      }
 
       const updates = {};
       const updatedFields = [];
 
-      if (username && username !== user.username) {
-        // Vérifier si le nouveau username est déjà pris
+      // Username update
+      if (username !== undefined && username !== user.username) {
         const existingUser = await User.findOne({ username });
         if (existingUser) {
-          return res
-            .status(409)
-            .json({ error: "Ce nom d'utilisateur est déjà utilisé" });
+          return res.status(409).json({ 
+            error: "Username already taken",
+            code: "USERNAME_EXISTS"
+          });
         }
         updates.username = username;
         updatedFields.push("username");
       }
 
-      if (email && email !== user.email) {
-        // Vérifier si le nouvel email est déjà pris
+      // Email update
+      if (email !== undefined && email !== user.email) {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-          return res.status(409).json({ error: "Cet email est déjà utilisé" });
+          return res.status(409).json({ 
+            error: "Email already in use", 
+            code: "EMAIL_EXISTS"
+          });
         }
         updates.email = email;
         updatedFields.push("email");
       }
-      if (req.body.image !== undefined) {
-        updates.image = req.body.image;
+
+      // Image update
+      if (image !== undefined) {
+        updates.image = image;
         updatedFields.push("image");
       }
+
+      // Password update
       if (newPassword) {
         if (!currentPassword) {
-          return res
-            .status(400)
-            .json({ error: "Le mot de passe actuel est requis" });
+          return res.status(400).json({ 
+            error: "Current password required for password changes",
+            code: "CURRENT_PASSWORD_REQUIRED"
+          });
         }
+        
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
-          return res
-            .status(401)
-            .json({ error: "Mot de passe actuel incorrect" });
+          return res.status(401).json({ 
+            error: "Incorrect current password",
+            code: "INCORRECT_PASSWORD"
+          });
         }
+        
         updates.password = await bcrypt.hash(newPassword, 12);
         updatedFields.push("password");
       }
 
-      if (Object.keys(updates).length === 0) {
-        return res.status(400).json({ error: "Aucune modification détectée" });
-      }
-
-      const updatedUser = await User.findByIdAndUpdate(req.user.id, updates, {
-        new: true,
-      });
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user.id, 
+        { $set: updates },
+        { new: true, runValidators: true }
+      );
 
       // Audit log
       await new AuditLog({
         action: "USER_SELF_UPDATE",
         targetUserId: req.user.id,
         performedBy: req.user.id,
-        details: `Utilisateur a mis à jour: ${updatedFields.join(', ')}`,
+        details: `Updated fields: ${updatedFields.join(", ")}`,
         changes: updatedFields,
         ipAddress: req.ip,
       }).save();
 
-      res.json({
-        message: "Profil mis à jour avec succès",
+      // Generate new token
+      const token = generateToken(updatedUser);
+      
+      return res.json({
+        success: true,
+        message: "Profile updated successfully",
         user: sanitizeUser(updatedUser),
+        token,
+        updatedFields
       });
+
     } catch (error) {
       console.error("Update self error:", error);
-      res.status(500).json({
-        error: "Erreur lors de la mise à jour du profil",
-        ...(process.env.NODE_ENV === "development" && {
-          details: error.message,
-        }),
+      return res.status(500).json({
+        error: "Profile update failed",
+        code: "UPDATE_FAILED",
+        ...(process.env.NODE_ENV === "development" && { details: error.message })
       });
     }
-  },
+},
   // desactivate user by self
   async deactivateSelf(req, res) {
     try {
@@ -345,12 +368,10 @@ const userController = {
       if (!user) {
         return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
-
       // Autorisation
       if (req.user.role !== "admin" && req.user.id !== user.id) {
         return res.status(403).json({ error: "Accès non autorisé" });
       }
-
       res.json(sanitizeUser(user));
     } catch (error) {
       console.error("Get user error:", error);
@@ -371,64 +392,68 @@ const userController = {
 
       // 1. Vérifications préliminaires
       const user = await User.findById(id);
-      if (!user)
+      if (!user) {
         return res.status(404).json({ error: "Utilisateur non trouvé" });
-
-      // 2. Autorisations
-      if (!isAdmin && !isSelfUpdate) {
-        return res.status(403).json({ error: "Accès non autorisé" });
       }
 
-      // 3. Construction des updates
+      // 2. Construction des updates
       const updates = {};
       const updatedFields = [];
+      let requireCurrentPassword = false;
 
-      // Champs modifiables par tous
+      // Champs modifiables par tous (y compris admin sur son propre profil)
       if (username !== undefined) {
         updates.username = username;
         updatedFields.push("username");
+        requireCurrentPassword = isSelfUpdate;
       }
 
       if (email !== undefined) {
         updates.email = email;
         updatedFields.push("email");
+        requireCurrentPassword = isSelfUpdate;
       }
+
       if (req.body.image !== undefined) {
         updates.image = req.body.image;
         updatedFields.push("image");
       }
-      // Gestion mot de passe (user seulement)
+
+      // Gestion mot de passe
       if (newPassword) {
         if (!isSelfUpdate) {
-          return res
-            .status(403)
-            .json({
-              error: "Seul l'utilisateur peut changer son mot de passe",
-            });
+          return res.status(403).json({
+            error: "Seul l'utilisateur peut changer son mot de passe",
+          });
+        }
+        
+        if (!currentPassword) {
+          return res.status(400).json({
+            error: "Le mot de passe actuel est requis pour changer le mot de passe"
+          });
         }
 
         const isMatch = await bcrypt.compare(currentPassword, user.password);
-        if (!isMatch)
-          return res
-            .status(401)
-            .json({ error: "Mot de passe actuel incorrect" });
+        if (!isMatch) {
+          return res.status(401).json({ error: "Mot de passe actuel incorrect" });
+        }
 
         updates.password = await bcrypt.hash(newPassword, 12);
         updatedFields.push("password");
       }
 
-      // Gestion rôle (admin seulement)
+      // Gestion rôle (admin seulement, pas sur soi-même)
       if (role !== undefined) {
         if (!isAdmin) {
-          return res
-            .status(403)
-            .json({ error: "Modification du rôle réservée aux admins" });
+          return res.status(403).json({
+            error: "Modification du rôle réservée aux admins"
+          });
         }
 
         if (isSelfUpdate) {
-          return res
-            .status(403)
-            .json({ error: "Un admin ne peut pas modifier son propre rôle" });
+          return res.status(403).json({
+            error: "Un admin ne peut pas modifier son propre rôle"
+          });
         }
 
         if (!["admin", "student", "tutor"].includes(role)) {
@@ -439,17 +464,32 @@ const userController = {
         updatedFields.push("role");
       }
 
-      // 4. Application des modifications
+      // Vérification mot de passe actuel pour les modifications sensibles
+      if (requireCurrentPassword && !currentPassword) {
+        return res.status(400).json({
+          error: "Le mot de passe actuel est requis pour modifier ces informations"
+        });
+      }
+
+      if (requireCurrentPassword) {
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+          return res.status(401).json({ error: "Mot de passe actuel incorrect" });
+        }
+      }
+
+      // 3. Application des modifications
       const updatedUser = await User.findByIdAndUpdate(id, updates, {
         new: true,
       });
 
-      // 5. Journalisation différenciée
+      // 4. Journalisation
       await AuditLog.create({
-        action: isAdmin ? "ADMIN_USER_UPDATE" : "USER_SELF_UPDATE",
+        action: isAdmin ? (isSelfUpdate ? "ADMIN_SELF_UPDATE" : "ADMIN_USER_UPDATE") 
+                       : "USER_SELF_UPDATE",
         targetUserId: id,
         performedBy: req.user.id,
-        details: `Mise à jour des champs: ${updatedFields.join(', ')}`,
+        details: `Mise à jour des champs: ${updatedFields.join(", ")}`,
         changes: updatedFields,
         ipAddress: req.ip,
       });
@@ -694,102 +734,97 @@ const userController = {
   /**
    * Upload d'image de profil
    */
-// In uploadProfileImage, ensure the file handling is correct:
-async uploadProfileImage(req, res) {
-  try {
-    // 1. Validate request contains a file
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        error: "No file uploaded",
-        code: "MISSING_FILE"
-      });
-    }
+  // In uploadProfileImage, ensure the file handling is correct:
+  async uploadProfileImage(req, res) {
+    try {
+      // 1. Validate request contains a file
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          error: "No file uploaded",
+          code: "MISSING_FILE",
+        });
+      }
 
-    // 2. Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(req.file.mimetype)) {
-      return res.status(400).json({
-        success: false,
-        error: "Only JPEG, PNG, or WebP images are allowed",
-        code: "INVALID_FILE_TYPE"
-      });
-    }
+      // 2. Validate file type
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowedTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({
+          success: false,
+          error: "Only JPEG, PNG, or WebP images are allowed",
+          code: "INVALID_FILE_TYPE",
+        });
+      }
 
-    // 3. Get user
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: "User not found",
-        code: "USER_NOT_FOUND"
-      });
-    }
+      // 3. Get user
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          error: "User not found",
+          code: "USER_NOT_FOUND",
+        });
+      }
 
-    // 4. Convert buffer to stream
-    const bufferStream = new stream.PassThrough();
-    bufferStream.end(req.file.buffer);
+      // 4. Convert buffer to stream
+      const bufferStream = new stream.PassThrough();
+      bufferStream.end(req.file.buffer);
 
-    // 5. Upload using your service
-    const imageUrl = await uploadFile(
-      bufferStream,
-      req.file.originalname,
-      {
-        folder: 'profile_images',
-        resource_type: 'image',
+      // 5. Upload using your service
+      const imageUrl = await uploadFile(bufferStream, req.file.originalname, {
+        folder: "profile_images",
+        resource_type: "image",
         transformation: {
           width: 500,
           height: 500,
-          crop: 'fill',
-          quality: 'auto'
+          crop: "fill",
+          quality: "auto",
+        },
+      });
+
+      // 6. Delete old image if exists
+      if (user.image) {
+        try {
+          const publicId = extractPublicId(user.image);
+          if (publicId) {
+            await cloudinary.uploader.destroy(publicId);
+          }
+        } catch (cleanupError) {
+          console.error("Old image cleanup failed:", cleanupError);
         }
       }
-    );
 
-    // 6. Delete old image if exists
-    if (user.image) {
-      try {
-        const publicId = extractPublicId(user.image);
-        if (publicId) {
-          await cloudinary.uploader.destroy(publicId);
-        }
-      } catch (cleanupError) {
-        console.error('Old image cleanup failed:', cleanupError);
+      // 7. Update user
+      user.image = imageUrl;
+      await user.save();
+
+      return res.json({
+        success: true,
+        message: "Profile image updated successfully",
+        imageUrl,
+      });
+    } catch (error) {
+      console.error("Upload error:", error);
+
+      // Handle specific Cloudinary errors
+      let errorCode = "UPLOAD_FAILED";
+      let statusCode = 500;
+
+      if (error.message.includes("File size too large")) {
+        statusCode = 413;
+        errorCode = "FILE_TOO_LARGE";
       }
+
+      return res.status(statusCode).json({
+        success: false,
+        error: "Failed to upload image",
+        code: errorCode,
+        ...(process.env.NODE_ENV === "development" && {
+          details: error.message,
+        }),
+      });
     }
-
-    // 7. Update user
-    user.image = imageUrl;
-    await user.save();
-
-    return res.json({
-      success: true,
-      message: "Profile image updated successfully",
-      imageUrl
-    });
-
-  } catch (error) {
-    console.error("Upload error:", error);
-    
-    // Handle specific Cloudinary errors
-    let errorCode = "UPLOAD_FAILED";
-    let statusCode = 500;
-    
-    if (error.message.includes('File size too large')) {
-      statusCode = 413;
-      errorCode = "FILE_TOO_LARGE";
-    }
-
-    return res.status(statusCode).json({
-      success: false,
-      error: "Failed to upload image",
-      code: errorCode,
-      ...(process.env.NODE_ENV === "development" && {
-        details: error.message
-      })
-    });
-  }
-},
+  },
   /**
    * Suppression de l'image de profil
    */
@@ -797,70 +832,68 @@ async uploadProfileImage(req, res) {
     try {
       // 1. Input Validation
       if (!req.user?.id) {
-        return res.status(401).json({ 
+        return res.status(401).json({
           error: "Non autorisé",
-          code: "UNAUTHORIZED"
+          code: "UNAUTHORIZED",
         });
       }
-  
+
       // 2. Fetch User
       const user = await User.findById(req.user.id);
       if (!user) {
-        return res.status(404).json({ 
+        return res.status(404).json({
           error: "Utilisateur non trouvé",
-          code: "USER_NOT_FOUND"
+          code: "USER_NOT_FOUND",
         });
       }
-  
+
       // 3. Check Existing Image
       if (!user.image) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: "Aucune photo de profil à supprimer",
-          code: "NO_PROFILE_IMAGE"
+          code: "NO_PROFILE_IMAGE",
         });
       }
-  
+
       // 4. Extract and Validate Public ID
       const publicId = extractPublicId(user.image);
       if (!publicId) {
         console.warn(`Invalid Cloudinary URL format: ${user.image}`);
       }
-  
+
       // 5. Cloudinary Deletion (with error handling)
       try {
         if (publicId) {
           await cloudinary.uploader.destroy(publicId, {
-            invalidate: true 
+            invalidate: true,
           });
         }
       } catch (cloudinaryError) {
         console.error("Cloudinary deletion error:", cloudinaryError);
-        
       }
-  
+
       // 6. Database Update
       user.image = null;
       await user.save();
-  
+
       // 7. Audit Log
       await new AuditLog({
-        action: "PROFILE_IMAGE_REMOVED", 
+        action: "PROFILE_IMAGE_REMOVED",
         targetUserId: user._id,
-        performedBy: req.user.id, 
+        performedBy: req.user.id,
         details: "Suppression de la photo de profil",
         metadata: {
-          oldImageUrl: user.image, 
-          cloudinaryPublicId: publicId
-        }
+          oldImageUrl: user.image,
+          cloudinaryPublicId: publicId,
+        },
       }).save();
-  
+
       // 8. Response
-      return res.json({ 
+      return res.json({
         success: true,
         message: "Photo de profil supprimée avec succès",
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-  
     } catch (error) {
       console.error("Remove profile image error:", error);
       return res.status(500).json({
@@ -868,10 +901,10 @@ async uploadProfileImage(req, res) {
         code: "PROFILE_IMAGE_DELETION_FAILED",
         ...(process.env.NODE_ENV === "development" && {
           details: error.message,
-          stack: error.stack
+          stack: error.stack,
         }),
       });
     }
   },
-}
+};
 module.exports = userController;
