@@ -38,6 +38,13 @@ const routes: Routes = [
           import('./views/front/profile/profile.module').then((m) => m.ProfileModule),
         canActivateChild: [guarduserGuard],
       },
+      {
+        path: 'messages',
+        loadChildren: () =>
+          import('./views/front/messages/messages.module').then(
+            (m) => m.MessagesModule),
+        canActivateChild: [guarduserGuard],
+      },
 
     ],
   },

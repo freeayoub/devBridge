@@ -1,0 +1,106 @@
+<!-- message-chat.component.html -->
+<div class="flex h-screen bg-gray-50">
+  <!-- Mobile back button -->
+  <div class="md:hidden fixed top-0 left-0 z-20 p-2">
+    <button (click)="router.navigate(['/messages'])" 
+            class="p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Chat header -->
+  <div class="fixed top-0 left-0 right-0 bg-white shadow-sm z-10 p-3 border-b border-gray-200 flex items-center">
+    <button (click)="router.navigate(['/messages'])" class="mr-2 md:hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+    
+    <div class="flex items-center flex-1">
+      <div class="relative mr-3">
+        <img [src]="otherParticipant?.image || 'assets/images/default-profile.png'" 
+             class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
+        <span *ngIf="statusService.isUserOnline(otherParticipant?.id)"
+              class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"></span>
+      </div>
+      <div>
+        <h2 class="font-semibold text-gray-800">{{ otherParticipant?.username }}</h2>
+        <p class="text-xs text-gray-500">
+          <span *ngIf="statusService.isUserOnline(otherParticipant?.id)" class="text-green-500">Online</span>
+          <span *ngIf="!statusService.isUserOnline(otherParticipant?.id)" class="text-gray-400">
+            Last seen {{ formatMessageTime(otherParticipant?.lastActive) }}
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages area -->
+  <div class="flex-1 overflow-y-auto pt-16 pb-20 px-4" #messagesContainer>
+    <div *ngIf="loading" class="text-center py-8">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+    </div>
+    
+    <div *ngIf="error" class="text-red-500 p-4">
+      Error loading conversation: {{ error.message }}
+    </div>
+    
+    <div *ngIf="!loading && conversation" class="space-y-6">
+      <div *ngFor="let message of messages; let i = index">
+        <!-- Date separator -->
+        <div *ngIf="shouldShowDateHeader(i)" class="flex justify-center my-4">
+          <span class="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">
+            {{ formatMessageDate(message.timestamp) }}
+          </span>
+        </div>
+        
+        <!-- Message bubble -->
+        <div [class.justify-end]="message.senderId.id === currentUserId"
+             class="flex">
+          <div [class.items-end]="message.senderId.id === currentUserId"
+               [class.items-start]="message.senderId.id !== currentUserId"
+               class="flex flex-col max-w-xs md:max-w-md lg:max-w-lg">
+            <div *ngIf="message.senderId.id !== currentUserId" class="flex items-center mb-1">
+              <img [src]="message.senderId.image || 'assets/images/default-profile.png'" 
+                   class="w-6 h-6 rounded-full mr-2">
+              <span class="text-xs font-medium text-gray-700">{{ message.senderId.username }}</span>
+            </div>
+            
+            <div [class.bg-purple-600]="message.senderId.id === currentUserId" 
+                 [class.bg-gray-200]="message.senderId.id !== currentUserId"
+                 [class.text-white]="message.senderId.id === currentUserId"
+                 class="p-3 rounded-lg shadow-sm">
+              <p>{{ message.content }}</p>
+            </div>
+            
+            <div class="flex justify-end mt-1">
+              <span class="text-xs text-gray-500">{{ formatMessageTime(message.timestamp) }}</span>
+              <span *ngIf="message.senderId.id === currentUserId && message.isRead" class="ml-1 text-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message input -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3">
+    <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="flex items-center">
+      <input type="text" formControlName="content" 
+             placeholder="Type a message..." 
+             class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+      <button type="submit" [disabled]="messageForm.invalid"
+              class="bg-purple-600 text-white px-4 py-2 rounded-r-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>

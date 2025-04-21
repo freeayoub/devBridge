@@ -113,6 +113,9 @@ export class AuthuserService {
     localStorage.setItem('token', token);
     this.initializeCurrentUser();
   }
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
   userLoggedIn(): boolean {
     const token = localStorage.getItem('token');
     if (!token) return false;

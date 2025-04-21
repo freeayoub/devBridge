@@ -1,24 +1,24 @@
 const { gql } = require("graphql-tag");
 
 const typeDefs = gql`
-scalar Upload
- type User {
-  id: ID!
-  username: String!
-  email: String!
-  role: String!
-  image: String
-  isActive: Boolean
-  isOnline: Boolean
-  lastActive: String
-  createdAt: String
-  updatedAt: String
-}
+  scalar Upload
+  type User {
+    id: ID!
+    username: String!
+    email: String!
+    role: String!
+    image: String
+    isActive: Boolean
+    isOnline: Boolean
+    lastActive: String
+    createdAt: String
+    updatedAt: String
+  }
 
   type Message {
     id: ID!
-    senderId: ID!
-    receiverId: ID!
+    senderId: ID
+    receiverId: ID
     content: String!
     timestamp: String!
     fileUrl: String
@@ -30,18 +30,19 @@ scalar Upload
     participants: [User!]!
     messages: [Message!]!
     lastMessage: Message
+    unreadCount: Int!
     createdAt: String!
     updatedAt: String!
   }
   type UnreadMessage {
-  id: ID!
-  senderId: ID!
-  receiverId: ID!
-  content: String!
-  timestamp: String!
-  isRead: Boolean!
-  sender: User 
-}
+    id: ID!
+    senderId: ID!
+    receiverId: ID!
+    content: String!
+    timestamp: String!
+    isRead: Boolean!
+    sender: User
+  }
   type Query {
     getMessages(
       senderId: ID!
@@ -50,9 +51,10 @@ scalar Upload
       limit: Int
     ): [Message]
     getConversation(conversationId: ID!): Conversation
+    getConversations: [Conversation!]!
     getUnreadMessages(userId: ID!): [UnreadMessage!]!
     me: User
-    }
+  }
 
   type Mutation {
     sendMessage(
@@ -65,7 +67,7 @@ scalar Upload
     setUserOnline(userId: ID!): User!
     setUserOffline(userId: ID!): User!
   }
-    
+
   type Subscription {
     messageSent(senderId: ID!, receiverId: ID!): Message!
     unreadMessages(receiverId: ID!): [Message]!

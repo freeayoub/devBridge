@@ -8,6 +8,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { GraphQLModule } from './graphql.module';
+import { ApolloModule } from 'apollo-angular';
 // Factory simplifiée sans injection de JwtHelperService
 export function jwtOptionsFactory() {
   return {
@@ -38,7 +40,9 @@ export function jwtOptionsFactory() {
         provide: JWT_OPTIONS,
         useFactory: jwtOptionsFactory
       }
-    })
+    }),
+    GraphQLModule,
+    ApolloModule
   ],
   providers: [
   ],

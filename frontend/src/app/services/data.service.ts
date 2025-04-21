@@ -21,18 +21,14 @@ export class DataService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private userAddedSubject = new BehaviorSubject<void | null>(null);
   public userAdded$ = this.userAddedSubject.asObservable();
-  
   constructor(private http: HttpClient, private jwtHelper: JwtHelperService, private authService: AuthuserService) {
     this.initializeCurrentUser();
   }
-// Ajoutez cette méthode
    fetchCurrentUser(): Observable<User> {
   return this.getProfile().pipe(
     tap(user => this.currentUserSubject.next(user))
   );
 }
-  //#endregion
-  //#region HTTP Configuration Helpers
   private getAdminHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     if (!token || this.jwtHelper.isTokenExpired(token)) {
@@ -59,8 +55,6 @@ export class DataService {
       .set('secret', environment.secret)
       .set('client', environment.client);
   }
-
-  //#endregion
   syncCurrentUser(): Observable<User> {
     return this.getProfile().pipe(
       tap(user => {
@@ -78,7 +72,6 @@ export class DataService {
       })
     );
   }
-  // Update the existing getProfile method to use syncCurrentUser
   getProfile(): Observable<User> {
     return this.http
       .get<User>(`${environment.urlBackend}users/profile`, {
@@ -89,7 +82,6 @@ export class DataService {
         catchError(this.handleError)
       );
   }
-  // Update the initializeCurrentUser to use syncCurrentUser
   private initializeCurrentUser(): void {
     const token = localStorage.getItem('token');
     if (token && !this.jwtHelper.isTokenExpired(token)) {
@@ -110,14 +102,13 @@ export class DataService {
       });
     }
   }
-  // Gestion plus robuste de la mise à jour de l'utilisateur
   updateCurrentUser(userData: Partial<User>): void {
     const currentUser = this.currentUserSubject.value;
     if (currentUser) {
       this.currentUserSubject.next({ ...currentUser, ...userData });
     }
   }
-  // Update current user's profile
+
   updateSelf(userId: string, updateData: any): Observable<any> {
     return this.http
       .put<User>(
@@ -136,22 +127,15 @@ export class DataService {
         catchError(this.handleError)
       );
   }
-// data.service.ts
-/**
- * Change current user's password
- */
 changePassword(currentPassword: string, newPassword: string): Observable<any> {
   const userId = this.currentUserValue?._id;
   if (!userId) {
     return throwError(() => new Error('User not logged in'));
   }
-
-  // Create the payload in the format your backend expects
   const passwordData = {
     currentPassword,
     newPassword
   };
-
   return this.http.put<any>(
     `${environment.urlBackend}users/updateself/${userId}`,
     passwordData,
@@ -178,10 +162,6 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
     })
   );
 }
-/**
-  /**
-   * Upload profile image
-   */
   uploadProfileImage(
     file: File
   ): Observable<{ imageUrl: string; token?: string }> {
@@ -213,9 +193,6 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
         catchError(this.handleError)
       );
   }
-  /**
-   * Remove profile image
-   */
   removeProfileImage(): Observable<{ message: string; token: string }> {
     return this.http
       .delete<{ message: string; token: string }>(
@@ -236,8 +213,7 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
         catchError(this.handleError)
       );
   }
-  //#endregion
-  //#region Current User Helpers
+
   get currentUserValue(): User | null {
     return this.currentUserSubject.value;
   }
@@ -248,8 +224,6 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
   isCurrentUser(userId: string): boolean {
     return this.currentUserValue?._id === userId;
   }
-  //#endregion
-  //#region User Cache Management
   private updateUserInCache(updatedUser: User): void {
     const updatedUsers = this.usersCache$.value.map((u) =>
       u._id === updatedUser._id ? { ...u, ...updatedUser } : u
@@ -260,8 +234,6 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
     this.lastFetchTime = 0;
     this.getAllUsers(true).subscribe();
   }
-  //#endregion
-  //#region Admin Methods
   getAllUsers(forceRefresh = false): Observable<User[]> {
     const now = Date.now();
     const cacheValid = !forceRefresh && 
@@ -354,8 +326,6 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
         catchError(this.handleError)
       );
   }
-  //#endregion
-  // Gestion d'erreur améliorée
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Une erreur est survenue';
 
@@ -371,4 +341,4 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
     return throwError(() => new Error(errorMessage));
   }
 }
-//#endregion
+

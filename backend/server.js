@@ -38,9 +38,8 @@ connectDB().catch((err) => {
 const corsOptions = {
   origin: [
     config.FRONTEND_URL || "http://localhost:4200",
-    "https://studio.apollographql.com",
-    "https://sandbox.apollographql.com",
-    "https://studio.apollographql.com/sandbox/explorer",
+    "http://localhost:3000",
+    "ws://localhost:3000",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "role"],
@@ -90,21 +89,31 @@ const wsServer = new WebSocketServer({
   path: "/graphql",
 });
 
+//  WebSocket server configuration
 const serverCleanup = useServer(
   {
     schema,
-    context: async (ctx) => {
+    onConnect: async (ctx) => {
+      const token = ctx.connectionParams?.authorization;
+      if (!token) {
+        console.log("Connection attempt without token");
+        throw new Error("Missing auth token");
+      }
+      
       try {
-        const token = ctx.connectionParams?.authorization?.split(" ")[1];
-        if (token) {
-          const user = await verifyTokenGraphql(token);
-          return { user, pubsub };
-        }
-        return { pubsub };
+        const user = await verifyTokenGraphql(token.split(" ")[1]);
+        console.log(`User ${user.id} connected via WebSocket`);
+        return { user, pubsub };
       } catch (error) {
-        console.error("WebSocket authentication error:", error);
+        console.error("WebSocket auth failed:", error);
         throw new Error("Authentication failed");
       }
+    },
+    onDisconnect(ctx, code, reason) {
+      console.log(`Client disconnected (${code}): ${reason}`);
+    },
+    onError: (ctx, msg, errors) => {
+      console.error("Subscription error:", { ctx, msg, errors });
     },
   },
   wsServer
@@ -125,13 +134,18 @@ const apolloServer = new ApolloServer({
     },
   ],
   context: async ({ req }) => {
-    // Authentification unifiée pour REST et GraphQL
     const token = req.headers.authorization?.split(" ")[1];
-    return {
-      user: token ? await verifyTokenGraphql(token) : null,
-      pubsub,
-      userId: token ? (await verifyTokenGraphql(token)).id : null,
-    };
+    try {
+      const user = token ? await verifyTokenGraphql(token) : null;
+      return {
+        user,
+        userId: user?.id || null,
+        pubsub,
+      };
+    } catch (error) {
+      console.error("Authentication error:", error);
+      return { pubsub };
+    }
   },
   formatError: (error) => ({
     message:
