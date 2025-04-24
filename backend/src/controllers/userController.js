@@ -1,11 +1,11 @@
-const User = require("../models/schemas/user.schema");
+const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
-const AuditLog = require("../models/schemas/auditLog.schema");
-const {userValidationSchema} = require("../models/validators/user.validators");
+const AuditLog = require("../models/auditLog.model");
+const {userValidationSchema} = require("../validators/user.validators");
 const cloudinary = require("../config/cloudinaryConfig");
-const uploadFile = require("../services/messageService");
+const uploadFile = require("../services/fileUpload.service");
 const stream = require("stream");
 // Helpers
 const generateToken = (user) => {

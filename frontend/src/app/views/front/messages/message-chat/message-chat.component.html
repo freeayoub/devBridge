@@ -57,27 +57,27 @@
         </div>
         
         <!-- Message bubble -->
-        <div [class.justify-end]="message.senderId.id === currentUserId"
+        <div [class.justify-end]="message.sender.id === currentUserId"
              class="flex">
-          <div [class.items-end]="message.senderId.id === currentUserId"
-               [class.items-start]="message.senderId.id !== currentUserId"
+          <div [class.items-end]="message.sender.id === currentUserId"
+               [class.items-start]="message.sender.id !== currentUserId"
                class="flex flex-col max-w-xs md:max-w-md lg:max-w-lg">
-            <div *ngIf="message.senderId.id !== currentUserId" class="flex items-center mb-1">
-              <img [src]="message.senderId.image || 'assets/images/default-profile.png'" 
+            <div *ngIf="message.sender.id !== currentUserId" class="flex items-center mb-1">
+              <img [src]="message.sender.image || 'assets/images/default-profile.png'" 
                    class="w-6 h-6 rounded-full mr-2">
-              <span class="text-xs font-medium text-gray-700">{{ message.senderId.username }}</span>
+              <span class="text-xs font-medium text-gray-700">{{ message.sender.username }}</span>
             </div>
             
-            <div [class.bg-purple-600]="message.senderId.id === currentUserId" 
-                 [class.bg-gray-200]="message.senderId.id !== currentUserId"
-                 [class.text-white]="message.senderId.id === currentUserId"
+            <div [class.bg-purple-600]="message.sender.id === currentUserId" 
+                 [class.bg-gray-200]="message.sender.id !== currentUserId"
+                 [class.text-white]="message.sender.id === currentUserId"
                  class="p-3 rounded-lg shadow-sm">
               <p>{{ message.content }}</p>
             </div>
             
             <div class="flex justify-end mt-1">
               <span class="text-xs text-gray-500">{{ formatMessageTime(message.timestamp) }}</span>
-              <span *ngIf="message.senderId.id === currentUserId && message.isRead" class="ml-1 text-blue-500">
+              <span *ngIf="message.sender.id === currentUserId && message.isRead" class="ml-1 text-blue-500">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>

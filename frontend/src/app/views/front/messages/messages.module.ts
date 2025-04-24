@@ -8,9 +8,10 @@ import { MessageChatComponent } from './message-chat/message-chat.component';
 import { MessagesListComponent } from './messages-list/messages-list.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { UserStatusService } from '@app/services/user-status.service';
+import { MessageUserProfileComponent } from './message-user-profile/message-user-profile.component';
 
 @NgModule({
-  declarations: [MessageChatComponent, MessagesListComponent, UserListComponent],
+  declarations: [MessageChatComponent, MessagesListComponent, UserListComponent, MessageUserProfileComponent],
   imports: [
     CommonModule,
     MessagesRoutingModule,

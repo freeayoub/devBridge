@@ -1,18 +1,16 @@
 // user-status.service.ts
 import { Injectable, OnDestroy } from '@angular/core';
-import { DataService } from './data.service';
 import { GraphqlDataService } from './graphql-data.service';
 import { Subscription } from 'rxjs';
-
+import { User } from '@app/models/user.model';
 @Injectable({
   providedIn: 'root'
 })
 export class UserStatusService implements OnDestroy {
-  private statusSub!: Subscription;
-  private onlineUsers: Set<string> = new Set();
+  private statusSub?: Subscription;
+  private onlineUsers = new Set<string>();
 
   constructor(
-    private dataService: DataService,
     private graphqlService: GraphqlDataService
   ) {
     this.subscribeToUserStatus();
@@ -20,17 +18,19 @@ export class UserStatusService implements OnDestroy {
 
   private subscribeToUserStatus(): void {
     this.statusSub = this.graphqlService.subscribeToUserStatus().subscribe({
-      next: (user) => {
+      next: (user:User) => {
         if (user.isOnline) {
-          this.onlineUsers.add(user.id);
+          this.onlineUsers.add(user._id);
         } else {
-          this.onlineUsers.delete(user.id);
+          this.onlineUsers.delete(user._id);
         }
       },
-      error: (error) => console.error('Status subscription error:', error)
+      error: (error: Error) => {
+        console.error('Status subscription error:', error.message);
+   
+      }
     });
   }
-
   isUserOnline(userId: string): boolean {
     return this.onlineUsers.has(userId);
   }

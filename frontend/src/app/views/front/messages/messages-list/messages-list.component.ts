@@ -1,7 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { GraphqlDataService } from 'src/app/services/graphql-data.service';
-import { Subscription } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 import { AuthuserService } from 'src/app/services/authuser.service';
+import { Conversation } from '@app/models/message.model';
+import { User } from '@app/models/user.model';
+
 
 @Component({
   selector: 'app-messages-list',
@@ -9,7 +12,7 @@ import { AuthuserService } from 'src/app/services/authuser.service';
   styleUrls: ['./messages-list.component.css'],
 })
 export class MessagesListComponent implements OnInit, OnDestroy {
-  conversations: any[] = [];
+  conversations: Conversation[] = [];
   loading = true;
   error: any;
   currentUserId: string | null = null;
@@ -24,69 +27,84 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.currentUserId = this.authService.getCurrentUserId();
     this.loadConversations();
-    // this.subscribeToUserStatus();
+    this.subscribeToUserStatus();
   }
-// In messages-list.component.ts
-loadConversations() {
-  this.querySubscription = this.graphqlService.getConversations().subscribe({
-    next: ({ data, loading, errors }) => {
-      if (errors) {
-        console.error('GraphQL errors:', errors);
-        this.error = errors[0];
-        return;
+  // In messages-list.component.ts
+  loadConversations() {
+    this.querySubscription = this.graphqlService.getConversations().subscribe({
+      next: (conversations) => {
+        this.conversations = Array.isArray(conversations) 
+          ? [...conversations] 
+          : [];
+        this.sortConversations();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Network error:', error);
+        this.error = error;
+        this.loading = false;
       }
-      this.conversations = data?.getConversations || [];
-      this.sortConversations();
-      this.loading = loading;
-    },
-    error: (error) => {
-      console.error('Network error:', error);
-      this.error = error;
-      this.loading = false;
-    }
-  });
-}
+    });
+  }
   sortConversations() {
-    this.conversations.sort((a, b) => {
+    this.conversations = [...this.conversations].sort((a, b) => {
       const dateA = new Date(a.lastMessage?.timestamp || a.updatedAt);
       const dateB = new Date(b.lastMessage?.timestamp || b.updatedAt);
       return dateB.getTime() - dateA.getTime();
     });
   }
-    getOtherParticipant(participants: any[]) {
-    return participants.find((p) => p.id !== this.currentUserId);
+  getOtherParticipant(participants: User[]): User | undefined {
+    return participants.find((p) => 
+      p._id !== this.currentUserId && 
+      p.id !== this.currentUserId
+    );
   }
-  
   subscribeToUserStatus() {
-    this.statusSubscription = this.graphqlService.subscribeToUserStatus().subscribe({
-      next: (user) => {
-        if (user) {
-          this.updateUserStatus(user);
-        }
-      },
-      error: (error) => console.error('Error in status subscription:', error)
-    });
+    this.statusSubscription = this.graphqlService
+      .subscribeToUserStatus()
+      .pipe(
+        map(user => this.graphqlService.normalizeUser(user))
+      )
+      .subscribe({
+        next: (user: User) => {
+          if (user) {
+            this.updateUserStatus(user);
+          }
+        },
+        error: (error) => console.error('Error in status subscription:', error),
+      });
   }
-
-  updateUserStatus(updatedUser: any) {
-    this.conversations = this.conversations.map(conv => {
-      const participants = conv.participants.map((p: any) => 
-        p.id === updatedUser.id ? { ...p, isOnline: updatedUser.isOnline, lastActive: updatedUser.lastActive } : p
-      );
+  updateUserStatus(updatedUser: User) {
+    this.conversations = this.conversations.map((conv) => {
+      const participants = conv.participants.map((p) => {
+        // Check both _id and id to handle different data sources
+        const userIdMatches = p._id === updatedUser._id || p.id === updatedUser._id;
+        
+        return userIdMatches
+          ? {
+              ...p,
+              isOnline: updatedUser.isOnline,
+              lastActive: updatedUser.lastActive
+            }
+          : p;
+      });
       return { ...conv, participants };
     });
   }
 
-
   formatLastActive(lastActive: string): string {
     if (!lastActive) return 'Offline';
-    
+
     const lastActiveDate = new Date(lastActive);
     const now = new Date();
-    const diffHours = Math.abs(now.getTime() - lastActiveDate.getTime()) / (1000 * 60 * 60);
-    
+    const diffHours =
+      Math.abs(now.getTime() - lastActiveDate.getTime()) / (1000 * 60 * 60);
+
     if (diffHours < 24) {
-      return `Last seen ${lastActiveDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+      return `Last seen ${lastActiveDate.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })}`;
     } else {
       return `Last seen ${lastActiveDate.toLocaleDateString()}`;
     }

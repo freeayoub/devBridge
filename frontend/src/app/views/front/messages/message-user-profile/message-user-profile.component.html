@@ -1,0 +1,69 @@
+<div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+  <!-- Header with profile picture -->
+  <div class="p-4 flex items-center space-x-4">
+    <div class="flex-shrink-0">
+      <img 
+        class="h-16 w-16 rounded-full object-cover border-2 border-purple-200"
+        [src]="user?.image ?? 'assets/images/default-profile.png'" 
+        alt="Profile photo"
+      >
+    </div>
+    <div>
+      <h2 class="text-xl font-bold text-gray-800">{{ user?.username ?? 'Loading...' }}</h2>
+      <p class="text-gray-500 text-sm">
+        Member since {{ (user?.createdAt | date:'mediumDate') ?? 'N/A' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- User details -->
+  <div class="px-4 pb-4">
+    <div class="space-y-3">
+      <!-- Email -->
+      <div class="flex items-center">
+        <svg class="h-5 w-5 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+        </svg>
+        <span class="text-gray-600">{{ user?.email ?? 'Email not available' }}</span>
+      </div>
+
+      <!-- Last active -->
+      <div class="flex items-center">
+        <svg class="h-5 w-5 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+        </svg>
+        <span class="text-gray-600">
+          Last active: {{ formatLastActive(user?.lastActive) }}
+        </span>
+      </div>
+
+      <!-- Additional info -->
+      <div *ngIf="user?.bio" class="mt-2">
+        <p class="text-gray-700">{{ user?.bio }}</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="mt-4 flex justify-around border-t pt-3">
+      <div class="text-center">
+        <div class="font-bold text-gray-800">Posts</div>
+        <div class="text-gray-500">{{ user?.postCount ?? 0 }}</div>
+      </div>
+      <div class="text-center">
+        <div class="font-bold text-gray-800">Following</div>
+        <div class="text-gray-500">{{ user?.followingCount ?? 0 }}</div>
+      </div>
+      <div class="text-center">
+        <div class="font-bold text-gray-800">Followers</div>
+        <div class="text-gray-500">{{ user?.followersCount ?? 0 }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="p-4 text-center">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+    <p class="mt-2 text-gray-500">Loading profile...</p>
+  </div>
+</div>

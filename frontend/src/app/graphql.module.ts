@@ -9,7 +9,6 @@ import { ApolloLink } from '@apollo/client/core';
 import { HttpHeaders } from '@angular/common/http';
 import { AuthuserService } from './services/authuser.service';
 import { createClient } from 'graphql-ws';
-
 export function createApollo(
   httpLink: HttpLink,
   authService: AuthuserService
@@ -17,8 +16,7 @@ export function createApollo(
   const token = authService.getToken();
   const httpUri = `${environment.urlBackend.replace('/api/', '/graphql')}`;
   const wsUri = httpUri.replace('http', 'ws');
-
-  // HTTP Link
+   // Configuration des headers HTTP
   const http = httpLink.create({
     uri: httpUri,
     headers: new HttpHeaders({
@@ -26,16 +24,14 @@ export function createApollo(
       Authorization: token ? `Bearer ${token}` : '',
     }),
   });
-
   let link: ApolloLink = http;
-
   // WebSocket Link seulement côté client et si token existe
   if (typeof window !== 'undefined' && token) {
     try {
       const wsClient = createClient({
         url: wsUri,
         connectionParams: () => ({
-          authorization: `Bearer ${authService.getToken()}`,
+          authorization: `Bearer ${token}`,
         }),
         shouldRetry: (err) => {
           console.error('WebSocket retry check:', err);
@@ -71,7 +67,6 @@ export function createApollo(
       console.error('WebSocket initialization failed:', error);
     }
   }
-
   return {
     link,
     cache: new InMemoryCache({
@@ -92,7 +87,6 @@ export function createApollo(
     },
   };
 }
-
 @NgModule({
   exports: [ApolloModule],
   providers: [

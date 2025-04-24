@@ -18,8 +18,8 @@ const {
 // Configurations
 const { verifyTokenGraphql } = require("./src/middlewares/authUserMiddleware");
 const userRoutes = require("./src/routes/userRoutes");
-const typeDefs = require("./src/schemas/messageSchema");
-const resolvers = require("./src/resolvers/messageResolvers");
+const typeDefs = require("./src/graphql/messageSchema");
+const resolvers = require("./src/graphql/messageResolvers");
 const connectDB = require("./src/config/connection");
 const config = require("./src/config/config");
 const pubsub = require("./src/config/pubsub");
@@ -76,7 +76,7 @@ app.get("/health", (req, res) => {
 app.use(
   "/graphql",
   graphqlUploadExpress({
-    maxFileSize: 10000000, // 10MB
+    maxFileSize: 10000000, 
     maxFiles: 10,
   })
 );
@@ -99,10 +99,9 @@ const serverCleanup = useServer(
         console.log("Connection attempt without token");
         throw new Error("Missing auth token");
       }
-      
+
       try {
         const user = await verifyTokenGraphql(token.split(" ")[1]);
-        console.log(`User ${user.id} connected via WebSocket`);
         return { user, pubsub };
       } catch (error) {
         console.error("WebSocket auth failed:", error);
@@ -110,7 +109,7 @@ const serverCleanup = useServer(
       }
     },
     onDisconnect(ctx, code, reason) {
-      console.log(`Client disconnected (${code}): ${reason}`);
+      // console.log(`Client disconnected (${code}): ${reason}`);
     },
     onError: (ctx, msg, errors) => {
       console.error("Subscription error:", { ctx, msg, errors });
@@ -163,7 +162,6 @@ const apolloServer = new ApolloServer({
 async function initializeApolloServer() {
   try {
     await apolloServer.start();
-    console.log("Apollo server initialized");
     app.use(
       "/graphql",
       async (req, res, next) => {
