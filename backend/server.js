@@ -18,6 +18,8 @@ const {
 // Configurations
 const { verifyTokenGraphql } = require("./src/middlewares/authUserMiddleware");
 const userRoutes = require("./src/routes/userRoutes");
+const reunionRoutes = require("./src/routes/reunionRoutes");
+const planningRoutes = require("./src/routes/plannigRoutes");
 const typeDefs = require("./src/graphql/messageSchema");
 const resolvers = require("./src/graphql/messageResolvers");
 const connectDB = require("./src/config/connection");
@@ -59,7 +61,9 @@ app.use(
 );
 
 // 3. REST Routes
-app.use("/api/users", userRoutes);
+app.use("/api/plannings",planningRoutes);
+app.use("/api/reunions",reunionRoutes);
+app.use("/api/users",userRoutes);
 // 4. Health Check Endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
