@@ -1,22 +1,18 @@
 const MessageService = require("../services/message.service");
 const NotificationService = require("../services/notification.service");
-const Message = require("../models/message.model");
-const Conversation = require("../models/conversation.model");
-const User = require("../models/user.model");
 const { GraphQLError } = require("graphql");
 const GraphQLUpload = require("graphql-upload/GraphQLUpload.js");
-const { isValidObjectId } = require("mongoose");
+const UserService = require("../services/user.service");
+const { messageSchema } = require("../validators/message.validators");
+const { messageUpdateSchema } = require("../validators/message.validators");
 const AuthenticationError = (message) =>
   new GraphQLError(message, {
     extensions: { code: "UNAUTHENTICATED" },
   });
-const UserInputError = (message) =>
-  new GraphQLError(message, {
-    extensions: { code: "BAD_USER_INPUT" },
-  });
 
 const resolvers = {
   Upload: GraphQLUpload,
+
   Message: {
     id: (parent) => parent._id.toString(),
     sender: async (parent) => {
@@ -33,11 +29,39 @@ const resolvers = {
       if (parent.groupId) return Group.findById(parent.groupId);
       return null;
     },
-    timestamp: (parent) => parent.timestamp.toISOString(),
-    readAt: (parent) => parent.readAt?.toISOString() || null,
+    timestamp: (parent) => {
+      if (!(parent.timestamp instanceof Date)) {
+        parent.timestamp = new Date(parent.timestamp);
+      }
+      return parent.timestamp.toISOString();
+    },
+    timestamp: (parent) => {
+      if (!parent.timestamp) return null;
+      if (!(parent.timestamp instanceof Date)) {
+        parent.timestamp = new Date(parent.timestamp);
+      }
+      return parent.timestamp.toISOString();
+    },
+    readAt: (parent) => {
+      if (!parent.readAt) return null;
+      if (!(parent.readAt instanceof Date)) {
+        parent.readAt = new Date(parent.readAt);
+      }
+      return parent.readAt.toISOString();
+    },
+    conversation: async (parent) => {
+      if (parent.conversation) return parent.conversation;
+      return Conversation.findById(parent.conversationId);
+    },
   },
+
   Conversation: {
-    id: (parent) => parent._id.toString(),
+    id: (parent) => {
+      if (!parent) return null;
+      if (parent._id) return parent._id.toString();
+      if (parent.id) return parent.id.toString();
+      return null;
+    },
     participants: async (parent) => {
       if (parent.participants && parent.participants[0]?.username) {
         return parent.participants;
@@ -45,10 +69,11 @@ const resolvers = {
       return User.find({ _id: { $in: parent.participants } });
     },
     messages: async (parent, { limit = 50, offset = 0 }) => {
-      return Message.find({ conversationId: parent._id })
-        .sort({ timestamp: -1 })
-        .skip(offset)
-        .limit(limit);
+      return MessageService.getMessages({
+        conversationId: parent._id,
+        limit,
+        offset,
+      });
     },
     lastMessage: async (parent) => {
       if (parent.lastMessage) return parent.lastMessage;
@@ -56,11 +81,7 @@ const resolvers = {
     },
     unreadCount: async (parent, _, { userId }) => {
       if (parent.unreadCount !== undefined) return parent.unreadCount;
-      return Message.countDocuments({
-        conversationId: parent._id,
-        receiver: userId,
-        isRead: false,
-      });
+      return MessageService.getUnreadCount(parent._id, userId);
     },
     pinnedMessages: async (parent) => {
       return Message.find({ _id: { $in: parent.pinnedMessages } });
@@ -69,518 +90,183 @@ const resolvers = {
       return User.find({ _id: { $in: parent.typingUsers } });
     },
   },
+  
   Query: {
-    getMessages: async (
-      _,
-      { senderId, receiverId, page = 1, limit = 10 },
-      context
-    ) => {
-      if (!context.userId) throw new Error("Unauthorized");
-
-      try {
-        await MessageService.validateUserIds(senderId, receiverId);
-        const safeLimit = Math.min(limit, 100);
-        const skip = (page - 1) * safeLimit;
-
-        const messages = await Message.find({
-          $or: [
-            { senderId, receiverId },
-            { senderId: receiverId, receiverId: senderId },
-          ],
-        })
-          .select(
-            "_id senderId receiverId content fileUrl isRead timestamp conversationId"
-          )
-          .sort({ timestamp: 1 })
-          .skip(skip)
-          .limit(safeLimit)
-          .lean();
-        return messages.map((msg) => MessageService.formatMessageResponse(msg));
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-        throw new Error(`Failed to fetch messages: ${error.message}`);
-      }
+    getMessages: async (_, { senderId, receiverId, page, limit }, context) => {
+      if (!context.userId) throw AuthenticationError("Unauthorized");
+      return MessageService.getMessages({
+        senderId,
+        receiverId,
+        page,
+        limit,
+      });
     },
 
     getUnreadMessages: async (_, { userId }, context) => {
+      if (!context.user) throw new AuthenticationError("Not authenticated");
+      if (context.user.id !== userId)
+        throw new ForbiddenError("Not authorized");
+
       try {
-        if (!context.userId) throw new Error("Authentication required");
-        if (context.userId !== userId) {
-          throw new Error(
-            "Unauthorized: You can only view your own unread messages"
-          );
-        }
+        const messages = await MessageService.getUnreadMessages(userId);
 
-        const unreadMessages = await Message.find({
-          receiverId: userId,
-          isRead: false,
-        })
-          .populate("sender", "id username email image")
-          .sort({ timestamp: -1 })
-          .lean();
-
-        return unreadMessages.map((msg) => {
-          return {
-            ...MessageService.formatMessageResponse(msg),
-            sender: msg.sender
-              ? {
-                  id: msg.sender._id.toString(),
-                  username: msg.sender.username,
-                  email: msg.sender.email,
-                  image: msg.sender.image,
-                  isOnline: msg.sender.isOnline,
-                }
-              : null,
-          };
-        });
+        // Ensure each message has a populated conversation
+        return messages.map((message) => ({
+          ...message,
+          conversation: message.conversation || { _id: message.conversationId },
+        }));
       } catch (error) {
-        console.error("Error in getUnreadMessages:", error);
-        throw new Error(
-          error.message.includes("Unauthorized") ||
-          error.message.includes("Authentication")
-            ? error.message
-            : "Failed to fetch unread messages"
-        );
+        throw new ApolloError(error.message, "MESSAGE_FETCH_FAILED", {
+          userId,
+          originalError: error,
+        });
       }
     },
-    searchMessages: async (_, { query, conversationId, limit, offset }, { userId }) => {
-      if (!userId) throw new AuthenticationError('Not authenticated');
-      
+
+    searchMessages: async (
+      _,
+      { query, conversationId, limit, offset },
+      { userId }
+    ) => {
+      if (!userId) throw AuthenticationError("Not authenticated");
       return MessageService.searchMessages({
         userId,
         query,
         conversationId,
         limit,
-        offset
+        offset,
       });
     },
+
     getConversation: async (_, { conversationId }, context) => {
-      if (!context.userId) throw new Error("Unauthorized");
+      if (!context.userId) {
+        throw new AuthenticationError("Unauthorized");
+      }
 
       try {
-        // Validate conversation ID
-        if (!isValidObjectId(conversationId)) {
-          throw new Error("Invalid conversation ID");
-        }
-
-        // Find the conversation with minimal population first
-        const conversation = await Conversation.findById(conversationId)
-          .populate("participants", "id username email image isOnline")
-          .lean();
-
-        if (!conversation) {
-          throw new Error("Conversation not found");
-        }
-
-        // Check if current user is a participant
-        const isParticipant = conversation.participants.some(
-          (p) => p._id.toString() === context.userId
+        return await MessageService.getConversation(
+          conversationId,
+          context.userId
         );
-
-        if (!isParticipant) {
-          throw new Error(
-            "Unauthorized: You are not a participant in this conversation"
-          );
-        }
-
-        // Now get messages separately with pagination
-        const messages = await Message.find({
-          conversationId: conversation._id,
-        })
-          .sort({ timestamp: -1 })
-          .limit(50)
-          .populate("senderId receiverId", "id username email image")
-          .lean();
-
-        // Get last message separately if needed
-        const lastMessage = conversation.lastMessage
-          ? await Message.findById(conversation.lastMessage)
-              .populate("senderId receiverId", "id username email image")
-              .lean()
-          : null;
-
-        // Safe date formatting function
-        const safeDate = (date) => {
-          if (!date) return null;
-          try {
-            return new Date(date).toISOString();
-          } catch {
-            return null;
-          }
-        };
-
-        // Format the response
-        return {
-          ...conversation,
-          id: conversation._id.toString(),
-          createdAt: safeDate(conversation.createdAt),
-          updatedAt: safeDate(conversation.updatedAt),
-          messages: messages.map((msg) => ({
-            ...msg,
-            id: msg._id.toString(),
-            timestamp: safeDate(msg.timestamp),
-            senderId: msg.senderId
-              ? {
-                  ...msg.senderId,
-                  id: msg.senderId._id.toString(),
-                }
-              : null,
-            receiverId: msg.receiverId
-              ? {
-                  ...msg.receiverId,
-                  id: msg.receiverId._id.toString(),
-                }
-              : null,
-          })),
-          lastMessage: lastMessage
-            ? {
-                ...lastMessage,
-                id: lastMessage._id.toString(),
-                timestamp: safeDate(lastMessage.timestamp),
-                senderId: lastMessage.senderId
-                  ? {
-                      ...lastMessage.senderId,
-                      id: lastMessage.senderId._id.toString(),
-                    }
-                  : null,
-                receiverId: lastMessage.receiverId
-                  ? {
-                      ...lastMessage.receiverId,
-                      id: lastMessage.receiverId._id.toString(),
-                    }
-                  : null,
-              }
-            : null,
-        };
       } catch (error) {
-        console.error("Error fetching conversation:", error);
-        throw new Error(`Failed to fetch conversation: ${error.message}`);
+        console.error("Resolver error:", error);
+        throw new ApolloError("Failed to fetch conversation");
       }
     },
+
     getConversations: async (_, __, context) => {
-      if (!context.userId) throw new Error("Unauthorized");
-
-      try {
-        const conversations = await Conversation.find({
-          participants: context.userId,
-        })
-          .populate({
-            path: "participants",
-            select: "_id username email image isOnline lastActive",
-            match: { _id: { $exists: true } },
-          })
-          .populate({
-            path: "lastMessage",
-            select: "_id content timestamp isRead",
-            options: { lean: true },
-          })
-          .lean();
-
-        const conversationsWithValidData = await Promise.all(
-          conversations.map(async (conv) => {
-            // Handle missing timestamps safely
-            const safeTimestamp = (date) => {
-              if (!date) return new Date().toISOString(); // Fallback to current time
-              return date.toISOString();
-            };
-
-            // Filter invalid participants
-            const validParticipants = conv.participants
-              .filter((p) => p && p._id)
-              .map((p) => ({
-                ...p,
-                id: p._id.toString(),
-              }));
-
-            // Count unread messages
-            const unreadCount = await Message.countDocuments({
-              conversationId: conv._id,
-              receiverId: context.userId,
-              isRead: false,
-            });
-
-            // Handle lastMessage safely
-            let lastMessage = null;
-            if (conv.lastMessage) {
-              lastMessage = {
-                ...conv.lastMessage,
-                id: conv.lastMessage._id.toString(),
-                timestamp: safeTimestamp(conv.lastMessage.timestamp),
-                isRead:
-                  conv.lastMessage.isRead !== undefined
-                    ? conv.lastMessage.isRead
-                    : false,
-              };
-            }
-
-            return {
-              ...conv,
-              id: conv._id.toString(),
-              participants: validParticipants,
-              unreadCount,
-              updatedAt: safeTimestamp(conv.updatedAt),
-              createdAt: safeTimestamp(conv.createdAt),
-              lastMessage,
-            };
-          })
-        );
-
-        return conversationsWithValidData;
-      } catch (error) {
-        console.error("Error fetching conversations:", error);
-        throw new Error(`Failed to fetch conversations: ${error.message}`);
-      }
+      if (!context.userId) throw AuthenticationError("Unauthorized");
+      return MessageService.getConversations(context.userId);
     },
+
     getAllUsers: async (_, { search }, context) => {
-      try {
-        // Authentication check
-        if (!context.userId) throw new Error("Unauthorized");
-
-        const filter = {};
-
-        if (search) {
-          filter.$or = [
-            { username: { $regex: search, $options: "i" } },
-            { email: { $regex: search, $options: "i" } },
-          ];
-        }
-
-        const users = await User.find(filter).sort({ createdAt: -1 }).lean();
-
-        return users.map((user) => ({
-          ...user,
-          id: user._id.toString(),
-          createdAt: user.createdAt.toISOString(),
-          updatedAt: user.updatedAt.toISOString(),
-          lastActive: user.lastActive?.toISOString() || null,
-        }));
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        throw new Error(`Failed to fetch users: ${error.message}`);
-      }
+      if (!context.userId) throw AuthenticationError("Unauthorized");
+      return UserService.getAllUsers(search);
     },
+
     getOneUser: async (_, { id }, context) => {
-      try {
-        // Authentication check
-        if (!context.userId) throw new Error("Unauthorized");
-
-        // Authorization
-        // if (context.userId !== id && context.user.role !== "admin") {
-        //   throw new Error("Unauthorized: You can only view your own profile");
-        // }
-
-        const user = await User.findById(id).lean();
-        if (!user) throw new Error("User not found");
-
-        return {
-          ...user,
-          id: user._id.toString(),
-          createdAt: user.createdAt.toISOString(),
-          updatedAt: user.updatedAt.toISOString(),
-          lastActive: user.lastActive?.toISOString() || null,
-        };
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        throw new Error(`Failed to fetch user: ${error.message}`);
-      }
+      if (!context.userId) throw AuthenticationError("Unauthorized");
+      return UserService.getOneUser(id);
     },
   },
 
   Mutation: {
-    sendMessage: async (
-      _,
-      { senderId, receiverId, content, file },
-      context
-    ) => {
-      return MessageService.sendMessage({
-        senderId,
-        receiverId,
-        content,
-        file,
-        context,
-      });
-    },
-    sendGroupMessage: async (_, { content, groupId, file }, { userId }) => {
-      if (!userId) throw new AuthenticationError('Not authenticated');
-      
-      let attachments = [];
-      if (file) {
-        const { createReadStream, filename, mimetype } = await file;
-        const stream = createReadStream();
-        const url = await uploadFile(stream, filename, mimetype);
-        
-        const type = mimetype.startsWith('image/') ? 'image' : 
-                     mimetype.startsWith('audio/') ? 'audio' : 'file';
-        
-        attachments.push({
-          url,
-          type,
-          name: filename,
-          size: 0
+    sendMessage: async (_, { receiverId, content, file }, context) => {
+      try {
+        // Validate input
+        const input = {
+          senderId: context.userId,
+          receiverId,
+          content,
+          file,
+          type: "text",
+          status: "sending",
+        };
+        await messageSchema.validate(input, { abortEarly: false });
+
+        if (!context.userId) throw new AuthenticationError("Unauthorized");
+
+        return MessageService.sendMessage({
+          senderId: context.userId,
+          receiverId,
+          content,
+          file,
+          replyTo: null,
+          context,
         });
+      } catch (error) {
+        console.error("Send message error:", error);
+        throw new Error(error.message);
       }
-
-      const message = await MessageService.sendGroupMessage({
-        senderId: userId,
-        groupId,
-        content,
-        attachments,
-        type: attachments.length ? attachments[0].type : 'text'
+    },
+    sendGroupMessage: async (_, { input }, { userId }) => {
+      if (!userId) throw AuthenticationError("Not authenticated");
+      return MessageService.sendGroupMessage({
+        content: input.content,
+        groupId: input.groupId,
+        file: input.file,
+        userId,
       });
-
-      // Send notifications
-      await NotificationService.sendMessageNotification(message);
-
-      return message;
     },
 
     editMessage: async (_, { messageId, newContent }, { userId }) => {
-      if (!userId) throw new AuthenticationError('Not authenticated');
+      if (!userId) throw AuthenticationError("Not authenticated");
       return MessageService.editMessage({ messageId, userId, newContent });
     },
 
     deleteMessage: async (_, { messageId }, { userId }) => {
-      if (!userId) throw new AuthenticationError('Not authenticated');
+      if (!userId) throw AuthenticationError("Not authenticated");
       return MessageService.deleteMessage({ messageId, userId });
     },
+
     markMessageAsRead: async (_, { messageId }, context) => {
-      if (!context.userId) throw new Error("Unauthorized");
+      // 1. Validation
+      await messageUpdateSchema.validate({ isRead: true });
+      if (!context.userId) throw AuthenticationError("Unauthorized");
       return MessageService.markAsRead({ messageId, userId: context.userId });
     },
 
     setUserOnline: async (_, { userId }, context) => {
       if (!context.userId || context.userId !== userId) {
-        throw new Error("Unauthorized: You can only update your own status");
-      }
-
-      try {
-        const now = new Date();
-        const user = await User.findByIdAndUpdate(
-          userId,
-          {
-            isOnline: true,
-            lastActive: now,
-          },
-          { new: true, lean: true }
+        throw AuthenticationError(
+          "Unauthorized: You can only update your own status"
         );
-
-        if (!user) throw new Error("User not found");
-
-        const formattedUser = {
-          ...user,
-          id: user._id.toString(),
-          createdAt: MessageService.safeToISOString(user.createdAt),
-          updatedAt: MessageService.safeToISOString(user.updatedAt),
-          lastActive: MessageService.safeToISOString(user.lastActive),
-        };
-
-        pubsub.publish("USER_STATUS_CHANGED", {
-          userStatusChanged: formattedUser,
-        });
-
-        return formattedUser;
-      } catch (error) {
-        console.error("Error setting user online:", error);
-        throw new Error(`Failed to set user online: ${error.message}`);
       }
+      return UserService.setUserOnline(userId);
     },
 
     setUserOffline: async (_, { userId }, context) => {
       if (!context.userId || context.userId !== userId) {
-        throw new Error("Unauthorized: You can only update your own status");
-      }
-
-      try {
-        const now = new Date();
-        const user = await User.findByIdAndUpdate(
-          userId,
-          {
-            isOnline: false,
-            lastActive: now,
-          },
-          { new: true, lean: true }
+        throw AuthenticationError(
+          "Unauthorized: You can only update your own status"
         );
-
-        if (!user) throw new Error("User not found");
-
-        const formattedUser = {
-          ...user,
-          id: user._id.toString(),
-          createdAt: MessageService.safeToISOString(user.createdAt),
-          updatedAt: MessageService.safeToISOString(user.updatedAt),
-          lastActive: MessageService.safeToISOString(user.lastActive),
-        };
-
-        pubsub.publish("USER_STATUS_CHANGED", {
-          userStatusChanged: formattedUser,
-        });
-
-        return formattedUser;
-      } catch (error) {
-        console.error("Error setting user offline:", error);
-        throw new Error(`Failed to set user offline: ${error.message}`);
       }
+      return UserService.setUserOffline(userId);
     },
+
     createGroup: async (_, { name, participantIds, photo }, { userId }) => {
-      if (!userId) throw new AuthenticationError('Not authenticated');
-      
-      // Add current user to participants
-      const participants = [...new Set([userId, ...participantIds])];
-      
-      if (participants.length < 2) {
-        throw new UserInputError('A group must have at least 2 participants');
-      }
-
-      let groupPhotoUrl;
-      if (photo) {
-        const { createReadStream, filename } = await photo;
-        const stream = createReadStream();
-        groupPhotoUrl = await uploadFile(stream, filename, 'image');
-      }
-
-      const group = new Conversation({
-        participants,
-        isGroup: true,
-        groupName: name,
-        groupPhoto: groupPhotoUrl,
-        groupAdmins: [userId]
+      if (!userId) throw AuthenticationError("Not authenticated");
+      return MessageService.createGroup({
+        name,
+        participantIds,
+        photo,
+        userId,
       });
-
-      await group.save();
-
-      return group;
     },
-    createGroup: async (_, { name, participantIds, photo }, { userId }) => {
-      if (!userId) throw new AuthenticationError('Not authenticated');
-      
-      // Add current user to participants
-      const participants = [...new Set([userId, ...participantIds])];
-      
-      if (participants.length < 2) {
-        throw new UserInputError('A group must have at least 2 participants');
+    markNotificationsAsRead: async (_, { notificationIds }, { userId }) => {
+      if (!userId) throw new AuthenticationError("Not authenticated");
+
+      const result = await NotificationService.markAsRead(
+        userId,
+        notificationIds
+      );
+      if (!result) {
+        throw new Error("Failed to mark notifications as read");
       }
 
-      let groupPhotoUrl;
-      if (photo) {
-        const { createReadStream, filename } = await photo;
-        const stream = createReadStream();
-        groupPhotoUrl = await uploadFile(stream, filename, 'image');
-      }
-
-      const group = new Conversation({
-        participants,
-        isGroup: true,
-        groupName: name,
-        groupPhoto: groupPhotoUrl,
-        groupAdmins: [userId]
-      });
-
-      await group.save();
-
-      return group;
-    }
+      return true;
+    },
   },
-
   Subscription: {
     messageSent: {
       subscribe: (_, { senderId, receiverId, conversationId }, { pubsub }) => {
@@ -647,7 +333,6 @@ const resolvers = {
         return pubsub.asyncIterator(`GROUP_MESSAGE_${groupId}`);
       },
     },
-
     messageUpdated: {
       subscribe: (_, { conversationId }, { pubsub }) => {
         return pubsub.asyncIterator(`MESSAGE_UPDATED_${conversationId}`);

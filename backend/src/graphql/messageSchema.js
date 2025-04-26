@@ -3,6 +3,7 @@ const { gql } = require("graphql-tag");
 const typeDefs = gql`
   scalar Upload
   scalar Date
+  scalar JSON
 
   type Message {
     id: ID!
@@ -11,18 +12,23 @@ const typeDefs = gql`
     timestamp: Date!
     isRead: Boolean!
     readAt: Date
+    isEdited: Boolean!
     isDeleted: Boolean!
+    deletedAt: Date
     sender: User!
     receiver: User
     group: Group
-    conversation: Conversation!
+    conversation: Conversation
+    conversationId: ID!
     reactions: [Reaction!]!
     attachments: [Attachment!]!
     status: MessageStatus!
     pinned: Boolean!
+    pinnedAt: Date
+    pinnedBy: User
     forwardedFrom: Message
-    isEphemeral: Boolean
-    expiresAt: Date
+    replyTo: Message
+    metadata: JSON
   }
 
   type Reaction {
@@ -37,26 +43,50 @@ const typeDefs = gql`
     type: AttachmentType!
     name: String!
     size: Int!
+    mimeType: String!
+    thumbnailUrl: String
+    duration: Int
   }
-  interface MessageEvent {
-    eventType: MessageEventType!
-    message: Message!
-    timestamp: Date!
+
+  type Participant {
+    id: ID!
+    username: String
+    email: String
+    image: String
   }
+
   type Conversation {
     id: ID!
     participants: [User!]!
-    messages(limit: Int, offset: Int): [Message!]!
+    messages(limit: Int = 50, offset: Int = 0): [Message!]!
     lastMessage: Message
+    lastMessageId: ID
     unreadCount: Int!
+    messageCount: Int!
     isGroup: Boolean!
     groupName: String
     groupPhoto: String
+    groupDescription: String
     groupAdmins: [User!]!
     pinnedMessages: [Message!]!
     typingUsers: [User!]!
+    lastRead: [UserReadStatus!]!
     createdAt: Date!
     updatedAt: Date!
+  }
+
+  type ConversationResponse {
+    id: ID
+    participants: [Participant!]!
+    lastMessage: Message
+    createdAt: Date
+    updatedAt: Date
+  }
+
+  type UserReadStatus {
+    userId: ID!
+    user: User!
+    readAt: Date!
   }
 
   type User {
@@ -68,32 +98,48 @@ const typeDefs = gql`
     isActive: Boolean!
     lastActive: Date
     role: String!
-    createdAt: Date
-    updatedAt: Date
+    notificationCount: Int!
+    lastNotification: Date
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   type Group {
     id: ID!
     name: String!
     photo: String
+    description: String
     participants: [User!]!
     admins: [User!]!
+    messageCount: Int!
     createdAt: Date!
     updatedAt: Date!
   }
-  enum MessageEventType {
-    SENT
-    EDITED
-    DELETED
-    READ
-    REACTION
+
+  type Notification {
+    id: ID!
+    type: NotificationType!
+    message: Message
+    sender: User
+    content: String!
+    timestamp: Date!
+    isRead: Boolean!
   }
+
+  enum NotificationType {
+    NEW_MESSAGE
+    FRIEND_REQUEST
+    GROUP_INVITE
+    MESSAGE_REACTION
+  }
+
   enum MessageType {
     TEXT
     IMAGE
     FILE
     AUDIO
     VIDEO
+    SYSTEM
   }
 
   enum AttachmentType {
@@ -104,10 +150,13 @@ const typeDefs = gql`
   }
 
   enum MessageStatus {
+    SENDING
     SENT
     DELIVERED
     READ
+    FAILED
   }
+
   input MessageFilter {
     isRead: Boolean
     isDeleted: Boolean
@@ -117,16 +166,63 @@ const typeDefs = gql`
     groupId: ID
     conversationId: ID
     pinned: Boolean
+    dateFrom: Date
+    dateTo: Date
   }
+
+  input ConversationFilter {
+    isGroup: Boolean
+    hasUnread: Boolean
+    updatedAfter: Date
+  }
+
+  input SendMessageInput {
+    receiverId: ID!
+    content: String!
+    file: Upload
+    replyTo: ID
+  }
+
+  input SendGroupMessageInput {
+    groupId: ID!
+    content: String!
+    file: Upload
+    replyTo: ID
+  }
+
+  input CreateGroupInput {
+    name: String!
+    participantIds: [ID!]!
+    photo: Upload
+    description: String
+  }
+
+  input UpdateGroupInput {
+    name: String
+    photo: Upload
+    description: String
+    addParticipants: [ID!]
+    removeParticipants: [ID!]
+    addAdmins: [ID!]
+    removeAdmins: [ID!]
+  }
+
+  input UpdateProfileInput {
+    username: String
+    email: String
+    image: Upload
+  }
+
   type Query {
-    # Message-related queries
     getMessages(
-      senderId: ID!
-      receiverId: ID!
-      page: Int
-      limit: Int
+      senderId: ID
+      receiverId: ID
+      page: Int = 1
+      limit: Int = 10
     ): [Message!]!
+
     getUnreadMessages(userId: ID!): [Message!]!
+
     searchMessages(
       query: String!
       conversationId: ID
@@ -134,38 +230,57 @@ const typeDefs = gql`
       offset: Int
     ): [Message!]!
 
-    # Conversation-related queries
-    getConversation(conversationId: ID!): Conversation!
-    getConversations: [Conversation!]!
+    getConversation(conversationId: ID!): ConversationResponse
 
-    # User-related queries (ADD THESE)
+    getConversations(
+      filter: ConversationFilter
+      limit: Int
+      offset: Int
+    ): [Conversation!]!
+
     getAllUsers(search: String): [User!]!
+
     getOneUser(id: ID!): User!
+
+    getCurrentUser: User!
+
+    getGroup(id: ID!): Group!
+
+    getUserGroups: [Group!]!
   }
 
   type Mutation {
-    sendMessage(
-      senderId: ID!
-      receiverId: ID!
-      content: String!
-      file: Upload
-    ): Message!
-    sendGroupMessage(content: String!, groupId: ID!, file: Upload): Message!
+    sendMessage(receiverId: ID!, content: String, file: Upload): Message!
+
+    markNotificationsAsRead(notificationIds: [ID!]!): Boolean!
+
+    sendGroupMessage(input: SendGroupMessageInput!): Message!
+
     editMessage(messageId: ID!, newContent: String!): Message!
+
     deleteMessage(messageId: ID!): Message!
+
     markMessageAsRead(messageId: ID!): Message!
+
     reactToMessage(messageId: ID!, emoji: String!): Message!
+
     forwardMessage(messageId: ID!, conversationIds: [ID!]!): [Message!]!
+
     pinMessage(messageId: ID!, conversationId: ID!): Message!
+
     startTyping(conversationId: ID!): Conversation!
+
     stopTyping(conversationId: ID!): Conversation!
-    createGroup(
-      name: String!
-      participantIds: [ID!]!
-      photo: Upload
-    ): Conversation!
+
+    createGroup(input: CreateGroupInput!): Group!
+
+    updateGroup(id: ID!, input: UpdateGroupInput!): Group!
+
     setUserOnline(userId: ID!): User!
+
     setUserOffline(userId: ID!): User!
+
+    updateUserProfile(input: UpdateProfileInput!): User!
   }
 
   type Subscription {
@@ -173,13 +288,13 @@ const typeDefs = gql`
     groupMessageSent(groupId: ID!): Message!
     messageUpdated(conversationId: ID!): Message!
     messageDeleted(conversationId: ID!): Message!
-    messageRead(userId: ID!): MessageReadEvent!
-    messageReaction(conversationId: ID!): MessageReactionEvent!
+    messageRead(userId: ID!): Message!
+    messageReaction(conversationId: ID!): Message!
     conversationUpdated(conversationId: ID!): Conversation!
-    typingIndicator(conversationId: ID!): TypingIndicatorEvent!
+    typingIndicator(conversationId: ID!): Conversation!
     notificationReceived: Notification!
     userStatusChanged: User!
-    unreadMessages(receiverId: ID!): [Message]!
+    unreadMessages(receiverId: ID!): [Message!]!
   }
 
   type MessageReadEvent {
@@ -197,16 +312,6 @@ const typeDefs = gql`
     conversationId: ID!
     userId: ID!
     isTyping: Boolean!
-  }
-
-  type Notification {
-    id: ID!
-    type: String!
-    messageId: ID
-    sender: User
-    content: String!
-    timestamp: Date!
-    isRead: Boolean!
   }
 `;
 

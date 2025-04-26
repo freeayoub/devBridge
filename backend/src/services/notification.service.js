@@ -31,7 +31,6 @@ class NotificationService {
     }
   }
 
- 
   async markAsRead(userId, notificationIds) {
     try {
       this.pubsub.publish(`NOTIFICATION_READ_${userId}`, {
@@ -60,26 +59,28 @@ class NotificationService {
         type: 'NEW_MESSAGE',
         messageId: message._id,
         senderId: message.sender,
-        content: message.content.substring(0, 100), // Truncate long messages
+        content: message.content.substring(0, 100), 
         isRead: false
       };
 
       if (Array.isArray(receiverId)) {
-        // Group message - notify all except sender
         await Promise.all(
           receiverId
             .filter(id => id.toString() !== message.sender.toString())
             .map(id => this.sendPushNotification(id, notification))
         );
       } else {
-        // Direct message
         await this.sendPushNotification(receiverId, notification);
       }
     } catch (error) {
-      console.error('Message notification error:', error);
+      console.error('[NotificationService] Error sending message notification:', {
+        error: error.message,
+        messageId: message?._id,
+        receiver: message?.receiver || message?.group
+      });
+      throw new Error('Failed to send message notification');
     }
   }
-
 
   async getGroupParticipants(groupId) {
     try {

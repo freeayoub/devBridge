@@ -1,177 +1,233 @@
-
 const mongoose = require('mongoose');
+const Message = require('./message.model');
 
 const ConversationSchema = new mongoose.Schema({
   participants: {
     type: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: true
     }],
-    validate: {
-      validator: function(participants) {
-        // Ensure participants is an array
-        if (!Array.isArray(participants)) {
-          return false;
-        }
-
-        // Check minimum participants (2)
-        if (participants.length < 2) {
-          return false;
-        }
-
-        // Check for duplicate participants
-        const participantIds = participants.map(p => 
-          p instanceof mongoose.Types.ObjectId ? p.toString() : p
-        );
-        return new Set(participantIds).size === participantIds.length;
+    validate: [
+      {
+        validator: function(participants) {
+          return participants.length >= (this.isGroup ? 2 : 2); // Minimum 2 participants
+        },
+        message: 'A conversation must have at least 2 participants'
       },
-      message: props => {
-        if (!Array.isArray(props.value)) {
-          return "Participants must be an array of User IDs";
-        }
-        if (props.value.length < 2) {
-          return "A conversation must have at least 2 participants";
-        }
-        return "Participants must be unique (no duplicates)";
+      {
+        validator: function(participants) {
+          const uniqueIds = new Set(participants.map(p => p.toString()));
+          return uniqueIds.size === participants.length;
+        },
+        message: 'Participants must be unique'
       }
-    },
-    required: [true, "Participants array is required"],
+    ],
+    required: true
   },
-  messages: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Message',
-  }],
   lastMessage: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Message',
+    default: null
   },
   lastRead: {
     type: Map,
     of: Date,
+    default: () => new Map()
   },
-  unreadCount: {
+  messageCount: {
     type: Number,
     default: 0,
+    min: 0
   },
   isGroup: {
     type: Boolean,
     default: false,
+    index: true
   },
   groupName: {
     type: String,
     trim: true,
+    maxlength: 100,
+    required: function() { return this.isGroup; }
   },
   groupPhoto: {
     type: String,
+    validate: {
+      validator: function(v) {
+        if (!this.isGroup) return true;
+        return /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i.test(v);
+      },
+      message: 'Invalid group photo URL'
+    }
+  },
+  groupDescription: {
+    type: String,
+    maxlength: 500
   },
   groupAdmins: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+    required: function() { return this.isGroup; },
+    validate: {
+      validator: function(v) {
+        return this.participants.some(p => p.equals(v));
+      },
+      message: 'Admin must be a participant'
+    }
   }],
-  pinnedMessages: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Message',
-  }],
+  pinnedMessages: {
+    type: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Message'
+    }],
+    validate: {
+      validator: function(v) {
+        return v.length <= 10; // Max 10 pinned messages
+      },
+      message: 'Maximum 10 pinned messages per conversation'
+    },
+    default: []
+  },
   typingUsers: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+    default: []
   }],
+  metadata: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  }
 }, {
   timestamps: true,
   toJSON: { 
     virtuals: true,
-    getters: true,
+    transform: function(doc, ret) {
+      delete ret.__v;
+      ret.id = ret._id.toString();
+      delete ret._id;
+      return ret;
+    }
   },
   toObject: { 
     virtuals: true,
-    getters: true,
-  },
+    transform: function(doc, ret) {
+      delete ret.__v;
+      ret.id = ret._id.toString();
+      delete ret._id;
+      return ret;
+    }
+  }
 });
 
-// Indexes for better query performance
-ConversationSchema.index({ participants: 1 });
-ConversationSchema.index({ lastMessage: 1 });
-ConversationSchema.index({ messages: 1 });
-ConversationSchema.index({ isGroup: 1 });
+// Virtual for messages with pagination
+ConversationSchema.virtual('messages', {
+  ref: 'Message',
+  localField: '_id',
+  foreignField: 'conversationId',
+  options: {
+    sort: { createdAt: -1 },
+    limit: 50
+  }
+});
 
- module.exports = mongoose.model('Conversation', ConversationSchema);
-// const mongoose = require('mongoose');
+// Virtual for unread message count
+ConversationSchema.virtual('unreadCount', {
+  ref: 'Message',
+  localField: '_id',
+  foreignField: 'conversationId',
+  match: { 
+    isRead: false,
+    isDeleted: false 
+  },
+  count: true
+});
 
-// const ConversationSchema = new mongoose.Schema({
-//   participants: [{
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'User',
-//     required: true
-//   }],
-//   messages: [{
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'Message'
-//   }],
-//   lastMessage: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'Message'
-//   },
-//   lastRead: {
-//     type: Map,
-//     of: Date
-//   },
-//   unreadCount: {
-//     type: Number,
-//     default: 0
-//   },
-//   isGroup: {
-//     type: Boolean,
-//     default: false
-//   },
-//   groupName: {
-//     type: String,
-//     trim: true
-//   },
-//   groupPhoto: {
-//     type: String
-//   },
-//   groupAdmins: [{
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'User'
-//   }],
-//   pinnedMessages: [{
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'Message'
-//   }],
-//   typingUsers: [{
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'User'
-//   }]
-// }, {
-//   timestamps: true,
-//   toJSON: { 
-//     virtuals: true,
-//     getters: true 
-//   },
-//   toObject: { 
-//     virtuals: true,
-//     getters: true 
-//   }
-// });
+// Compound indexes for frequent queries
+ConversationSchema.index({ participants: 1, isGroup: 1, updatedAt: -1 });
+ConversationSchema.index({ isGroup: 1, updatedAt: -1 });
+ConversationSchema.index({ 'groupAdmins': 1 });
 
-// ConversationSchema.path('participants').validate(function(participants) {
-//   if (!participants || participants.length < 2) {
-//     throw new Error('A conversation requires at least 2 participants');
-//   }
-  
-//   const participantIds = participants.map(p => p.toString());
-//   const uniqueParticipants = new Set(participantIds);
-  
-//   if (uniqueParticipants.size !== participantIds.length) {
-//     throw new Error('Participants must be unique');
-//   }
-  
-//   return true;
-// });
-// ConversationSchema.index({ participants: 1 });
-// ConversationSchema.index({ lastMessage: 1 });
-// ConversationSchema.index({ messages: 1 });
-// ConversationSchema.index({ isGroup: 1 });
+// Cascade delete middleware
+ConversationSchema.pre('deleteOne', { document: true }, async function(next) {
+  try {
+    await Message.deleteMany({ conversationId: this._id });
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
-// module.exports = mongoose.model('Conversation', ConversationSchema);
+// Add participant method
+ConversationSchema.methods.addParticipant = async function(userId) {
+  if (!this.participants.includes(userId)) {
+    this.participants.push(userId);
+    await this.save();
+  }
+  return this;
+};
+
+// Remove participant method
+ConversationSchema.methods.removeParticipant = async function(userId) {
+  const index = this.participants.indexOf(userId);
+  if (index > -1) {
+    this.participants.splice(index, 1);
+    await this.save();
+  }
+  return this;
+};
+
+// Pin message method
+ConversationSchema.methods.pinMessage = async function(messageId) {
+  if (!this.pinnedMessages.includes(messageId)) {
+    this.pinnedMessages.push(messageId);
+    await this.save();
+  }
+  return this;
+};
+
+// Unpin message method
+ConversationSchema.methods.unpinMessage = async function(messageId) {
+  const index = this.pinnedMessages.indexOf(messageId);
+  if (index > -1) {
+    this.pinnedMessages.splice(index, 1);
+    await this.save();
+  }
+  return this;
+};
+
+// Find private conversation between two users
+ConversationSchema.statics.findPrivateConversation = async function(user1, user2) {
+  return this.findOne({
+    isGroup: false,
+    participants: { $all: [user1, user2], $size: 2 }
+  });
+};
+
+// Update last read timestamp
+ConversationSchema.methods.updateLastRead = async function(userId) {
+  this.lastRead.set(userId.toString(), new Date());
+  await this.save();
+  return this;
+};
+
+// Add admin method
+ConversationSchema.methods.addAdmin = async function(userId) {
+  if (!this.groupAdmins.includes(userId)) {
+    this.groupAdmins.push(userId);
+    await this.save();
+  }
+  return this;
+};
+
+// Remove admin method
+ConversationSchema.methods.removeAdmin = async function(userId) {
+  const index = this.groupAdmins.indexOf(userId);
+  if (index > -1) {
+    this.groupAdmins.splice(index, 1);
+    await this.save();
+  }
+  return this;
+};
+
+module.exports = mongoose.model('Conversation', ConversationSchema);

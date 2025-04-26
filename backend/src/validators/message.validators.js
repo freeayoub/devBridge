@@ -26,7 +26,17 @@ exports.messageSchema = yup.object().shape({
   conversationId: yup
     .string()
     .matches(/^[0-9a-fA-F]{24}$/, 'Format d\'ID de conversation invalide')
-    .nullable()
+    .nullable(),
+  
+  type: yup
+    .string()
+    .oneOf(['text', 'image', 'video', 'file', 'audio', 'system'], 'Type de message invalide')
+    .default('text'),
+
+  status: yup
+    .string()
+    .oneOf(['sending', 'sent', 'delivered', 'read', 'failed'], 'Statut du message invalide')
+    .default('sending')
 });
 
 exports.messageUpdateSchema = yup.object().shape({
