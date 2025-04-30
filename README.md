@@ -33,11 +33,31 @@ académiques.
 
 # Configuration de base
 
+# Configuration de base
+
 PORT=3000 NODE_ENV=development
+
+# Base de données MongoDB
+
 MONGO_URI=mongodb://127.0.0.1:27017/project_management
+
+# Frontend
+
 FRONTEND_URL=http://localhost:4200 CORS_ORIGIN=http://localhost:4200
+
+# Authentification
+
 JWT_SECRET=devbridge JWT_EXPIRES_IN=7d SECRET_KEY=2cinfo1 CLIENT_KEY=esprit
-USE_GRAPHQL=true CLOUDINARY_CLOUD_NAME=dhefwodjk
-CLOUDINARY_API_KEY=759654722199679
+
+# GraphQL
+
+USE_GRAPHQL=true
+
+# Cloudinary
+
+CLOUDINARY_CLOUD_NAME=dhefwodjk CLOUDINARY_API_KEY=759654722199679
 CLOUDINARY_API_SECRET=RWqD45DPdUXvDN6Bf096EcVrPdA
-DEFAULT_IMAGE="https://res.cloudinary.com/dhefwodjk/image/upload/v1744417743/profile_images/profile_images/1744417744084-default-avatar.png.webp
+
+# link image
+
+DEFAULT_IMAGE=https://res.cloudinary.com/dhefwodjk/image/upload/v1744417743/profile_images/profile_images/1744417744084-default-avatar.png.webp
