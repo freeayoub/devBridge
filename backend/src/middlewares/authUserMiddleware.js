@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const privatekey = process.env.JWT_SECRET;
 const secretkey = process.env.SECRET_KEY;
-const clientkey = process.env.Client_KEY;
+const clientkey = process.env.CLIENT_KEY;
 
 if (!privatekey || !secretkey || !clientkey) {
   throw new Error("Missing required environment variables for authentication");
