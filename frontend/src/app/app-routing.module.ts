@@ -30,7 +30,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/front/register/register.module').then(
             (m) => m.RegisterModule
-          ),
+          ), canActivateChild: [noguarduserGuard],
       },
       {
         path: 'profile',
@@ -45,7 +45,27 @@ const routes: Routes = [
             (m) => m.MessagesModule),
         canActivateChild: [guarduserGuard],
       },
-
+      { 
+        path: 'plannings', 
+        loadChildren: () => import('./views/front/plannings/plannings.module').then(m => m.PlanningsModule),
+        canActivateChild: [guarduserGuard],
+      },
+      { 
+        path: 'reunions', 
+        loadChildren: () => import('./views/front/reunions/reunions.module').then(m => m.ReunionsModule),
+        canActivateChild: [guarduserGuard],
+      },
+      { 
+        path: 'notifications', 
+        loadChildren: () => import('./views/front/notifications/notifications.module').then(m => m.NotificationsModule),
+        canActivateChild: [guarduserGuard],
+      },
+      { 
+        path: 'projects', 
+        loadChildren: () => import('./views/front/projects/projects.module').then(m => m.ProjectsModule),
+        canActivateChild: [guarduserGuard],
+      },
+      // sameh &med & ...
     ],
   },
 
@@ -89,6 +109,20 @@ const routes: Routes = [
             (m) => m.UserdetailsModule
           ),
       },
+      { 
+        path: 'plannings', 
+        loadChildren: () => import('./views/front/plannings/plannings.module').then(m => m.PlanningsModule
+
+        ),
+   
+      },
+      { 
+        path: 'reunions', 
+        loadChildren: () => import('./views/front/reunions/reunions.module').then(m => m.ReunionsModule
+
+        ),
+      },
+      // sameh med & ....
     ],
   },
   { path: 'admin/login', component: AuthAdminLayoutComponent },

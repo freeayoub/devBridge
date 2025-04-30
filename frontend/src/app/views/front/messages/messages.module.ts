@@ -11,7 +11,12 @@ import { UserStatusService } from '@app/services/user-status.service';
 import { MessageUserProfileComponent } from './message-user-profile/message-user-profile.component';
 
 @NgModule({
-  declarations: [MessageChatComponent, MessagesListComponent, UserListComponent, MessageUserProfileComponent],
+  declarations: [
+    MessageChatComponent,
+    MessagesListComponent,
+    UserListComponent,
+    MessageUserProfileComponent,
+  ],
   imports: [
     CommonModule,
     MessagesRoutingModule,
@@ -19,7 +24,7 @@ import { MessageUserProfileComponent } from './message-user-profile/message-user
     ReactiveFormsModule,
     ApolloModule,
   ],
-  
-  providers: [UserStatusService]
+
+  providers: [UserStatusService],
 })
 export class MessagesModule {}
