@@ -29,13 +29,15 @@
           <!-- Logo -->
           <div class="flex-shrink-0 flex items-center">
             <h1 class="text-xl font-bold text-purple-600">DevBridge</h1>
+
             <span class="ml-2 text-sm text-gray-500 hidden md:block"
               >Project Management Suite</span
             >
           </div>
 
-          <!-- Desktop navigation -->
+          <!-------------------------------------------------------------------------------------------------------------------------------- Desktop navigation ----------------------------------------------------------------------->
           <nav class="hidden md:ml-6 md:flex md:space-x-8">
+            <!--  Accueil desktop -->
             <a
               routerLink="/"
               class="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors"
@@ -43,25 +45,64 @@
             >
               Accueil
             </a>
+            <!--  Planning desktop -->
             <a
-            routerLink="/messages"
-            class="group flex items-center px-2 py-2 text-base font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
-          >
-            <svg
-              class="mr-4 h-6 w-6 text-gray-500 group-hover:text-purple-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+              routerLink="/plannings"
+              class="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors"
+              routerLinkActive="text-purple-600 border-b-2 border-purple-600"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
-            Messages
-          </a>
+              Plannings
+            </a>
+            <!-- Réunions desktop -->
+            <a
+              routerLink="/reunions"
+              class="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors"
+              routerLinkActive="text-purple-600 border-b-2 border-purple-600"
+            >
+              Réunions
+            </a>
+            <!--  project desktop-->
+            <!-- sameh -->
+            <!--  ressources desktop-->
+            <!-- sameh -->
+            <!--  equipe desktop -->
+            <!-- med-->
+            <!--  """" desktop-->
+            <!-- med-->
+            <!--  Message desktop -->
+            <a
+              routerLink="/messages"
+              class="group flex items-center px-2 py-2 text-base font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+            >
+              <svg
+                class="mr-4 h-6 w-6 text-gray-500 group-hover:text-purple-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+              Messages
+            </a>
+            <!-- Notifications desktop -->
+            <a
+              routerLink="/notifications"
+              class="relative text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors"
+              routerLinkActive="text-purple-600 border-b-2 border-purple-600"
+            >
+              Notifications
+              <span
+                *ngIf="unreadNotificationsCount > 0"
+                class="absolute top-0 right-0 inline-block w-5 h-5 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white text-xs rounded-full items-center justify-center"
+              >
+                {{ unreadNotificationsCount }}
+              </span>
+            </a>
           </nav>
         </div>
 
@@ -72,6 +113,33 @@
             *ngIf="authService.userLoggedIn(); else authButtons"
             class="ml-4 flex items-center md:ml-6"
           >
+            <!-- Notifications dropdown -->
+            <div class="relative mr-4">
+              <button
+                class="p-1 rounded-full text-gray-500 hover:text-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <span class="sr-only">View notifications</span>
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+                <span
+                  *ngIf="unreadNotificationsCount > 0"
+                  class="absolute top-0 right-0 inline-block w-3 h-3 bg-red-500 rounded-full"
+                ></span>
+              </button>
+            </div>
+
+            <!-- Profile dropdown -->
             <div class="relative">
               <button
                 (click)="toggleProfileMenu()"
@@ -96,8 +164,6 @@
                   class="h-8 w-8 rounded-full object-cover border-2 border-purple-200"
                 />
               </button>
-              <!-- ... reste du menu ... -->
-              <!-- Profile dropdown -->
               <div
                 *ngIf="profileMenuOpen"
                 class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
@@ -109,6 +175,7 @@
                 >
                   Mon profil
                 </a>
+
                 <a
                   (click)="logout()"
                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
@@ -180,9 +247,10 @@
             </svg>
           </button>
         </div>
-
+        <!-------------------------------------------------------------------------------------------------------------------------------- Sidbar navigation ----------------------------------------------------------------------->
         <!-- Sidebar navigation -->
-        <nav class="flex-1 px-2 py-4 space-y-1">
+        <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+          <!-- Bouton Accueil-->
           <a
             routerLink="/"
             (click)="toggleSidebar()"
@@ -201,10 +269,112 @@
                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
               />
             </svg>
-     
+            Accueil
           </a>
-      
-   
+          <!-- Bouton Plannings -->
+          <a
+          routerLink="/plannings"
+          (click)="toggleSidebar()"
+          class="group flex items-center px-2 py-2 text-base font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+        >
+          <svg
+            class="mr-4 h-6 w-6 text-gray-500 group-hover:text-purple-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
+          </svg>
+          Plannings
+        </a>
+        <!-- Bouton Réunions -->
+        <a
+          routerLink="/reunions"
+          (click)="toggleSidebar()"
+          class="group flex items-center px-2 py-2 text-base font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+        >
+          <svg
+            class="mr-4 h-6 w-6 text-gray-500 group-hover:text-purple-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+          Réunions
+        </a>
+
+          <!-- Bouton Réunions -->
+
+          <!-- Bouton project -->
+          <!-- sameh-->
+          <!-- Bouton ressources -->
+          <!-- sameh-->
+          <!-- Bouton equipe -->
+          <!-- med-->
+          <!-- Bouton """" -->
+          <!-- med-->
+
+          <!-- Bouton Messages -->
+          <a
+            routerLink="/messages"
+            (click)="toggleSidebar()"
+            class="group flex items-center px-2 py-2 text-base font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+          >
+            <svg
+              class="mr-4 h-6 w-6 text-gray-500 group-hover:text-purple-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+              />
+            </svg>
+            Messages
+          </a>
+          <!-- Bouton Notifications -->
+          <a
+            routerLink="/notifications"
+            (click)="toggleSidebar()"
+            class="group flex items-center px-2 py-2 text-base font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors relative"
+          >
+            <svg
+              class="mr-4 h-6 w-6 text-gray-500 group-hover:text-purple-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+            Notifications
+            <span
+              *ngIf="unreadNotificationsCount > 0"
+              class="absolute right-4 inline-block w-5 h-5 bg-red-500 text-white text-xs rounded-full items-center justify-center"
+            >
+              {{ unreadNotificationsCount }}
+            </span>
+          </a>
+          <!-- Bouton connexion -->
+          <div class="border-t border-gray-200 my-2"></div>
           <ng-container *ngIf="!authService.userLoggedIn()">
             <a
               routerLink="/loginuser"
@@ -226,7 +396,7 @@
               </svg>
               Connexion
             </a>
-
+            <!-- Bouton    Inscription -->
             <a
               routerLink="/registeruser"
               (click)="toggleSidebar()"
@@ -248,7 +418,7 @@
               Inscription
             </a>
           </ng-container>
-
+          <!-- Bouton   Mon Profil -->
           <ng-container *ngIf="authService.userLoggedIn()">
             <a
               routerLink="/profile"
@@ -270,7 +440,7 @@
               </svg>
               Mon Profil
             </a>
-
+            <!-- Bouton    Déconnexion   -->
             <a
               (click)="logout(); toggleSidebar()"
               class="group flex items-center px-2 py-2 text-base font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors cursor-pointer"

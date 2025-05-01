@@ -6,24 +6,26 @@ import { UserListComponent } from './user-list/user-list.component';
 import { MessageUserProfileComponent } from './message-user-profile/message-user-profile.component';
 
 const routes: Routes = [
-
   {
-    path:'',component:MessagesListComponent
+    path: '',
+    component: MessagesListComponent,
+    children: [
+      {
+        path: 'new',
+        component: UserListComponent,
+      },
+      {
+        path: 'chat/:conversationId',
+        component: MessageChatComponent,
+        data: { fullPage: true },
+      },
+      { path: 'profile/:userId', component: MessageUserProfileComponent },
+    ],
   },
-  {
-     path: 'new', component: UserListComponent
-     },
-  {
-    path:'chat/:conversationId',component:MessageChatComponent
-  },
-  {
-    path: 'message/profile/:userId',
-    component: MessageUserProfileComponent
-  }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class MessagesRoutingModule { }
+export class MessagesRoutingModule {}

@@ -69,3 +69,36 @@
       transform: translateY(-5px);
     }
   }
+  /* Animation pour les nouvelles notifications */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.notification-pulse {
+  animation: pulse 1.5s infinite;
+}
+
+/* Transition pour le sidebar */
+.sidebar-transition {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Style pour les messages non lus */
+.unread-message {
+  @apply bg-purple-50 border-l-4 border-purple-600;
+}
+
+/* Style pour les indicateurs de statut */
+.status-indicator {
+  @apply absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white;
+}
+
+.status-online {
+  @apply bg-green-500;
+}
+
+.status-offline {
+  @apply bg-gray-400;
+}

@@ -26,9 +26,11 @@ export class ReunionListComponent implements OnInit {
     const userId = this.authService.getCurrentUserId();
     if (!userId) return;
 
-    this.reunionService.getProchainesReunions(userId).subscribe({
+    // this.reunionService.getProchainesReunions(userId).subscribe({
+    this.reunionService. getAllReunions().subscribe({
       next: (reunions) => {
         this.reunions = reunions;
+        console.log(this.reunions)
         this.loading = false;
       },
       error: (error:any) => {

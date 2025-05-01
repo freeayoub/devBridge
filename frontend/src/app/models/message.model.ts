@@ -7,16 +7,15 @@ export interface Participant {
   image: string;
   isOnline: boolean;
 }
-
 export interface Message {
   id: string;
   content: string;
   timestamp: string | Date;
   isRead: boolean;
   senderId: string;
+  sender: User;
   receiverId: string;
 }
-
 export interface GetConversationsResponse {
   getConversations: Conversation[];
 }
@@ -28,15 +27,12 @@ export interface GetConversationResponse {
     updatedAt: string;
   };
 }
-
 export interface MessageSentResponse {
   messageSent: Message;
 }
-
 export interface UserStatusResponse {
   userStatusChanged: User;
 }
-
 export interface StatusUser {
   id: string; 
   isOnline: boolean;
@@ -65,7 +61,6 @@ export interface AppMessage {
   };
   conversationId?: string;
 }
-
 export interface Conversation {
   id: string;
   participants: User[];

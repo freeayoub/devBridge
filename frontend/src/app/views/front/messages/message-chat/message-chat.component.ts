@@ -13,7 +13,7 @@ import { GraphqlDataService } from 'src/app/services/graphql-data.service';
 import { Subscription } from 'rxjs';
 import { User } from '@app/models/user.model';
 import { UserStatusService } from 'src/app/services/user-status.service';
-import { AppMessage } from '@app/models/message.model';
+import { AppMessage , Conversation } from '@app/models/message.model';
 @Component({
   selector: 'app-message-chat',
   templateUrl: './message-chat.component.html',
@@ -22,17 +22,18 @@ import { AppMessage } from '@app/models/message.model';
 export class MessageChatComponent
   implements OnInit, OnDestroy, AfterViewChecked
 {
+
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   messages: AppMessage[] = [];
   messageForm: FormGroup;
-  conversation: any = null;
+ conversation: Conversation | null = null;
   loading = true;
   error: any;
-  currentUserId: any;
-  otherParticipant: any = null;
+  currentUserId: any | null = null;
+  otherParticipant: any | null = null;
   isNewConversation = false;
   otherUserId: string | null = null;
-  private subscriptions: Subscription[] = [];
+  private subscriptions: Subscription = new Subscription();
   constructor(
     private graphqlService: GraphqlDataService,
     private route: ActivatedRoute,
@@ -44,11 +45,13 @@ export class MessageChatComponent
     this.messageForm = this.fb.group({
       content: ['', [Validators.required, Validators.maxLength(1000)]],
     });
+
   }
   ngOnInit(): void {
     this.currentUserId = this.authService.getCurrentUserId();
-    const conversationId = this.route.snapshot.paramMap.get('conversationId');
-    this.otherUserId = this.route.snapshot.queryParamMap.get('userId');
+    this.route.paramMap.subscribe(params => {
+      const conversationId = params.get('conversationId');
+      this.otherUserId = this.route.snapshot.queryParamMap.get('userId');
     if (conversationId) {
       this.loadConversation(conversationId);
     } else if (this.otherUserId) {
@@ -57,17 +60,14 @@ export class MessageChatComponent
     } else {
       this.router.navigate(['/messages']);
     }
+  });
   }
   prepareNewConversation(): void {
+  
     this.loading = true;
-    this.graphqlService.getOneUser(this.otherUserId!).subscribe({
+    const sub = this.graphqlService.getOneUser(this.otherUserId!).subscribe({
       next: (user: User) => {
-        this.otherParticipant = {
-          id: user._id,
-          username: user.username,
-          image: user.image,
-          isOnline: user.isOnline,
-        };
+        this.otherParticipant = user;;
         this.loading = false;
       },
       error: (error: any) => {
@@ -75,30 +75,23 @@ export class MessageChatComponent
         this.loading = false;
       },
     });
+    this.subscriptions.add(sub);
   }
   // Modifier loadConversation
-  loadConversation(conversationId: string) {
+  loadConversation(conversationId: string): void {
+    this.loading = true;
     const sub = this.graphqlService.getConversation(conversationId).subscribe({
-      next: ({ data, loading, error }: any) => {
-        if (error) {
-          this.error = error;
-          this.loading = false;
-          return;
-        }
-
-        this.conversation = data?.getConversation;
-        this.messages = Array.isArray(this.conversation?.messages)
-          ? [...this.conversation.messages]
-          : [];
-
-        this.otherParticipant = this.conversation?.participants?.find(
+      next: (conversation:any) => {
+        this.conversation = conversation;
+        this.messages = [...(conversation?.messages || [])];
+        this.otherParticipant = conversation?.participants?.find(
           (p: any) => p.id !== this.currentUserId
-        );
-
-        this.loading = loading;
+        ) || null;
+        
+        this.loading = false;
         setTimeout(() => this.scrollToBottom(), 100);
         this.markMessagesAsRead();
-
+        this.subscribeToConversationUpdates(conversationId);
         if (this.currentUserId && this.otherParticipant?.id) {
           this.subscribeToNewMessages();
         }
@@ -107,18 +100,31 @@ export class MessageChatComponent
         this.error = error;
         this.loading = false;
         console.error('Error loading conversation:', error);
-      },
+      }
     });
-    this.subscriptions.push(sub);
+    this.subscriptions.add(sub);
   }
+  private subscribeToConversationUpdates(conversationId: string): void {
+    if (!this.currentUserId || !this.otherParticipant?.id) return;
 
+    this.subscriptions.add(
+      this.graphqlService.subscribeToConversationUpdates(conversationId).subscribe({
+        next: (updatedConversation) => {
+          this.conversation = updatedConversation;
+          this.messages = [...updatedConversation.messages];
+          this.scrollToBottom();
+        },
+        error: (error) => console.error('Conversation update error:', error)
+      })
+    );
+  }
   markMessagesAsRead() {
     const unreadMessages = this.messages.filter(
       (msg) => !msg.isRead && msg.receiver.id === this.currentUserId
     );
     unreadMessages.forEach((msg) => {
       const sub = this.graphqlService.markMessageAsRead(msg.id).subscribe();
-      this.subscriptions.push(sub);
+      this.subscriptions.add(sub);
     });
   }
   subscribeToNewMessages() {
@@ -142,7 +148,7 @@ export class MessageChatComponent
           console.error('Message subscription error:', error);
         },
       });
-    this.subscriptions.push(sub);
+      this.subscriptions.add(sub);
   }
   sendMessage() {
     if (
@@ -154,7 +160,7 @@ export class MessageChatComponent
 
     const content = this.messageForm.get('content')?.value;
     const sub = this.graphqlService
-      .sendMessage(this.currentUserId, this.otherParticipant.id, content)
+      .sendMessage(this.currentUserId,this.otherParticipant.id, content )
       .subscribe({
         next: () => {
           this.messageForm.reset();
@@ -163,9 +169,8 @@ export class MessageChatComponent
           console.error('Error sending message:', error);
         },
       });
-    this.subscriptions.push(sub);
+      this.subscriptions.add(sub);
   }
-
   formatMessageTime(timestamp: string | Date): string {
     const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -234,6 +239,6 @@ export class MessageChatComponent
     } catch (err) {}
   }
   ngOnDestroy(): void {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.subscriptions.unsubscribe();
   }
 }

@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
-import { Observable, of, Subscription, throwError } from 'rxjs';
-import { catchError, delay, map,retryWhen,take, tap } from 'rxjs/operators';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Apollo} from 'apollo-angular';
+import { BehaviorSubject, Observable, of, Subscription, throwError } from 'rxjs';
+import { catchError, delay, map, retryWhen, take, tap } from 'rxjs/operators';
 import {
   AppMessage,
   Conversation,
@@ -11,7 +11,7 @@ import {
   SendMessageResponse,
   UserStatusResponse,
 } from '@app/models/message.model';
-import { 
+import {
   GET_CONVERSATIONS_QUERY,
   GET_CONVERSATION_QUERY,
   SEND_MESSAGE_MUTATION,
@@ -19,18 +19,31 @@ import {
   MESSAGE_SENT_SUBSCRIPTION,
   USER_STATUS_SUBSCRIPTION,
   GET_USER_QUERY,
-  GET_ALL_USER_QUERY
-} from 'src/app/models/graph-queries';
+  GET_ALL_USER_QUERY,
+  CONVERSATION_UPDATED_SUBSCRIPTION,
+  SEARCH_MESSAGES_QUERY,
+  GET_UNREAD_MESSAGES_QUERY,
+  SET_USER_ONLINE_MUTATION,
+  SET_USER_OFFLINE_MUTATION
+} from '../graphql/message.graphql';
 import { User } from 'src/app/models/user.model';
 @Injectable({
   providedIn: 'root',
 })
-export class GraphqlDataService {
+export class GraphqlDataService implements OnDestroy {
+  private activeConversation = new BehaviorSubject<string | null>(null);
+  public activeConversation$ = this.activeConversation.asObservable();
   private readonly CACHE_DURATION = 300000;
   private lastFetchTime = 0;
   private usersCache: User[] = [];
   private subscriptions: Subscription[] = [];
-  constructor(private apollo: Apollo) {}
+  constructor(private apollo: Apollo) {
+
+  }
+ setActiveConversation(conversationId: string): void {
+    this.activeConversation.next(conversationId);
+  }
+  // User operations
   getAllUsers(forceRefresh = false, search?: string): Observable<User[]> {
     const now = Date.now();
     const cacheValid =
@@ -44,7 +57,7 @@ export class GraphqlDataService {
 
     return this.apollo
       .watchQuery<{ getAllUsers: User[] }>({
-        query:GET_ALL_USER_QUERY,
+        query: GET_ALL_USER_QUERY,
         variables: { search },
         fetchPolicy: 'network-only',
       })
@@ -59,20 +72,21 @@ export class GraphqlDataService {
         })
       );
   }
-  getOneUser(id: string): Observable<User> {
+  getOneUser(userId: string): Observable<User> {
     return this.apollo
       .watchQuery<{ getOneUser: User }>({
-        query: GET_USER_QUERY ,
-        variables: { id },
+        query: GET_USER_QUERY,
+        variables: { userId },
         fetchPolicy: 'network-only',
       })
-      .valueChanges.pipe(map((result) => result.data.getOneUser));
+      .valueChanges.pipe(
+        map((result) => this.normalizeUser(result.data.getOneUser))
+      );
   }
-    // Conversations
   getConversations(): Observable<Conversation[]> {
     return this.apollo
       .watchQuery<{ getConversations: Conversation[] }>({
-        query:GET_CONVERSATIONS_QUERY,
+        query: GET_CONVERSATIONS_QUERY,
         fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
@@ -83,7 +97,6 @@ export class GraphqlDataService {
         })
       );
   }
-
   getConversation(
     conversationId: string
   ): Observable<GetConversationResponse['getConversation']> {
@@ -95,28 +108,117 @@ export class GraphqlDataService {
       })
       .valueChanges.pipe(map((result) => result.data.getConversation));
   }
+  sendMessage(
+senderId: string, receiverId: string, content: string ): Observable<Message> {
+    return this.apollo
+      .mutate<SendMessageResponse>({
+        mutation: SEND_MESSAGE_MUTATION,
+        variables: { senderId, receiverId, content },
+      })
+      .pipe(map((result) => result.data?.sendMessage as Message));
+  }
+  markMessageAsRead(
+    messageId: string
+  ): Observable<{ id: string; isRead: boolean }> {
+    return this.apollo
+      .mutate<MarkMessageAsReadResponse>({
+        mutation: MARK_AS_READ_MUTATION,
+        variables: {
+          messageId: messageId,
+        },
+      })
+      .pipe(
+        map((result) => {
+          if (!result.data?.markMessageAsRead) {
+            throw new Error('Failed to mark message as read');
+          }
+          return result.data.markMessageAsRead;
+        }),
+        catchError((error) => {
+          console.error('Error marking message as read:', error);
+          return throwError(() => new Error('Failed to mark message as read'));
+        })
+      );
+  }
+  searchMessages(query: string, conversationId?: string): Observable<Message[]> {
+    return this.apollo
+      .watchQuery<{ searchMessages: Message[] }>({
+        query: SEARCH_MESSAGES_QUERY,
+        variables: { query, conversationId },
+        fetchPolicy: 'network-only',
+      })
+      .valueChanges.pipe(
+        map((result) => result.data?.searchMessages || []),
+        catchError((error) => {
+          console.error('Error searching messages:', error);
+          return throwError(() => new Error('Failed to search messages'));
+        })
+      );
+  }
+  getUnreadMessages(): Observable<Message[]> {
+    return this.apollo
+      .watchQuery<{ getUnreadMessages: Message[] }>({
+        query: GET_UNREAD_MESSAGES_QUERY,
+        fetchPolicy: 'network-only',
+      })
+      .valueChanges.pipe(
+        map((result) => result.data?.getUnreadMessages || []),
+        catchError((error) => {
+          console.error('Error fetching unread messages:', error);
+          return throwError(() => new Error('Failed to fetch unread messages'));
+        })
+      );
+  }
+  setUserOnline(userId: string): Observable<User> {
+    return this.apollo
+      .mutate<{ setUserOnline: User }>({
+        mutation: SET_USER_ONLINE_MUTATION,
+        variables: { userId },
+      })
+      .pipe(
+        map((result) => {
+          if (!result.data?.setUserOnline) {
+            throw new Error('Failed to set user online');
+          }
+          return this.normalizeUser(result.data.setUserOnline);
+        })
+      );
+  }
+  setUserOffline(userId: string): Observable<User> {
+    return this.apollo
+      .mutate<{ setUserOffline: User }>({
+        mutation: SET_USER_OFFLINE_MUTATION,
+        variables: { userId },
+      })
+      .pipe(
+        map((result) => {
+          if (!result.data?.setUserOffline) {
+            throw new Error('Failed to set user offline');
+          }
+          return this.normalizeUser(result.data.setUserOffline);
+        })
+      );
+  }
+  subscribeToConversationUpdates(conversationId: string): Observable<Conversation> {
+    return this.apollo.subscribe<{ conversationUpdated: Conversation }>({
+      query: CONVERSATION_UPDATED_SUBSCRIPTION,
+      variables: { conversationId }
+    }).pipe(
+      map(result => {
+        if (!result?.data?.conversationUpdated) {
+          throw new Error('Invalid conversation update received');
+        }
+        return result.data.conversationUpdated;
+      })
+    );
+  }
   subscribeToNewMessages(
     senderId: string,
     receiverId: string
   ): Observable<AppMessage> {
     return this.apollo
       .subscribe<{ messageSent: AppMessage }>({
-        query: gql`
-          subscription MessageSent($senderId: ID!, $receiverId: ID!) {
-            messageSent(senderId: $senderId, receiverId: $receiverId) {
-              id
-              content
-              timestamp
-              isRead
-              sender {
-                id
-                username
-                image
-              }
-              conversationId
-            }
-          }
-        `,
+        query: MESSAGE_SENT_SUBSCRIPTION,
         variables: { senderId, receiverId },
       })
       .pipe(
@@ -134,16 +236,7 @@ export class GraphqlDataService {
   subscribeToUserStatus(): Observable<User> {
     return this.apollo
       .subscribe<UserStatusResponse>({
-        query: gql`
-          subscription UserStatusChanged {
-            userStatusChanged {
-              id
-              username
-              isOnline
-              lastActive
-            }
-          }
-        `,
+        query: USER_STATUS_SUBSCRIPTION ,
         fetchPolicy: 'no-cache',
       })
       .pipe(
@@ -168,167 +261,25 @@ export class GraphqlDataService {
         })
       );
   }
- // Messages
-  sendMessage(
-    senderId: string,
-    receiverId: string,
-    content: string,
-  ): Observable<Message> {
-    return this.apollo
-      .mutate<SendMessageResponse>({
-        mutation:SEND_MESSAGE_MUTATION ,
-        variables: { senderId, receiverId, content},  
-      })
-      .pipe(map((result) => result.data?.sendMessage as Message));
-  }
-
-  markMessageAsRead(
-    messageId: string
-  ): Observable<{ id: string; isRead: boolean }> {
-    return this.apollo
-      .mutate<MarkMessageAsReadResponse>({
-        mutation: MARK_AS_READ_MUTATION,
-        variables: {
-          messageId: messageId,
-        },
-      })
-      .pipe(
-        map((result) => {
-          if (!result.data?.markMessageAsRead) {
-            throw new Error('Failed to mark message as read');
-          }
-          return result.data.markMessageAsRead;
-        }),
-        catchError((error) => {
-          console.error('Error marking message as read:', error);
-          return throwError(() => new Error('Failed to mark message as read'));
-        })
-      );
-  }
-  normalizeUser(user: any): User {
+  normalizeUser(user: any): any {
+    if (!user) return null;
     return {
-      ...user,
       _id: user._id || user.id,
-      id: user.id || user._id,
+      id: user._id || user.id,
+      username: user.username,
+      email: user.email,
+      image: user.image,
+      isOnline: user.isOnline,
+      // lastActive: user.lastActive ? new Date(user.lastActive) : null,
+      // createdAt: user.createdAt ? new Date(user.createdAt) : null,
+      // updatedAt: user.updatedAt ? new Date(user.updatedAt) : null
     };
   }
+  cleanupSubscriptions(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.subscriptions = [];
+  }
+  ngOnDestroy() {
+    this.cleanupSubscriptions();
+  }
 }
-
-
-// import { Injectable } from '@angular/core';
-// import { Apollo } from 'apollo-angular';
-// import { Observable, Subscription } from 'rxjs';
-// import { map } from 'rxjs/operators';
-// import { 
-//   GET_CONVERSATIONS_QUERY,
-//   GET_CONVERSATION_QUERY,
-//   SEND_MESSAGE_MUTATION,
-//   MARK_AS_READ_MUTATION,
-//   MESSAGE_SENT_SUBSCRIPTION,
-//   USER_STATUS_SUBSCRIPTION,
-//   GET_USER_QUERY
-// } from './graphql-queries';
-// import { Conversation, AppMessage } from '@app/models/message.model';
-// import { User } from '@app/models/user.model';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class MessageService {
-//   private subscriptions: Subscription[] = [];
-
-//   constructor(private apollo: Apollo) {}
-
-//   // Conversations
-//   getConversations(): Observable<Conversation[]> {
-//     return this.apollo.watchQuery<{ getConversations: Conversation[] }>({
-//       query: GET_CONVERSATIONS_QUERY,
-//       fetchPolicy: 'network-only'
-//     }).valueChanges.pipe(
-//       map(result => result.data.getConversations || [])
-//     );
-//   }
-
-//   getConversation(conversationId: string): Observable<Conversation> {
-//     return this.apollo.watchQuery<{ getConversation: Conversation }>({
-//       query: GET_CONVERSATION_QUERY,
-//       variables: { conversationId },
-//       fetchPolicy: 'network-only'
-//     }).valueChanges.pipe(
-//       map(result => result.data.getConversation)
-//     );
-//   }
-
-//   // Messages
-//   sendMessage(senderId: string, receiverId: string, content: string): Observable<AppMessage> {
-//     return this.apollo.mutate<{ sendMessage: AppMessage }>({
-//       mutation: SEND_MESSAGE_MUTATION,
-//       variables: { senderId, receiverId, content }
-//     }).pipe(
-//       map(result => result.data?.sendMessage)
-//     );
-//   }
-
-//   markAsRead(messageId: string): Observable<boolean> {
-//     return this.apollo.mutate<{ markMessageAsRead: boolean }>({
-//       mutation: MARK_AS_READ_MUTATION,
-//       variables: { messageId }
-//     }).pipe(
-//       map(result => result.data?.markMessageAsRead || false)
-//     );
-//   }
-
-//   // Subscriptions
-//   subscribeToNewMessages(senderId: string, receiverId: string): Observable<AppMessage> {
-//     return this.apollo.subscribe<{ messageSent: AppMessage }>({
-//       query: MESSAGE_SENT_SUBSCRIPTION,
-//       variables: { senderId, receiverId }
-//     }).pipe(
-//       map(result => result.data?.messageSent)
-//     );
-//   }
-
-//   subscribeToUserStatus(): Observable<User> {
-//     return this.apollo.subscribe<{ userStatusChanged: User }>({
-//       query: USER_STATUS_SUBSCRIPTION
-//     }).pipe(
-//       map(result => this.normalizeUser(result.data?.userStatusChanged))
-//     );
-//   }
-
-//   // User operations
-//   getOneUser(userId: string): Observable<User> {
-//     return this.apollo.watchQuery<{ getUser: User }>({
-//       query: GET_USER_QUERY,
-//       variables: { userId },
-//       fetchPolicy: 'network-only'
-//     }).valueChanges.pipe(
-//       map(result => this.normalizeUser(result.data.getUser))
-//     );
-//   }
-
-//   // Utility methods
-//   normalizeUser(user: any): User {
-//     if (!user) return null;
-//     return {
-//       _id: user._id || user.id,
-//       id: user._id || user.id,
-//       username: user.username,
-//       email: user.email,
-//       image: user.image,
-//       isOnline: user.isOnline,
-//       lastActive: user.lastActive ? new Date(user.lastActive) : null,
-//       createdAt: user.createdAt ? new Date(user.createdAt) : null,
-//       updatedAt: user.updatedAt ? new Date(user.updatedAt) : null
-//     };
-//   }
-
-//   cleanupSubscriptions(): void {
-//     this.subscriptions.forEach(sub => sub.unsubscribe());
-//     this.subscriptions = [];
-//   }
-
-//   ngOnDestroy() {
-//     this.cleanupSubscriptions();
-//   }
-// }

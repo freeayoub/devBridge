@@ -23,7 +23,7 @@ export class ReunionService {
    }
 
  getAllReunions(): Observable<Reunion[]> {
-   return this.http.get<Reunion[]>(`${environment.urlBackend}reunions/getall`);
+   return this.http.get<Reunion[]>(`${environment.urlBackend}reunions/getall`); 
  }
  getReunionById(id: string): Observable<Reunion> {
    return this.http.get<Reunion>(`${environment.urlBackend}reunions/getone/${id}`);
@@ -41,11 +41,11 @@ export class ReunionService {
  }
  
  getReunionsByPlanning(planningId: string): Observable<Reunion[]> {
-   return this.http.get<Reunion[]>(`${environment.urlBackend}/planning/${planningId}`);
+   return this.http.get<Reunion[]>(`${environment.urlBackend}planning/${planningId}`);
  }
 
  getProchainesReunions(userId: string): Observable<Reunion[]> {
-   return this.http.get<Reunion[]>(`${environment.urlBackend}/upcoming/${userId}`);
+   return this.http.get<Reunion[]>(`${environment.urlBackend}upcoming/${userId}`);
  }
  
 }
