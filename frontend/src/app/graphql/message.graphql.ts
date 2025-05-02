@@ -1,26 +1,26 @@
 import { gql } from 'apollo-angular';
 
 export const SEND_MESSAGE_MUTATION = gql`
-mutation SendMessage($receiverId: ID!, $content: String, $file: Upload) {
-  sendMessage(receiverId: $receiverId, content: $content, file: $file) {
-    id
-    content
-    type
-    timestamp
-    isRead
-    sender {
+  mutation SendMessage($receiverId: ID!, $content: String, $file: Upload) {
+    sendMessage(receiverId: $receiverId, content: $content, file: $file) {
       id
-      username
-      image
-    }
-    receiver {
-      id
-    }
-    conversation {
-      id
+      content
+      type
+      timestamp
+      isRead
+      sender {
+        id
+        username
+        image
+      }
+      receiver {
+        id
+      }
+      conversation {
+        id
+      }
     }
   }
-}
 `;
 export const MARK_AS_READ_MUTATION = gql`
   mutation MarkMessageAsRead($messageId: ID!) {
@@ -58,33 +58,33 @@ query GetConversations {
 }
 `;
 export const GET_CONVERSATION_QUERY = gql`
-query GetConversation($conversationId: ID!) {
-  getConversation(conversationId: $conversationId) {
-    id
-    participants {
+  query GetConversation($conversationId: ID!, $limit: Int = 50, $offset: Int = 0) {
+    getConversation(conversationId: $conversationId) {
       id
-      username
-      image
-      isOnline
-    }
-    messages {
-      id
-      content
-      type
-      timestamp
-      isRead
-      sender {
+      participants {
         id
         username
         image
+        isOnline
       }
-      attachments {
-        url
+      messages(limit: $limit, offset: $offset) {
+        id
+        content
         type
+        timestamp
+        isRead
+        sender {
+          id
+          username
+          image
+        }
+        attachments {
+          url
+          type
+        }
       }
     }
   }
-}
 `;
 
 export const GET_USER_QUERY = gql`
@@ -151,6 +151,7 @@ export const MESSAGE_SENT_SUBSCRIPTION = gql`
     }
   }
 `;
+
 export const USER_STATUS_SUBSCRIPTION = gql`
   subscription UserStatusChanged {
     userStatusChanged {
@@ -237,49 +238,50 @@ export const SET_USER_OFFLINE_MUTATION = gql`
 `;
 
 export const GET_NOTIFICATIONS_QUERY = gql`
-  query GetNotifications($userId: ID!) {
-    getNotifications(userId: $userId) {
-      id
-      type
-      message
-      isRead
-      createdAt
-      relatedEntity {
+  query GetCurrentUser {
+    getCurrentUser {
+      notificationCount
+      lastNotification
+      notifications {
         id
         type
-      }
-      sender {
-        id
-        username
-        image
+        content
+        timestamp
+        isRead
+        sender {
+          id
+          username
+          image
+        }
+        message {
+          id
+          content
+        }
       }
     }
   }
 `;
 export const MARK_NOTIFICATION_READ_MUTATION = gql`
   mutation MarkNotificationsAsRead($notificationIds: [ID!]!) {
-    markNotificationsAsRead(notificationIds: $notificationIds) {
-      id
-      isRead
-    }
+    markNotificationsAsRead(notificationIds: $notificationIds)
   }
 `;
 export const NOTIFICATION_SUBSCRIPTION = gql`
-  subscription NotificationReceived($userId: ID!) {
-    notificationReceived(userId: $userId) {
+  subscription NotificationReceived {
+    notificationReceived {
       id
       type
-      message
+      content
+      timestamp
       isRead
-      createdAt
-      relatedEntity {
-        id
-        type
-      }
       sender {
         id
         username
         image
+      }
+      message {
+        id
+        content
       }
     }
   }

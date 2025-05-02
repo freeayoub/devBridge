@@ -43,16 +43,25 @@ const typeDefs = gql`
     type: AttachmentType!
     name: String!
     size: Int!
-    mimeType: String!
+    mimeType: String
     thumbnailUrl: String
     duration: Int
   }
 
-  type Participant {
+  type User {
     id: ID!
-    username: String
-    email: String
+    username: String!
+    email: String!
     image: String
+    isOnline: Boolean!
+    isActive: Boolean!
+    lastActive: Date
+    role: String!
+    notificationCount: Int!
+    lastNotification: Date
+    createdAt: Date!
+    updatedAt: Date!
+    notifications: [Notification!]!
   }
 
   type Conversation {
@@ -74,34 +83,10 @@ const typeDefs = gql`
     createdAt: Date!
     updatedAt: Date!
   }
-
-  type ConversationResponse {
-    id: ID
-    participants: [Participant!]!
-    lastMessage: Message
-    createdAt: Date
-    updatedAt: Date
-  }
-
   type UserReadStatus {
     userId: ID!
     user: User!
     readAt: Date!
-  }
-
-  type User {
-    id: ID!
-    username: String!
-    email: String!
-    image: String
-    isOnline: Boolean!
-    isActive: Boolean!
-    lastActive: Date
-    role: String!
-    notificationCount: Int!
-    lastNotification: Date
-    createdAt: Date!
-    updatedAt: Date!
   }
 
   type Group {
@@ -125,14 +110,29 @@ const typeDefs = gql`
     timestamp: Date!
     isRead: Boolean!
   }
+ type MessageReadEvent {
+    messageId: ID!
+    readerId: ID!
+    readAt: Date!
+  }
 
+  type MessageReactionEvent {
+    messageId: ID!
+    reactions: [Reaction!]!
+  }
+
+  type TypingIndicatorEvent {
+    conversationId: ID!
+    userId: ID!
+    isTyping: Boolean!
+  }
+    
   enum NotificationType {
     NEW_MESSAGE
     FRIEND_REQUEST
     GROUP_INVITE
     MESSAGE_REACTION
   }
-
   enum MessageType {
     TEXT
     IMAGE
@@ -230,7 +230,7 @@ const typeDefs = gql`
       offset: Int
     ): [Message!]!
 
-    getConversation(conversationId: ID!): ConversationResponse
+    getConversation(conversationId: ID!): Conversation
 
     getConversations(
       filter: ConversationFilter
@@ -247,6 +247,8 @@ const typeDefs = gql`
     getGroup(id: ID!): Group!
 
     getUserGroups: [Group!]!
+    
+    getUserNotifications(userId: ID!): [Notification!]!
   }
 
   type Mutation {
@@ -268,9 +270,9 @@ const typeDefs = gql`
 
     pinMessage(messageId: ID!, conversationId: ID!): Message!
 
-    startTyping(conversationId: ID!): Conversation!
+    startTyping(conversationId: ID!): Boolean!
 
-    stopTyping(conversationId: ID!): Conversation!
+    stopTyping(conversationId: ID!): Boolean!
 
     createGroup(input: CreateGroupInput!): Group!
 
@@ -288,30 +290,14 @@ const typeDefs = gql`
     groupMessageSent(groupId: ID!): Message!
     messageUpdated(conversationId: ID!): Message!
     messageDeleted(conversationId: ID!): Message!
-    messageRead(userId: ID!): Message!
-    messageReaction(conversationId: ID!): Message!
+    messageRead(userId: ID!):  MessageReadEvent!
+    messageReaction(conversationId: ID!): MessageReactionEvent!
     conversationUpdated(conversationId: ID!): Conversation!
-    typingIndicator(conversationId: ID!): Conversation!
+    typingIndicator(conversationId: ID!): TypingIndicatorEvent!
     notificationReceived: Notification!
     userStatusChanged: User!
     unreadMessages(receiverId: ID!): [Message!]!
-  }
-
-  type MessageReadEvent {
-    messageId: ID!
-    readerId: ID!
-    readAt: Date!
-  }
-
-  type MessageReactionEvent {
-    messageId: ID!
-    reactions: [Reaction!]!
-  }
-
-  type TypingIndicatorEvent {
-    conversationId: ID!
-    userId: ID!
-    isTyping: Boolean!
+    notificationsRead(userId: ID!): [ID!]!
   }
 `;
 

@@ -1,53 +1,68 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, throwError  } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { 
+import {
   GET_NOTIFICATIONS_QUERY,
   MARK_NOTIFICATION_READ_MUTATION,
-  NOTIFICATION_SUBSCRIPTION 
-} from '../graphql/message.graphql';
-import { Notification } from 'src/app/models/notification.model'
+  NOTIFICATION_SUBSCRIPTION,
+} from 'src/app/graphql/message.graphql';
+import { Notification } from 'src/app/models/notification.model';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationService {
   private notificationCount = new BehaviorSubject<number>(0);
   public notificationCount$ = this.notificationCount.asObservable();
-  constructor(private apollo: Apollo) {
-    
-  }
-  getNotifications(userId: string): Observable<Notification[]> {
-    return this.apollo.watchQuery<{ getNotifications: Notification[] }>({
-      query: GET_NOTIFICATIONS_QUERY,
-      variables: { userId },
-      fetchPolicy: 'network-only'
-    }).valueChanges.pipe(
-      map(result => result.data.getNotifications),
-      catchError(error => {
-        console.error('Error fetching notifications:', error);
-        return throwError(() => new Error('Failed to fetch notifications'));
+  constructor(private apollo: Apollo) {}
+
+  getNotifications(): Observable<Notification[]> {
+    return this.apollo
+      .watchQuery<{
+        getCurrentUser: {
+          notifications: Notification[];
+        };
+      }>({
+        query: GET_NOTIFICATIONS_QUERY,
+        fetchPolicy: 'network-only',
       })
-    );
+      .valueChanges.pipe(
+        map((result) => result.data.getCurrentUser.notifications),
+        catchError((error) => {
+          console.error('Error fetching notifications:', error);
+          return throwError(() => new Error('Failed to fetch notifications'));
+        })
+      );
   }
 
-  markAsRead(notificationIds: string[]): Observable<Notification[]> {
-    return this.apollo.mutate<{ markNotificationsAsRead: Notification[] }>({
-      mutation: MARK_NOTIFICATION_READ_MUTATION,
-      variables: { notificationIds }
-    }).pipe(
-      map(result => result.data?.markNotificationsAsRead || []),
-      catchError(error => {
-        console.error('Error marking notifications as read:', error);
-        return throwError(() => new Error('Failed to mark notifications as read'));
+  markAsRead(notificationIds: string[]): Observable<boolean> {
+    return this.apollo
+      .mutate<{
+        markNotificationsAsRead: boolean;
+      }>({
+        mutation: MARK_NOTIFICATION_READ_MUTATION,
+        variables: { notificationIds },
+        refetchQueries: [
+          {
+            query: GET_NOTIFICATIONS_QUERY,
+          },
+        ],
       })
-    );
+      .pipe(
+        map((result) => result.data?.markNotificationsAsRead ?? false),
+        catchError((error) => {
+          console.error('Error marking notifications as read:', error);
+          return throwError(
+            () => new Error('Failed to mark notifications as read')
+          );
+        })
+      );
   }
-  
-  subscribeToNotifications(userId: string): Observable<Notification> {
-    return this.apollo.subscribe<{ notificationReceived: Notification }>({
-      query: NOTIFICATION_SUBSCRIPTION,
-      variables: { userId }
+  subscribeToNotifications(): Observable<Notification> {
+    return this.apollo.subscribe<{ 
+      notificationReceived: Notification 
+    }>({
+      query: NOTIFICATION_SUBSCRIPTION
     }).pipe(
       map(result => {
         if (!result.data?.notificationReceived) {
@@ -65,6 +80,4 @@ export class NotificationService {
   updateUnreadCount(count: number): void {
     this.notificationCount.next(count);
   }
-
-  
 }

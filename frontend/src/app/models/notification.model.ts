@@ -1,17 +1,13 @@
-// notification.model.ts
+import { User } from "./user.model";
 export interface Notification {
   id: string;
-  type: string;
-  message: string;
+  type: 'NEW_MESSAGE' | 'FRIEND_REQUEST' | 'GROUP_INVITE' | 'MESSAGE_REACTION';
+  content: string;
+  timestamp: string | Date;
   isRead: boolean;
-  createdAt: string;
-  sender: {
+  sender: User;
+  message?: {
     id: string;
-    username: string;
-    image: string;
-  };
-  relatedEntity?: {
-    id: string;
-    type: string;
+    content: string;
   };
 }

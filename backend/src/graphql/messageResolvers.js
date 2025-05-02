@@ -374,6 +374,12 @@ const resolvers = {
         if (!userId) throw new AuthenticationError("Not authenticated");
         return pubsub.asyncIterator(`NOTIFICATION_${userId}`);
       },
+      resolve: (payload) => {
+        if (!payload?.notificationReceived) {
+          throw new Error('Invalid notification format');
+        }
+        return payload.notificationReceived;
+      }
     },
   },
 };

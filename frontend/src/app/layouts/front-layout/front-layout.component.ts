@@ -70,7 +70,7 @@ export class FrontLayoutComponent implements OnInit, OnDestroy {
     const userId = this.authService.getCurrentUserId();
     if (!userId) return;
 
-    this.notificationService.getNotifications(userId).subscribe({
+    this.notificationService.getNotifications().subscribe({
       next: (notifications) => {
         this.unreadNotificationsCount = notifications.filter((n:any) => !n.isRead).length;
       },
@@ -81,7 +81,7 @@ export class FrontLayoutComponent implements OnInit, OnDestroy {
     const userId = this.authService.getCurrentUserId();
     if (!userId) return;
 
-    this.notificationService.subscribeToNotifications(userId)
+    this.notificationService.subscribeToNotifications()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (notification) => {
