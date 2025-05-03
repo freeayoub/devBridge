@@ -1,87 +1,97 @@
-import { User } from "./user.model";
-
-export interface Participant {
-  id: string;
-  username: string;
-  email: string;
-  image: string;
-  isOnline: boolean;
+import {User} from './user.model';
+// Attachment Interface
+export interface Attachment {
+  url: string;
+  type:MessageType;
+  name?: string;
+  size?: number;
+  mimeType?: string;
+  thumbnailUrl?: string;
+  duration?: number;
 }
+export enum MessageType {
+  TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  FILE = 'FILE',
+  AUDIO = 'AUDIO',
+  VIDEO = 'VIDEO',
+  SYSTEM = 'SYSTEM'
+}
+
+// Message Interface
 export interface Message {
   id: string;
-  content: string;
-  timestamp: string | Date;
-  isRead: boolean;
-  senderId: string;
-  sender: User;
-  receiverId: string;
-}
-export interface GetConversationsResponse {
-  getConversations: Conversation[];
-}
-export interface GetConversationResponse {
-  getConversation: {
-    id: string;
-    participants: Participant[];
-    messages: Message[];
-    updatedAt: string;
-  };
-}
-export interface MessageSentResponse {
-  messageSent: Message;
-}
-export interface UserStatusResponse {
-  userStatusChanged: User;
-}
-export interface StatusUser {
-  id: string; 
-  isOnline: boolean;
-}
-export interface SendMessageResponse {
-  sendMessage: Message;
-}
-export interface MarkMessageAsReadResponse {
-  markMessageAsRead: {
-    id: string;
-    isRead: boolean;
-  };
-}
-export interface AppMessage {
-  id: string;
-  content: string;
+  content?: string;
+  type: MessageType;
   timestamp: Date | string;
   isRead: boolean;
-  senderId: {
-    id: string;
-    username: string;
-    image?: string;
-  };
-  receiverId: {
-    id: string;
-  };
-  conversationId?: string;
+  readAt?: Date | string;
+  sender: Partial<User>; 
+  receiver?: Partial<User>;
+  group?: Partial<Group>;
+  conversationId: string;
+  attachments: Attachment[];
+  status: 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
+  isEdited?: boolean;
+  isDeleted?: boolean;
+  deletedAt?: Date | string;
+  pinned?: boolean;
+  pinnedAt?: Date | string;
+  pinnedBy?: Partial<User>;
+  forwardedFrom?: Partial<Message>;
+  replyTo?: Partial<Message>;
 }
+
+// Conversation Interface
 export interface Conversation {
   id: string;
   participants: User[];
-  messages: AppMessage[];
-  lastMessage?: AppMessage;
+  messages: Message[];
+  lastMessage?: Message;
   unreadCount: number;
-  createdAt: Date | string;
+  isGroup: boolean;
+  groupName?: string;
+  groupPhoto?: string;
+  groupDescription?: string;
+  groupAdmins?: User[];
   updatedAt: Date | string;
 }
-export interface AppMessage {
+
+// Group Interface
+export interface Group {
   id: string;
-  content: string;
-  timestamp: Date | string;
-  isRead: boolean;
-  sender: {  
-    id: string;
-    username: string;
-    image?: string;
-  };
-  receiver: { 
-    id: string;
-  };
-  conversationId?: string;
+  name: string;
+  photo?: string;
+  description?: string;
+  participants: User[];
+  admins: User[];
+  messageCount: number;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
+
+export interface MessageFilter {
+  isRead?: boolean;
+  isDeleted?: boolean;
+  type?: MessageType;
+  senderId?: string;
+  receiverId?: string;
+  groupId?: string;
+  conversationId?: string;
+  pinned?: boolean;
+  dateFrom?: Date;
+  dateTo?: Date;
+}
+
+export interface Toast {
+  id?: number;
+  type: 'success' | 'error' | 'warning' | 'info';
+  message: string;
+  duration?: number;
+}
+export interface TypingIndicatorEvent {
+  conversationId: string;
+  userId: string;
+  isTyping: boolean;
+}
+

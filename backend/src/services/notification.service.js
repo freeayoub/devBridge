@@ -30,7 +30,6 @@ class NotificationService {
       return false;
     }
   }
-
   async markAsRead(userId, notificationIds) {
     try {
       this.pubsub.publish(`NOTIFICATION_READ_${userId}`, {
@@ -48,7 +47,6 @@ class NotificationService {
       return false;
     }
   }
- 
   async sendMessageNotification(message) {
     try {
       const receiverId = message.receiver || 
@@ -73,25 +71,26 @@ class NotificationService {
         await this.sendPushNotification(receiverId, notification);
       }
     } catch (error) {
-      console.error('[NotificationService] Error sending message notification:', {
-        error: error.message,
-        messageId: message?._id,
-        receiver: message?.receiver || message?.group
-      });
+      console.error('[NotificationService] Error sending message notification:')
       throw new Error('Failed to send message notification');
     }
   }
-
   async getGroupParticipants(groupId) {
     try {
       const conversation = await Conversation.findById(groupId)
         .select('participants')
         .lean();
-      return conversation?.participants || [];
+      return conversation.participants || [];
     } catch (error) {
-      console.error('Get group participants error:', error);
+      console.error('Get group participants error:');
       return [];
     }
+  }
+  async getUserNotifications(userId) {
+    return this.NotificationModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .populate('sender', 'username image')
+      .populate('message', 'content');
   }
 }
 

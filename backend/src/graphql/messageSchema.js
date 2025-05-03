@@ -4,7 +4,7 @@ const typeDefs = gql`
   scalar Upload
   scalar Date
   scalar JSON
-
+  scalar DateTime
   type Message {
     id: ID!
     content: String
@@ -110,7 +110,7 @@ const typeDefs = gql`
     timestamp: Date!
     isRead: Boolean!
   }
- type MessageReadEvent {
+  type MessageReadEvent {
     messageId: ID!
     readerId: ID!
     readAt: Date!
@@ -126,7 +126,7 @@ const typeDefs = gql`
     userId: ID!
     isTyping: Boolean!
   }
-    
+
   enum NotificationType {
     NEW_MESSAGE
     FRIEND_REQUEST
@@ -164,10 +164,9 @@ const typeDefs = gql`
     senderId: ID
     receiverId: ID
     groupId: ID
-    conversationId: ID
     pinned: Boolean
-    dateFrom: Date
-    dateTo: Date
+    dateFrom: DateTime
+    dateTo: DateTime
   }
 
   input ConversationFilter {
@@ -226,8 +225,17 @@ const typeDefs = gql`
     searchMessages(
       query: String!
       conversationId: ID
-      limit: Int
-      offset: Int
+      limit: Int = 20
+      offset: Int = 0
+      isRead: Boolean
+      isDeleted: Boolean
+      type: MessageType
+      senderId: ID
+      receiverId: ID
+      groupId: ID
+      pinned: Boolean
+      dateFrom: DateTime
+      dateTo: DateTime
     ): [Message!]!
 
     getConversation(conversationId: ID!): Conversation
@@ -247,8 +255,8 @@ const typeDefs = gql`
     getGroup(id: ID!): Group!
 
     getUserGroups: [Group!]!
-    
-    getUserNotifications(userId: ID!): [Notification!]!
+
+    getUserNotifications: [Notification!]!
   }
 
   type Mutation {
@@ -290,7 +298,7 @@ const typeDefs = gql`
     groupMessageSent(groupId: ID!): Message!
     messageUpdated(conversationId: ID!): Message!
     messageDeleted(conversationId: ID!): Message!
-    messageRead(userId: ID!):  MessageReadEvent!
+    messageRead(userId: ID!): MessageReadEvent!
     messageReaction(conversationId: ID!): MessageReactionEvent!
     conversationUpdated(conversationId: ID!): Conversation!
     typingIndicator(conversationId: ID!): TypingIndicatorEvent!

@@ -633,31 +633,31 @@ class MessageService {
 
     return message;
   }
-
   async searchMessages({
     userId,
     query,
     conversationId = null,
     limit = 20,
     offset = 0,
+    filters = {}
   }) {
+    // Base search query
     const searchQuery = {
       $or: [
         { content: { $regex: query, $options: "i" } },
         { "attachments.name": { $regex: query, $options: "i" } },
       ],
-      isDeleted: false,
+      ...filters // Spread additional filters
     };
-
+  
+    // Handle conversation scope
     if (conversationId) {
-      // Search in specific conversation
       const conversation = await Conversation.findById(conversationId);
       if (!conversation || !conversation.participants.includes(userId)) {
         throw new Error("Conversation not found or unauthorized");
       }
       searchQuery.conversationId = conversationId;
     } else {
-      // Search across all user's conversations
       const conversations = await Conversation.find({
         participants: userId,
       });
@@ -665,7 +665,15 @@ class MessageService {
         $in: conversations.map((c) => c._id),
       };
     }
-
+  
+    // Handle date range filters
+    if (filters.dateFrom || filters.dateTo) {
+      searchQuery.timestamp = {};
+      if (filters.dateFrom) searchQuery.timestamp.$gte = filters.dateFrom;
+      if (filters.dateTo) searchQuery.timestamp.$lte = filters.dateTo;
+    }
+  
+    // Execute query
     const messages = await Message.find(searchQuery)
       .sort({ timestamp: -1 })
       .skip(offset)
@@ -673,10 +681,9 @@ class MessageService {
       .populate("sender", "username email image")
       .populate("receiver", "username email image")
       .populate("group", "groupName groupPhoto");
-
-    return messages;
+  
+    return messages.map(msg => this.formatMessageResponse(msg));
   }
-
   async startTyping({ userId, conversationId }) {
     const conversation = await Conversation.findById(conversationId);
     if (!conversation) {

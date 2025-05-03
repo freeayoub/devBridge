@@ -90,7 +90,7 @@ const resolvers = {
       return User.find({ _id: { $in: parent.typingUsers } });
     },
   },
-  
+
   Query: {
     getMessages: async (_, { senderId, receiverId, page, limit }, context) => {
       if (!context.userId) throw AuthenticationError("Unauthorized");
@@ -125,16 +125,42 @@ const resolvers = {
 
     searchMessages: async (
       _,
-      { query, conversationId, limit, offset },
+      {
+        query,
+        conversationId,
+        limit = 20,
+        offset = 0,
+        isRead,
+        isDeleted,
+        type,
+        senderId,
+        receiverId,
+        groupId,
+        pinned,
+        dateFrom,
+        dateTo,
+      },
       { userId }
     ) => {
       if (!userId) throw AuthenticationError("Not authenticated");
+
       return MessageService.searchMessages({
         userId,
         query,
         conversationId,
         limit,
         offset,
+        filters: {
+          isRead,
+          isDeleted,
+          type,
+          senderId,
+          receiverId,
+          groupId,
+          pinned,
+          dateFrom: dateFrom ? new Date(dateFrom) : undefined,
+          dateTo: dateTo ? new Date(dateTo) : undefined,
+        },
       });
     },
 
@@ -167,6 +193,16 @@ const resolvers = {
     getOneUser: async (_, { id }, context) => {
       if (!context.userId) throw AuthenticationError("Unauthorized");
       return UserService.getOneUser(id);
+    },
+    getUserNotifications: async (_, __, { userId }) => {
+      if (!userId) throw new AuthenticationError("Not authenticated");
+
+      try {
+        return await NotificationService.getUserNotifications(userId);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+        throw new ApolloError("Failed to fetch notifications");
+      }
     },
   },
 
@@ -376,10 +412,10 @@ const resolvers = {
       },
       resolve: (payload) => {
         if (!payload?.notificationReceived) {
-          throw new Error('Invalid notification format');
+          throw new Error("Invalid notification format");
         }
         return payload.notificationReceived;
-      }
+      },
     },
   },
 };

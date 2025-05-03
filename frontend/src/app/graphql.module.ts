@@ -9,6 +9,8 @@ import { ApolloLink } from '@apollo/client/core';
 import { HttpHeaders } from '@angular/common/http';
 import { AuthuserService } from './services/authuser.service';
 import { createClient } from 'graphql-ws';
+import * as ApolloUploadClient from 'apollo-upload-client';
+const createUploadLink = ApolloUploadClient.createUploadLink;
 export function createApollo(
   httpLink: HttpLink,
   authService: AuthuserService
@@ -17,14 +19,38 @@ export function createApollo(
   const httpUri = `${environment.urlBackend.replace('/api/', '/graphql')}`;
   const wsUri = httpUri.replace('http', 'ws');
    // Configuration des headers HTTP
-  const http = httpLink.create({
-    uri: httpUri,
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: token ? `Bearer ${token}` : '',
-    }),
-  });
-  let link: ApolloLink = http;
+ // Create upload link
+ const uploadLink = createUploadLink({
+  uri: httpUri,
+  headers: {
+    Authorization: token ? `Bearer ${token}` : '',
+    'Apollo-Require-Preflight': 'true'
+  }
+});
+
+// Create regular HTTP link
+const http = httpLink.create({
+  uri: httpUri,
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json',
+    Authorization: token ? `Bearer ${token}` : '',
+  }),
+});
+
+// Combine links
+const httpLinkSplit = split(
+  ({ query, variables }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'mutation' &&
+      variables?.['file'] !== undefined
+    );
+  },
+  uploadLink,
+  http
+);
+let link: ApolloLink = httpLinkSplit;
   // WebSocket Link seulement côté client et si token existe
   if (typeof window !== 'undefined' && token) {
     try {

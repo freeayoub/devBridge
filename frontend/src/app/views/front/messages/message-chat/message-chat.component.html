@@ -1,105 +1,166 @@
-<div class="flex h-full bg-gray-50 flex-col">
-  <!-- Mobile back button -->
-  <div class="md:hidden fixed top-0 left-0 z-20 p-2">
-    <button (click)="router.navigate(['/messages'])" 
-            class="p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-      </svg>
-    </button>
-  </div>
-
+<div class="flex flex-col h-full bg-white">
   <!-- Chat header -->
-  <div class="bg-white shadow-sm z-10 p-3 border-b border-gray-200 flex items-center">
-    <button (click)="router.navigate(['/messages'])" class="mr-2 md:hidden">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-      </svg>
+  <div class="p-4 border-b border-gray-200 flex items-center sticky top-0 z-10 bg-white">
+    <button (click)="router.navigate(['../'], { relativeTo: route })" 
+            class="md:hidden mr-2 p-2 rounded-full hover:bg-gray-100">
+      <i class="fas fa-arrow-left text-gray-600"></i>
     </button>
     
-    <div class="flex items-center flex-1">
-      <div class="relative mr-3">
-        <img [src]="otherParticipant?.image || 'assets/images/default-profile.png'" 
-             class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
-        <span *ngIf="statusService.isUserOnline(otherParticipant?.id)"
-              class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"></span>
+    <div class="flex items-center">
+      <div class="relative">
+        <img [src]="otherParticipant?.image || 'assets/images/default-avatar.png'" 
+             class="w-10 h-10 rounded-full object-cover">
+        <span *ngIf="otherParticipant?.isOnline" 
+              class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
       </div>
-      <div>
-        <h2 class="font-semibold text-gray-800">{{ otherParticipant?.username }}</h2>
+      <div class="ml-3">
+        <h2 class="font-medium text-gray-900">{{ otherParticipant?.username || 'Unknown User' }}</h2>
         <p class="text-xs text-gray-500">
-          <span *ngIf="statusService.isUserOnline(otherParticipant?.id)" class="text-green-500">Online</span>
-          <span *ngIf="!statusService.isUserOnline(otherParticipant?.id)" class="text-gray-400">
-            Last seen {{ formatMessageTime(otherParticipant?.lastActive) }}
-          </span>
+          {{ formatLastActive(otherParticipant?.lastActive) }}
         </p>
       </div>
+    </div>
+    
+    <div class="ml-auto flex space-x-2">
+      <button class="p-2 rounded-full hover:bg-gray-100 text-gray-600">
+        <i class="fas fa-phone"></i>
+      </button>
+      <button class="p-2 rounded-full hover:bg-gray-100 text-gray-600">
+        <i class="fas fa-video"></i>
+      </button>
+      <button [routerLink]="['../profile', otherParticipant?.id]" 
+              class="p-2 rounded-full hover:bg-gray-100 text-gray-600">
+        <i class="fas fa-ellipsis-v"></i>
+      </button>
     </div>
   </div>
 
   <!-- Messages area -->
-  <div class="flex-1 overflow-y-auto p-4 pt-16 pb-20" #messagesContainer>
-    <!-- Loading and error states -->
-    <div *ngIf="loading" class="text-center py-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+  <div #messagesContainer class="flex-1 overflow-y-auto p-4 space-y-4">
+    <!-- Loading state -->
+    <div *ngIf="loading" class="flex justify-center items-center h-full">
+      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-600"></div>
     </div>
-    
-    <div *ngIf="error" class="text-red-500 p-4">
-      Error loading conversation: {{ error.message }}
-    </div>
-    
-    <div *ngIf="!loading && conversation" class="space-y-6">
-      <div *ngFor="let message of messages; let i = index">
-        <!-- Date separator -->
-        <div *ngIf="shouldShowDateHeader(i)" class="flex justify-center my-4">
-          <span class="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">
-            {{ formatMessageDate(message.timestamp) }}
-          </span>
+
+    <!-- Error state -->
+    <div *If="error" class="p-4 bg-red-50 border-l-4 border-red-500">
+      <div class="flex items-start">
+        <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-2"></i>
+        <div>
+          <h3 class="text-sm font-medium text-red-800">Error loading messages</h3>
+          <p class="text-sm text-red-700 mt-1">{{ error }}</p>
         </div>
-        
-        <!-- Message bubble -->
-        <div [class.justify-end]="message.sender.id === currentUserId"
-             class="flex">
-          <div [class.items-end]="message.sender.id === currentUserId"
-               [class.items-start]="message.sender.id !== currentUserId"
-               class="flex flex-col max-w-xs md:max-w-md lg:max-w-lg">
-            <div *ngIf="message.sender.id !== currentUserId" class="flex items-center mb-1">
-              <img [src]="message.sender.image || 'assets/images/default-profile.png'" 
-                   class="w-6 h-6 rounded-full mr-2">
-              <span class="text-xs font-medium text-gray-700">{{ message.sender.username }}</span>
-            </div>
-            
-            <div [class.bg-purple-600]="message.sender.id === currentUserId" 
-                 [class.bg-gray-200]="message.sender.id !== currentUserId"
-                 [class.text-white]="message.sender.id === currentUserId"
-                 class="p-3 rounded-lg shadow-sm">
-              <p>{{ message.content }}</p>
-            </div>
-            
-            <div class="flex justify-end mt-1">
-              <span class="text-xs text-gray-500">{{ formatMessageTime(message.timestamp) }}</span>
-              <span *ngIf="message.sender.id === currentUserId && message.isRead" class="ml-1 text-blue-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-              </span>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div *ngFor="let message of messages; let i = index" 
+         [class.items-end]="(message.sender.id === currentUserId) || (message.sender._id === currentUserId)"
+         class="flex flex-col">
+      
+      <!-- Date separator -->
+      <div *ngIf="shouldShowDateHeader(i)" class="flex justify-center my-4">
+        <span class="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">
+          {{ formatMessageDate(message.timestamp) }}
+        </span>
+      </div>
+      
+      <!-- Message bubble -->
+      <div [class.flex-row-reverse]="(message.sender.id === currentUserId) || (message.sender._id === currentUserId)"
+           class="flex items-start space-x-2 max-w-[80%]">
+        <img *ngIf="!((message.sender?.id === currentUserId) || (message.sender?._id === currentUserId))"
+             [src]="message.sender.image || 'assets/images/default-avatar.png'"
+             class="w-8 h-8 rounded-full object-cover">
+             
+        <div [class]="getMessageTypeClass(message)"
+             class="px-4 py-2 rounded-lg">
+          <!-- Text content -->
+          <p *ngIf="message.content" class="text-sm">{{ message.content }}</p>
+          
+          <!-- File attachment -->
+          <div *ngIf="message.attachments?.length" class="mt-2">
+            <div *ngFor="let attachment of message.attachments" class="mb-2">
+              <ng-container [ngSwitch]="attachment.type">
+                <!-- Image attachment -->
+                <div *ngSwitchCase="'image'" class="relative">
+                  <img [src]="attachment.url" class="max-w-xs rounded-lg border border-gray-200">
+                  <a [href]="attachment.url" target="_blank" 
+                     class="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white p-1 rounded">
+                    <i class="fas fa-expand"></i>
+                  </a>
+                </div>
+                
+                <!-- File attachment -->
+                <div *ngSwitchDefault class="flex items-center p-2 bg-gray-50 rounded-lg">
+                  <i class="fas fa-file text-gray-400 mr-2"></i>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium truncate">{{ attachment.name || 'File' }}</p>
+                    <p class="text-xs text-gray-500">{{ ((attachment.size || 0) / 1024).toFixed(1) }} KB</p>
+                  </div>
+                  <a [href]="attachment.url" target="_blank" class="ml-2 text-purple-600 hover:text-purple-800">
+                    <i class="fas fa-download"></i>
+                  </a>
+                </div>
+              </ng-container>
             </div>
           </div>
+          
+          <!-- Message metadata -->
+          <p class="text-xs text-gray-500 mt-1 text-right">
+            {{ formatMessageTime(message.timestamp) }}
+            <span *ngIf="(message.sender?.id === currentUserId) || (message.sender?._id === currentUserId)">
+              <i *ngIf="message.isRead" class="fas fa-check-double text-blue-500 ml-1"></i>
+              <i *ngIf="!message.isRead" class="fas fa-check text-gray-400 ml-1"></i>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Typing indicator -->
+    <div *ngIf="isTyping" class="flex items-center space-x-2">
+      <img [src]="otherParticipant?.image || 'assets/images/default-avatar.png'" 
+           class="w-8 h-8 rounded-full object-cover">
+      <div class="bg-gray-100 px-4 py-2 rounded-lg rounded-tl-none">
+        <div class="flex space-x-1">
+          <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+          <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+          <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Message input -->
-  <div class="bg-white border-t border-gray-200 p-3">
-    <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="flex items-center">
-      <input type="text" formControlName="content" 
-             placeholder="Type a message..." 
-             class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-      <button type="submit" [disabled]="messageForm.invalid"
-              class="bg-purple-600 text-white px-4 py-2 rounded-r-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-        </svg>
+  <div class="p-4 border-t border-gray-200 bg-white sticky bottom-0">
+    <!-- File preview -->
+    <div *ngIf="previewUrl" class="mb-2 relative">
+      <img [src]="previewUrl" class="max-h-40 rounded-lg border border-gray-200">
+      <button (click)="removeAttachment()" 
+              class="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full p-1">
+        <i class="fas fa-times text-xs"></i>
+      </button>
+    </div>
+    
+    <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="flex items-center space-x-2">
+      <button type="button" (click)="fileInput.click()" 
+              class="p-2 text-gray-500 hover:text-gray-700">
+        <i class="fas fa-paperclip"></i>
+        <input #fileInput type="file" (change)="onFileSelected($event)" 
+               class="hidden" accept="image/*, .pdf, .doc, .docx">
+      </button>
+      
+      <input formControlName="content" 
+             type="text" 
+             placeholder="Type a message..."
+             (input)="onTyping()"
+             class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:ring-purple-500 focus:border-purple-500">
+      
+      <button type="submit" 
+              [disabled]="isUploading || (messageForm.invalid && !selectedFile)"
+              class="p-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 disabled:bg-purple-300 transition-colors">
+        <i *ngIf="!isUploading" class="fas fa-paper-plane"></i>
+        <i *ngIf="isUploading" class="fas fa-spinner fa-spin"></i>
       </button>
     </form>
   </div>
