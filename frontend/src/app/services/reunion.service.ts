@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpHeaders,HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Reunion } from '../models/reunion.model';
+import { Reunion } from 'src/app/models/reunion.model';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
@@ -41,11 +41,11 @@ export class ReunionService {
  }
  
  getReunionsByPlanning(planningId: string): Observable<Reunion[]> {
-   return this.http.get<Reunion[]>(`${environment.urlBackend}planning/${planningId}`);
+   return this.http.get<Reunion[]>(`${environment.urlBackend}reunions/planning/${planningId}`,{headers: this.getUserHeaders()});
  }
 
  getProchainesReunions(userId: string): Observable<Reunion[]> {
-   return this.http.get<Reunion[]>(`${environment.urlBackend}upcoming/${userId}`);
+   return this.http.get<Reunion[]>(`${environment.urlBackend}reunions/upcoming/${userId}`,{headers: this.getUserHeaders()});
  }
  
 }

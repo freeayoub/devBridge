@@ -13,7 +13,12 @@ import { GraphqlDataService } from 'src/app/services/graphql-data.service';
 import { Subscription, combineLatest } from 'rxjs';
 import { User } from '@app/models/user.model';
 import { UserStatusService } from 'src/app/services/user-status.service';
-import { Message , Conversation, Attachment, MessageType  } from 'src/app/models/message.model';
+import {
+  Message,
+  Conversation,
+  Attachment,
+  MessageType,
+} from 'src/app/models/message.model';
 import { ToastService } from 'src/app/services/toast.service';
 import { switchMap, distinctUntilChanged, filter } from 'rxjs/operators';
 @Component({
@@ -25,7 +30,8 @@ export class MessageChatComponent
   implements OnInit, OnDestroy, AfterViewChecked
 {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
-  @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('fileInput', { static: false })
+  fileInput!: ElementRef<HTMLInputElement>;
 
   messages: Message[] = [];
   messageForm: FormGroup;
@@ -56,36 +62,76 @@ export class MessageChatComponent
   }
   ngOnInit(): void {
     this.currentUserId = this.authService.getCurrentUserId();
-    
-    const routeSub = this.route.params.pipe(
-      filter(params => params['conversationId']),
-      distinctUntilChanged(),
-      switchMap(params => {
-        this.loading = true;
-        this.messages = [];
-        return this.graphqlService.getConversation(params['conversationId']);
-      })
-    ).subscribe({
-      next: (conversation) => {
-        this.handleConversationLoaded(conversation);
-      },
-      error: (error) => {
-        this.handleError('Failed to load conversation', error);
-      }
-    });
+
+    const routeSub = this.route.params
+      .pipe(
+        filter((params) => params['conversationId']),
+        distinctUntilChanged(),
+        switchMap((params) => {
+          this.loading = true;
+          this.messages = [];
+          return this.graphqlService.getConversation(params['conversationId']);
+        })
+      )
+      .subscribe({
+        next: (conversation) => {
+          this.handleConversationLoaded(conversation);
+        },
+        error: (error) => {
+          this.handleError('Failed to load conversation', error);
+        },
+      });
     this.subscriptions.add(routeSub);
   }
+  
+  // logique FileService
+  getFileIcon(mimeType?: string): string {
+    if (!mimeType) return 'fa-file';
+    if (mimeType.startsWith('image/')) return 'fa-image';
+    if (mimeType.includes('pdf')) return 'fa-file-pdf';
+    if (mimeType.includes('word') || mimeType.includes('msword')) return 'fa-file-word';
+    if (mimeType.includes('excel')) return 'fa-file-excel';
+    if (mimeType.includes('powerpoint')) return 'fa-file-powerpoint';
+    if (mimeType.includes('audio')) return 'fa-file-audio';
+    if (mimeType.includes('video')) return 'fa-file-video';
+    if (mimeType.includes('zip') || mimeType.includes('compressed')) return 'fa-file-archive';
+    return 'fa-file';
+  }
+  getFileType(mimeType?: string): string {
+    if (!mimeType) return 'File';
+    
+    const typeMap: Record<string, string> = {
+      'image/': 'Image',
+      'application/pdf': 'PDF',
+      'application/msword': 'Word Doc',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word Doc',
+      'application/vnd.ms-excel': 'Excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel',
+      'application/vnd.ms-powerpoint': 'PowerPoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PowerPoint',
+      'audio/': 'Audio',
+      'video/': 'Video',
+      'application/zip': 'ZIP Archive',
+      'application/x-rar-compressed': 'RAR Archive'
+    };
+    for (const [key, value] of Object.entries(typeMap)) {
+      if (mimeType.includes(key)) return value;
+    }
+    return 'File';
+  }
+
   private handleConversationLoaded(conversation: Conversation): void {
     this.conversation = conversation;
     this.messages = [...(conversation?.messages || [])];
-    this.otherParticipant = conversation?.participants?.find(
-      p => p.id !== this.currentUserId && p._id !== this.currentUserId
-    ) || null;
-    
+    this.otherParticipant =
+      conversation?.participants?.find(
+        (p) => p.id !== this.currentUserId && p._id !== this.currentUserId
+      ) || null;
+
     this.loading = false;
     setTimeout(() => this.scrollToBottom(), 100);
     this.markMessagesAsRead();
-    
+
     if (this.conversation?.id) {
       this.subscribeToConversationUpdates(this.conversation.id);
       this.subscribeToNewMessages(this.conversation.id);
@@ -94,64 +140,78 @@ export class MessageChatComponent
   }
 
   private subscribeToConversationUpdates(conversationId: string): void {
-    const sub = this.graphqlService.subscribeToConversationUpdates(conversationId).subscribe({
-      next: (updatedConversation) => {
-        this.conversation = updatedConversation;
-        this.messages = [...updatedConversation.messages];
-        this.scrollToBottom();
-      },
-      error: (error) => {
-        this.toastService.showError('Connection to conversation updates lost');
-      }
-    });
+    const sub = this.graphqlService
+      .subscribeToConversationUpdates(conversationId)
+      .subscribe({
+        next: (updatedConversation) => {
+          this.conversation = updatedConversation;
+          this.messages = [...updatedConversation.messages];
+          this.scrollToBottom();
+        },
+        error: (error) => {
+          this.toastService.showError(
+            'Connection to conversation updates lost'
+          );
+        },
+      });
     this.subscriptions.add(sub);
   }
 
   private subscribeToNewMessages(conversationId: string): void {
-    const sub = this.graphqlService.subscribeToNewMessages(conversationId).subscribe({
-      next: (newMessage) => {
-        if (newMessage?.conversationId === this.conversation?.id) {
-          this.messages = [...this.messages, newMessage];
-          setTimeout(() => this.scrollToBottom(), 100);
-          if (newMessage.sender?.id !== this.currentUserId && newMessage.sender?._id !== this.currentUserId) {
-            this.graphqlService.markMessageAsRead(newMessage.id).subscribe();
+    const sub = this.graphqlService
+      .subscribeToNewMessages(conversationId)
+      .subscribe({
+        next: (newMessage) => {
+          if (newMessage?.conversationId === this.conversation?.id) {
+            this.messages = [...this.messages, newMessage];
+            setTimeout(() => this.scrollToBottom(), 100);
+            if (
+              newMessage.sender?.id !== this.currentUserId &&
+              newMessage.sender?._id !== this.currentUserId
+            ) {
+              this.graphqlService.markMessageAsRead(newMessage.id).subscribe();
+            }
           }
-        }
-      },
-      error: (error) => {
-        this.toastService.showError('Connection to new messages lost');
-      }
-    });
+        },
+        error: (error) => {
+          this.toastService.showError('Connection to new messages lost');
+        },
+      });
     this.subscriptions.add(sub);
   }
 
   private subscribeToTypingIndicators(conversationId: string): void {
-    const sub = this.graphqlService.subscribeToTypingIndicator(conversationId).subscribe({
-      next: (event) => {
-        if (event.userId !== this.currentUserId) {
-          this.isTyping = event.isTyping;
-          if (this.isTyping) {
-            clearTimeout(this.typingTimeout);
-            this.typingTimeout = setTimeout(() => {
-              this.isTyping = false;
-            }, 2000);
+    const sub = this.graphqlService
+      .subscribeToTypingIndicator(conversationId)
+      .subscribe({
+        next: (event) => {
+          if (event.userId !== this.currentUserId) {
+            this.isTyping = event.isTyping;
+            if (this.isTyping) {
+              clearTimeout(this.typingTimeout);
+              this.typingTimeout = setTimeout(() => {
+                this.isTyping = false;
+              }, 2000);
+            }
           }
-        }
-      }
-    });
+        },
+      });
     this.subscriptions.add(sub);
   }
 
   private markMessagesAsRead(): void {
     const unreadMessages = this.messages.filter(
-      msg => !msg.isRead && (msg.receiver?.id === this.currentUserId || msg.receiver?._id === this.currentUserId)
+      (msg) =>
+        !msg.isRead &&
+        (msg.receiver?.id === this.currentUserId ||
+          msg.receiver?._id === this.currentUserId)
     );
-    
-    unreadMessages.forEach(msg => {
+
+    unreadMessages.forEach((msg) => {
       const sub = this.graphqlService.markMessageAsRead(msg.id).subscribe({
         error: (error) => {
           console.error('Error marking message as read:', error);
-        }
+        },
       });
       this.subscriptions.add(sub);
     });
@@ -168,10 +228,18 @@ export class MessageChatComponent
     }
 
     // Validate file type
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 
-                       'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const validTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
     if (!validTypes.includes(file.type)) {
-      this.toastService.showError('Invalid file type. Only images, PDFs and Word docs are allowed');
+      this.toastService.showError(
+        'Invalid file type. Only images, PDFs and Word docs are allowed'
+      );
       return;
     }
 
@@ -192,24 +260,34 @@ export class MessageChatComponent
   }
 
   onTyping(): void {
-    if (this.conversation?.id && this.currentUserId) {
-      this.graphqlService.startTyping({
-        userId: this.currentUserId,
-        conversationId: this.conversation.id
-      }).subscribe();
-    }
+    // if (this.conversation?.id && this.currentUserId) {
+    //   this.graphqlService
+    //     .startTyping({
+    //       userId: this.currentUserId,
+    //       conversationId: this.conversation.id,
+    //     })
+    //     .subscribe();
+    // }
   }
 
   sendMessage(): void {
-    if ((this.messageForm.invalid && !this.selectedFile) || !this.currentUserId || !this.otherParticipant?.id) {
+    if (
+      (this.messageForm.invalid && !this.selectedFile) ||
+      !this.currentUserId ||
+      !this.otherParticipant?.id
+    ) {
       return;
     }
 
     const content = this.messageForm.get('content')?.value;
     this.isUploading = true;
-    
+
     const sendSub = this.graphqlService
-      .sendMessage(this.otherParticipant.id, content, this.selectedFile || undefined)
+      .sendMessage(
+        this.otherParticipant.id,
+        content,
+        this.selectedFile || undefined
+      )
       .subscribe({
         next: () => {
           this.messageForm.reset();
@@ -220,7 +298,7 @@ export class MessageChatComponent
         error: (error) => {
           this.isUploading = false;
           this.toastService.showError('Failed to send message');
-        }
+        },
       });
     this.subscriptions.add(sendSub);
   }
@@ -232,12 +310,17 @@ export class MessageChatComponent
 
   formatLastActive(lastActive: string | Date | undefined): string {
     if (!lastActive) return 'Offline';
-    const lastActiveDate = lastActive instanceof Date ? lastActive : new Date(lastActive);
+    const lastActiveDate =
+      lastActive instanceof Date ? lastActive : new Date(lastActive);
     const now = new Date();
-    const diffHours = Math.abs(now.getTime() - lastActiveDate.getTime()) / (1000 * 60 * 60);
+    const diffHours =
+      Math.abs(now.getTime() - lastActiveDate.getTime()) / (1000 * 60 * 60);
 
     if (diffHours < 24) {
-      return `Active ${lastActiveDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      return `Active ${lastActiveDate.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })}`;
     }
     return `Active ${lastActiveDate.toLocaleDateString()}`;
   }
@@ -272,14 +355,31 @@ export class MessageChatComponent
   }
 
   private getDateFromTimestamp(timestamp: string | Date): string {
-    return (timestamp instanceof Date ? timestamp : new Date(timestamp)).toDateString();
+    return (
+      timestamp instanceof Date ? timestamp : new Date(timestamp)
+    ).toDateString();
   }
-
-  getMessageTypeClass(message: Message): string {
-    if (message.sender?.id === this.currentUserId || message.sender?._id === this.currentUserId) {
-      return 'bg-purple-100 rounded-tr-none';
+  getMessageType(message: Message): MessageType {
+    if (message.attachments?.length) {
+      return message.attachments[0].type;
     }
-    return 'bg-gray-100 rounded-tl-none';
+    return MessageType.TEXT;
+  }
+  getMessageTypeClass(message: Message): string {
+    const isCurrentUser =
+      message.sender?.id === this.currentUserId ||
+      message.sender?._id === this.currentUserId;
+    const baseClass = isCurrentUser
+      ? 'bg-purple-100 rounded-tr-none'
+      : 'bg-gray-100 rounded-tl-none';
+    switch (this.getMessageType(message)) {
+      case MessageType.IMAGE:
+        return `${baseClass} p-1 max-w-xs`;
+      case MessageType.FILE:
+        return `${baseClass} p-3`;
+      default:
+        return `${baseClass} px-4 py-2`;
+    }
   }
 
   ngAfterViewChecked() {
@@ -304,8 +404,17 @@ export class MessageChatComponent
     this.toastService.showError(message);
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-    clearTimeout(this.typingTimeout);
-  }
+ngOnDestroy(): void {
+  this.subscriptions.unsubscribe();
+  clearTimeout(this.typingTimeout);
+  
+  // Envoyer un stop typing au départ
+  // if (this.conversation?.id && this.currentUserId) {
+  //   this.graphqlService.stopTyping({
+  //     userId: this.currentUserId,
+  //     conversationId: this.conversation.id
+  //   }).subscribe();
+  // }
+}
+
 }

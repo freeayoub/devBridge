@@ -103,7 +103,7 @@ const typeDefs = gql`
 
   type Notification {
     id: ID!
-    type: NotificationType!
+    type: String!
     message: Message
     sender: User
     content: String!
@@ -305,7 +305,7 @@ const typeDefs = gql`
     notificationReceived: Notification!
     userStatusChanged: User!
     unreadMessages(receiverId: ID!): [Message!]!
-    notificationsRead(userId: ID!): [ID!]!
+    notificationsRead: [ID!]!
   }
 `;
 

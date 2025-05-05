@@ -1,8 +1,8 @@
 const MessageService = require("../services/message.service");
 const NotificationService = require("../services/notification.service");
+const UserService = require("../services/user.service");
 const { GraphQLError } = require("graphql");
 const GraphQLUpload = require("graphql-upload/GraphQLUpload.js");
-const UserService = require("../services/user.service");
 const { messageSchema } = require("../validators/message.validators");
 const { messageUpdateSchema } = require("../validators/message.validators");
 const AuthenticationError = (message) =>
@@ -14,45 +14,37 @@ const resolvers = {
   Upload: GraphQLUpload,
 
   Message: {
-    id: (parent) => parent._id.toString(),
-    sender: async (parent) => {
-      if (parent.senderId) return parent.senderId;
-      return User.findById(parent.senderId);
+    id: (parent) => parent._id?.toString() || parent.id,
+    sender: async (parent, _, { loaders }) => {
+      return loaders.userLoader.load(parent.senderId);
     },
-    receiver: async (parent) => {
-      if (parent.receiverId) return parent.receiverId;
-      if (parent.receiverId) return User.findById(parent.receiverId);
-      return null;
+    receiver: async (parent, _, { loaders }) => {
+      if (!parent.receiverId) return null;
+      return loaders.userLoader.load(parent.receiverId);
     },
-    group: async (parent) => {
-      if (parent.group) return parent.group;
-      if (parent.groupId) return Group.findById(parent.groupId);
-      return null;
+    group: async (parent, _, { loaders }) => {
+      if (!parent.groupId) return null;
+      return loaders.groupLoader.load(parent.groupId);
     },
-    timestamp: (parent) => {
-      if (!(parent.timestamp instanceof Date)) {
-        parent.timestamp = new Date(parent.timestamp);
-      }
-      return parent.timestamp.toISOString();
+    conversation: async (parent, _, { loaders }) => {
+      return loaders.conversationLoader.load(parent.conversationId);
     },
-    timestamp: (parent) => {
-      if (!parent.timestamp) return null;
-      if (!(parent.timestamp instanceof Date)) {
-        parent.timestamp = new Date(parent.timestamp);
-      }
-      return parent.timestamp.toISOString();
+    forwardedFrom: async (parent, _, { loaders }) => {
+      if (!parent.forwardedFrom) return null;
+      return loaders.messageLoader.load(parent.forwardedFrom);
     },
-    readAt: (parent) => {
-      if (!parent.readAt) return null;
-      if (!(parent.readAt instanceof Date)) {
-        parent.readAt = new Date(parent.readAt);
-      }
-      return parent.readAt.toISOString();
+    replyTo: async (parent, _, { loaders }) => {
+      if (!parent.replyTo) return null;
+      return loaders.messageLoader.load(parent.replyTo);
     },
-    conversation: async (parent) => {
-      if (parent.conversation) return parent.conversation;
-      return Conversation.findById(parent.conversationId);
+    pinnedBy: async (parent, _, { loaders }) => {
+      if (!parent.pinnedBy) return null;
+      return loaders.userLoader.load(parent.pinnedBy);
     },
+    timestamp: (parent) => parent.timestamp?.toISOString(),
+    readAt: (parent) => parent.readAt?.toISOString(),
+    deletedAt: (parent) => parent.deletedAt?.toISOString(),
+    pinnedAt: (parent) => parent.pinnedAt?.toISOString(),
   },
 
   Conversation: {
@@ -194,6 +186,7 @@ const resolvers = {
       if (!context.userId) throw AuthenticationError("Unauthorized");
       return UserService.getOneUser(id);
     },
+
     getUserNotifications: async (_, __, { userId }) => {
       if (!userId) throw new AuthenticationError("Not authenticated");
 
@@ -203,6 +196,21 @@ const resolvers = {
         console.error("Error fetching notifications:", error);
         throw new ApolloError("Failed to fetch notifications");
       }
+    },
+
+    getCurrentUser: async (_, __, { userId }) => {
+      if (!userId) throw new GraphQLError("Unauthorized");
+      return UserService.getOneUser(userId);
+    },
+
+    getGroup: async (_, { id }, { userId }) => {
+      if (!userId) throw new GraphQLError("Unauthorized");
+      return MessageService.getGroup(id, userId);
+    },
+
+    getUserGroups: async (_, __, { userId }) => {
+      if (!userId) throw new GraphQLError("Unauthorized");
+      return MessageService.getUserGroups(userId);
     },
   },
 
@@ -289,20 +297,66 @@ const resolvers = {
         userId,
       });
     },
+
     markNotificationsAsRead: async (_, { notificationIds }, { userId }) => {
       if (!userId) throw new AuthenticationError("Not authenticated");
 
-      const result = await NotificationService.markAsRead(
-        userId,
-        notificationIds
-      );
-      if (!result) {
-        throw new Error("Failed to mark notifications as read");
+      try {
+        const result = await NotificationService.markAsRead(
+          userId,
+          notificationIds
+        );
+        return result;
+      } catch (error) {
+        throw new Error(error.message);
       }
+    },
 
-      return true;
+    reactToMessage: async (_, { messageId, emoji }, { userId, pubsub }) => {
+      if (!userId) throw new GraphQLError("Unauthorized");
+      return MessageService.reactToMessage({
+        messageId,
+        userId,
+        emoji,
+        pubsub,
+      });
+    },
+
+    forwardMessage: async (_, { messageId, conversationIds }, { userId }) => {
+      if (!userId) throw new GraphQLError("Unauthorized");
+      return MessageService.forwardMessage({
+        messageId,
+        userId,
+        conversationIds,
+      });
+    },
+
+    pinMessage: async (_, { messageId, conversationId }, { userId }) => {
+      if (!userId) throw new GraphQLError("Unauthorized");
+      return MessageService.pinMessage({ messageId, conversationId, userId });
+    },
+
+    startTyping: async (_, { conversationId }, { userId, pubsub }) => {
+      if (!userId) throw new GraphQLError("Unauthorized");
+      return MessageService.startTyping({ userId, conversationId, pubsub });
+    },
+
+    stopTyping: async (_, { conversationId }, { userId, pubsub }) => {
+      if (!userId) throw new GraphQLError("Unauthorized");
+      return MessageService.stopTyping({ userId, conversationId, pubsub });
+    },
+
+    updateGroup: async (_, { id, input }, { userId }) => {
+      if (!userId) throw new GraphQLError("Unauthorized");
+      return MessageService.updateGroup({ groupId: id, input, userId });
+    },
+
+    updateUserProfile: async (_, { input }, { userId }) => {
+      if (!userId) throw new GraphQLError("Unauthorized");
+      return UserService.updateProfile(userId, input);
     },
   },
+
   Subscription: {
     messageSent: {
       subscribe: (_, { senderId, receiverId, conversationId }, { pubsub }) => {
@@ -341,12 +395,10 @@ const resolvers = {
         };
       },
     },
+
     userStatusChanged: {
-      subscribe: (_, __, context) => {
-        if (!context.pubsub) {
-          throw new Error("PubSub not available in context");
-        }
-        return context.pubsub.asyncIterator("USER_STATUS_CHANGED");
+      subscribe: (_, __, { pubsub }) => {
+        return pubsub.asyncIterator("USER_STATUS_CHANGED");
       },
       resolve: (payload) => {
         if (!payload?.userStatusChanged) {
@@ -360,15 +412,19 @@ const resolvers = {
         };
       },
     },
+
     unreadMessages: {
-      subscribe: (_, { receiverId }, { pubsub }) =>
-        pubsub.asyncIterator(`UNREAD_MESSAGES_${receiverId}`),
+      subscribe: (_, { receiverId }, { pubsub }) => {
+        pubsub.asyncIterator(`UNREAD_MESSAGES_${receiverId}`);
+      },
     },
+
     groupMessageSent: {
       subscribe: (_, { groupId }, { pubsub }) => {
         return pubsub.asyncIterator(`GROUP_MESSAGE_${groupId}`);
       },
     },
+
     messageUpdated: {
       subscribe: (_, { conversationId }, { pubsub }) => {
         return pubsub.asyncIterator(`MESSAGE_UPDATED_${conversationId}`);
@@ -415,6 +471,19 @@ const resolvers = {
           throw new Error("Invalid notification format");
         }
         return payload.notificationReceived;
+      },
+    },
+
+    notificationsRead: {
+      subscribe: (_, __, { userId, pubsub }) => {
+        if (!userId) throw new AuthenticationError("Not authenticated");
+        return pubsub.asyncIterator(`NOTIFICATION_READ_${userId}`);
+      },
+      resolve: (payload) => {
+        if (!payload?.notificationsRead) {
+          throw new Error("Invalid notifications read payload");
+        }
+        return payload.notificationsRead;
       },
     },
   },

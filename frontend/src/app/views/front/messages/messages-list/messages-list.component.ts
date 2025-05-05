@@ -22,7 +22,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   
   private unreadCount = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCount.asObservable();
-  private subscriptions = new Subscription();
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private graphqlService: GraphqlDataService,
@@ -67,7 +67,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
         this.toastService.showError('Failed to load conversations');
       },
     });
-    this.subscriptions.add(sub);
+    this.subscriptions.push(sub);
   }
 
   filterConversations(): void {
@@ -116,7 +116,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
           this.toastService.showError('Connection to status updates lost');
         }
       });
-    this.subscriptions.add(sub);
+    this.subscriptions.push(sub);
   }
 
   subscribeToConversationUpdates(): void {
@@ -135,7 +135,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
           console.error('Conversation update error:', error);
         }
       });
-    this.subscriptions.add(sub);
+    this.subscriptions.push(sub);
   }
 
   updateUserStatus(updatedUser: User): void {
@@ -179,6 +179,6 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

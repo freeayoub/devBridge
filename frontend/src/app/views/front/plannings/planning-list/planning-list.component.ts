@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ReunionService } from 'src/app/services/reunion.service';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { PlanningService } from 'src/app/services/planning.service';
-import { Reunion } from 'src/app/models/reunion.model';
 import { Planning } from 'src/app/models/planning.model';
 import { AuthuserService } from 'src/app/services/authuser.service';
 
@@ -17,7 +15,8 @@ export class PlanningListComponent implements OnInit {
 
   constructor(
     private planningService: PlanningService,
-    private authService: AuthuserService
+    private authService: AuthuserService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -29,13 +28,16 @@ export class PlanningListComponent implements OnInit {
     if (!userId) return;
 
     this.planningService.getPlanningsByUser(userId).subscribe({
-      next: (plannings) => {
-        this.plannings = plannings;
+      next: (response: any) => {
+        this.plannings = response.plannings || [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
+        console.error('Erreur:', error);
         this.error = error;
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

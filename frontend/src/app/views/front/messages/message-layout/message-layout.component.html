@@ -1,0 +1,12 @@
+<div class="flex h-screen bg-gray-50">
+    <!-- Sidebar - toujours visible sur desktop, conditionnel sur mobile -->
+    <div class="w-full md:w-80 lg:w-96 border-r border-gray-200 bg-white flex flex-col"
+         [class.hidden]="(isMobileView$ | async) && hideSidebar">
+      <!-- Contenu de la sidebar -->
+    </div>
+    
+    <!-- Contenu principal -->
+    <div class="flex-1 flex flex-col">
+      <router-outlet></router-outlet>
+    </div>
+  </div>

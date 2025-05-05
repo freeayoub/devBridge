@@ -1,13 +1,14 @@
 const Message = require("../models/message.model");
 const Conversation = require("../models/conversation.model");
 const User = require("../models/user.model");
-const { pubsub } = require("../config/pubsub");
+const pubsub = require("../config/pubsub");
 const { isValidObjectId } = require("mongoose");
 const uploadFile = require("../services/fileUpload.service");
 const NotificationService = require("./notification.service");
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
+
 class MessageService {
   constructor() {
     this.pubsub = pubsub || {
@@ -16,6 +17,7 @@ class MessageService {
       },
     };
   }
+ 
   async validateUserIds(...userIds) {
     for (const userId of userIds) {
       if (!isValidObjectId(userId)) {
@@ -31,29 +33,7 @@ class MessageService {
       throw new Error("One or more users do not exist");
     }
   }
-  safeToISOString(date) {
-    if (!date) return null;
-    try {
-      return date instanceof Date
-        ? date.toISOString()
-        : new Date(date).toISOString();
-    } catch {
-      return null;
-    }
-  }
-  formatMessageResponse(message) {
-    if (!message) throw new Error("Message cannot be null");
 
-    const msg = message.toObject?.() || message;
-    return {
-      ...msg,
-      id: msg._id?.toString(),
-      timestamp: this.safeToISOString(msg.timestamp),
-      readAt: this.safeToISOString(msg.readAt),
-      createdAt: this.safeToISOString(msg.createdAt),
-      updatedAt: this.safeToISOString(msg.updatedAt),
-    };
-  }
   async generateThumbnail(originalUrl) {
     try {
       // Skip thumbnail generation for remote URLs
@@ -81,54 +61,58 @@ class MessageService {
       return originalUrl;
     }
   }
+  
   async getMediaDuration(url) {
-    return 0; 
+    return 0;
   }
+  
   async getConversation(conversationId, userId) {
     try {
       if (!isValidObjectId(conversationId)) {
-        throw new Error('Invalid conversation ID');
+        throw new Error("Invalid conversation ID");
       }
       if (!isValidObjectId(userId)) {
-        throw new Error('Invalid user ID');
+        throw new Error("Invalid user ID");
       }
-  
+
       const conversation = await Conversation.findOne({
         _id: conversationId,
         participants: userId,
       })
-      .populate({
-        path: 'participants',
-        select: '_id username',
-      })
-      .populate({
-        path: 'lastMessage',
-        select: '_id content',
-        options: { lean: true }
-      })
-      .lean();
-  
+        .populate({
+          path: "participants",
+          select: "_id username",
+        })
+        .populate({
+          path: "lastMessage",
+          select: "_id content",
+          options: { lean: true },
+        })
+        .lean();
+
       if (!conversation) {
         return null; // Or return an empty conversation object if preferred
       }
-  
+
       return {
         id: conversation._id.toString(),
-        participants: conversation.participants.map(p => ({
+        participants: conversation.participants.map((p) => ({
           id: p._id.toString(),
-          username: p.username
+          username: p.username,
         })),
-        lastMessage: conversation.lastMessage ? {
-          id: conversation.lastMessage._id.toString(),
-          content: conversation.lastMessage.content
-        } : null
+        lastMessage: conversation.lastMessage
+          ? {
+              id: conversation.lastMessage._id.toString(),
+              content: conversation.lastMessage.content,
+            }
+          : null,
       };
     } catch (error) {
-      console.error('Error in getConversation:', error);
+      console.error("Error in getConversation:", error);
       throw error; // Let GraphQL handle the error
     }
   }
-  
+
   async getConversations(userId) {
     const conversations = await Conversation.find({
       participants: userId,
@@ -185,6 +169,7 @@ class MessageService {
       })
     );
   }
+
   async createGroup({ name, participantIds, photo, userId }) {
     const participants = [...new Set([userId, ...participantIds])];
 
@@ -210,6 +195,7 @@ class MessageService {
     await group.save();
     return group;
   }
+
   async getMessages({ senderId, receiverId, page = 1, limit = 10 }) {
     await this.validateUserIds(senderId, receiverId);
     const safeLimit = Math.min(limit, 100);
@@ -236,53 +222,57 @@ class MessageService {
     const unreadMessages = await Message.find({
       receiverId: userId,
       isRead: false,
-      isDeleted: false
+      isDeleted: false,
     })
       .populate("senderId")
       .populate({
         path: "conversationId",
-        model: "Conversation", 
-        select: "_id participants isGroup groupName"
+        model: "Conversation",
+        select: "_id participants isGroup groupName",
       })
       .sort({ timestamp: -1 })
       .lean();
-  
+
     return unreadMessages.map((msg) => {
       const formattedMessage = this.formatMessageResponse(msg);
-      
+
       // Handle sender
-      const sender = msg.senderId ? {
-        id: msg.senderId._id.toString(),
-        username: msg.senderId.username,
-        email: msg.senderId.email,
-        image: msg.senderId.image,
-        isOnline: msg.senderId.isOnline,
-      } : {
-        id: 'deleted-user',
-        username: 'Deleted User',
-        email: null,
-        image: null,
-        isOnline: false
-      };
-  
+      const sender = msg.senderId
+        ? {
+            id: msg.senderId._id.toString(),
+            username: msg.senderId.username,
+            email: msg.senderId.email,
+            image: msg.senderId.image,
+            isOnline: msg.senderId.isOnline,
+          }
+        : {
+            id: "deleted-user",
+            username: "Deleted User",
+            email: null,
+            image: null,
+            isOnline: false,
+          };
+
       // Handle conversation
-      const conversation = msg.conversationId ? {
-        id: msg.conversationId._id.toString(),
-        participants: msg.conversationId.participants,
-        isGroup: msg.conversationId.isGroup || false,
-        groupName: msg.conversationId.groupName || null
-      } : {
-        id: 'unknown-conversation',
-        participants: [],
-        isGroup: false,
-        groupName: null
-      };
-  
+      const conversation = msg.conversationId
+        ? {
+            id: msg.conversationId._id.toString(),
+            participants: msg.conversationId.participants,
+            isGroup: msg.conversationId.isGroup || false,
+            groupName: msg.conversationId.groupName || null,
+          }
+        : {
+            id: "unknown-conversation",
+            participants: [],
+            isGroup: false,
+            groupName: null,
+          };
+
       return {
         ...formattedMessage,
         sender,
-        conversation, 
-        conversationId: conversation.id
+        conversation,
+        conversationId: conversation.id,
       };
     });
   }
@@ -403,54 +393,7 @@ class MessageService {
       throw new Error(`Failed to send message: ${error.message}`);
     }
   }
-  async sendGroupMessage({
-    senderId,
-    groupId,
-    content,
-    attachments = [],
-    type = "text",
-  }) {
-    await this.validateUserIds(senderId, ...groupId.participants);
 
-    const conversation = await Conversation.findById(groupId);
-    if (!conversation?.isGroup) {
-      throw new Error("Group conversation not found");
-    }
-
-    if (!conversation.participants.includes(senderId)) {
-      throw new Error("Not a group member");
-    }
-
-    const message = new Message({
-      sender: senderId,
-      group: groupId,
-      content,
-      attachments,
-      type,
-      conversationId: conversation._id,
-      status: "sent",
-    });
-    await message.save();
-
-    // Update conversation
-    conversation.messages.push(message._id);
-    conversation.lastMessage = message._id;
-    conversation.updatedAt = new Date();
-    await conversation.save();
-
-    // Publish events
-    this.publishMessageEvent({
-      eventType: "GROUP_MESSAGE_SENT",
-      conversationId: groupId,
-      senderId,
-      message,
-    });
-
-    // Send notifications
-    await NotificationService.sendMessageNotification(message);
-
-    return message;
-  }
   async editMessage({ messageId, userId, newContent }) {
     const message = await Message.findById(messageId);
     if (!message) {
@@ -633,13 +576,14 @@ class MessageService {
 
     return message;
   }
+  
   async searchMessages({
     userId,
     query,
     conversationId = null,
     limit = 20,
     offset = 0,
-    filters = {}
+    filters = {},
   }) {
     // Base search query
     const searchQuery = {
@@ -647,9 +591,9 @@ class MessageService {
         { content: { $regex: query, $options: "i" } },
         { "attachments.name": { $regex: query, $options: "i" } },
       ],
-      ...filters // Spread additional filters
+      ...filters, // Spread additional filters
     };
-  
+
     // Handle conversation scope
     if (conversationId) {
       const conversation = await Conversation.findById(conversationId);
@@ -665,14 +609,14 @@ class MessageService {
         $in: conversations.map((c) => c._id),
       };
     }
-  
+
     // Handle date range filters
     if (filters.dateFrom || filters.dateTo) {
       searchQuery.timestamp = {};
       if (filters.dateFrom) searchQuery.timestamp.$gte = filters.dateFrom;
       if (filters.dateTo) searchQuery.timestamp.$lte = filters.dateTo;
     }
-  
+
     // Execute query
     const messages = await Message.find(searchQuery)
       .sort({ timestamp: -1 })
@@ -681,9 +625,10 @@ class MessageService {
       .populate("sender", "username email image")
       .populate("receiver", "username email image")
       .populate("group", "groupName groupPhoto");
-  
-    return messages.map(msg => this.formatMessageResponse(msg));
+
+    return messages.map((msg) => this.formatMessageResponse(msg));
   }
+
   async startTyping({ userId, conversationId }) {
     const conversation = await Conversation.findById(conversationId);
     if (!conversation) {
@@ -785,6 +730,151 @@ class MessageService {
       throw error; // Re-throw the original error
     }
   }
+ 
+  async getGroup(groupId, userId) {
+    const group = await Conversation.findOne({
+      _id: groupId,
+      isGroup: true,
+      participants: userId
+    }).populate('participants admins');
+    
+    if (!group) throw new Error("Group not found or access denied");
+    
+    return {
+      ...group.toObject(),
+      id: group._id.toString(),
+      participants: group.participants,
+      admins: group.admins
+    };
+  }
+
+  async getUserGroups(userId) {
+    const groups = await Conversation.find({
+      isGroup: true,
+      participants: userId
+    }).populate('participants admins lastMessage');
+    
+    return groups.map(group => ({
+      ...group.toObject(),
+      id: group._id.toString(),
+      participants: group.participants,
+      admins: group.admins,
+      lastMessage: group.lastMessage
+    }));
+  }
+
+  async updateGroup({ groupId, input, userId }) {
+    const group = await Conversation.findOne({
+      _id: groupId,
+      isGroup: true,
+      participants: userId
+    });
+    
+    if (!group) throw new Error("Group not found or access denied");
+    
+    // Vérifier si l'utilisateur est admin pour certaines modifications
+    const isAdmin = group.groupAdmins.includes(userId);
+    
+    if (input.name) group.groupName = input.name;
+    if (input.description) group.groupDescription = input.description;
+    
+    // Gestion des participants
+    if (input.addParticipants && isAdmin) {
+      group.participants = [...new Set([...group.participants, ...input.addParticipants])];
+    }
+    
+    if (input.removeParticipants && isAdmin) {
+      group.participants = group.participants.filter(
+        p => !input.removeParticipants.includes(p.toString())
+      );
+      // Retirer aussi des admins si nécessaire
+      group.groupAdmins = group.groupAdmins.filter(
+        a => !input.removeParticipants.includes(a.toString())
+      );
+    }
+    
+    // Gestion des admins
+    if (input.addAdmins && isAdmin) {
+      group.groupAdmins = [...new Set([...group.groupAdmins, ...input.addAdmins])];
+    }
+    
+    if (input.removeAdmins && isAdmin) {
+      group.groupAdmins = group.groupAdmins.filter(
+        a => !input.removeAdmins.includes(a.toString())
+      );
+    }
+    
+    // Gestion de la photo
+    if (input.photo) {
+      const { createReadStream, filename } = await input.photo;
+      const stream = createReadStream();
+      group.groupPhoto = await uploadFile(stream, filename, 'group-photos');
+    }
+    
+    await group.save();
+    return group;
+  }
+
+  async sendGroupMessage({
+    senderId,
+    groupId,
+    content,
+    attachments = [],
+    type = "text",
+  }) {
+    try {
+    await this.validateUserIds(senderId, ...groupId.participants);
+
+    const conversation = await Conversation.findById(groupId);
+    if (!conversation?.isGroup) {
+      throw new Error("CONVERSATION_NOT_GROUP");
+    }
+
+ 
+    if (!conversation.participants.includes(senderId)) {
+      throw new Error("USER_NOT_IN_GROUP");
+    }
+
+    const message = new Message({
+      sender: senderId,
+      group: groupId,
+      content,
+      attachments,
+      type,
+      conversationId: conversation._id,
+      status: "sent",
+    });
+
+    await Promise.all([
+      message.save(),
+      Conversation.findByIdAndUpdate(
+        groupId,
+        { 
+          $push: { messages: message._id },
+          $set: { 
+            lastMessage: message._id,
+            updatedAt: new Date() 
+          }
+        }
+      )
+    ]);
+    // Publish events
+    this.publishMessageEvent({
+      eventType: "GROUP_MESSAGE_SENT",
+      conversationId: groupId,
+      senderId,
+      message,
+    });
+
+    // Send notifications
+    await NotificationService.sendMessageNotification(message);
+
+    return message;
+  }catch (error) {
+    console.error(`[GroupMessage] Error: ${error.message}`);
+    throw new Error("MESSAGE_SEND_FAILED");
+  }
+}
 
   async publishMessageEvent({
     eventType,
@@ -855,5 +945,32 @@ class MessageService {
       // Don't throw error here as it would prevent message sending
     }
   }
+
+  safeToISOString(date) {
+    if (!date) return null;
+    try {
+      return date instanceof Date
+        ? date.toISOString()
+        : new Date(date).toISOString();
+    } catch {
+      return null;
+    }
+  }
+
+  formatMessageResponse(message) {
+    if (!message) throw new Error("Message cannot be null");
+
+    const msg = message.toObject?.() || message;
+    return {
+      ...msg,
+      id: msg._id?.toString(),
+      timestamp: this.safeToISOString(msg.timestamp),
+      readAt: this.safeToISOString(msg.readAt),
+      createdAt: this.safeToISOString(msg.createdAt),
+      updatedAt: this.safeToISOString(msg.updatedAt),
+    };
+  }
+ 
+
 }
 module.exports = new MessageService();

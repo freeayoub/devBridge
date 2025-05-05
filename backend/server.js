@@ -30,7 +30,6 @@ const pubsub = require("./src/config/pubsub");
 const app = express();
 const httpServer = createServer(app);
 const PORT = config.PORT || 3000;
-
 // 1. Connexion DB
 connectDB().catch((err) => {
   console.error("Database connection error:", err);
@@ -61,9 +60,9 @@ app.use(
 );
 
 // 3. REST Routes
-app.use("/api/plannings",planningRoutes);
-app.use("/api/reunions",reunionRoutes);
-app.use("/api/users",userRoutes);
+app.use("/api/plannings", planningRoutes);
+app.use("/api/reunions", reunionRoutes);
+app.use("/api/users", userRoutes);
 // 4. Health Check Endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -80,7 +79,7 @@ app.get("/health", (req, res) => {
 app.use(
   "/graphql",
   graphqlUploadExpress({
-    maxFileSize: 10000000, 
+    maxFileSize: 10000000,
     maxFiles: 10,
   })
 );
@@ -92,23 +91,27 @@ const wsServer = new WebSocketServer({
   server: httpServer,
   path: "/graphql",
 });
-
 //  WebSocket server configuration
 const serverCleanup = useServer(
   {
     schema,
     onConnect: async (ctx) => {
-      const token = ctx.connectionParams?.authorization;
-      if (!token) {
-        console.log("Connection attempt without token");
-        throw new Error("Missing auth token");
-      }
-
       try {
-        const user = await verifyTokenGraphql(token.split(" ")[1]);
+        const token = (ctx.connectionParams || {}).authorization;
+        if (!token) {
+          console.warn("Unauthorized connection attempt - No token provided");
+          throw new Error("Authentication token required");
+        }
+        // Extract Bearer token
+        const authToken = token.split(" ")[1];
+        if (!authToken) {
+          console.warn("Malformed authorization header");
+          throw new Error("Invalid token format");
+        }
+        const user = await verifyTokenGraphql(authToken);
         return { user, pubsub };
       } catch (error) {
-        console.error("WebSocket auth failed:", error);
+        console.error("WebSocket authentication failed:", error instanceof Error ? error.message : error);
         throw new Error("Authentication failed");
       }
     },

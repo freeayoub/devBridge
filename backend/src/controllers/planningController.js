@@ -338,6 +338,49 @@ const updatePlanning = async (req, res) => {
   }
 };
 
+const getPlanningsByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Validate user ID
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID utilisateur invalide"
+      });
+    }
+
+    // Find plannings where user is creator OR participant
+    const plannings = await Planning.find({
+      $or: [
+        { createur: userId },
+        { participants: userId }
+      ]
+    })
+    .populate("createur", "username email image")
+    .populate("participants", "username email image")
+    .populate({
+      path: "reunions",
+      select: "titre date heureDebut heureFin statut",
+      options: { sort: { date: 1 } } // Sort meetings by date
+    })
+    .sort({ dateDebut: -1 }); // Sort plannings by most recent first
+
+    return res.status(200).json({
+      success: true,
+      count: plannings.length,
+      plannings
+    });
+
+  } catch (error) {
+    console.error("Erreur récupération plannings par utilisateur:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined
+    });
+  }
+};
 
 module.exports = {
   createPlanning,
@@ -345,4 +388,5 @@ module.exports = {
   getAllPlannings,
   getPlanningById,
   updatePlanning,
+  getPlanningsByUser
 };

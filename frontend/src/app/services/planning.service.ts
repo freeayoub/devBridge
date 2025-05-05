@@ -45,6 +45,6 @@ export class PlanningService {
   }
 
   getPlanningsByUser(userId: string): Observable<Planning[]> {
-    return this.http.get<Planning[]>(`${environment.urlBackend}plannings/getone/${userId}`);
+    return this.http.get<Planning[]>(`${environment.urlBackend}plannings/getPlannigByUser/${userId}`,{headers: this.getUserHeaders()});
 }
 }

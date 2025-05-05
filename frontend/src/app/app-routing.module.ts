@@ -60,11 +60,11 @@ const routes: Routes = [
         loadChildren: () => import('./views/front/notifications/notifications.module').then(m => m.NotificationsModule),
         canActivateChild: [guarduserGuard],
       },
-      { 
-        path: 'projects', 
-        loadChildren: () => import('./views/front/projects/projects.module').then(m => m.ProjectsModule),
-        canActivateChild: [guarduserGuard],
-      },
+      // { 
+      //   path: 'projects', 
+      //   loadChildren: () => import('./views/front/projects/projects.module').then(m => m.ProjectsModule),
+      //   canActivateChild: [guarduserGuard],
+      // },
       // sameh &med & ...
     ],
   },
@@ -120,6 +120,11 @@ const routes: Routes = [
         path: 'reunions', 
         loadChildren: () => import('./views/front/reunions/reunions.module').then(m => m.ReunionsModule
 
+        ),
+      },
+      { 
+        path: 'projects', 
+        loadChildren: () => import('./views/admin/projects/projects.module').then(m => m.ProjectsModule
         ),
       },
       // sameh med & ....

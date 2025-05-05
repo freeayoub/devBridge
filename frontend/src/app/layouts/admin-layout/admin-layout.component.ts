@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, HostListener, OnInit} from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthadminService } from 'src/app/services/authadmin.service';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -13,13 +13,19 @@ import { AuthuserService } from 'src/app/services/authuser.service';
     trigger('fadeIn', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(-10px)' }),
-        animate('150ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+        animate(
+          '150ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' })
+        ),
       ]),
       transition(':leave', [
-        animate('100ms ease-in', style({ opacity: 0, transform: 'translateY(-10px)' }))
-      ])
-    ])
-  ]
+        animate(
+          '100ms ease-in',
+          style({ opacity: 0, transform: 'translateY(-10px)' })
+        ),
+      ]),
+    ]),
+  ],
 })
 export class AdminLayoutComponent implements OnInit {
   username: string;
@@ -34,7 +40,7 @@ export class AdminLayoutComponent implements OnInit {
     private location: Location,
     private authAdminService: AuthadminService,
     private authService: AuthuserService,
-    private router: Router,
+    private router: Router
   ) {
     const user = this.authAdminService.getUser();
     this.username = user?.username || '';
@@ -44,7 +50,6 @@ export class AdminLayoutComponent implements OnInit {
   ngOnInit(): void {
     this.checkScrollPosition();
   }
-
 
   @HostListener('window:scroll')
   checkScrollPosition(): void {
@@ -71,32 +76,33 @@ export class AdminLayoutComponent implements OnInit {
   closeLogoutModal(): void {
     this.showLogoutModal = false;
   }
-    logout(): void {
-      this.authService.logout().subscribe({
-        next: () => {
-          this.userMenuOpen = false;
-          this.showLogoutModal = false;
-          this.authService.clearAuthData();
-          this.authAdminService.clearAuthData(); 
-          setTimeout(() => {
-            this.router.navigate(['/admin/login'], {
-              queryParams: { message: 'Déconnexion réussie' },
-              replaceUrl: true 
-            });
-          }, 100);
-        }, error: (err) => {
-          console.error('Logout error:', err);
-          this.authService.clearAuthData();
-          this.authAdminService.clearAuthData();
-          setTimeout(() => {
-            this.router.navigate(['/admin/login'], {
-              queryParams: { message: 'Déconnexion effectuée' },
-              replaceUrl: true
-            });
-          }, 100);
-        }
-      });
-    }
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.userMenuOpen = false;
+        this.showLogoutModal = false;
+        this.authService.clearAuthData();
+        this.authAdminService.clearAuthData();
+        setTimeout(() => {
+          this.router.navigate(['/admin/login'], {
+            queryParams: { message: 'Déconnexion réussie' },
+            replaceUrl: true,
+          });
+        }, 100);
+      },
+      error: (err) => {
+        console.error('Logout error:', err);
+        this.authService.clearAuthData();
+        this.authAdminService.clearAuthData();
+        setTimeout(() => {
+          this.router.navigate(['/admin/login'], {
+            queryParams: { message: 'Déconnexion effectuée' },
+            replaceUrl: true,
+          });
+        }, 100);
+      },
+    });
+  }
 
   goBack(): void {
     this.location.back();

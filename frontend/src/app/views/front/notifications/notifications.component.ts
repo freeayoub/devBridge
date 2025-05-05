@@ -1,254 +1,110 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NotificationService } from 'src/app/services/notification.service';
-import { Subscription } from 'rxjs';
+import { EMPTY,Observable, Subject } from 'rxjs';
 import { Notification } from 'src/app/models/notification.model';
+import { catchError, map, takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css'],
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
-  notifications: Notification[] = [];
+  notifications$: Observable<Notification[]>;
+  unreadCount$: Observable<number> ;
   loading = true;
-  error: any;
-  private subscriptions: Subscription[] = [];
+  error: Error | null = null;
+  private destroy$ = new Subject<void>();
 
-  constructor(private notificationService: NotificationService) {}
-
+  constructor(private notificationService:NotificationService) {
+    this.notifications$ = this.notificationService.notifications$;
+    this.unreadCount$ = this.notificationService.notificationCount$;
+  }
   ngOnInit(): void {
     this.loadNotifications();
-    this.subscribeToNewNotifications();
-    this.subscribeToNotificationsRead();
+    this.setupSubscriptions();
   }
 
   loadNotifications(): void {
-    const sub = this.notificationService.getNotifications().subscribe({
-      next: (notifications) => {
-        this.notifications = notifications;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.error = error;
-        this.loading = false;
-      },
-    });
-    this.subscriptions.push(sub);
-  }
-
-  hasUnreadNotifications(): boolean {
-    return this.notifications.some(notification => !notification.isRead);
-  }
-  
-  subscribeToNewNotifications(): void {
-    const sub = this.notificationService.subscribeToNotifications().subscribe({
-      next: (notification) => {
-        this.notifications.unshift(notification);
-        this.updateUnreadCount();
-      },
+    this.loading = true;
+    this.error = null;
+    
+      this.notificationService.getNotifications().subscribe({
+      next: () => this.loading = false,
       error: (err) => {
-        console.error('Notification subscription error:', err);
-      },
-    });
-    this.subscriptions.push(sub);
-  }
-
-  subscribeToNotificationsRead(): void {
-    const sub = this.notificationService.subscribeToNotificationsRead().subscribe({
-      next: (readIds) => {
-        this.notifications = this.notifications.map(n => 
-          readIds.includes(n.id) ? { ...n, isRead: true } : n
-        );
-        this.updateUnreadCount();
-      },
-      error: (err) => {
-        console.error('Notifications read subscription error:', err);
+        this.error = err.message;
+        this.loading = false;
       }
     });
-    this.subscriptions.push(sub);
   }
 
+  setupSubscriptions(): void {
+      this.notificationService
+      .subscribeToNewNotifications()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(error => {
+          console.error('Notification stream error:', error);
+          return EMPTY;
+        })
+      )
+      .subscribe();
+      this.notificationService
+      .subscribeToNotificationsRead()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(error => {
+          console.error('Notifications read stream error:', error);
+          return EMPTY;
+        })
+      )
+      .subscribe();
+  }
+  
   markAsRead(notificationId: string): void {
-    this.notificationService.markAsRead([notificationId]).subscribe({
-      error: (err) => {
-        console.error('Failed to mark notification as read:', err);
+   this.notificationService.markAsRead([notificationId]).subscribe({
+      next: (result) => {
+        if (!result.success) {
+          console.error('Failed to mark notification as read');
+        }
       },
+      error: (err) => console.error('Error:', err)
     });
+ 
   }
 
   markAllAsRead(): void {
-    const unreadIds = this.notifications
-      .filter((n) => !n.isRead)
-      .map((n) => n.id);
-
-    if (unreadIds.length === 0) return;
-
-    this.notificationService.markAsRead(unreadIds).subscribe({
-      error: (error) => {
-        console.error('Error marking notifications as read:', error);
-      },
+    this.notifications$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(notifications => {
+      const unreadIds = notifications
+        .filter(n => !n.isRead)
+        .map(n => n.id);
+  
+      if (unreadIds.length > 0) {
+        this.notificationService.markAsRead(unreadIds).subscribe();
+      }
     });
   }
 
-  private updateUnreadCount(): void {
-    const unreadCount = this.notifications.filter(n => !n.isRead).length;
-    this.notificationService.updateUnreadCount(unreadCount);
-  }
-  acceptFriendRequest(notification: Notification): void {
-    // Implement friend request acceptance logic
-    this.markAsRead(notification.id);
-    // Additional friend request handling
+  hasUnreadNotifications(): Observable<boolean> {
+    return this.unreadCount$.pipe(
+      map(count => count > 0)
+    );
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  acceptFriendRequest(notification: Notification): void {
+   
+    this.markAsRead(notification.id);
   }
+hasNotifications(): boolean {
+  return this.notificationService.notifications.value?.length > 0;
+}
+getErrorMessage(): string {
+  return this.error?.message || 'Unknown error occurred';
 }
 
-// import { Component, OnInit, OnDestroy } from '@angular/core';
-// import { NotificationService } from 'src/app/services/notification.service';
-// import { Subscription } from 'rxjs';
-// import { Notification } from 'src/app/models/notification.model';
-// import { FriendsService } from 'src/app/services/friends.service'; // Nouveau service
-// import { ToastService } from 'src/app/services/toast.service'; // Service de notification
-
-// @Component({
-//   selector: 'app-notifications',
-//   templateUrl: './notifications.component.html',
-//   styleUrls: ['./notifications.component.css'],
-// })
-// export class NotificationsComponent implements OnInit, OnDestroy {
-//   notifications: Notification[] = [];
-//   loading = true;
-//   error: any;
-//   hasMoreNotifications = true;
-//   private subscriptions: Subscription[] = [];
-
-//   constructor(
-//     private notificationService: NotificationService,
-//     private friendsService: FriendsService, // Injection du service
-//     private toastService: ToastService // Injection du service de toast
-//   ) {}
-
-//   ngOnInit(): void {
-//     this.loadNotifications();
-//     this.subscribeToNewNotifications();
-//     this.subscribeToNotificationsRead();
-//   }
-
-//   loadNotifications(): void {
-//     this.loading = true;
-//     this.error = null;
-    
-//     const sub = this.notificationService.getNotifications().subscribe({
-//       next: (notifications) => {
-//         this.notifications = notifications;
-//         this.loading = false;
-//         this.updateUnreadCount();
-//       },
-//       error: (error) => {
-//         this.error = error;
-//         this.loading = false;
-//         this.toastService.showError('Failed to load notifications');
-//       },
-//     });
-//     this.subscriptions.push(sub);
-//   }
-
-//   loadMoreNotifications(): void {
-//     // Implémentez la pagination si votre API la supporte
-//   }
-
-//   hasUnreadNotifications(): boolean {
-//     return this.notifications.some(notification => !notification.isRead);
-//   }
-  
-//   subscribeToNewNotifications(): void {
-//     const sub = this.notificationService.subscribeToNotifications().subscribe({
-//       next: (notification) => {
-//         this.notifications.unshift(notification);
-//         this.updateUnreadCount();
-//         this.toastService.showInfo('New notification received');
-//       },
-//       error: (err) => {
-//         console.error('Notification subscription error:', err);
-//         this.toastService.showError('Notification update failed');
-//       },
-//     });
-//     this.subscriptions.push(sub);
-//   }
-
-//   subscribeToNotificationsRead(): void {
-//     const sub = this.notificationService.subscribeToNotificationsRead().subscribe({
-//       next: (readIds) => {
-//         this.notifications = this.notifications.map(n => 
-//           readIds.includes(n.id) ? { ...n, isRead: true } : n
-//         );
-//         this.updateUnreadCount();
-//       },
-//       error: (err) => {
-//         console.error('Notifications read subscription error:', err);
-//       }
-//     });
-//     this.subscriptions.push(sub);
-//   }
-
-//   markAsRead(notificationId: string): void {
-//     this.notificationService.markAsRead([notificationId]).subscribe({
-//       next: () => {
-//         this.notifications = this.notifications.map(n => 
-//           n.id === notificationId ? { ...n, isRead: true } : n
-//         );
-//         this.updateUnreadCount();
-//       },
-//       error: (err) => {
-//         console.error('Failed to mark notification as read:', err);
-//         this.toastService.showError('Failed to mark as read');
-//       },
-//     });
-//   }
-
-//   markAllAsRead(): void {
-//     const unreadIds = this.notifications
-//       .filter((n) => !n.isRead)
-//       .map((n) => n.id);
-
-//     if (unreadIds.length === 0) return;
-
-//     this.notificationService.markAsRead(unreadIds).subscribe({
-//       next: () => {
-//         this.notifications = this.notifications.map(n => ({ ...n, isRead: true }));
-//         this.updateUnreadCount();
-//         this.toastService.showSuccess('All notifications marked as read');
-//       },
-//       error: (error) => {
-//         console.error('Error marking notifications as read:', error);
-//         this.toastService.showError('Failed to mark all as read');
-//       },
-//     });
-//   }
-
-//   acceptFriendRequest(notification: Notification): void {
-//     const senderId = notification.sender.id;
-//     this.friendsService.acceptFriendRequest(senderId).subscribe({
-//       next: () => {
-//         this.markAsRead(notification.id);
-//         this.toastService.showSuccess(`Friend request from ${notification.sender.username} accepted`);
-//         // Optionally remove the notification
-//         this.notifications = this.notifications.filter(n => n.id !== notification.id);
-//       },
-//       error: (err) => {
-//         console.error('Failed to accept friend request:', err);
-//         this.toastService.showError('Failed to accept friend request');
-//       }
-//     });
-//   }
-
-//   private updateUnreadCount(): void {
-//     const unreadCount = this.notifications.filter(n => !n.isRead).length;
-//     this.notificationService.updateUnreadCount(unreadCount);
-//   }
-
-//   ngOnDestroy(): void {
-//     this.subscriptions.forEach((sub) => sub.unsubscribe());
-//   }
-// }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+}

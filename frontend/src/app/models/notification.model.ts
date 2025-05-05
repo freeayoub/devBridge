@@ -1,20 +1,23 @@
-import { User } from "./user.model";
+
 export interface Notification {
-createdAt: string|number|Date;
   id: string;
   type: 'NEW_MESSAGE' | 'FRIEND_REQUEST' | 'GROUP_INVITE' | 'MESSAGE_REACTION';
   content: string;
-  timestamp: string | Date;
+  timestamp: Date | string;
   isRead: boolean;
-  sender:{
-    username:string;
-    image?: string; 
+  sender?: {
+    id: string;
+    username: string;
+    image?: string;
   };
   message?: {
+    id?: string;
     content: string;
-    attachments?: {
+    attachments?: Array<{
       url: string;
       type: 'IMAGE' | 'DOCUMENT' | 'AUDIO' | 'VIDEO' | 'OTHER';
-    }[];
+      name?: string;
+      size?: number;
+    }>;
   };
 }

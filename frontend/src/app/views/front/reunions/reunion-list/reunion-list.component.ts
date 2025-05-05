@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ReunionService }  from 'src/app/services/reunion.service';
+import { ReunionService } from 'src/app/services/reunion.service';
 import { Reunion } from 'src/app/models/reunion.model';
 import { AuthuserService } from 'src/app/services/authuser.service';
 
@@ -11,7 +11,7 @@ import { AuthuserService } from 'src/app/services/authuser.service';
 export class ReunionListComponent implements OnInit {
   reunions: Reunion[] = [];
   loading = true;
-  error: any;
+  error: Error | null = null;
 
   constructor(
     private reunionService: ReunionService,
@@ -23,30 +23,36 @@ export class ReunionListComponent implements OnInit {
   }
 
   loadReunions(): void {
-    const userId = this.authService.getCurrentUserId();
-    if (!userId) return;
-
-    // this.reunionService.getProchainesReunions(userId).subscribe({
-    this.reunionService. getAllReunions().subscribe({
-      next: (reunions) => {
-        this.reunions = reunions;
-        console.log(this.reunions)
-        this.loading = false;
-      },
-      error: (error:any) => {
-        this.error = error;
-        this.loading = false;
+    try {
+      const userId = this.authService.getCurrentUserId();
+      if (!userId) {
+        throw new Error('User not authenticated');
       }
-    });
+
+      this.reunionService.getProchainesReunions(userId).subscribe({
+        next: (reunions) => {
+          this.reunions = reunions;
+          this.loading = false;
+        },
+        error: (error: Error) => {
+          this.error = error;
+          this.loading = false;
+          console.error('Error loading meetings:', error);
+        }
+      });
+    } catch (error) {
+      this.error = error instanceof Error ? error : new Error('Unknown error');
+      this.loading = false;
+    }
   }
 
-  getStatutClass(statut: string): string {
-    switch (statut) {
-      case 'planifiee': return 'bg-blue-100 text-blue-800';
-      case 'en_cours': return 'bg-yellow-100 text-yellow-800';
-      case 'terminee': return 'bg-green-100 text-green-800';
-      case 'annulee': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  getStatutClass(statut: 'planifiee' | 'en_cours' | 'terminee' | 'annulee'): string {
+    const classes = {
+      planifiee: 'bg-blue-100 text-blue-800',
+      en_cours: 'bg-yellow-100 text-yellow-800',
+      terminee: 'bg-green-100 text-green-800',
+      annulee: 'bg-red-100 text-red-800'
+    };
+    return classes[statut] || 'bg-gray-100 text-gray-800';
   }
 }

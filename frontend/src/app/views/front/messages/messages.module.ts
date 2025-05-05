@@ -7,8 +7,12 @@ import { ApolloModule } from 'apollo-angular';
 import { MessageChatComponent } from './message-chat/message-chat.component';
 import { MessagesListComponent } from './messages-list/messages-list.component';
 import { UserListComponent } from './user-list/user-list.component';
-import { UserStatusService } from '@app/services/user-status.service';
 import { MessageUserProfileComponent } from './message-user-profile/message-user-profile.component';
+import { RouterModule } from '@angular/router';
+import { MessageLayoutComponent } from './message-layout/message-layout.component';
+import { GraphqlDataService } from '@app/services/graphql-data.service';
+import { NotificationService } from '@app/services/notification.service';
+import { UserStatusService } from '@app/services/user-status.service';
 
 @NgModule({
   declarations: [
@@ -16,6 +20,7 @@ import { MessageUserProfileComponent } from './message-user-profile/message-user
     MessagesListComponent,
     UserListComponent,
     MessageUserProfileComponent,
+    MessageLayoutComponent,
   ],
   imports: [
     CommonModule,
@@ -23,8 +28,8 @@ import { MessageUserProfileComponent } from './message-user-profile/message-user
     FormsModule,
     ReactiveFormsModule,
     ApolloModule,
+    RouterModule,
   ],
-
-  providers: [UserStatusService],
+  providers: [UserStatusService,GraphqlDataService,NotificationService],
 })
 export class MessagesModule {}

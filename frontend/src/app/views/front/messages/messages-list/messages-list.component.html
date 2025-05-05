@@ -79,6 +79,7 @@
             class="p-4 hover:bg-gray-50 cursor-pointer flex items-center transition-colors">
           
           <!-- Avatar with status indicator -->
+
           <div class="relative flex-shrink-0 mr-3">
             <img [src]="getOtherParticipant(conv.participants)?.image || 'assets/images/default-avatar.png'" 
                  class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">
@@ -116,7 +117,7 @@
   <!-- Main Content Area -->
   <div class="flex-1 hidden md:flex flex-col bg-gray-50">
     <!-- Default empty state -->
-    <div *ngIf="!selectedConversationId" class="flex-1 flex items-center justify-center">
+    <!-- <div *ngIf="!selectedConversationId" class="flex-1 flex items-center justify-center">
       <div class="text-center p-8">
         <i class="fas fa-comment-dots text-4xl text-gray-300 mb-4"></i>
         <h3 class="text-lg font-medium text-gray-900">Select a conversation</h3>
@@ -126,7 +127,7 @@
           New Conversation
         </button>
       </div>
-    </div>
+    </div> -->
     
     <!-- Router outlet for chat component -->
     <router-outlet></router-outlet>

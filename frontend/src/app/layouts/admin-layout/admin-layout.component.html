@@ -52,6 +52,7 @@
             </svg>
             Dashboard
           </a>
+
           <a
             routerLink="/admin/allusers"
             routerLinkActive="bg-[#dac4ea]/20 text-white"
@@ -73,6 +74,7 @@
             </svg>
             All Users
           </a>
+
           <a
             routerLink="/admin/adduser"
             routerLinkActive="bg-[#dac4ea]/20 text-white"
@@ -94,7 +96,31 @@
             </svg>
             Add User
           </a>
-<!-- end of bo back -->
+
+      
+          <a
+            routerLink="/admin/projects"
+            routerLinkActive="bg-[#dac4ea]/20 text-white"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+              />
+            </svg>
+            Projects
+          </a>
+      
+          <!-- end of bo back -->
         </nav>
       </div>
     </div>
@@ -173,6 +199,7 @@
             </svg>
             Dashboard
           </a>
+
           <a
             routerLink="/admin/allusers"
             (click)="toggleMobileMenu()"
@@ -194,6 +221,7 @@
             </svg>
             All Users
           </a>
+
           <a
             routerLink="/admin/adduser"
             (click)="toggleMobileMenu()"
@@ -214,6 +242,27 @@
               />
             </svg>
             Add User
+          </a>
+          <a
+            routerLink="/admin/projects"
+            (click)="toggleMobileMenu()"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+              />
+            </svg>
+            Project
           </a>
         </nav>
       </div>
@@ -242,14 +291,27 @@
             />
           </svg>
         </button>
-  <!-- Bouton Back -->
-  <button (click)="goBack()" 
-          class="hidden md:flex items-center px-3 py-1 rounded-md text-sm font-medium text-[#4f5fad] hover:bg-[#dac4ea]/20 transition-colors duration-200">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-    </svg>
-    Back
-  </button>
+        <!-- Bouton Back -->
+        <button
+          (click)="goBack()"
+          class="hidden md:flex items-center px-3 py-1 rounded-md text-sm font-medium text-[#4f5fad] hover:bg-[#dac4ea]/20 transition-colors duration-200"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          Back
+        </button>
         <div class="flex-1 max-w-md ml-4 md:ml-6">
           <div class="relative">
             <div

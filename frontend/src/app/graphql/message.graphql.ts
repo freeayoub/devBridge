@@ -60,7 +60,11 @@ export const GET_CONVERSATIONS_QUERY = gql`
   }
 `;
 export const GET_CONVERSATION_QUERY = gql`
-  query GetConversation($conversationId: ID!, $limit: Int = 50, $offset: Int = 0) {
+  query GetConversation(
+    $conversationId: ID!
+    $limit: Int = 50
+    $offset: Int = 0
+  ) {
     getConversation(conversationId: $conversationId) {
       id
       participants {
@@ -221,43 +225,47 @@ export const CONVERSATION_UPDATED_SUBSCRIPTION = gql`
 `;
 // Notification Queries
 export const GET_NOTIFICATIONS_QUERY = gql`
-query GetUserNotifications {
-  getUserNotifications {
-    id
-    type
-    content
-    timestamp
-    isRead
-    sender {
+  query GetUserNotifications {
+    getUserNotifications {
       id
-      username
-      image
-    }
-    message {
-      id
+      type
       content
+      timestamp
+      isRead
+      sender {
+        id
+        username
+        image
+      }
+      message {
+        id
+        content
+      }
     }
   }
-}
 `;
-export const GET_NOTIFICATIONS_ATTACHAMENTS =  gql`
-query GetNotificationAttachments($id: ID!) {
-  getNotificationAttachments(notificationId: $id) {
-    url
-    type
-    name
-    size
+export const GET_NOTIFICATIONS_ATTACHAMENTS = gql`
+  query GetNotificationAttachments($id: ID!) {
+    getNotificationAttachments(notificationId: $id) {
+      url
+      type
+      name
+      size
+    }
   }
-}
 `;
 export const MARK_NOTIFICATION_READ_MUTATION = gql`
   mutation MarkNotificationsAsRead($notificationIds: [ID!]!) {
-    markNotificationsAsRead(notificationIds: $notificationIds)
+    markNotificationsAsRead(notificationIds: $notificationIds) {
+      success
+      readCount
+      remainingCount
+    }
   }
 `;
 export const NOTIFICATION_SUBSCRIPTION = gql`
-  subscription NotificationReceived($userId: ID!) {
-    notificationReceived(userId: $userId) {
+  subscription NotificationReceived {
+    notificationReceived {
       id
       type
       content
@@ -276,8 +284,8 @@ export const NOTIFICATION_SUBSCRIPTION = gql`
   }
 `;
 export const NOTIFICATIONS_READ_SUBSCRIPTION = gql`
-  subscription NotificationsRead($userId: ID!) {
-    notificationsRead(userId: $userId)
+  subscription NotificationsRead {
+    notificationsRead
   }
 `;
 // group Queries
@@ -334,8 +342,18 @@ export const GET_USER_GROUPS_QUERY = gql`
   }
 `;
 export const CREATE_GROUP_MUTATION = gql`
-  mutation CreateGroup($name: String!, $participantIds: [ID!]!, $photo: Upload, $description: String) {
-    createGroup(name: $name, participantIds: $participantIds, photo: $photo, description: $description) {
+  mutation CreateGroup(
+    $name: String!
+    $participantIds: [ID!]!
+    $photo: Upload
+    $description: String
+  ) {
+    createGroup(
+      name: $name
+      participantIds: $participantIds
+      photo: $photo
+      description: $description
+    ) {
       id
       name
       photo
@@ -383,15 +401,68 @@ export const TYPING_INDICATOR_SUBSCRIPTION = gql`
     }
   }
 `;
-
 export const START_TYPING_MUTATION = gql`
   mutation StartTyping($input: TypingInput!) {
     startTyping(input: $input)
   }
 `;
-
 export const STOP_TYPING_MUTATION = gql`
   mutation StopTyping($input: TypingInput!) {
     stopTyping(input: $input)
+  }
+`;
+export const GET_CURRENT_USER_QUERY = gql`
+  query GetCurrentUser {
+    getCurrentUser {
+      id
+      username
+      email
+      image
+      isOnline
+      lastActive
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const REACT_TO_MESSAGE_MUTATION = gql`
+  mutation ReactToMessage($messageId: ID!, $emoji: String!) {
+    reactToMessage(messageId: $messageId, emoji: $emoji) {
+      id
+      reactions {
+        userId
+        emoji
+        createdAt
+      }
+    }
+  }
+`;
+export const FORWARD_MESSAGE_MUTATION = gql`
+  mutation ForwardMessage($messageId: ID!, $conversationIds: [ID!]!) {
+    forwardMessage(messageId: $messageId, conversationIds: $conversationIds) {
+      id
+      content
+      timestamp
+      sender {
+        id
+        username
+      }
+      conversation {
+        id
+      }
+    }
+  }
+`;
+export const PIN_MESSAGE_MUTATION = gql`
+  mutation PinMessage($messageId: ID!, $conversationId: ID!) {
+    pinMessage(messageId: $messageId, conversationId: $conversationId) {
+      id
+      pinned
+      pinnedAt
+      pinnedBy {
+        id
+        username
+      }
+    }
   }
 `;

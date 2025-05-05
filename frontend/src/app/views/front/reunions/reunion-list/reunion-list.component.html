@@ -19,6 +19,9 @@
   
     <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
       Erreur lors du chargement des réunions: {{ error.message }}
+      <button (click)="loadReunions()" class="ml-2 px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+        Réessayer
+      </button>
     </div>
   
     <div *ngIf="!loading && reunions.length === 0" class="text-center py-8">
