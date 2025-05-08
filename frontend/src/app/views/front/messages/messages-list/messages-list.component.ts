@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { GraphqlDataService } from 'src/app/services/graphql-data.service';
 import { map, Subscription, BehaviorSubject } from 'rxjs';
 import { AuthuserService } from 'src/app/services/authuser.service';
 import { Conversation, Message } from 'src/app/models/message.model';
 import { User } from '@app/models/user.model';
 import { Router, ActivatedRoute  } from '@angular/router';
 import { ToastService } from 'src/app/services/toast.service';
+import { MessageService } from '@app/services/message.service';
 @Component({
   selector: 'app-messages-list',
   templateUrl: './messages-list.component.html',
@@ -25,7 +25,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(
-    private graphqlService: GraphqlDataService,
+    private MessageService: MessageService,
     private authService: AuthuserService,
     private router: Router,
     private route: ActivatedRoute,
@@ -53,7 +53,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
     
-    const sub = this.graphqlService.getConversations().subscribe({
+    const sub = this.MessageService.getConversations().subscribe({
       next: (conversations) => {
         this.conversations = Array.isArray(conversations) ? [...conversations] : [];
         this.filterConversations();
@@ -103,8 +103,8 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   }
 
   subscribeToUserStatus(): void {
-    const sub = this.graphqlService.subscribeToUserStatus()
-      .pipe(map(user => this.graphqlService.normalizeUser(user)))
+    const sub = this.MessageService.subscribeToUserStatus()
+      .pipe(map(user => this.MessageService.normalizeUser(user)))
       .subscribe({
         next: (user: User) => {
           if (user) {
@@ -120,7 +120,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   }
 
   subscribeToConversationUpdates(): void {
-    const sub = this.graphqlService.subscribeToConversationUpdates('global')
+    const sub = this.MessageService.subscribeToConversationUpdates('global')
       .subscribe({
         next: (updatedConv) => {
           const index = this.conversations.findIndex(c => c.id === updatedConv.id);

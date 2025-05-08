@@ -1,5 +1,35 @@
-import {User} from './user.model';
-
+export interface User {
+  _id: string;
+  id?: string;
+  username: string;
+  email: string;
+  image?: string | null;  
+  role: string;
+  bio?: string;
+  isActive: boolean;
+  isOnline?: boolean;   
+  lastActive?: Date;   
+  createdAt?: Date;     
+  updatedAt?: Date;  
+  followingCount?: number;
+  followersCount?: number;
+  postCount?: number;
+}
+export interface PaginatedResponse<T> {
+  items: T[];
+  totalCount: number;
+  pageInfo: {
+    currentPage: number;
+    perPage: number;
+    hasNextPage: boolean;
+  };
+}
+export interface Toast {
+  id?: number;
+  type: 'success' | 'error' | 'warning' | 'info';
+  message: string;
+  duration?: number;
+}
 export enum MessageType {
   TEXT = 'TEXT',
   IMAGE = 'IMAGE',
@@ -15,7 +45,6 @@ export enum MessageStatus {
   READ = 'READ',
   FAILED = 'FAILED'
 }
-
 export interface Attachment {
   url: string;
   type: MessageType;
@@ -25,15 +54,12 @@ export interface Attachment {
   thumbnailUrl?: string;
   duration?: number;
 }
-
 export interface Reaction {
   userId: string;
   user: Partial<User>;
   emoji: string;
   createdAt: Date | string;
 }
-
-// Message Interface
 export interface Message {
   id: string;
   content?: string;
@@ -58,9 +84,18 @@ export interface Message {
   reactions?: Reaction[];
   metadata?: any;
 }
-
-// Conversation Interface
-
+export interface MessageFilter {
+  isRead?: boolean;
+  isDeleted?: boolean;
+  type?: MessageType;
+  senderId?: string;
+  receiverId?: string;
+  groupId?: string;
+  conversationId?: string;
+  pinned?: boolean;
+  dateFrom?: Date | string;
+  dateTo?: Date | string;
+}
 export interface Conversation {
   id: string;
   participants: User[];
@@ -80,22 +115,11 @@ export interface Conversation {
   createdAt: Date | string;
   updatedAt: Date | string;
 }
-
 export interface UserReadStatus {
   userId: string;
   user: User;
   readAt: Date | string;
 }
-// conversations reponse 
-export interface GetConversationsResponse {
-  getConversations: Conversation[];
-}
-//conversation reponse 
-export interface GetConversationResponse {
-  getConversation: Conversation;
-}
-
-// Group Interface
 export interface Group {
   id: string;
   name: string;
@@ -107,10 +131,15 @@ export interface Group {
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
+export interface GetConversationsResponse {
+  getConversations: Conversation[];
+}
+export interface GetConversationResponse {
+  getConversation: Conversation;
+}
 export interface GetGroupResponse {
   getGroup: Group;
 }
-
 export interface GetUserGroupsResponse {
   getUserGroups: Group[];
 }
@@ -123,27 +152,12 @@ export interface GetOneUserResponse {
 export interface getCurrentUserResponse {
   getCurrentUser: User  ;
 }
-
-export interface MessageFilter {
-  isRead?: boolean;
-  isDeleted?: boolean;
-  type?: MessageType;
-  senderId?: string;
-  receiverId?: string;
-  groupId?: string;
-  conversationId?: string;
-  pinned?: boolean;
-  dateFrom?: Date | string;
-  dateTo?: Date | string;
-}
 export interface SearchMessagesResponse {
   searchMessages: Message[];
 }
-
 export interface GetUnreadMessagesResponse {
   getUnreadMessages: Message[];
 }
-
 export interface TypingIndicatorEvents {
   typingIndicator: TypingIndicatorEvent 
 }
@@ -152,75 +166,63 @@ export interface TypingIndicatorEvent {
   userId: string;
   isTyping: boolean;
 }
-
+export interface MessageDeleteResponse {
+  deleteMessage: {
+    id: string;
+    isDeleted: boolean;
+    deletedAt?: string | Date;
+  };
+}
+export interface MessageEditResponse {
+  editMessage: {
+    id: string;
+    content: string;
+    isEdited: boolean;
+    updatedAt: string | Date;
+  };
+}
 export interface MessageReadEvent {
   messageId: string;
   readerId: string;
   readAt: Date | string;
 }
-
 export interface MessageReactionEvent {
   messageId: string;
   reactions: Reaction[];
 }
-
-export interface Notification {
-  id: string;
-  type: 'NEW_MESSAGE' | 'FRIEND_REQUEST' | 'GROUP_INVITE' | 'MESSAGE_REACTION';
-  message?: Message;
-  sender?: User;
-  content: string;
-  timestamp: Date | string;
-  isRead: boolean;
-  createdAt: Date | string;
-  reciver: User;
-  relatedEntityId?: string;
+export interface MessageSentEvent {
+  messageSent: Message;
 }
-
-export interface GetNotificationsResponse {
-  getUserNotifications: Notification[];
+export interface UserStatusChangedEvent {
+  userStatusChanged: User;
 }
-
-export interface Toast {
-  id?: number;
-  type: 'success' | 'error' | 'warning' | 'info';
-  message: string;
-  duration?: number;
+export interface ConversationUpdatedEvent {
+  conversationUpdated: Conversation;
 }
-
-// Responses for mutations
 export interface SendMessageResponse {
   sendMessage: Message;
 }
-
 export interface MarkAsReadResponse {
   markMessageAsRead: Message;
 }
-
 export interface ReactToMessageResponse {
   reactToMessage: Message;
 }
-
 export interface ForwardMessageResponse {
   forwardMessage: Message[];
 }
-
 export interface PinMessageResponse {
   pinMessage: Message;
 }
-
 export interface CreateGroupResponse {
   createGroup: Group;
 }
-
 export interface UpdateGroupResponse {
   updateGroup: Group;
 }
-
 export interface SetUserOnlineResponse {
   setUserOnline: User;
 }
-
 export interface SetUserOfflineResponse {
   setUserOffline: User;
 }
@@ -233,6 +235,68 @@ export interface StartTupingResponse {
 export interface conversationUpdatedResponse {
   conversationUpdated: Conversation 
 }
+export interface getNotificationAttachmentsEvent {
+  getNotificationAttachments: Attachment[] 
+ }
 
-
-
+export interface NotificationAttachment {
+ url: string;
+ type: AttachmentType;
+ name?: string;
+ size?: number;
+ mimeType?: string;
+}
+export interface NotificationMessage {
+ id?: string;
+ content: string;
+ attachments?: NotificationAttachment[];
+}
+export interface NotificationSender {
+ id: string;
+ username: string;
+ image?: string | null;
+}
+export interface Notification {
+ id: string;
+ type: NotificationType;
+ content: string;
+ timestamp: Date | string;
+ isRead: boolean;
+ sender?: NotificationSender;
+ message?: NotificationMessage;
+ relatedEntityId?: string; 
+ metadata?: Record<string, any>; 
+}
+export interface GetNotificationsResponse {
+ getUserNotifications: Notification[];
+}
+export interface NotificationReceivedEvent {
+ notificationReceived: Notification;
+}
+export interface NotificationsReadEvent {
+ notificationsRead: string[];
+}
+export interface MarkNotificationsAsReadResponse {
+ markNotificationsAsRead: {
+   success: boolean;
+   readCount: number;
+   remainingCount: number;
+ };
+}
+export interface getUserNotificationsResponse {
+  getUserNotifications: Notification[]
+  }
+  export type NotificationType = 
+  | 'NEW_MESSAGE' 
+  | 'FRIEND_REQUEST' 
+  | 'GROUP_INVITE' 
+  | 'MESSAGE_REACTION'
+  | 'SYSTEM_ALERT'; 
+ 
+ export type AttachmentType = 
+  | 'IMAGE' 
+  | 'DOCUMENT' 
+  | 'AUDIO' 
+  | 'VIDEO' 
+  | 'OTHER';
+ 

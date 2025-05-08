@@ -9,7 +9,6 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthuserService } from 'src/app/services/authuser.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { GraphqlDataService } from 'src/app/services/graphql-data.service';
 import { Subscription, combineLatest } from 'rxjs';
 import { User } from '@app/models/user.model';
 import { UserStatusService } from 'src/app/services/user-status.service';
@@ -21,6 +20,7 @@ import {
 } from 'src/app/models/message.model';
 import { ToastService } from 'src/app/services/toast.service';
 import { switchMap, distinctUntilChanged, filter } from 'rxjs/operators';
+import { MessageService } from '@app/services/message.service';
 @Component({
   selector: 'app-message-chat',
   templateUrl: './message-chat.component.html',
@@ -48,7 +48,7 @@ export class MessageChatComponent
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private graphqlService: GraphqlDataService,
+    private MessageService: MessageService,
     public route: ActivatedRoute,
     private authService: AuthuserService,
     private fb: FormBuilder,
@@ -70,7 +70,7 @@ export class MessageChatComponent
         switchMap((params) => {
           this.loading = true;
           this.messages = [];
-          return this.graphqlService.getConversation(params['conversationId']);
+          return this.MessageService.getConversation(params['conversationId']);
         })
       )
       .subscribe({
@@ -140,7 +140,7 @@ export class MessageChatComponent
   }
 
   private subscribeToConversationUpdates(conversationId: string): void {
-    const sub = this.graphqlService
+    const sub = this.MessageService
       .subscribeToConversationUpdates(conversationId)
       .subscribe({
         next: (updatedConversation) => {
@@ -158,7 +158,7 @@ export class MessageChatComponent
   }
 
   private subscribeToNewMessages(conversationId: string): void {
-    const sub = this.graphqlService
+    const sub = this.MessageService
       .subscribeToNewMessages(conversationId)
       .subscribe({
         next: (newMessage) => {
@@ -169,7 +169,7 @@ export class MessageChatComponent
               newMessage.sender?.id !== this.currentUserId &&
               newMessage.sender?._id !== this.currentUserId
             ) {
-              this.graphqlService.markMessageAsRead(newMessage.id).subscribe();
+              this.MessageService.markMessageAsRead(newMessage.id).subscribe();
             }
           }
         },
@@ -181,7 +181,7 @@ export class MessageChatComponent
   }
 
   private subscribeToTypingIndicators(conversationId: string): void {
-    const sub = this.graphqlService
+    const sub = this.MessageService
       .subscribeToTypingIndicator(conversationId)
       .subscribe({
         next: (event) => {
@@ -208,7 +208,7 @@ export class MessageChatComponent
     );
 
     unreadMessages.forEach((msg) => {
-      const sub = this.graphqlService.markMessageAsRead(msg.id).subscribe({
+      const sub = this.MessageService.markMessageAsRead(msg.id).subscribe({
         error: (error) => {
           console.error('Error marking message as read:', error);
         },
@@ -282,7 +282,7 @@ export class MessageChatComponent
     const content = this.messageForm.get('content')?.value;
     this.isUploading = true;
 
-    const sendSub = this.graphqlService
+    const sendSub = this.MessageService
       .sendMessage(
         this.otherParticipant.id,
         content,

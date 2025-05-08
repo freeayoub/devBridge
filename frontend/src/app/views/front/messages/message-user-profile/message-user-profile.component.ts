@@ -1,8 +1,8 @@
 // message-user-profile.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GraphqlDataService } from 'src/app/services/graphql-data.service';
 import { User } from '@app/models/user.model';
+import { MessageService } from '@app/services/message.service';
 import { ToastService } from '@app/services/toast.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class MessageUserProfileComponent implements OnInit {
   constructor(
     public route: ActivatedRoute,
     public router :Router,
-    private graphqlService: GraphqlDataService,
+     private MessageService: MessageService,
     private toastService: ToastService
   ) {}
 
@@ -30,7 +30,7 @@ export class MessageUserProfileComponent implements OnInit {
 
   loadUser(userId: string): void {
     this.loading = true;
-    this.graphqlService.getOneUser(userId).subscribe({
+    this.MessageService.getOneUser(userId).subscribe({
       next: (user) => {
         this.user = user;
         this.loading = false;

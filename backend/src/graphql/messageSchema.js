@@ -216,8 +216,9 @@ const typeDefs = gql`
     getMessages(
       senderId: ID
       receiverId: ID
-      page: Int = 1
-      limit: Int = 10
+      conversationId: ID
+      page: Int 
+      limit: Int 
     ): [Message!]!
 
     getUnreadMessages(userId: ID!): [Message!]!

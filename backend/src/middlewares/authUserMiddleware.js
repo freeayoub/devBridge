@@ -108,7 +108,7 @@ const verifySecretClient = (req, res, next) => {
   }
 };
 const verifyTokenGraphql = async (token) => {
-  if (!token || typeof token !== "string" || token.length < 30) {
+  if (!token || typeof token !== "string" || token.split('.').length !== 3) {
     throw new Error("Invalid or missing token");
   }
 

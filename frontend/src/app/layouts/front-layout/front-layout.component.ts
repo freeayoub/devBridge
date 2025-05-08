@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router , NavigationEnd  } from '@angular/router';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { Subject } from 'rxjs';
-import {  filter,takeUntil} from 'rxjs/operators';
+import { filter, takeUntil, distinctUntilChanged } from 'rxjs/operators';
 import { AuthuserService } from 'src/app/services/authuser.service';
 import { UserStatusService } from 'src/app/services/user-status.service';
-import { NotificationService } from 'src/app/services/notification.service';
+import { MessageService } from 'src/app/services/message.service';
+import { User } from 'src/app/models/user.model';
 @Component({
   selector: 'app-front-layout',
   templateUrl: './front-layout.component.html',
@@ -14,73 +15,72 @@ export class FrontLayoutComponent implements OnInit, OnDestroy {
 
   sidebarOpen = false;
   profileMenuOpen = false;
-  currentUser: any;
+  currentUser: User | null = null;
   messageFromRedirect: string = '';
   unreadNotificationsCount = 0;
+  isMobileView = false;
+
   private destroy$ = new Subject<void>();
+  private readonly MOBILE_BREAKPOINT = 768;
 
   constructor(
     public authService: AuthuserService,
     private route: ActivatedRoute,
     private router: Router,
     public statusService: UserStatusService,
-    private notificationService: NotificationService
-  ) {}
-
+    private MessageService: MessageService,
+  ) {
+    this.checkViewport();
+  }
   ngOnInit(): void {
     this.subscribeToQueryParams();
     this.subscribeToCurrentUser();
     this.subscribeToRouterEvents();
-      
-    if (this.authService.userLoggedIn()) {
-      this.setupNotificationSystem();
+    this.setupNotificationSystem();
+  }
+  @HostListener('window:resize')
+  private checkViewport(): void {
+    this.isMobileView = window.innerWidth < this.MOBILE_BREAKPOINT;
+    if (!this.isMobileView) {
+      this.sidebarOpen = false;
     }
   }
-
   private setupNotificationSystem(): void {
-    // Initial load and count subscription
-    this.notificationService.getNotifications().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      error: err => console.error('Error loading notifications:', err)
-    });
-
     // Real-time count updates
-    this.notificationService.notificationCount$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(count => {
-      this.unreadNotificationsCount = count;
-    });
-
-    // New notifications subscription
-    this.notificationService.subscribeToNewNotifications().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      error: err => console.error('Notification subscription error:', err)
-    });
+    this.MessageService.notificationCount$
+      .pipe(takeUntil(this.destroy$), distinctUntilChanged())
+      .subscribe((count) => {
+        this.unreadNotificationsCount = count;
+      });
+    // Charger les notifications initiales si l'utilisateur est connecté
+    if (this.authService.userLoggedIn()) {
+      this.MessageService.getNotifications(true).subscribe();
+    }
   }
   private subscribeToCurrentUser(): void {
-    this.authService.currentUser$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(user => {
-      this.currentUser = user;
-    });
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((user) => {
+        this.currentUser = user;
+      });
   }
   private subscribeToQueryParams(): void {
-    this.route.queryParams.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(params => {
-      this.messageFromRedirect = params['message'] || '';
-    });
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        this.messageFromRedirect = params['message'] || '';
+      });
   }
   private subscribeToRouterEvents(): void {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.sidebarOpen = false;
-      this.profileMenuOpen = false;
-    });
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.sidebarOpen = false;
+        this.profileMenuOpen = false;
+      });
   }
   toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;
@@ -101,7 +101,7 @@ export class FrontLayoutComponent implements OnInit, OnDestroy {
         this.authService.clearAuthData();
         this.currentUser = null;
         this.router.navigate(['/loginuser']);
-      }
+      },
     });
   }
   ngOnDestroy(): void {
@@ -109,3 +109,4 @@ export class FrontLayoutComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 }
+

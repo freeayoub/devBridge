@@ -17,6 +17,7 @@ const {
 
 // Configurations
 const { verifyTokenGraphql } = require("./src/middlewares/authUserMiddleware");
+const { createUserLoader, createMessageLoader, createConversationLoader, createGroupLoader } = require('./src/graphql/loaders');
 const userRoutes = require("./src/routes/userRoutes");
 const reunionRoutes = require("./src/routes/reunionRoutes");
 const planningRoutes = require("./src/routes/plannigRoutes");
@@ -39,11 +40,10 @@ connectDB().catch((err) => {
 const corsOptions = {
   origin: [
     config.FRONTEND_URL || "http://localhost:4200",
-    "http://localhost:3000",
-    "ws://localhost:3000",
+    "ws://localhost:4200",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "role"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
 
@@ -103,15 +103,19 @@ const serverCleanup = useServer(
           throw new Error("Authentication token required");
         }
         // Extract Bearer token
-        const authToken = token.split(" ")[1];
+        const authToken = token?.startsWith('Bearer ') ? token.split(' ')[1] : token;
         if (!authToken) {
           console.warn("Malformed authorization header");
           throw new Error("Invalid token format");
         }
         const user = await verifyTokenGraphql(authToken);
-        return { user, pubsub };
+       const userId= user?.id || null;
+        return { user, pubsub,userId };
       } catch (error) {
-        console.error("WebSocket authentication failed:", error instanceof Error ? error.message : error);
+        console.error(
+          "WebSocket authentication failed:",
+          error instanceof Error ? error.message : error
+        );
         throw new Error("Authentication failed");
       }
     },
@@ -139,20 +143,17 @@ const apolloServer = new ApolloServer({
       },
     },
   ],
-  context: async ({ req }) => {
-    const token = req.headers.authorization?.split(" ")[1];
-    try {
-      const user = token ? await verifyTokenGraphql(token) : null;
-      return {
-        user,
-        userId: user?.id || null,
-        pubsub,
-      };
-    } catch (error) {
-      console.error("Authentication error:", error);
-      return { pubsub };
-    }
-  },
+  context: async ({ req }) => ({
+    user: req.user,
+    userId: req.userId,
+    loaders: {
+      userLoader: createUserLoader(),
+      groupLoader: createGroupLoader(),
+      messageLoader: createMessageLoader(),
+      conversationLoader: createConversationLoader(),
+    },
+    pubsub
+  }),
   formatError: (error) => ({
     message:
       process.env.NODE_ENV === "production"
@@ -176,6 +177,12 @@ async function initializeApolloServer() {
           const token = req.headers.authorization?.split(" ")[1];
           req.user = token ? await verifyTokenGraphql(token) : null;
           req.userId = req.user?.id || null;
+          req.loaders = {
+            userLoader: createUserLoader(),
+            groupLoader: createGroupLoader(),
+            messageLoader: createMessageLoader(),
+            conversationLoader: createConversationLoader(),
+          };
           next();
         } catch (error) {
           console.error("Auth middleware error:", error);
@@ -187,9 +194,8 @@ async function initializeApolloServer() {
         context: async ({ req }) => ({
           user: req.user,
           userId: req.userId,
-          pubsub,
-          ip: req.ip,
-          userAgent: req.headers["user-agent"],
+          loaders: req.loaders,
+          pubsub
         }),
       })
     );

@@ -1,19 +1,21 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NotificationLayoutComponent } from './notification-layout/notification-layout.component';
 import { NotificationListComponent } from './notification-list/notification-list.component';
+import { MessageLayoutComponent } from '../messages/message-layout/message-layout.component';
 
 const routes: Routes = [
   {
-    path:'',component:NotificationLayoutComponent,
+    path: '',
+    component: MessageLayoutComponent,
+    data: { context: 'notifications' },
     children: [
-      { 
-        path: '', 
-        component: NotificationListComponent, data: { title: 'Notifications' }
-      }
-    ]
-  }
-
+      {
+        path: '',
+        component: NotificationListComponent,
+        data: { title: 'Notifications' },
+      },
+    ],
+  },
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

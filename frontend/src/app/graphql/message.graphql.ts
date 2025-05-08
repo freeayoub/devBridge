@@ -33,6 +33,49 @@ export const MARK_AS_READ_MUTATION = gql`
     }
   }
 `;
+export const EDIT_MESSAGE_MUTATION = gql`
+  mutation EditMessage($messageId: ID!, $newContent: String!) {
+    editMessage(messageId: $messageId, newContent: $newContent) {
+      id
+      content
+      isEdited
+      updatedAt
+    }
+  }
+`;
+export const DELETE_MESSAGE_MUTATION = gql`
+  mutation DeleteMessage($messageId: ID!) {
+    deleteMessage(messageId: $messageId) {
+      id
+      isDeleted
+      deletedAt
+    }
+  }
+`;
+export const GET_MESSAGES_QUERY = gql`
+  query GetMessages($senderId: ID!, $receiverId: ID!,$conversationId: ID!, $page: Int, $limit: Int) {
+    getMessages( senderId:$senderId, receiverId:$receiverId, conversationId: $conversationId, page: $page, limit: $limit) {
+      id
+      content
+      type
+      timestamp
+      isRead
+      sender {
+        id
+        username
+        image
+      }
+      attachments {
+        url
+        type
+      }
+      replyTo {
+        id
+        content
+      }
+    }
+  }
+`;
 // Conversation Queries
 export const GET_CONVERSATIONS_QUERY = gql`
   query GetConversations {

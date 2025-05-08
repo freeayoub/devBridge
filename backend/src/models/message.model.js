@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
-const Conversation = require('../models/conversation.model');
-
+// Solution pour la dépendance circulaire
+let Conversation;
+try {
+  Conversation = mongoose.model("Conversation");
+} catch {
+  Conversation = require("./conversation.model");
+}
 const ReactionSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -90,7 +95,7 @@ const MessageSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
     index: true,
-    immutable: true // Ne peut pas être modifié
+    immutable: true 
   },
   isRead: {
     type: Boolean,
@@ -120,20 +125,18 @@ const MessageSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  receiverId: {
+receiverId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    index: true,
     required: function() {
-      return !this.group; // Requis si pas de groupe
+      return !this.groupId && this.type !== 'system';
     }
   },
   groupId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Group",
-    index: true,
     required: function() {
-      return !this.receiverId; // Requis si pas de receiverId
+      return this.type === 'group';
     }
   },
   reactions: {
@@ -154,7 +157,7 @@ const MessageSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["sending", "sent", "delivered", "read", "failed"],
-    default: "sending",
+    default: "sent", 
     index: true
   },
   conversationId: {
@@ -227,16 +230,15 @@ MessageSchema.virtual('group', {
   justOne: true
 });
 
-// Middleware pour mettre à jour la conversation après sauvegarde
 MessageSchema.post('save', async function(doc) {
   await Conversation.findByIdAndUpdate(
     doc.conversationId,
     { 
+      $push: { messageIds: doc._id }, // Changé de messages à messageIds
       $set: { 
         lastMessage: doc._id,
         updatedAt: new Date() 
-      },
-      $inc: { messageCount: 1 }
+      }
     }
   );
 });

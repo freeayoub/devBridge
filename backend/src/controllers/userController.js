@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const AuditLog = require("../models/auditLog.model");
-const {userValidationSchema} = require("../validators/user.validators");
+const { userValidationSchema } = require("../validators/user.validators");
 const cloudinary = require("../config/cloudinaryConfig");
 const uploadFile = require("../services/fileUpload.service");
 const stream = require("stream");
@@ -15,7 +15,7 @@ const generateToken = (user) => {
       username: user.username,
       email: user.email,
       role: user.role,
-      image:user.image
+      image: user.image,
     },
     config.JWT_SECRET,
     { expiresIn: config.JWT_EXPIRATION || "7d" }
@@ -193,19 +193,21 @@ const userController = {
       const { username, email, currentPassword, newPassword, image } = req.body;
 
       // Validate at least one field is being updated
-      const updateFields = ['username', 'email', 'newPassword', 'image'].filter(field => req.body[field] !== undefined);
+      const updateFields = ["username", "email", "newPassword", "image"].filter(
+        (field) => req.body[field] !== undefined
+      );
       if (updateFields.length === 0) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: "No fields to update",
-          code: "NO_UPDATES"
+          code: "NO_UPDATES",
         });
       }
 
       const user = await User.findById(req.user.id);
       if (!user) {
-        return res.status(404).json({ 
+        return res.status(404).json({
           error: "User not found",
-          code: "USER_NOT_FOUND" 
+          code: "USER_NOT_FOUND",
         });
       }
 
@@ -216,9 +218,9 @@ const userController = {
       if (username !== undefined && username !== user.username) {
         const existingUser = await User.findOne({ username });
         if (existingUser) {
-          return res.status(409).json({ 
+          return res.status(409).json({
             error: "Username already taken",
-            code: "USERNAME_EXISTS"
+            code: "USERNAME_EXISTS",
           });
         }
         updates.username = username;
@@ -229,9 +231,9 @@ const userController = {
       if (email !== undefined && email !== user.email) {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-          return res.status(409).json({ 
-            error: "Email already in use", 
-            code: "EMAIL_EXISTS"
+          return res.status(409).json({
+            error: "Email already in use",
+            code: "EMAIL_EXISTS",
           });
         }
         updates.email = email;
@@ -247,26 +249,26 @@ const userController = {
       // Password update
       if (newPassword) {
         if (!currentPassword) {
-          return res.status(400).json({ 
+          return res.status(400).json({
             error: "Current password required for password changes",
-            code: "CURRENT_PASSWORD_REQUIRED"
+            code: "CURRENT_PASSWORD_REQUIRED",
           });
         }
-        
+
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
-          return res.status(401).json({ 
+          return res.status(401).json({
             error: "Incorrect current password",
-            code: "INCORRECT_PASSWORD"
+            code: "INCORRECT_PASSWORD",
           });
         }
-        
+
         updates.password = await bcrypt.hash(newPassword, 12);
         updatedFields.push("password");
       }
 
       const updatedUser = await User.findByIdAndUpdate(
-        req.user.id, 
+        req.user.id,
         { $set: updates },
         { new: true, runValidators: true }
       );
@@ -283,24 +285,25 @@ const userController = {
 
       // Generate new token
       const token = generateToken(updatedUser);
-      
+
       return res.json({
         success: true,
         message: "Profile updated successfully",
         user: sanitizeUser(updatedUser),
         token,
-        updatedFields
+        updatedFields,
       });
-
     } catch (error) {
       console.error("Update self error:", error);
       return res.status(500).json({
         error: "Profile update failed",
         code: "UPDATE_FAILED",
-        ...(process.env.NODE_ENV === "development" && { details: error.message })
+        ...(process.env.NODE_ENV === "development" && {
+          details: error.message,
+        }),
       });
     }
-},
+  },
   // desactivate user by self
   async deactivateSelf(req, res) {
     try {
@@ -426,16 +429,19 @@ const userController = {
             error: "Seul l'utilisateur peut changer son mot de passe",
           });
         }
-        
+
         if (!currentPassword) {
           return res.status(400).json({
-            error: "Le mot de passe actuel est requis pour changer le mot de passe"
+            error:
+              "Le mot de passe actuel est requis pour changer le mot de passe",
           });
         }
 
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
-          return res.status(401).json({ error: "Mot de passe actuel incorrect" });
+          return res
+            .status(401)
+            .json({ error: "Mot de passe actuel incorrect" });
         }
 
         updates.password = await bcrypt.hash(newPassword, 12);
@@ -446,13 +452,13 @@ const userController = {
       if (role !== undefined) {
         if (!isAdmin) {
           return res.status(403).json({
-            error: "Modification du rôle réservée aux admins"
+            error: "Modification du rôle réservée aux admins",
           });
         }
 
         if (isSelfUpdate) {
           return res.status(403).json({
-            error: "Un admin ne peut pas modifier son propre rôle"
+            error: "Un admin ne peut pas modifier son propre rôle",
           });
         }
 
@@ -467,14 +473,17 @@ const userController = {
       // Vérification mot de passe actuel pour les modifications sensibles
       if (requireCurrentPassword && !currentPassword) {
         return res.status(400).json({
-          error: "Le mot de passe actuel est requis pour modifier ces informations"
+          error:
+            "Le mot de passe actuel est requis pour modifier ces informations",
         });
       }
 
       if (requireCurrentPassword) {
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
-          return res.status(401).json({ error: "Mot de passe actuel incorrect" });
+          return res
+            .status(401)
+            .json({ error: "Mot de passe actuel incorrect" });
         }
       }
 
@@ -485,8 +494,11 @@ const userController = {
 
       // 4. Journalisation
       await AuditLog.create({
-        action: isAdmin ? (isSelfUpdate ? "ADMIN_SELF_UPDATE" : "ADMIN_USER_UPDATE") 
-                       : "USER_SELF_UPDATE",
+        action: isAdmin
+          ? isSelfUpdate
+            ? "ADMIN_SELF_UPDATE"
+            : "ADMIN_USER_UPDATE"
+          : "USER_SELF_UPDATE",
         targetUserId: id,
         performedBy: req.user.id,
         details: `Mise à jour des champs: ${updatedFields.join(", ")}`,

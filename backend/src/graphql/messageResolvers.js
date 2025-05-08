@@ -4,96 +4,300 @@ const UserService = require("../services/user.service");
 const { GraphQLError } = require("graphql");
 const GraphQLUpload = require("graphql-upload/GraphQLUpload.js");
 const { messageSchema } = require("../validators/message.validators");
+const { AuthenticationError } = require('../graphql/errors');
 const { messageUpdateSchema } = require("../validators/message.validators");
-const AuthenticationError = (message) =>
-  new GraphQLError(message, {
-    extensions: { code: "UNAUTHENTICATED" },
-  });
+const User = require("../models/user.model");
+const   Group  = require("../models/group.model");
+const  Message = require("../models/message.model");
+const Conversation  = require("../models/conversation.model");
 
 const resolvers = {
+
   Upload: GraphQLUpload,
 
   Message: {
     id: (parent) => parent._id?.toString() || parent.id,
-    sender: async (parent, _, { loaders }) => {
-      return loaders.userLoader.load(parent.senderId);
+    sender: (parent) => {
+      return parent.sender || {
+        id: parent.senderId?.toString() || 'unknown-user',
+        username: 'Unknown User',
+        email: null,
+        image: null
+      };
     },
-    receiver: async (parent, _, { loaders }) => {
-      if (!parent.receiverId) return null;
-      return loaders.userLoader.load(parent.receiverId);
+    receiver: (parent) => {
+      return parent.receiver || (parent.receiverId ? {
+        id: parent.receiverId.toString()
+      } : null);
     },
     group: async (parent, _, { loaders }) => {
       if (!parent.groupId) return null;
-      return loaders.groupLoader.load(parent.groupId);
+      try {
+        return loaders?.groupLoader 
+          ? await loaders.groupLoader.load(parent.groupId.toString())
+          : await Group.findById(parent.groupId);
+      } catch (error) {
+        console.error('Error loading group:', error);
+        return null;
+      }
     },
     conversation: async (parent, _, { loaders }) => {
-      return loaders.conversationLoader.load(parent.conversationId);
+      if (!parent.conversationId) return null;
+      try {
+        return loaders?.conversationLoader 
+          ? await loaders.conversationLoader.load(parent.conversationId.toString())
+          : await Conversation.findById(parent.conversationId);
+      } catch (error) {
+        console.error('Error loading conversation:', error);
+        return null;
+      }
     },
     forwardedFrom: async (parent, _, { loaders }) => {
       if (!parent.forwardedFrom) return null;
-      return loaders.messageLoader.load(parent.forwardedFrom);
+      try {
+        return loaders?.messageLoader
+          ? await loaders.messageLoader.load(parent.forwardedFrom.toString())
+          : await Message.findById(parent.forwardedFrom).lean();
+      } catch (error) {
+        console.error('Error loading forwarded message:', error);
+        return null;
+      }
     },
     replyTo: async (parent, _, { loaders }) => {
       if (!parent.replyTo) return null;
-      return loaders.messageLoader.load(parent.replyTo);
+      try {
+        return loaders?.messageLoader
+          ? await loaders.messageLoader.load(parent.replyTo.toString())
+          : await Message.findById(parent.replyTo).lean();
+      } catch (error) {
+        console.error('Error loading replied message:', error);
+        return null;
+      }
     },
     pinnedBy: async (parent, _, { loaders }) => {
       if (!parent.pinnedBy) return null;
-      return loaders.userLoader.load(parent.pinnedBy);
+      try {
+        return loaders?.userLoader
+          ? await loaders.userLoader.load(parent.pinnedBy.toString())
+          : await User.findById(parent.pinnedBy).lean();
+      } catch (error) {
+        console.error('Error loading pinnedBy user:', error);
+        return null;
+      }
     },
-    timestamp: (parent) => parent.timestamp?.toISOString(),
-    readAt: (parent) => parent.readAt?.toISOString(),
-    deletedAt: (parent) => parent.deletedAt?.toISOString(),
-    pinnedAt: (parent) => parent.pinnedAt?.toISOString(),
+    timestamp: (parent) => {
+      // Gestion robuste du timestamp
+      if (!parent.timestamp) return null;
+      
+      try {
+        const date = parent.timestamp instanceof Date 
+          ? parent.timestamp 
+          : new Date(parent.timestamp);
+        
+        return date.toISOString();
+      } catch (error) {
+        console.error('Invalid timestamp:', parent.timestamp);
+        return null;
+      }
+    },
+    readAt: (parent) => parent.readAt?.toISOString() || null,
+    deletedAt: (parent) => parent.deletedAt?.toISOString() || null,
+    pinnedAt: (parent) => parent.pinnedAt?.toISOString() || null,
+    reactions: async (parent, _, { loaders }) => {
+      if (!parent.reactions?.length) return [];
+      try {
+        const reactionUsers = await Promise.all(
+          parent.reactions.map(r => 
+            loaders?.userLoader 
+              ? loaders.userLoader.load(r.userId.toString())
+              : User.findById(r.userId).lean()
+          )
+        );
+        return parent.reactions.map((reaction, index) => ({
+          ...reaction,
+          userId: reaction.userId.toString(),
+          user: reactionUsers[index]
+        }));
+      } catch (error) {
+        console.error('Error loading reaction users:', error);
+        return [];
+      }
+    },
+    attachments: (parent) => parent.attachments || []
   },
 
   Conversation: {
-    id: (parent) => {
-      if (!parent) return null;
-      if (parent._id) return parent._id.toString();
-      if (parent.id) return parent.id.toString();
-      return null;
+    
+    id: (parent) => parent._id?.toString() || parent.id,
+    messages: async (parent, { limit = 50, offset = 0 }, { loaders }) => {
+      try {
+        const messages = await MessageService.getMessages({
+          conversationId: parent._id || parent.id,
+          limit,
+          offset
+        });
+  
+        if (loaders?.messageLoader) {
+          messages.forEach(msg => {
+            loaders.messageLoader.prime(msg._id.toString(), msg);
+          });
+        }
+  
+        return messages;
+      } catch (error) {
+        console.error('Error loading messages:', error);
+        return [];
+      }
     },
+  
     participants: async (parent) => {
-      if (parent.participants && parent.participants[0]?.username) {
+      // If participants are already populated (from getConversations)
+      if (Array.isArray(parent.participants) && parent.participants.length > 0) {
         return parent.participants;
       }
-      return User.find({ _id: { $in: parent.participants } });
+      
+      // Fallback population
+      try {
+        const conv = await Conversation.findById(parent.id)
+          .populate({
+            path: "participants",
+            select: "_id username email image isOnline lastActive role",
+            model: "User"
+          })
+          .lean();
+        
+        return (conv?.participants || []).map(p => ({
+          id: p._id.toString(),
+          username: p.username,
+          email: p.email,
+          image: p.image,
+          isOnline: p.isOnline,
+          lastActive: p.lastActive?.toISOString(),
+          role: p.role
+        }));
+      } catch (error) {
+        console.error('Error loading participants:', error);
+        return [];
+      }
     },
-    messages: async (parent, { limit = 50, offset = 0 }) => {
-      return MessageService.getMessages({
-        conversationId: parent._id,
-        limit,
-        offset,
-      });
-    },
-    lastMessage: async (parent) => {
-      if (parent.lastMessage) return parent.lastMessage;
-      return Message.findById(parent.lastMessageId);
-    },
+  
     unreadCount: async (parent, _, { userId }) => {
-      if (parent.unreadCount !== undefined) return parent.unreadCount;
-      return MessageService.getUnreadCount(parent._id, userId);
+      try {
+        return await Message.countDocuments({
+          conversationId: parent.id,
+          receiverId: userId,
+          isRead: false
+        });
+      } catch (error) {
+        console.error('Error calculating unread count:', error);
+        return 0;
+      }
     },
-    pinnedMessages: async (parent) => {
-      return Message.find({ _id: { $in: parent.pinnedMessages } });
+    lastMessage: async (parent, _, { loaders }) => {
+      if (!parent.lastMessage && !parent.lastMessageId) return null;
+      try {
+        if (parent.lastMessage) return parent.lastMessage;
+        return loaders?.messageLoader
+          ? await loaders.messageLoader.load(parent.lastMessageId.toString())
+          : await Message.findById(parent.lastMessageId).lean();
+      } catch (error) {
+        console.error('Error loading last message:', error);
+        return null;
+      }
     },
-    typingUsers: async (parent) => {
-      return User.find({ _id: { $in: parent.typingUsers } });
+
+    pinnedMessages: async (parent, _, { loaders }) => {
+      if (!parent.pinnedMessages?.length) return [];
+      try {
+        return loaders?.messageLoader
+          ? await Promise.all(
+              parent.pinnedMessages.map(id => 
+                loaders.messageLoader.load(id.toString())
+              )
+            )
+          : await Message.find({ 
+              _id: { $in: parent.pinnedMessages } 
+            }).lean();
+      } catch (error) {
+        console.error('Error loading pinned messages:', error);
+        return [];
+      }
     },
+  
+    typingUsers: async (parent, _, { loaders }) => {
+      if (!parent.typingUsers?.length) return [];
+      try {
+        return loaders?.userLoader
+          ? await Promise.all(
+              parent.typingUsers.map(id => 
+                loaders.userLoader.load(id.toString())
+              )
+            )
+          : await User.find({ 
+              _id: { $in: parent.typingUsers } 
+            }).lean();
+      } catch (error) {
+        console.error('Error loading typing users:', error);
+        return [];
+      }
+    },
+  
+    groupAdmins: async (parent, _, { loaders }) => {
+      if (!parent.groupAdmins?.length) return [];
+      try {
+        return loaders?.userLoader
+          ? await Promise.all(
+              parent.groupAdmins.map(id => 
+                loaders.userLoader.load(id.toString())
+              )
+            )
+          : await User.find({ 
+              _id: { $in: parent.groupAdmins } 
+            }).lean();
+      } catch (error) {
+        console.error('Error loading group admins:', error);
+        return [];
+      }
+    }
+
   },
 
   Query: {
-    getMessages: async (_, { senderId, receiverId, page, limit }, context) => {
-      if (!context.userId) throw AuthenticationError("Unauthorized");
-      return MessageService.getMessages({
-        senderId,
-        receiverId,
-        page,
-        limit,
-      });
+    getMessages: async (_, { senderId, receiverId, conversationId, page = 1, limit = 10 }, { userId, loaders }) => {
+      if (!userId) throw new AuthenticationError('Unauthorized');
+      
+      try {
+        const messages = await MessageService.getMessages({
+          senderId,
+          receiverId,
+          conversationId,
+          page,
+          limit,
+          userId,
+          loaders
+        });
+    
+        // Ensure no null values for non-nullable fields
+        return messages.map(msg => ({
+          ...msg,
+          sender: {
+            ...msg.sender,
+            username: msg.sender.username || 'Unknown User',
+            email: msg.sender.email || 'unknown@example.com'
+          },
+          receiver: msg.receiver ? {
+            ...msg.receiver,
+            username: msg.receiver.username || 'Unknown User',
+            email: msg.receiver.email || 'unknown@example.com'
+          } : null
+        }));
+      } catch (error) {
+        console.error('Error in getMessages:', error);
+        throw new ApolloError('Failed to fetch messages', 'MESSAGE_FETCH_FAILED', {
+          originalError: error
+        });
+      }
     },
-
     getUnreadMessages: async (_, { userId }, context) => {
       if (!context.user) throw new AuthenticationError("Not authenticated");
       if (context.user.id !== userId)
@@ -162,18 +366,26 @@ const resolvers = {
       }
 
       try {
-        return await MessageService.getConversation(
+        const conversation = await MessageService.getConversation(
           conversationId,
           context.userId
         );
+        if (!conversation) {
+          throw new ApolloError("Conversation not found", "NOT_FOUND");
+        }
+        return conversation;
       } catch (error) {
-        console.error("Resolver error:", error);
-        throw new ApolloError("Failed to fetch conversation");
+        console.error("Error fetching conversation:", error);
+        throw new ApolloError(
+          error.message || "Failed to fetch conversation",
+          error.extensions?.code || "CONVERSATION_FETCH_FAILED",
+          { originalError: error }
+        );
       }
     },
-
+    
     getConversations: async (_, __, context) => {
-      if (!context.userId) throw AuthenticationError("Unauthorized");
+      if (!context.userId) throw new AuthenticationError('Unauthorized');
       return MessageService.getConversations(context.userId);
     },
 
@@ -215,31 +427,19 @@ const resolvers = {
   },
 
   Mutation: {
-    sendMessage: async (_, { receiverId, content, file }, context) => {
+    sendMessage: async (_, { receiverId, content, file }, { userId, pubsub }) => {
+      if (!userId) throw new AuthenticationError('Unauthorized');
       try {
-        // Validate input
-        const input = {
-          senderId: context.userId,
+        const result = await MessageService.sendMessage({
+          senderId: userId,
           receiverId,
           content,
           file,
-          type: "text",
-          status: "sending",
-        };
-        await messageSchema.validate(input, { abortEarly: false });
-
-        if (!context.userId) throw new AuthenticationError("Unauthorized");
-
-        return MessageService.sendMessage({
-          senderId: context.userId,
-          receiverId,
-          content,
-          file,
-          replyTo: null,
-          context,
+          context: { userId, pubsub }
         });
+        return result;
       } catch (error) {
-        console.error("Send message error:", error);
+        console.error('Send message error:', error);
         throw new Error(error.message);
       }
     },
@@ -373,29 +573,22 @@ const resolvers = {
         return pubsub.asyncIterator(channels);
       },
       resolve: (payload) => {
-        if (!payload?.messageSent) {
-          throw new Error("No message payload");
-        }
+        const message = payload.messageSent;
         return {
-          ...payload.messageSent,
-          id: payload.messageSent._id?.toString() || payload.messageSent.id,
-          timestamp:
-            payload.messageSent.timestamp?.toISOString() ||
-            new Date().toISOString(),
-          senderId: {
-            id: payload.messageSent.sender || payload.messageSent.senderId,
-            username: payload.sender?.username || "",
-            image: payload.sender?.image || "",
+          ...message,
+          sender: {
+            id: message.senderId,
+            username: message.sender?.username || 'Unknown',
+            image: message.sender?.image || null
           },
-          receiverId: {
-            id: payload.messageSent.receiver || payload.messageSent.receiverId,
-            username: payload.receiver?.username || "",
-            image: payload.receiver?.image || "",
-          },
+          receiver: message.receiverId ? {
+            id: message.receiverId,
+            username: message.receiver?.username || 'Unknown',
+            image: message.receiver?.image || null
+          } : null,
         };
       },
     },
-
     userStatusChanged: {
       subscribe: (_, __, { pubsub }) => {
         return pubsub.asyncIterator("USER_STATUS_CHANGED");
@@ -487,6 +680,7 @@ const resolvers = {
       },
     },
   },
+
 };
 
 module.exports = resolvers;

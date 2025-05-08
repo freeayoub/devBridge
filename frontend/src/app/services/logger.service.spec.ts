@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GraphqlDataService } from './graphql-data.service';
+import { LoggerService } from './logger.service';
 
-describe('GraphqlDataService', () => {
-  let service: GraphqlDataService;
+describe('LoggerService', () => {
+  let service: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(GraphqlDataService);
+    service = TestBed.inject(LoggerService);
   });
 
   it('should be created', () => {

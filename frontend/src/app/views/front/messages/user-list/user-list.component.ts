@@ -1,11 +1,11 @@
 // user-list.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { GraphqlDataService } from 'src/app/services/graphql-data.service';
 import { Subscription } from 'rxjs';
 import { User } from '@app/models/user.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthuserService } from 'src/app/services/authuser.service';
 import { ToastService } from '@app/services/toast.service';
+import { MessageService } from '@app/services/message.service';
 
 @Component({
   selector: 'app-user-list',
@@ -20,7 +20,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private graphqlService: GraphqlDataService,
+    private MessageService: MessageService,
     public router: Router,
     public route: ActivatedRoute,
     private authService: AuthuserService,
@@ -34,7 +34,7 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   loadUsers(): void {
     this.loading = true;
-    const sub = this.graphqlService.getAllUsers(false, this.searchQuery).subscribe({
+    const sub = this.MessageService.getAllUsers(false, this.searchQuery).subscribe({
       next: (users) => {
         this.users = users.filter(user => user.id !== this.currentUserId);
         this.loading = false;

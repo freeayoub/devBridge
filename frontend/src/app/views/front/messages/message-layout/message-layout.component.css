@@ -1,0 +1,15 @@
+/* .layout-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .sidebar-hidden {
+    margin-left: 0;
+  }
+  
+  /* Adap */
