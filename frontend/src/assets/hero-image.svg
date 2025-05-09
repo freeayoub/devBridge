@@ -1,0 +1,39 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f5f7fa" rx="15" ry="15"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="150" cy="150" r="100" fill="#dac4ea" opacity="0.3"/>
+  <circle cx="650" cy="450" r="120" fill="#4f5fad" opacity="0.2"/>
+  <circle cx="400" cy="100" r="50" fill="#7826b5" opacity="0.1"/>
+  
+  <!-- Code window -->
+  <rect x="200" y="150" width="400" height="300" rx="10" ry="10" fill="#2d3748" stroke="#4a5568" stroke-width="2"/>
+  
+  <!-- Window header -->
+  <rect x="200" y="150" width="400" height="30" rx="10" ry="10" fill="#4a5568"/>
+  <circle cx="220" cy="165" r="5" fill="#fc8181"/>
+  <circle cx="240" cy="165" r="5" fill="#f6e05e"/>
+  <circle cx="260" cy="165" r="5" fill="#68d391"/>
+  
+  <!-- Code lines -->
+  <rect x="220" y="200" width="150" height="10" rx="2" ry="2" fill="#7826b5" opacity="0.7"/>
+  <rect x="220" y="220" width="250" height="10" rx="2" ry="2" fill="#4f5fad" opacity="0.7"/>
+  <rect x="220" y="240" width="200" height="10" rx="2" ry="2" fill="#4f5fad" opacity="0.7"/>
+  <rect x="220" y="260" width="300" height="10" rx="2" ry="2" fill="#4f5fad" opacity="0.7"/>
+  <rect x="220" y="280" width="180" height="10" rx="2" ry="2" fill="#7826b5" opacity="0.7"/>
+  <rect x="220" y="300" width="250" height="10" rx="2" ry="2" fill="#4f5fad" opacity="0.7"/>
+  <rect x="220" y="320" width="200" height="10" rx="2" ry="2" fill="#4f5fad" opacity="0.7"/>
+  <rect x="220" y="340" width="270" height="10" rx="2" ry="2" fill="#7826b5" opacity="0.7"/>
+  <rect x="220" y="360" width="150" height="10" rx="2" ry="2" fill="#4f5fad" opacity="0.7"/>
+  <rect x="220" y="380" width="220" height="10" rx="2" ry="2" fill="#4f5fad" opacity="0.7"/>
+  <rect x="220" y="400" width="180" height="10" rx="2" ry="2" fill="#7826b5" opacity="0.7"/>
+  
+  <!-- Connection lines -->
+  <line x1="150" y1="250" x2="200" y2="250" stroke="#7826b5" stroke-width="3" stroke-dasharray="5,5"/>
+  <line x1="600" y1="300" x2="650" y2="350" stroke="#4f5fad" stroke-width="3" stroke-dasharray="5,5"/>
+  <line x1="400" y1="150" x2="400" y2="100" stroke="#7826b5" stroke-width="3" stroke-dasharray="5,5"/>
+  
+  <!-- DevBridge text -->
+  <text x="400" y="500" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#4f5fad">DevBridge Platform</text>
+</svg>

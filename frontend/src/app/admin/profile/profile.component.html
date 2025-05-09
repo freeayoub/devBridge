@@ -1,0 +1,247 @@
+<!-- Include the navbar -->
+<app-navbar></app-navbar>
+
+<div class="min-h-screen bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-light dark:border-primary-dark"></div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg mb-6 animate-pulse">
+      {{ error }}
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="message" class="bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg mb-6 animate-pulse">
+      {{ message }}
+    </div>
+
+    <!-- Admin Profile -->
+    <div *ngIf="!loading && user" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Profile Card -->
+      <div class="profile-card">
+        <div class="profile-header">
+          <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Cover" class="cover-photo">
+          <div class="profile-photo-container">
+            <div class="profile-photo" *ngIf="!user.profileImageURL">
+              {{ getInitials(user.fullName) }}
+            </div>
+            <img *ngIf="user.profileImageURL" [src]="user.profileImageURL" alt="Profile" class="profile-photo">
+            <label for="profile-upload" class="upload-overlay">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+              </svg>
+            </label>
+            <input type="file" id="profile-upload" class="hidden" accept="image/*" (change)="onFileSelected($event)">
+          </div>
+        </div>
+        <div class="profile-content">
+          <h2 class="profile-name">{{ user.fullName }}</h2>
+          <p class="profile-role">
+            <span class="badge" [ngClass]="{'bg-primary-light dark:bg-primary-dark text-white': user.role === 'admin'}">
+              {{ user.role | titlecase }}
+            </span>
+          </p>
+
+          <!-- Personal Information -->
+          <div class="profile-section">
+            <h3 class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+              </svg>
+              Account Information
+            </h3>
+            <div class="space-y-3">
+              <div class="info-item">
+                <div class="info-label">Email</div>
+                <div class="info-value">{{ user.email }}</div>
+              </div>
+              <div class="flex space-x-3">
+                <div class="info-item flex-1">
+                  <div class="info-label">Status</div>
+                  <div class="info-value">
+                    <span [ngClass]="user.isActive !== false ? 'badge active' : 'badge inactive'">
+                      {{ user.isActive !== false ? 'Active' : 'Inactive' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="info-item flex-1">
+                  <div class="info-label">Verification</div>
+                  <div class="info-value">
+                    <span [ngClass]="user.emailVerified ? 'badge verified' : 'badge not-verified'">
+                      {{ user.emailVerified ? 'Verified' : 'Not Verified' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Member Since</div>
+                <div class="info-value">{{ user.createdAt | date:'mediumDate' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="action-buttons">
+            <button *ngIf="selectedImage" (click)="onUpload()" class="btn btn-primary" [disabled]="uploadLoading">
+              <span *ngIf="!uploadLoading" class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                Upload
+              </span>
+              <span *ngIf="uploadLoading" class="flex items-center justify-center">
+                <svg class="animate-spin mr-1 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Uploading
+              </span>
+            </button>
+            <button (click)="navigateTo('/auth/change-password')" class="btn btn-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1 inline" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+              </svg>
+              Password
+            </button>
+            <button (click)="logout()" class="btn btn-danger">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1 inline" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414l-4-4H3zm6 11a1 1 0 11-2 0 1 1 0 012 0zm2-5.5a.5.5 0 00-.5.5v3a.5.5 0 01-.5.5h-3a.5.5 0 010-1H9V9.5A1.5 1.5 0 0110.5 8h.5a.5.5 0 01.5.5z" clip-rule="evenodd" />
+              </svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Dashboard Summary -->
+      <div class="lg:col-span-2 space-y-4">
+        <!-- Stats Cards -->
+        <div class="profile-card">
+          <div class="p-4">
+            <h3 class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+              </svg>
+              User Statistics
+            </h3>
+
+            <!-- User Status -->
+            <div class="mt-3 grid grid-cols-2 gap-3">
+              <div class="info-item">
+                <div class="flex justify-between items-center">
+                  <div class="info-label">Total Users</div>
+                  <div class="info-value text-lg">{{ stats.totalUsers }}</div>
+                </div>
+                <div class="mt-2 bg-gray-200 dark:bg-gray-600 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-primary-light dark:bg-primary-dark h-full rounded-full" style="width: 100%"></div>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <div class="flex justify-between items-center">
+                  <div class="info-label">Status</div>
+                  <div class="flex space-x-2 text-xs">
+                    <span class="text-green-600 dark:text-green-400 font-medium">{{ stats.activeUsers }} Active</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-red-600 dark:text-red-400 font-medium">{{ stats.inactiveUsers }} Inactive</span>
+                  </div>
+                </div>
+                <div class="mt-2 bg-gray-200 dark:bg-gray-600 h-1.5 rounded-full overflow-hidden flex">
+                  <div class="bg-green-500 dark:bg-green-600 h-full" [style.width.%]="stats.totalUsers ? (stats.activeUsers / stats.totalUsers) * 100 : 0"></div>
+                  <div class="bg-red-500 dark:bg-red-600 h-full" [style.width.%]="stats.totalUsers ? (stats.inactiveUsers / stats.totalUsers) * 100 : 0"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- User Roles -->
+            <div class="mt-4">
+              <div class="info-item">
+                <div class="flex justify-between items-center">
+                  <div class="info-label">User Roles</div>
+                  <div class="flex space-x-2 text-xs">
+                    <span class="text-blue-600 dark:text-blue-400 font-medium">{{ stats.students }}</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-purple-600 dark:text-purple-400 font-medium">{{ stats.teachers }}</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-yellow-600 dark:text-yellow-400 font-medium">{{ stats.admins }}</span>
+                  </div>
+                </div>
+                <div class="mt-2 bg-gray-200 dark:bg-gray-600 h-1.5 rounded-full overflow-hidden flex">
+                  <div class="bg-blue-500 dark:bg-blue-600 h-full" [style.width.%]="stats.totalUsers ? (stats.students / stats.totalUsers) * 100 : 0"></div>
+                  <div class="bg-purple-500 dark:bg-purple-600 h-full" [style.width.%]="stats.totalUsers ? (stats.teachers / stats.totalUsers) * 100 : 0"></div>
+                  <div class="bg-yellow-500 dark:bg-yellow-600 h-full" [style.width.%]="stats.totalUsers ? (stats.admins / stats.totalUsers) * 100 : 0"></div>
+                </div>
+                <div class="flex justify-between mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <span>Students</span>
+                  <span>Teachers</span>
+                  <span>Admins</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="profile-card">
+          <div class="p-4">
+            <h3 class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+              </svg>
+              Recent Activity
+            </h3>
+            <div class="mt-3 space-y-2">
+              <div *ngFor="let activity of recentActivity" class="info-item flex justify-between items-center p-2">
+                <div class="flex items-center">
+                  <div class="w-2 h-2 rounded-full bg-primary-light dark:bg-primary-dark mr-2"></div>
+                  <div>
+                    <div class="info-value text-sm">{{ activity.action }}</div>
+                    <div class="info-label text-xs">{{ activity.target }}</div>
+                  </div>
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                  {{ formatDate(activity.timestamp) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="profile-card">
+          <div class="p-4">
+            <h3 class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1 2H8l-1-2H5V5z" clip-rule="evenodd" />
+              </svg>
+              Quick Actions
+            </h3>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button (click)="navigateTo('/admin/dashboard')" class="btn btn-primary flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                </svg>
+                Users
+              </button>
+              <button (click)="toggleDarkMode()" class="btn btn-secondary flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                </svg>
+                Theme
+              </button>
+              <button (click)="navigateTo('/')" class="btn btn-secondary flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                Home
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
