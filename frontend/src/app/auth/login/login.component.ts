@@ -42,6 +42,14 @@ export class LoginComponent {
       next: (res: any) => {
         this.isLoading = false;
         localStorage.setItem('token', res.token);
+
+        // Make sure the user object has the profileImageURL property
+        if (res.user && res.user.profileImage && !res.user.profileImageURL) {
+          // Construct the full URL if it's not already provided
+          const baseUrl = window.location.origin;
+          res.user.profileImageURL = `${baseUrl}/${res.user.profileImage}`;
+        }
+
         localStorage.setItem('user', JSON.stringify(res.user));
 
         const role = res.user.role;

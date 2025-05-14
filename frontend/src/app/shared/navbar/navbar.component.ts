@@ -33,7 +33,22 @@ export class NavbarComponent implements OnInit {
 
     if (token && userStr) {
       this.isLoggedIn = true;
+      // First set user from localStorage
       this.user = JSON.parse(userStr);
+
+      // Then fetch the latest user data from the server to get the updated profile image
+      this.authService.getProfile(token).subscribe({
+        next: (userData: any) => {
+          // Update the user object with the latest data
+          this.user = userData;
+
+          // Also update the user in localStorage to keep it in sync
+          localStorage.setItem('user', JSON.stringify(userData));
+        },
+        error: (err) => {
+          console.error('Failed to fetch user profile:', err);
+        }
+      });
     } else {
       this.isLoggedIn = false;
       this.user = null;

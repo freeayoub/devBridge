@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Group = require('../models/Group');
+const { formatUserResponse, formatUsersResponse } = require('../utils/formatUserResponse');
 
 // GET /api/admin/users
 exports.getAllUsers = async (req, res) => {
@@ -10,7 +11,10 @@ exports.getAllUsers = async (req, res) => {
       .select('-password -verificationCode -resetCode')
       .populate('group', 'name description');
 
-    res.json(users);
+    // Format the response to include the full profile image URL for each user
+    const formattedUsers = formatUsersResponse(users, req);
+
+    res.json(formattedUsers);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
@@ -37,9 +41,12 @@ exports.updateUserRole = async (req, res) => {
       .select('-password -verificationCode -resetCode')
       .populate('group', 'name description');
 
+    // Format the user object to include the profile image URL
+    const formattedUser = formatUserResponse(updatedUser, req);
+
     res.json({
       message: 'User role updated successfully',
-      user: updatedUser
+      user: formattedUser
     });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
@@ -72,9 +79,12 @@ exports.updateUserGroup = async (req, res) => {
       .select('-password -verificationCode -resetCode')
       .populate('group', 'name description');
 
+    // Format the user object to include the profile image URL
+    const formattedUser = formatUserResponse(updatedUser, req);
+
     res.json({
       message: 'User group updated successfully',
-      user: updatedUser
+      user: formattedUser
     });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

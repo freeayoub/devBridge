@@ -6,7 +6,7 @@ import { SignupComponent } from './signup/signup.component';
 import { LoginComponent } from './login/login.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
-import { ResetPasswordComponent } from './reset-password/reset-password.component';3
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProfileComponent } from './profile/profile.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
@@ -25,8 +25,7 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
   imports: [
     CommonModule,
     AuthRoutingModule,
-    ReactiveFormsModule,
-    AuthRoutingModule
+    ReactiveFormsModule
   ]
 })
 export class AuthModule { }

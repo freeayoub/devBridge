@@ -38,9 +38,13 @@
           class="flex items-center space-x-1.5 focus:outline-none"
           aria-expanded="false"
         >
-          <div class="w-7 h-7 rounded-full bg-primary-light dark:bg-primary-dark flex items-center justify-center text-white text-sm">
-            <span *ngIf="!user?.profileImageURL">{{ user?.fullName?.charAt(0) || 'U' }}</span>
-            <img *ngIf="user?.profileImageURL" [src]="user.profileImageURL" alt="Profile" class="w-7 h-7 rounded-full object-cover">
+          <div class="w-8 h-8 rounded-full overflow-hidden">
+            <!-- Show initial only if no profile image URL is available -->
+            <div *ngIf="!user?.profileImageURL" class="w-full h-full bg-primary-light dark:bg-primary-dark flex items-center justify-center text-white text-sm">
+              {{ user?.fullName?.charAt(0) || 'U' }}
+            </div>
+            <!-- Show profile image if available -->
+            <img *ngIf="user?.profileImageURL" [src]="user.profileImageURL" alt="Profile" class="w-full h-full object-cover">
           </div>
           <span class="hidden md:inline text-sm">{{ user?.fullName || 'User' }}</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

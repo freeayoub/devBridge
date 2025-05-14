@@ -103,6 +103,11 @@ export class ProfileComponent implements OnInit {
         this.selectedImage = null;
         this.uploadLoading = false;
 
+        // Also update the user in localStorage to keep it in sync
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        storedUser.profileImageURL = res.user.profileImageURL;
+        localStorage.setItem('user', JSON.stringify(storedUser));
+
         // Auto-hide message after 3 seconds
         setTimeout(() => {
           this.message = '';

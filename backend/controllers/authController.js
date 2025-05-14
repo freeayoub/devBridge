@@ -2,9 +2,12 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const generateCode = require('../utils/generateCode');
-const sendEmail = require('../utils/sendEmail');
-
-const { sendVerificationEmail } = require('../utils/sendEmail');
+const { formatUserResponse } = require('../utils/formatUserResponse');
+const {
+  sendVerificationEmail,
+  sendPasswordResetEmail,
+  sendWelcomeEmail
+} = require('../utils/sendEmail');
 
 exports.signup = async (req, res) => {
   const { fullName, email, password, role } = req.body;
@@ -27,7 +30,7 @@ exports.signup = async (req, res) => {
     });
 
     await user.save();
-    await sendVerificationEmail(email, code);
+    await sendVerificationEmail(email, code, fullName);
 
     res.status(201).json({ message: 'Signup successful. Verification code sent to email.' });
   } catch (err) {
@@ -51,7 +54,7 @@ exports.login = async (req, res) => {
       if (!match) return res.status(400).json({ message: 'Invalid credentials' });
 
       const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
+        expiresIn: process.env.JWT_EXPIRES_IN || '7d',
       });
 
       res.json({
@@ -82,7 +85,10 @@ exports.getProfile = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    res.json(user);
+    // Format the response to include the full profile image URL
+    const userResponse = formatUserResponse(user, req);
+
+    res.json(userResponse);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
@@ -117,16 +123,15 @@ exports.updateProfile = async (req, res) => {
         }
       }
 
+      // Format the user response with proper profile image URL
+      const formattedUser = formatUserResponse(user, req);
+
+      // Add group info
+      formattedUser.group = groupInfo;
+
       res.json({
         message: 'Profile updated successfully',
-        user: {
-          id: user._id,
-          fullName: user.fullName,
-          email: user.email,
-          role: user.role,
-          group: groupInfo,
-          profileImageURL: `${req.protocol}://${req.get('host')}/${user.profileImage}`
-        }
+        user: formattedUser
       });
     } catch (err) {
       res.status(500).json({ message: 'Server error', error: err.message });
@@ -167,6 +172,10 @@ exports.verifyEmail = async (req, res) => {
         user.verified = true;
         user.verificationCode = null;
         await user.save();
+
+        // Send welcome email after successful verification
+        await sendWelcomeEmail(email, user.fullName);
+
         res.json({ message: 'Email verified successfully' });
       } else {
         res.status(400).json({ message: 'Invalid verification code' });
@@ -186,7 +195,7 @@ exports.verifyEmail = async (req, res) => {
 
       user.resetCode = code;
       await user.save();
-      await sendVerificationEmail(email, code); // reuse the email function
+      await sendPasswordResetEmail(email, code, user.fullName);
 
       res.json({ message: 'Reset code sent to email' });
     } catch (err) {
@@ -229,8 +238,8 @@ exports.verifyEmail = async (req, res) => {
       user.verificationCode = code;
       await user.save();
 
-      // Send email
-      await sendVerificationEmail(email, code);
+      // Send email with user's name
+      await sendVerificationEmail(email, code, user.fullName);
 
       res.json({ message: 'Un nouveau code a été envoyé à votre email.' });
     } catch (err) {
