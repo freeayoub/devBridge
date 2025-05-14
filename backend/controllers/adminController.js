@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Group = require('../models/Group');
 const { formatUserResponse, formatUsersResponse } = require('../utils/formatUserResponse');
+const moment = require('moment');
 
 // GET /api/admin/users
 exports.getAllUsers = async (req, res) => {
@@ -85,6 +86,113 @@ exports.updateUserGroup = async (req, res) => {
     res.json({
       message: 'User group updated successfully',
       user: formattedUser
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// GET /api/admin/user-growth
+exports.getUserGrowth = async (req, res) => {
+  try {
+    const { period = 'monthly' } = req.query;
+
+    // Get all users with their creation dates
+    const users = await User.find().select('createdAt');
+
+    let groupedData = [];
+    const now = moment();
+
+    if (period === 'daily') {
+      // Last 30 days
+      const startDate = moment().subtract(30, 'days').startOf('day');
+
+      // Initialize data array with zeros for all days
+      for (let i = 0; i < 30; i++) {
+        const date = moment(startDate).add(i, 'days');
+        groupedData.push({
+          label: date.format('MMM DD'),
+          count: 0,
+          date: date.toDate()
+        });
+      }
+
+      // Count users for each day
+      users.forEach(user => {
+        const createdAt = moment(user.createdAt);
+        if (createdAt.isAfter(startDate)) {
+          const dayIndex = createdAt.diff(startDate, 'days');
+          if (dayIndex >= 0 && dayIndex < 30) {
+            groupedData[dayIndex].count++;
+          }
+        }
+      });
+    } else if (period === 'weekly') {
+      // Last 12 weeks
+      const startDate = moment().subtract(12, 'weeks').startOf('week');
+
+      // Initialize data array with zeros for all weeks
+      for (let i = 0; i < 12; i++) {
+        const date = moment(startDate).add(i, 'weeks');
+        groupedData.push({
+          label: `Week ${date.format('W')}`,
+          count: 0,
+          date: date.toDate()
+        });
+      }
+
+      // Count users for each week
+      users.forEach(user => {
+        const createdAt = moment(user.createdAt);
+        if (createdAt.isAfter(startDate)) {
+          const weekIndex = createdAt.diff(startDate, 'weeks');
+          if (weekIndex >= 0 && weekIndex < 12) {
+            groupedData[weekIndex].count++;
+          }
+        }
+      });
+    } else {
+      // Monthly (default) - Last 12 months
+      const startDate = moment().subtract(12, 'months').startOf('month');
+
+      // Initialize data array with zeros for all months
+      for (let i = 0; i < 12; i++) {
+        const date = moment(startDate).add(i, 'months');
+        groupedData.push({
+          label: date.format('MMM YYYY'),
+          count: 0,
+          date: date.toDate()
+        });
+      }
+
+      // Count users for each month
+      users.forEach(user => {
+        const createdAt = moment(user.createdAt);
+        if (createdAt.isAfter(startDate)) {
+          const monthIndex = createdAt.diff(startDate, 'months');
+          if (monthIndex >= 0 && monthIndex < 12) {
+            groupedData[monthIndex].count++;
+          }
+        }
+      });
+    }
+
+    // Calculate cumulative growth
+    let cumulativeData = [];
+    let cumulativeCount = 0;
+
+    groupedData.forEach(item => {
+      cumulativeCount += item.count;
+      cumulativeData.push({
+        ...item,
+        cumulativeCount
+      });
+    });
+
+    res.json({
+      period,
+      data: groupedData,
+      cumulativeData
     });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

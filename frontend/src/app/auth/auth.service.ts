@@ -68,7 +68,28 @@ export class AuthService {
   }
 
   toggleUserActivation(userId: string, isActive: boolean, token: string) {
+    console.log(`Auth service: Toggling user activation for ${userId}, setting isActive to ${isActive}`);
     return this.http.put(`${this.ADMIN_API}/users/${userId}/activation`, { isActive }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  toggleUserVerification(userId: string, verified: boolean, token: string) {
+    return this.http.put(`${this.ADMIN_API}/users/${userId}/verification`, { verified }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  triggerPasswordReset(userId: string, token: string) {
+    return this.http.post(`${this.ADMIN_API}/users/${userId}/reset-password`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+
+
+  getUserGrowthData(period: string, token: string) {
+    return this.http.get(`${this.ADMIN_API}/user-growth?period=${period}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }

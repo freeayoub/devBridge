@@ -4,6 +4,7 @@ const {
   getPasswordResetEmailTemplate,
   getWelcomeEmailTemplate
 } = require('./emailTemplates');
+const getAdminPasswordResetTemplate = require('./emailTemplates/adminPasswordResetTemplate');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail', // or use Mailgun, SendGrid etc
@@ -54,5 +55,20 @@ exports.sendWelcomeEmail = async (email, fullName = '') => {
     to: email,
     subject: 'Welcome to DevBridge!',
     html: getWelcomeEmailTemplate(fullName)
+  });
+};
+
+/**
+ * Send admin-triggered password reset email with new password
+ * @param {string} email - Recipient email
+ * @param {string} newPassword - New password
+ * @param {string} fullName - Optional recipient name
+ */
+exports.sendAdminPasswordResetEmail = async (email, newPassword, fullName = '') => {
+  await transporter.sendMail({
+    from: `"DevBridge" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'Your DevBridge Password Has Been Reset',
+    html: getAdminPasswordResetTemplate(newPassword, fullName)
   });
 };
