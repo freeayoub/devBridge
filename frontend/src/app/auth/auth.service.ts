@@ -1,10 +1,11 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { environment } from "../../environments/environment";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private AUTH_API = 'http://localhost:5000/api/auth';
-  private ADMIN_API = 'http://localhost:5000/api/admin';
+  private AUTH_API = `${environment.apiUrl}/auth`;
+  private ADMIN_API = `${environment.apiUrl}/admin`;
 
   constructor(private http: HttpClient) {}
 
@@ -67,7 +68,28 @@ export class AuthService {
   }
 
   toggleUserActivation(userId: string, isActive: boolean, token: string) {
+    console.log(`Auth service: Toggling user activation for ${userId}, setting isActive to ${isActive}`);
     return this.http.put(`${this.ADMIN_API}/users/${userId}/activation`, { isActive }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  toggleUserVerification(userId: string, verified: boolean, token: string) {
+    return this.http.put(`${this.ADMIN_API}/users/${userId}/verification`, { verified }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  triggerPasswordReset(userId: string, token: string) {
+    return this.http.post(`${this.ADMIN_API}/users/${userId}/reset-password`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+
+
+  getUserGrowthData(period: string, token: string) {
+    return this.http.get(`${this.ADMIN_API}/user-growth?period=${period}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }

@@ -14,9 +14,10 @@ const userSchema = new mongoose.Schema({
     ref: 'Group',
     default: null
   },
-  profileImage: { type: String, default: 'uploads/default.png' },
+  profileImage: { type: String, default: 'uploads/default-avatar.png' },
   createdAt: { type: Date, default: Date.now },
   verified: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
   verificationCode: { type: String },
   resetCode: { type: String }
 });

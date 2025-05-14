@@ -15,6 +15,6 @@
   }
 
   &.inactive {
-    @apply bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300;
+    @apply bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300 font-semibold border border-red-300 dark:border-red-800;
   }
 }

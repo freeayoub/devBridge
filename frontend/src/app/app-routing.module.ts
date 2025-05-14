@@ -5,13 +5,28 @@ import { ProfileComponent } from './admin/profile/profile.component';
 import { HomeComponent } from './home/home.component';
 import { DashboardComponent as UserDashboardComponent } from './user/dashboard/dashboard.component';
 import { AuthGuard } from './auth/auth.guard';
+import { RoleGuard } from './auth/role.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'auth', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) },
-  { path: 'admin/dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'admin/profile', component: ProfileComponent, canActivate: [AuthGuard] },
-  { path: 'user/dashboard', component: UserDashboardComponent, canActivate: [AuthGuard] }
+  {
+    path: 'admin/dashboard',
+    component: DashboardComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: 'admin' }
+  },
+  {
+    path: 'admin/profile',
+    component: ProfileComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: 'admin' }
+  },
+  {
+    path: 'user/dashboard',
+    component: UserDashboardComponent,
+    canActivate: [AuthGuard]
+  }
 ];
 
 

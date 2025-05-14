@@ -1,6 +1,4 @@
-# PI // application de gestion de projet intégrée //
-
-# devBridge
+# DevBridge - Application de Gestion de Projet Intégrée
 
 ## Description
 
@@ -11,53 +9,71 @@ académiques.
 
 ## Structure du Projet
 
-## Le projet utilise une structure **monorepo** avec un seul dépôt Git qui contient à la fois le **frontend** (Angular) et le **backend** (Node.js). Voici la structure des dossiers :
+Le projet utilise une structure **monorepo** avec un seul dépôt Git qui contient à la fois le **frontend** (Angular) et le **backend** (Node.js).
 
-# .gitignore
+## Installation
 
----
+1. Cloner le dépôt
+```bash
+git clone https://github.com/freeayoub/devBridge.git
+cd devBridge
+```
 
-# .env
+2. Installer les dépendances du backend
+```bash
+cd backend
+npm install
+```
 
-# node_modules/
+3. Installer les dépendances du frontend
+```bash
+cd ../frontend
+npm install
+```
 
-# uploads/
+4. Configurer les variables d'environnement
+   - Copier le fichier `.env.example` vers `.env` dans le dossier racine
+   - Modifier les valeurs selon votre environnement
 
----
+## Configuration
 
-# GitHub :
+Créez un fichier `.env` à la racine du projet avec les variables suivantes:
 
-## git clone https://github.com/freeayoub/devBridge.git
-
-# .env:
-
+```
 # Configuration de base
-
-# Configuration de base
-
-PORT=3000 NODE_ENV=development
+PORT=5000
+NODE_ENV=development
 
 # Base de données MongoDB
-
 MONGO_URI=mongodb://127.0.0.1:27017/project_management
 
 # Frontend
-
-FRONTEND_URL=http://localhost:4200 CORS_ORIGIN=http://localhost:4200
+FRONTEND_URL=http://localhost:4200
+CORS_ORIGIN=http://localhost:4200
 
 # Authentification
+JWT_SECRET=votre_secret_jwt
+JWT_EXPIRES_IN=7d
 
-JWT_SECRET=devbridge JWT_EXPIRES_IN=7d SECRET_KEY=2cinfo1 CLIENT_KEY=esprit
+# Email Configuration (requis pour l'envoi d'emails)
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-email-password
+```
 
-# GraphQL
+## Démarrage
 
-USE_GRAPHQL=true
+1. Démarrer le serveur backend
+```bash
+cd backend
+npm start
+```
 
-# Cloudinary
+2. Démarrer le serveur frontend
+```bash
+cd frontend
+ng serve
+```
 
-CLOUDINARY_CLOUD_NAME=dhefwodjk CLOUDINARY_API_KEY=759654722199679
-CLOUDINARY_API_SECRET=RWqD45DPdUXvDN6Bf096EcVrPdA
-
-# link image
-
-DEFAULT_IMAGE=https://res.cloudinary.com/dhefwodjk/image/upload/v1744417743/profile_images/profile_images/1744417744084-default-avatar.png.webp
+3. Accéder à l'application
+   - Frontend: http://localhost:4200
+   - Backend API: http://localhost:5000/api

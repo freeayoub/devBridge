@@ -41,11 +41,29 @@ export class ProfileComponent implements OnInit {
     this.authService.updateProfile(formData, token!).subscribe({
       next: (res: any) => {
         this.message = res.message;
+
+        // Update the user object with the new profile image URL
         this.user.profileImageURL = res.user.profileImageURL;
+
+        // Also update the user in localStorage to keep it in sync
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        storedUser.profileImageURL = res.user.profileImageURL;
+        localStorage.setItem('user', JSON.stringify(storedUser));
+
         this.selectedImage = null;
+
+        // Auto-hide message after 3 seconds
+        setTimeout(() => {
+          this.message = '';
+        }, 3000);
       },
       error: (err) => {
         this.error = err.error.message || 'Upload failed';
+
+        // Auto-hide error after 3 seconds
+        setTimeout(() => {
+          this.error = '';
+        }, 3000);
       }
     });
   }
