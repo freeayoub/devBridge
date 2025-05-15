@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel='stylesheet' href='https://www.zapsplat.com/wp-content/plugins/breakdance/plugin/themeless/normalize.min.css'>
+        <meta name='robots' content='noindex, follow' />
+	<style>img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }</style>
+	
+	<!-- This site is optimized with the Yoast SEO Premium plugin v25.0 (Yoast SEO v25.0) - https://yoast.com/wordpress/plugins/seo/ -->
+	<title>Page not found | ZapSplat - Download free sound effects</title>
+	<meta property="og:locale" content="en_GB" />
+	<meta property="og:title" content="Page not found | ZapSplat - Download free sound effects" />
+	<meta property="og:site_name" content="ZapSplat - Download free sound effects" />
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://www.zapsplat.com/#website","url":"https://www.zapsplat.com/","name":"ZapSplat - Download free sound effects","description":"Free sound effects and royalty free music library","publisher":{"@id":"https://www.zapsplat.com/#organization"},"alternateName":"Zapsplat","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://www.zapsplat.com/?s={search_term_string}"},"query-input":{"@type":"PropertyValueSpecification","valueRequired":true,"valueName":"search_term_string"}}],"inLanguage":"en-GB"},{"@type":"Organization","@id":"https://www.zapsplat.com/#organization","name":"Zapsplat","url":"https://www.zapsplat.com/","logo":{"@type":"ImageObject","inLanguage":"en-GB","@id":"https://www.zapsplat.com/#/schema/logo/image/","url":"https://www.zapsplat.com/wp-content/uploads/2018/04/zapsplat_logo_display.png","contentUrl":"https://www.zapsplat.com/wp-content/uploads/2018/04/zapsplat_logo_display.png","width":500,"height":175,"caption":"Zapsplat"},"image":{"@id":"https://www.zapsplat.com/#/schema/logo/image/"},"sameAs":["https://x.com/zap_splat","https://www.instagram.com/zap_splat/","https://www.linkedin.com/company/zapsplat","https://www.youtube.com/@zapsplat"]}]}</script>
+	<!-- / Yoast SEO Premium plugin. -->
+
+
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<style id='classic-theme-styles-inline-css' type='text/css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<link rel='stylesheet' id='cookie-notice-front-css' href='https://www.zapsplat.com/wp-content/plugins/cookie-notice/css/front.min.css?ver=2.5.6' type='text/css' media='all' />
+<link rel='stylesheet' id='pmpro_frontend_base-css' href='https://www.zapsplat.com/wp-content/plugins/paid-memberships-pro/css/frontend/base.css?ver=3.4.6' type='text/css' media='all' />
+<link rel='stylesheet' id='pmpro_frontend_variation_1-css' href='https://www.zapsplat.com/wp-content/plugins/paid-memberships-pro/css/frontend/variation_1.css?ver=3.4.6' type='text/css' media='all' />
+<link rel='stylesheet' id='pmpro-add-paypal-express-styles-css' href='https://www.zapsplat.com/wp-content/plugins/pmpro-add-paypal-express/css/pmpro-add-paypal-express.css?ver=6.8.1' type='text/css' media='all' />
+<link rel='stylesheet' id='slicewp-style-css' href='https://www.zapsplat.com/wp-content/plugins/slicewp/assets/css/style-front-end.css?ver=1.1.32' type='text/css' media='all' />
+<link rel='stylesheet' id='brands-styles-css' href='https://www.zapsplat.com/wp-content/plugins/woocommerce/assets/css/brands.css?ver=9.8.4' type='text/css' media='all' />
+<style id='akismet-widget-style-inline-css' type='text/css'>
+
+			.a-stats {
+				--akismet-color-mid-green: #357b49;
+				--akismet-color-white: #fff;
+				--akismet-color-light-grey: #f6f7f7;
+
+				max-width: 350px;
+				width: auto;
+			}
+
+			.a-stats * {
+				all: unset;
+				box-sizing: border-box;
+			}
+
+			.a-stats strong {
+				font-weight: 600;
+			}
+
+			.a-stats a.a-stats__link,
+			.a-stats a.a-stats__link:visited,
+			.a-stats a.a-stats__link:active {
+				background: var(--akismet-color-mid-green);
+				border: none;
+				box-shadow: none;
+				border-radius: 8px;
+				color: var(--akismet-color-white);
+				cursor: pointer;
+				display: block;
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
+				font-weight: 500;
+				padding: 12px;
+				text-align: center;
+				text-decoration: none;
+				transition: all 0.2s ease;
+			}
+
+			/* Extra specificity to deal with TwentyTwentyOne focus style */
+			.widget .a-stats a.a-stats__link:focus {
+				background: var(--akismet-color-mid-green);
+				color: var(--akismet-color-white);
+				text-decoration: none;
+			}
+
+			.a-stats a.a-stats__link:hover {
+				filter: brightness(110%);
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 0 2px rgba(0, 0, 0, 0.16);
+			}
+
+			.a-stats .count {
+				color: var(--akismet-color-white);
+				display: block;
+				font-size: 1.5em;
+				line-height: 1.4;
+				padding: 0 13px;
+				white-space: nowrap;
+			}
+		
+</style>
+<link rel='stylesheet' id='zs-ads-frontend-css' href='https://www.zapsplat.com/wp-content/plugins/zs-ads/frontend/css/zs-ads-frontend.css?ver=1.0.0.1704929165' type='text/css' media='all' />
+<link rel='stylesheet' id='zs-frontend-css' href='https://www.zapsplat.com/wp-content/plugins/zs/includes/frontend/css/zs-frontend.css?ver=1.0.0.1704929165' type='text/css' media='all' />
+<script type="text/javascript" id="cookie-notice-front-js-before">
+/* <![CDATA[ */
+var cnArgs = {"ajaxUrl":"https:\/\/www.zapsplat.com\/wp-admin\/admin-ajax.php","nonce":"20a37866a2","hideEffect":"fade","position":"bottom","onScroll":false,"onScrollOffset":100,"onClick":false,"cookieName":"cookie_notice_accepted","cookieTime":2592000,"cookieTimeRejected":2592000,"globalCookie":false,"redirection":false,"cache":true,"revokeCookies":false,"revokeCookiesOpt":"automatic"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/cookie-notice/js/front.min.js?ver=2.5.6" id="cookie-notice-front-js"></script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" id="jquery-core-js"></script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/pmpro-group-accounts/js/pmprogroupacct-checkout.js?ver=1.3" id="pmprogroupacct-checkout-js"></script>
+<script type="text/javascript" id="cc-pmpro-xero-js-extra">
+/* <![CDATA[ */
+var cc_pmpro_xero_ajax = {"ajax_url":"https:\/\/www.zapsplat.com\/wp-admin\/admin-ajax.php","cc_pmpro_xero_nonce":"34410bf167"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/pmpro-xero/js/cc-pmpro-xero-frontend.js?ver=6.8.1" id="cc-pmpro-xero-js"></script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min.js?ver=2.7.0-wc.9.8.4" id="jquery-blockui-js" defer="defer" data-wp-strategy="defer"></script>
+<script type="text/javascript" id="wc-add-to-cart-js-extra">
+/* <![CDATA[ */
+var wc_add_to_cart_params = {"ajax_url":"\/wp-admin\/admin-ajax.php","wc_ajax_url":"\/?wc-ajax=%%endpoint%%","i18n_view_cart":"View basket","cart_url":"https:\/\/www.zapsplat.com\/cart\/","is_cart":"","cart_redirect_after_add":"no"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.min.js?ver=9.8.4" id="wc-add-to-cart-js" defer="defer" data-wp-strategy="defer"></script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/woocommerce/assets/js/js-cookie/js.cookie.min.js?ver=2.1.4-wc.9.8.4" id="js-cookie-js" defer="defer" data-wp-strategy="defer"></script>
+<script type="text/javascript" id="woocommerce-js-extra">
+/* <![CDATA[ */
+var woocommerce_params = {"ajax_url":"\/wp-admin\/admin-ajax.php","wc_ajax_url":"\/?wc-ajax=%%endpoint%%","i18n_password_show":"Show password","i18n_password_hide":"Hide password"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/woocommerce/assets/js/frontend/woocommerce.min.js?ver=9.8.4" id="woocommerce-js" defer="defer" data-wp-strategy="defer"></script>
+<script type="text/javascript" id="slicewp-script-tracking-js-before">
+/* <![CDATA[ */
+var slicewp_ajaxurl = "https:\/\/www.zapsplat.com\/wp-admin\/admin-ajax.php";
+var slicewp = {"ajaxurl":"https:\/\/www.zapsplat.com\/wp-admin\/admin-ajax.php","cookie_duration":90,"affiliate_credit":"last","affiliate_keyword":"aff","predefined_date_ranges":{"past_7_days":"Past 7 days","past_30_days":"Past 30 days","week_to_date":"Week to date","month_to_date":"Month to date","year_to_date":"Year to date","last_week":"Last week","last_month":"Last month","last_year":"Last year"},"settings":{"active_currency":"GBP","currency_symbol_position":"before","currency_thousands_separator":",","currency_decimal_separator":"."}};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/slicewp/assets/js/script-trk.js?ver=1.1.32" id="slicewp-script-tracking-js"></script>
+<script type="text/javascript" id="zs-ads-frontend-js-extra">
+/* <![CDATA[ */
+var zs_ads_frontend = {"ajax_url":"https:\/\/www.zapsplat.com\/wp-admin\/admin-ajax.php","nonce":"19f0f1e491"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/zs-ads/frontend/js/zs-ads-frontend.js?ver=1.0.2" id="zs-ads-frontend-js"></script>
+<script type="text/javascript" id="wc-cart-fragments-js-extra">
+/* <![CDATA[ */
+var wc_cart_fragments_params = {"ajax_url":"\/wp-admin\/admin-ajax.php","wc_ajax_url":"\/?wc-ajax=%%endpoint%%","cart_hash_key":"wc_cart_hash_5857379e6fbedc438b0c43b2f60b0f31","fragment_name":"wc_fragments_5857379e6fbedc438b0c43b2f60b0f31","request_timeout":"5000"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/woocommerce/assets/js/frontend/cart-fragments.min.js?ver=9.8.4" id="wc-cart-fragments-js" defer="defer" data-wp-strategy="defer"></script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/zs/includes/frontend/js/wavesurfer-7.8.10.min.js?ver=6.8.1" id="wavesurfer-js"></script>
+<script type="text/javascript" id="zs-frontend-js-extra">
+/* <![CDATA[ */
+var zs_frontend = {"ajax_url":"https:\/\/www.zapsplat.com\/wp-admin\/admin-ajax.php","nonce":"6d08bb8fba","upgrade_page":"https:\/\/www.zapsplat.com\/upgrade\/","registration_options_page":"https:\/\/www.zapsplat.com\/registration-plans\/","registration_page":"https:\/\/www.zapsplat.com\/registration\/","login_page":"https:\/\/www.zapsplat.com\/login\/","recaptcha_site_key":"6LfyQDMrAAAAADFw5rvHbsc-aNTlsfZK5xZ3tsow","individual_sale_contributor_ids":[1348,764200,771461,2681874]};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/zs/includes/frontend/js/zs-frontend.js?ver=1.0.43" id="zs-frontend-js"></script>
+<style id="pmpro_colors">:root {
+	--pmpro--color--base: #1b1b1b;
+	--pmpro--color--contrast: #ffffff;
+	--pmpro--color--accent: #ef5c72;
+	--pmpro--color--accent--variation: hsl( 351,82%,97.5% );
+	--pmpro--color--border--variation: hsl( 0,0%,30% );
+}</style>	<noscript><style>.woocommerce-product-gallery{ opacity: 1 !important; }</style></noscript>
+	<!-- [HEADER ASSETS] -->
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/plugins/breakdance/subplugins/breakdance-woocommerce/css/breakdance-woocommerce.css" />
+
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/plugins/breakdance/subplugins/breakdance-elements/dependencies-files/awesome-menu@1/awesome-menu.css?bd_ver=2.0.0" />
+
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/uploads/breakdance/css/post-158524-defaults.css?v=fe48750790b4d1397dc20582e7fce769" />
+
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/uploads/breakdance/css/post-158471-defaults.css?v=f872452ba2dcc3aa98c15898e073908b" />
+
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/uploads/breakdance/css/post-158527-defaults.css?v=0f1ed965ed90b707cd1b441771e2089d" />
+
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/uploads/breakdance/css/global-settings.css?v=c5ab26366790a45a65a578623cfd808c" />
+
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/uploads/breakdance/css/presets.css?v=d41d8cd98f00b204e9800998ecf8427e" />
+
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/uploads/breakdance/css/selectors.css?v=9c7003dcbe96bdcc0a78ddea8e95904a" />
+
+
+
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/uploads/breakdance/css/post-158524.css?v=bf13b283e1a45f66c13279ebde3cc9d4" />
+
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/uploads/breakdance/css/post-158471.css?v=2555387ad3bf50c9d80e1052acdf119a" />
+
+<link rel="stylesheet" href="https://www.zapsplat.com/wp-content/uploads/breakdance/css/post-158527.css?v=ef2ce1c2a10b65e82c23bee719bb0696" />
+<!-- [/EOF HEADER ASSETS] --><script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "q3skuqawh7");
+</script><noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript></head>
+<body class="pmpro-variation_1 error404 wp-theme-breakdance-zero wp-child-theme-zs breakdance theme-breakdance-zero cookies-not-set woocommerce-no-js">
+    <svg class="breakdance-global-gradients-sprite" aria-hidden="true"><radialGradient id="bde-palette-blule-radial-gradient-3e21386b-fb4f-4f8d-9f65-8a72630b13ac-gradient-8"><stop stop-opacity="1" stop-color="#031c4f" offset="0"></stop><stop stop-opacity="0" stop-color="#ff0000" offset="0.7128205128205128"></stop></radialGradient></svg>    <div class='breakdance'><header class="bde-header-builder-158524-100 bde-header-builder bde-header-builder--sticky bde-header-builder--sticky-scroll-slide">
+
+<div class="bde-header-builder__container"><div class="bde-image-158524-101 bde-image">
+<figure class="breakdance-image breakdance-image--158753">
+	<div class="breakdance-image-container">
+		<div class="breakdance-image-clip"><a class="breakdance-image-link breakdance-image-link--url" href="/" target="_self" rel="noopener" data-sub-html="" data-lg-size="-"><img class="breakdance-image-object" src="https://www.zapsplat.com/wp-content/uploads/2025/01/Zapsplat-logo.webp" width="138" height="47" sizes="(max-width: 138px) 100vw, 138px" alt="Zapsplat Logo"></a></div>
+	</div></figure>
+
+</div><div class="bde-menu-158524-102 bde-menu">
+
+
+      
+        
+    <nav class="breakdance-menu breakdance-menu--collapse  breakdance-menu--active-styles breakdance-menu--active-underline  " aria-label="main navigation menu">
+    <button class="breakdance-menu-toggle breakdance-menu-toggle--squeeze" type="button" aria-label="Open Menu" aria-expanded="false" aria-controls="menu-102">
+                  <span class="breakdance-menu-toggle-icon">
+            <span class="breakdance-menu-toggle-lines"></span>
+          </span>
+            </button>
+    
+  <ul class="breakdance-menu-list" id="menu-102">
+              
+      <li class="breakdance-menu-topbar">
+              <span class="breakdance-menu-topbar-logo">
+                                </span>
+      
+              <button class="breakdance-menu-close-button" type="button">Close</button>
+          </li>
+  
+    <li class="breakdance-menu-item-158524-103 breakdance-menu-item" aria-label="Home">
+        
+            
+            
+
+    
+    
+    
+    
+    
+    <a class="breakdance-link breakdance-menu-link" href="/" target="_self" data-type="url"  >
+  Home
+    </a>
+
+</li><li class="bde-menu-custom-dropdown-158524-104 bde-menu-custom-dropdown breakdance-menu-item">
+<div class="breakdance-dropdown breakdance-dropdown--custom breakdance-dropdown--with-link">
+    <div class="breakdance-dropdown-toggle">
+            
+                      
+            
+            
+
+    
+    
+    
+    
+                            
+    <a class="breakdance-link breakdance-menu-link" href="/sound-effect-categories/" target="_self" data-type="url" aria-expanded="false" aria-controls="dropdown-104" aria-label="View all sound effects categories" >
+
+          Sound Effects
+            </a>
+
+      
+      <button class="breakdance-menu-link-arrow" type="button" aria-expanded="false" aria-controls="dropdown-104" aria-label="Sound Effects Submenu"></button>
+    </div>
+
+    <div class="breakdance-dropdown-floater" aria-hidden="true" id="dropdown-104">
+        <div class="breakdance-dropdown-body">
+            <div class="breakdance-dropdown-custom-content">
+                <div class="bde-text-158524-105 bde-text">
+Browse Sound Effects Categories
+</div><div class="bde-shortcode-158524-106 bde-shortcode">
+<ul class="menu-sound-effect-categories"><li><a href="https://www.zapsplat.com/sound-effect-category/animals/" class="sound-effect-category-link">Animal</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/bells/" class="sound-effect-category-link">Bell</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/cartoon/" class="sound-effect-category-link">Cartoon</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/emergency/" class="sound-effect-category-link">Emergency</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/explosions-and-fireworks/" class="sound-effect-category-link">Explosions</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/fantasy/" class="sound-effect-category-link">Fantasy</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/foley/" class="sound-effect-category-link">Foley</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/food-and-drink/" class="sound-effect-category-link">Food and Drink</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/horror/" class="sound-effect-category-link">Horror</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/hospital/" class="sound-effect-category-link">Hospital</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/household/" class="sound-effect-category-link">Household</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/human/" class="sound-effect-category-link">Human</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/impacts/" class="sound-effect-category-link">Impacts</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/industrial/" class="sound-effect-category-link">Industrial</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/lab/" class="sound-effect-category-link">Lab</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/leisure/" class="sound-effect-category-link">Leisure</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/multimedia/" class="sound-effect-category-link">Multimedia and UI</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/musical/" class="sound-effect-category-link">Musical</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/nature/" class="sound-effect-category-link">Nature</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/office/" class="sound-effect-category-link">Office</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/public-places/" class="sound-effect-category-link">Public Places</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/science-fiction/" class="sound-effect-category-link">Science Fiction</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/sound-design/" class="sound-effect-category-link">Sound Design</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/sport/" class="sound-effect-category-link">Sport</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/technology/" class="sound-effect-category-link">Technology</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/vehicles-and-transport/" class="sound-effect-category-link">Vehicles</a></li><li><a href="https://www.zapsplat.com/sound-effect-category/war-and-weapons/" class="sound-effect-category-link">Warfare</a></li></ul>
+</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</li><li class="breakdance-menu-item-158524-107 breakdance-menu-item" aria-label="Sound Effects Packs">
+        
+            
+            
+
+    
+    
+    
+    
+    
+    <a class="breakdance-link breakdance-menu-link" href="/sound-effect-packs/" target="_self" data-type="url"  >
+  SFX Packs
+    </a>
+
+</li><li class="breakdance-menu-item-158524-108 breakdance-menu-item" aria-label="Royalty free music">
+        
+            
+            
+
+    
+    
+    
+    
+    
+    <a class="breakdance-link breakdance-menu-link" href="/sound-effect-category/royalty-free-music/" target="_self" data-type="url"  >
+  Music
+    </a>
+
+</li><li class="bde-button-158524-109 bde-button breakdance-menu-item">
+    
+                                    
+    
+    
+    
+                            
+            
+                    
+            
+            
+
+    
+    
+    
+    
+                            
+    <a class="breakdance-link button-atom button-atom--primary bde-button__button" href="/login/" target="_self" data-type="url"  aria-label="Login" >
+
+    
+        <span class="button-atom__text">Login</span>
+
+        
+        
+                </a>
+
+    
+
+
+</li><li class="bde-button-158524-110 bde-button breakdance-menu-item">
+    
+                                    
+    
+    
+    
+                            
+            
+                    
+            
+            
+
+    
+    
+    
+    
+                            
+    <a class="breakdance-link button-atom button-atom--secondary bde-button__button" href="/registration/" target="_self" data-type="url"  aria-label="Login" >
+
+    
+        <span class="button-atom__text">Register</span>
+
+        
+        
+                </a>
+
+    
+
+
+</li>
+  </ul>
+  </nav>
+
+
+</div><div class="bde-div-158524-113 bde-div">
+  
+	
+
+
+
+<div class="bde-search-form-158524-114 bde-search-form" aria-label="Search our library of sound effects and music">
+
+
+
+
+
+
+   
+
+
+<form id="search-form-114" role="search" method="get" data-type="classic" aria-hidden="false" class="js-search-form search-form search-form--classic" action="https://www.zapsplat.com">
+  <div class="search-form__container">
+      <button type="submit" aria-label="search" class="search-form__button">
+      		  <svg xmlns="http://www.w3.org/2000/svg" id="icon-search" viewBox="0 0 32 32">
+<path d="M31.008 27.231l-7.58-6.447c-0.784-0.705-1.622-1.029-2.299-0.998 1.789-2.096 2.87-4.815 2.87-7.787 0-6.627-5.373-12-12-12s-12 5.373-12 12 5.373 12 12 12c2.972 0 5.691-1.081 7.787-2.87-0.031 0.677 0.293 1.515 0.998 2.299l6.447 7.58c1.104 1.226 2.907 1.33 4.007 0.23s0.997-2.903-0.23-4.007zM12 20c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8z"/>
+</svg>
+          </button>
+   
+   
+
+  	
+  	<label class="screen-reader-text" for="search-form-field-114">Search for:</label>
+   
+        <input id="search-form-field-114" type="text" class="js-search-form-field search-form__field" placeholder="Search Library" value="" name="s" />
+  	 
+
+     
+   
+     
+
+      
+  </div>
+</form>
+
+
+</div><div class="bde-button-158524-117 bde-button">
+    
+                                    
+    
+    
+    
+                            
+            
+                    
+            
+            
+
+    
+    
+    
+    
+                            
+    <a class="breakdance-link button-atom button-atom--custom bde-button__button" href="/login/" target="_self" data-type="url"  aria-label="Login" >
+
+    
+        <span class="button-atom__text">Login</span>
+
+        
+        
+                </a>
+
+    
+
+
+</div><div class="bde-button-158524-118 bde-button">
+    
+                                    
+    
+    
+    
+                            
+            
+                    
+            
+            
+
+    
+    
+    
+    
+                            
+    <a class="breakdance-link button-atom button-atom--custom bde-button__button" href="/registration/" target="_self" data-type="url"  aria-label="Register" >
+
+    
+        <span class="button-atom__text">Register</span>
+
+        
+        
+                </a>
+
+    
+
+
+</div><div class="bde-mini-cart-158524-119 bde-mini-cart breakdance-woocommerce">
+
+    <a class="bde-mini-cart-toggle" href="https://www.zapsplat.com/cart/" aria-label="View basket" >
+        <span class="bde-mini-cart-toggle__subtotal" data-count='0'><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">&pound;</span>0.00</bdi></span></span>
+        <span class="bde-mini-cart-toggle__icon"></span>
+        <span class="bde-mini-cart-toggle__counter" data-count='0'>0</span>
+    </a>
+
+    <div class="bde-mini-cart-offcanvas bde-mini-cart-offcanvas--sidebar bde-mini-cart-offcanvas--primary-checkout bde-mini-cart-offcanvas--right">
+        <div class="bde-mini-cart-offcanvas-body">
+            <div class="bde-mini-cart-offcanvas-topbar">
+                <p class="bde-mini-cart-offcanvas-title bde-h6">Basket</p>
+                <button class="bde-mini-cart-offcanvas__close-button">×</button>
+            </div>
+
+            
+            <div class="widget_shopping_cart_content">
+                
+
+    <p class="woocommerce-mini-cart__empty-message">No products in the basket.</p>
+
+
+            </div>
+
+            
+                    </div>
+
+        <span class="bde-mini-cart-offcanvas-overlay"></span>
+    </div>
+
+
+</div>
+</div></div>
+
+
+</header></div><div class='breakdance'><section class="bde-section-158471-100 bde-section">
+  
+	
+
+
+
+<div class="section-container"><h1 class="bde-heading-158471-103 bde-heading">
+404
+</h1><div class="bde-text-158471-104 bde-text">
+not found
+</div><div class="bde-icon-158471-105 bde-icon">
+
+    
+            <div class="bde-icon-icon breakdance-icon-atom" >
+    
+                    <svg xmlns="http://www.w3.org/2000/svg" id="icon-sad" viewBox="0 0 32 32">
+<path d="M16 32c8.837 0 16-7.163 16-16s-7.163-16-16-16-16 7.163-16 16 7.163 16 16 16zM16 3c7.18 0 13 5.82 13 13s-5.82 13-13 13-13-5.82-13-13 5.82-13 13-13zM8 10c0-1.105 0.895-2 2-2s2 0.895 2 2c0 1.105-0.895 2-2 2s-2-0.895-2-2zM20 10c0-1.105 0.895-2 2-2s2 0.895 2 2c0 1.105-0.895 2-2 2s-2-0.895-2-2zM9.997 24.398l-2.573-1.544c1.749-2.908 4.935-4.855 8.576-4.855s6.827 1.946 8.576 4.855l-2.573 1.544c-1.224-2.036-3.454-3.398-6.003-3.398s-4.779 1.362-6.003 3.398z"/>
+</svg>
+        
+        
+        
+            </div>
+    
+
+
+</div></div>
+</section></div><div class='breakdance'><footer class="bde-section-158527-100 bde-section">
+  
+	
+
+
+
+<div class="section-container"><div class="bde-columns-158527-101 bde-columns"><div class="bde-column-158527-102 bde-column">
+  
+	
+
+
+
+<div class="bde-image-158527-103 bde-image">
+<figure class="breakdance-image breakdance-image--158753">
+	<div class="breakdance-image-container">
+		<div class="breakdance-image-clip"><img class="breakdance-image-object" src="https://www.zapsplat.com/wp-content/uploads/2025/01/Zapsplat-logo.webp" width="138" height="47" sizes="(max-width: 138px) 100vw, 138px" alt="Zapsplat logo" loading="lazy"></div>
+	</div></figure>
+
+</div><div class="bde-text-158527-104 bde-text">
+With a growing library of over 150,000 free sound effects downloads and more than 500 royalty free music tracks too, ZapSplat is one of the largest free SFX libraries online. We're trusted by over 2.6 million creatives who use our sound fx and music to bring their projects to life.
+</div><a class="bde-text-link-158527-105 bde-text-link breakdance-link" href="/cdn-cgi/l/email-protection#88fbfdf8f8e7fafcc8f2e9f8fbf8e4e9fca6ebe7e5" target="_self" data-type="url">
+  Email: <span class="__cf_email__" data-cfemail="4b383e3b3b24393f0b312a3b383b272a3f65282426">[email&#160;protected]</span>
+
+</a><div class="bde-image-158527-106 bde-image">
+<figure class="breakdance-image breakdance-image--121665">
+	<div class="breakdance-image-container">
+		<div class="breakdance-image-clip"><a class="breakdance-image-link breakdance-image-link--url" href="https://www.trustpilot.com/review/zapsplat.com" target="_blank" rel="noopener" data-sub-html="" data-lg-size="-"><img class="breakdance-image-object" src="https://www.zapsplat.com/wp-content/uploads/2022/04/trust-pilot-logo-white-small.png" width="200" height="99" sizes="(max-width: 200px) 100vw, 200px" loading="lazy"></a></div>
+	</div></figure>
+
+</div>
+</div><div class="bde-column-158527-107 bde-column">
+  
+	
+
+
+
+<h3 class="bde-heading-158527-108 bde-heading">
+The Important Stuff
+</h3><div class="bde-wp-menu-158527-109 bde-wp-menu">
+
+
+      
+        
+    <nav class="breakdance-menu breakdance-menu--collapse breakdance-menu--vertical   ">
+    <button class="breakdance-menu-toggle breakdance-menu-toggle--squeeze" type="button" aria-label="Open Menu" aria-expanded="false" aria-controls="menu-109">
+                  <span class="breakdance-menu-toggle-icon">
+            <span class="breakdance-menu-toggle-lines"></span>
+          </span>
+            </button>
+    
+  <ul class="breakdance-menu-list" id="menu-109">
+              
+  
+    <li id="menu-item-68573" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-68573 breakdance-menu-item"><a title="Licensing" href="https://www.zapsplat.com/license-type/standard-license/" class="breakdance-menu-link">Licensing</a></li>
+<li id="menu-item-158825" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158825 breakdance-menu-item"><a title="Premium Account Upgrade Terms" href="https://www.zapsplat.com/premium-account-upgrade-terms-and-conditions/" class="breakdance-menu-link">Premium Account Upgrade Terms</a></li>
+<li id="menu-item-158826" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158826 breakdance-menu-item"><a href="https://www.zapsplat.com/refund-policy/" class="breakdance-menu-link">Refund Policy</a></li>
+<li id="menu-item-158827" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158827 breakdance-menu-item"><a href="https://www.zapsplat.com/website-terms-of-use/" class="breakdance-menu-link">Website Terms of Use</a></li>
+<li id="menu-item-158828" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158828 breakdance-menu-item"><a href="https://www.zapsplat.com/privacy-policy/" class="breakdance-menu-link">Privacy Policy</a></li>
+
+  </ul>
+  </nav>
+
+
+</div>
+</div><div class="bde-column-158527-110 bde-column">
+  
+	
+
+
+
+<h3 class="bde-heading-158527-111 bde-heading">
+More Information
+</h3><div class="bde-wp-menu-158527-112 bde-wp-menu">
+
+
+      
+        
+    <nav class="breakdance-menu breakdance-menu--collapse breakdance-menu--vertical   ">
+    <button class="breakdance-menu-toggle breakdance-menu-toggle--squeeze" type="button" aria-label="Open Menu" aria-expanded="false" aria-controls="menu-112">
+                  <span class="breakdance-menu-toggle-icon">
+            <span class="breakdance-menu-toggle-lines"></span>
+          </span>
+            </button>
+    
+  <ul class="breakdance-menu-list" id="menu-112">
+              
+  
+    <li id="menu-item-158818" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158818 breakdance-menu-item"><a title="About Zapsplat" href="https://www.zapsplat.com/about/" class="breakdance-menu-link">About Us</a></li>
+<li id="menu-item-158819" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158819 breakdance-menu-item"><a title="Contact Zapsplat" href="https://www.zapsplat.com/contact/" class="breakdance-menu-link">Contact Us</a></li>
+<li id="menu-item-158820" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158820 breakdance-menu-item"><a href="https://www.zapsplat.com/faq/" class="breakdance-menu-link">FAQ</a></li>
+<li id="menu-item-158821" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158821 breakdance-menu-item"><a href="https://www.zapsplat.com/zapsplat-for-teams/" class="breakdance-menu-link">ZapSplat for Teams</a></li>
+<li id="menu-item-158822" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158822 breakdance-menu-item"><a title="Premium Sound Effects" href="https://www.zapsplat.com/gold-sounds/" class="breakdance-menu-link">Latest Premium SFX</a></li>
+<li id="menu-item-158823" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158823 breakdance-menu-item"><a title="Our Contributors" href="https://www.zapsplat.com/contributor-directory/" class="breakdance-menu-link">Our Contributors</a></li>
+<li id="menu-item-154665" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-154665 breakdance-menu-item"><a title="ZapSplat Discord Community" href="https://discord.com/invite/hFRW7rhhwD" class="breakdance-menu-link">ZapSplat Discord Community</a></li>
+<li id="menu-item-68571" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-68571 breakdance-menu-item"><a title="Read Our Blog" href="https://www.zapsplat.com/blog/" class="breakdance-menu-link">Read Our Blog</a></li>
+<li id="menu-item-158824" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158824 breakdance-menu-item"><a href="https://www.zapsplat.com/zapsplat-affiliate-program/" class="breakdance-menu-link">Zapsplat Affiliate Program</a></li>
+
+  </ul>
+  </nav>
+
+
+</div>
+</div><div class="bde-column-158527-113 bde-column">
+  
+	
+
+
+
+<h3 class="bde-heading-158527-114 bde-heading">
+Popular Sound Effects
+</h3><div class="bde-wp-menu-158527-115 bde-wp-menu">
+
+
+      
+        
+    <nav class="breakdance-menu breakdance-menu--collapse breakdance-menu--vertical   ">
+    <button class="breakdance-menu-toggle breakdance-menu-toggle--squeeze" type="button" aria-label="Open Menu" aria-expanded="false" aria-controls="menu-115">
+                  <span class="breakdance-menu-toggle-icon">
+            <span class="breakdance-menu-toggle-lines"></span>
+          </span>
+            </button>
+    
+  <ul class="breakdance-menu-list" id="menu-115">
+              
+  
+    <li id="menu-item-158829" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-158829 breakdance-menu-item"><a title="Our Latest Sound Effects" href="https://www.zapsplat.com/new-sounds/" class="breakdance-menu-link">Our Latest Sound Effects</a></li>
+<li id="menu-item-147626" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-147626 breakdance-menu-item"><a href="/funny-sound-effects/" class="breakdance-menu-link">Funny Sounds</a></li>
+<li id="menu-item-132584" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-132584 breakdance-menu-item"><a title="Gun Sounds" href="https://www.zapsplat.com/sound-effect-category/guns/" class="breakdance-menu-link">Gun Sounds</a></li>
+<li id="menu-item-132582" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-132582 breakdance-menu-item"><a title="Doorbell Sounds" href="https://www.zapsplat.com/sound-effect-category/doorbell/" class="breakdance-menu-link">Doorbell Sounds</a></li>
+<li id="menu-item-132583" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-132583 breakdance-menu-item"><a title="Explosion Sounds" href="https://www.zapsplat.com/sound-effect-category/explosions/" class="breakdance-menu-link">Explosion Sounds</a></li>
+<li id="menu-item-132585" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-132585 breakdance-menu-item"><a title="Fart Sounds" href="https://www.zapsplat.com/sound-effect-category/fart/" class="breakdance-menu-link">Fart Sounds</a></li>
+<li id="menu-item-132586" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-132586 breakdance-menu-item"><a title="Dog Sounds" href="https://www.zapsplat.com/sound-effect-category/dogs/" class="breakdance-menu-link">Dog Sounds</a></li>
+<li id="menu-item-132587" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-132587 breakdance-menu-item"><a title="Horror Sounds" href="https://www.zapsplat.com/sound-effect-category/horror/" class="breakdance-menu-link">Horror Sounds</a></li>
+<li id="menu-item-132588" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-132588 breakdance-menu-item"><a title="Alarm Sounds" href="https://www.zapsplat.com/sound-effect-category/sirens-and-alarms/" class="breakdance-menu-link">Alarm Sounds</a></li>
+<li id="menu-item-132589" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-132589 breakdance-menu-item"><a title="Glitch Sounds" href="https://www.zapsplat.com/sound-effect-category/glitches/" class="breakdance-menu-link">Glitch Sounds</a></li>
+<li id="menu-item-132590" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-132590 breakdance-menu-item"><a title="Cartoon Sounds" href="https://www.zapsplat.com/sound-effect-category/cartoon/" class="breakdance-menu-link">Cartoon Sounds</a></li>
+<li id="menu-item-132591" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-132591 breakdance-menu-item"><a title="Wind Sounds" href="https://www.zapsplat.com/sound-effect-category/wind/" class="breakdance-menu-link">Wind Sounds</a></li>
+
+  </ul>
+  </nav>
+
+
+</div>
+</div></div></div>
+</footer></div>    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"\/*"},{"not":{"href_matches":["\/wp-*.php","\/wp-admin\/*","\/wp-content\/uploads\/*","\/wp-content\/*","\/wp-content\/plugins\/*","\/wp-content\/themes\/zs\/*","\/wp-content\/themes\/breakdance-zero\/*","\/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+		<!-- Memberships powered by Paid Memberships Pro v3.4.6. -->
+	<div id="notification-container"></div>
+        <div class="dialogue-container download-dialogue-container">
+
+            <div class="dialogue-content-container download-dialogue-content-container">
+
+                <div class="dialogue-header">
+                    <p aria-label="Download dialogue popup opened">Download SFX</p>
+                </div>
+
+                <button type="button" class="dialogue-close" title="Close download popup" data-triggering-item="">
+                    <img class="img-close-icon" src="https://www.zapsplat.com/wp-content/plugins/zs/includes/frontend/assets/close-dialogue.svg" alt="Close Dialogue" height="24px" width="24px">
+                </button>
+
+                <div class="dialogue-details-container">
+
+                    <div class="download-actions-container">
+
+                        <input type="hidden" id="item_id" name="item_id" value="">
+                        <input type="hidden" id="item_type" name="item_type" value="">
+
+                        <p tabindex="0" class="check-download-limits-info">Checking your download limits</p>
+
+                        <div class="upgrade-message-container attribution-upgrade-message hide">
+
+                            <p class="premium-download-message-header" tabindex="0">
+                                <img src="https://www.zapsplat.com/wp-content/plugins/zs/includes/frontend/assets/attribution-required-icon-red-24x24.svg" alt="Attribution is required icon">
+                                Attribution&nbsp;<span class="red-text-accent">Required!</span>
+                            </p>
+
+                            <p tabindex="0">Would you like to remove the attribution requirement?</p>
+
+                            <a href="https://www.zapsplat.com/upgrade/" class="upgrade-button">Upgrade Now</a>
+
+                            
+                        </div>
+
+                        <div class="upgrade-message-container download-limits-upgrade-message hide" data-id="" data-filetype="">
+
+                            <p class="premium-download-message-header" tabindex="0">
+                                <img src="https://www.zapsplat.com/wp-content/plugins/zs/includes/frontend/assets/download-timer-icon-red-24x24.svg" alt="Remove download timer limits icon">
+                                Remove&nbsp;<span class="red-text-accent">Download Limits</span>
+                            </p>
+
+                            <p class="download-limits-text" tabindex="0"></p>
+
+                            <div class="countdown-container">
+
+                                <div class="countdown-box hide">
+
+                                    <p class="countdown-text"><span class="time-display" tabindex="0"></span></p>
+
+                                </div>
+
+                                <div class="progress-bar">
+
+                                    <div class="progress"></div>
+
+                                </div>
+
+                            </div>
+
+                            <p tabindex="0">Would you like to remove the download limits?</p>
+
+                            <p tabindex="0">Our premium members get unlimited downloads.</p>
+
+                            <a href="https://www.zapsplat.com/upgrade/" class="upgrade-button">Remove Limits</a>
+
+                            
+                        </div>
+
+                        <div class="upgrade-message-container premium-download-upgrade-message hide">
+
+                            <p class="premium-download-message-header" tabindex="0">
+                                <img src="https://www.zapsplat.com/wp-content/plugins/zs/includes/frontend/assets/premium-icon-gold-24x24.svg" alt="Premium content icon">
+                                Access&nbsp;<span class="gold-text-accent">Premium</span>&nbsp;Content
+                            </p>
+
+                            <p tabindex="0">Get unlimited access to this download and over 150,000 others.</p>
+
+                            <a href="https://www.zapsplat.com/upgrade/" class="upgrade-button">Upgrade Now</a>
+
+                            
+                        </div>
+
+                        <div class="upgrade-message-container wav-download-upgrade-message hide">
+
+                            <p class="premium-download-message-header" tabindex="0">
+                                <img src="https://www.zapsplat.com/wp-content/plugins/zs/includes/frontend/assets/premium-icon-gold-24x24.svg" alt="Premium content icon">
+                                WAV files are&nbsp;<span class="gold-text-accent">Premium Content</span>
+                            </p>
+
+                            <p tabindex="0">Our premium members can access this high quality WAV file and over 150,000 others.</p>
+
+                            <a href="https://www.zapsplat.com/upgrade/" class="upgrade-button">Upgrade Now</a>
+
+                            
+                        </div>
+
+                        <button type="button" class="download-mp3-file hide" title="Download MP3 file" data-key="" data-filetype="">Download FREE MP3</button>
+
+                        <!--<button type="button" class="show-upgrade" title="Download WAV file">Download WAV</button>-->
+
+                    </div>
+
+                    <div class="download-details-container">
+
+                        <div class="download-title" tabindex="0">
+                            This is a really long track or sound title that we need to account for and maybe it gets even longer so we need to ensure we have space for it
+                        </div>
+
+                        <div class="download-meta-container">
+
+                            <div class="download-contributor">
+                                
+                            </div>
+
+                            <div class="download-licence">
+                                
+                            </div>
+
+                        </div>
+
+                        <div class="download-related-items-container">
+                            
+                        </div>
+                        
+                    </div>
+                    
+                    <!--
+                    
+                        -->
+                
+                </div>
+
+                <div class="download-information-container">
+
+                    <div class="timer">
+
+                    </div>
+
+                    <div class="download-actions">
+
+                    </div>
+
+                    <div class="customer-information">
+
+                    </div>
+
+                </div>                
+
+            </div>
+
+        </div>
+
+        
+        <div class="dialogue-container list-dialogue-container">
+
+            <div class="dialogue-content-container list-dialogue-content-container">
+
+                <div class="dialogue-header">
+                    <p tabindex="0" aria-label="Add to list popup opened">Add to list</p>
+                </div>
+
+                <div class="dialogue-details-container user-list-content">
+
+                    <div class="user-list-choice-container show">
+
+                        <p tabindex="0">Please select the list to add to.</p>
+
+                        <input type="hidden" class="add-media-id" value="">
+
+                        <p>
+                            <select id="user-list-selector" name="user-list-selector"></select>
+                        </p>
+
+                        <button type="button" class="add-media-to-list main-action-button" aria-label="Add to list">Add To List</button>
+
+                        <button type="button" class="show-new-list secondary-action-button" aria-label="Create new list">Create New List</button>
+                        
+                    </div>
+
+                    <div class="user-list-details-container">
+
+                        <p class="heading-text" tabindex="0">List Details</p>
+
+                        <div class="add-user-list-field">
+                            <label for="user-list-name">List Name</label><br>
+                            <input type="text" id="user-list-name" tabindex="0" aria-label="New list name">
+                        </div>
+                        
+                        <div class="add-user-list-field">
+                            <label for="user-list-description">List Description</label><br>
+                            <input type="text" id="user-list-description" tabindex="0" aria-label="New list description">
+                        </div>                        
+
+                        <button type="button" class="add-user-list main-action-button" aria-label="Save list and add media">Save List & Add Media</button>
+                        <button type="button" class="cancel-add-list cancel-action-button" aria-label="Cancel new list creation">Cancel</button>
+
+                    </div>
+
+                    <div class="user-list-messages-container">
+
+                    </div>
+                
+                </div>
+
+                <button type="button" class="dialogue-close" title="Close list dialogue" aria-label="Close list dialogue" data-triggering-item="">
+                    <img class="img-close-icon" src="https://www.zapsplat.com/wp-content/plugins/zs/includes/frontend/assets/close-dialogue.svg" alt="Close Dialogue" height="24px" width="24px">
+                </button>
+
+            </div>
+
+        </div>
+
+        	<script type='text/javascript'>
+		(function () {
+			var c = document.body.className;
+			c = c.replace(/woocommerce-no-js/, 'woocommerce-js');
+			document.body.className = c;
+		})();
+	</script>
+	<link rel='stylesheet' id='wc-stripe-blocks-checkout-style-css' href='https://www.zapsplat.com/wp-content/plugins/woocommerce-gateway-stripe/build/upe_blocks.css?ver=01e38ce4a409d9a2ff015f6088fdd03e' type='text/css' media='all' />
+<link rel='stylesheet' id='wc-blocks-style-css' href='https://www.zapsplat.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-blocks.css?ver=wc-9.8.4' type='text/css' media='all' />
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/breakdance/subplugins/breakdance-woocommerce/js/quantity.js?ver=6.8.1" id="breakdance-woo-qty-js"></script>
+<script type="text/javascript" id="rocket-browser-checker-js-after">
+/* <![CDATA[ */
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+/* ]]> */
+</script>
+<script type="text/javascript" id="rocket-preload-links-js-extra">
+/* <![CDATA[ */
+var RocketPreloadLinksConfig = {"excludeUris":"\/login\/|\/registration\/|\/profile\/|\/profile\/|\/reset-your-password\/|\/membership-account\/|\/membership-account\/(.*)\/|\/my_list\/|\/(.*)sitemap(.*).xml\/|\/(.*)sitemap.xsl\/|\/(?:.+\/)?feed(?:\/(?:.+\/?)?)?$|\/(?:.+\/)?embed\/|\/checkout\/??(.*)|\/cart\/?|\/profile\/??(.*)|\/(index.php\/)?(.*)wp-json(\/.*|$)|\/refer\/|\/go\/|\/recommend\/|\/recommends\/","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php|html|htm","siteUrl":"https:\/\/www.zapsplat.com","onHoverDelay":"100","rateThrottle":"3"};
+/* ]]> */
+</script>
+<script type="text/javascript" id="rocket-preload-links-js-after">
+/* <![CDATA[ */
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+/* ]]> */
+</script>
+<script type="text/javascript" id="rocket_lazyload_css-js-extra">
+/* <![CDATA[ */
+var rocket_lazyload_css_data = {"threshold":"300"};
+/* ]]> */
+</script>
+<script type="text/javascript" id="rocket_lazyload_css-js-after">
+/* <![CDATA[ */
+!function o(n,c,a){function u(t,e){if(!c[t]){if(!n[t]){var r="function"==typeof require&&require;if(!e&&r)return r(t,!0);if(s)return s(t,!0);throw(e=new Error("Cannot find module '"+t+"'")).code="MODULE_NOT_FOUND",e}r=c[t]={exports:{}},n[t][0].call(r.exports,function(e){return u(n[t][1][e]||e)},r,r.exports,o,n,c,a)}return c[t].exports}for(var s="function"==typeof require&&require,e=0;e<a.length;e++)u(a[e]);return u}({1:[function(e,t,r){"use strict";{const c="undefined"==typeof rocket_pairs?[]:rocket_pairs,a=(("undefined"==typeof rocket_excluded_pairs?[]:rocket_excluded_pairs).map(t=>{var e=t.selector;document.querySelectorAll(e).forEach(e=>{e.setAttribute("data-rocket-lazy-bg-"+t.hash,"excluded")})}),document.querySelector("#wpr-lazyload-bg-container"));var o=rocket_lazyload_css_data.threshold||300;const u=new IntersectionObserver(e=>{e.forEach(t=>{t.isIntersecting&&c.filter(e=>t.target.matches(e.selector)).map(t=>{var e;t&&((e=document.createElement("style")).textContent=t.style,a.insertAdjacentElement("afterend",e),t.elements.forEach(e=>{u.unobserve(e),e.setAttribute("data-rocket-lazy-bg-"+t.hash,"loaded")}))})})},{rootMargin:o+"px"});function n(){0<(0<arguments.length&&void 0!==arguments[0]?arguments[0]:[]).length&&c.forEach(t=>{try{document.querySelectorAll(t.selector).forEach(e=>{"loaded"!==e.getAttribute("data-rocket-lazy-bg-"+t.hash)&&"excluded"!==e.getAttribute("data-rocket-lazy-bg-"+t.hash)&&(u.observe(e),(t.elements||=[]).push(e))})}catch(e){console.error(e)}})}n(),function(){const r=window.MutationObserver;return function(e,t){if(e&&1===e.nodeType)return(t=new r(t)).observe(e,{attributes:!0,childList:!0,subtree:!0}),t}}()(document.querySelector("body"),n)}},{}]},{},[1]);
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min.js?ver=9.8.4" id="sourcebuster-js-js"></script>
+<script type="text/javascript" id="wc-order-attribution-js-extra">
+/* <![CDATA[ */
+var wc_order_attribution = {"params":{"lifetime":1.0000000000000000818030539140313095458623138256371021270751953125e-5,"session":30,"base64":false,"ajaxurl":"https:\/\/www.zapsplat.com\/wp-admin\/admin-ajax.php","prefix":"wc_order_attribution_","allowTracking":true},"fields":{"source_type":"current.typ","referrer":"current_add.rf","utm_campaign":"current.cmp","utm_source":"current.src","utm_medium":"current.mdm","utm_content":"current.cnt","utm_id":"current.id","utm_term":"current.trm","utm_source_platform":"current.plt","utm_creative_format":"current.fmt","utm_marketing_tactic":"current.tct","session_entry":"current_add.ep","session_start_time":"current_add.fd","session_pages":"session.pgs","session_count":"udata.vst","user_agent":"udata.uag"}};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.zapsplat.com/wp-content/plugins/woocommerce/assets/js/frontend/order-attribution.min.js?ver=9.8.4" id="wc-order-attribution-js"></script>
+
+		<!-- Cookie Notice plugin v2.5.6 by Hu-manity.co https://hu-manity.co/ -->
+		<div id="cookie-notice" role="dialog" class="cookie-notice-hidden cookie-revoke-hidden cn-position-bottom" aria-label="Cookie Notice" style="background-color: rgba(50,50,58,1);"><div class="cookie-notice-container" style="color: #ffffff"><span id="cn-notice-text" class="cn-text-container">Zapsplat.com uses cookies to give you a smooth experience on our website. Your continued use assumes that you are happy with that.</span><span id="cn-notice-buttons" class="cn-buttons-container"><a href="#" id="cn-accept-cookie" data-cookie-set="accept" class="cn-set-cookie cn-button" aria-label="Ok" style="background-color: #757575">Ok</a></span><span id="cn-close-notice" data-cookie-set="accept" class="cn-close-icon" title="No"></span></div>
+			
+		</div>
+		<!-- / Cookie Notice plugin --><script src='https://www.zapsplat.com/wp-content/plugins/breakdance/plugin/global-scripts/breakdance-utils.js?bd_ver=2.0.0' defer></script>
+<script src='https://www.zapsplat.com/wp-content/plugins/breakdance/subplugins/breakdance-elements/elements/Header_Builder/header-builder.js?bd_ver=2.0.0' defer></script>
+<script src='https://www.zapsplat.com/wp-content/plugins/breakdance/subplugins/breakdance-elements/dependencies-files/awesome-menu@1/awesome-menu.js?bd_ver=2.0.0' defer></script>
+<script src='https://www.zapsplat.com/wp-content/plugins/breakdance/subplugins/breakdance-elements/elements/Search_Form/assets/search-form.js?bd_ver=2.0.0' defer></script>
+<script src='https://www.zapsplat.com/wp-content/plugins/breakdance/subplugins/breakdance-elements/elements/MiniCart/mini-cart.js?bd_ver=2.0.0' defer></script>
+<script>document.addEventListener('DOMContentLoaded', function(){     if (!window.BreakdanceFrontend) {
+        window.BreakdanceFrontend = {}
+    }
+
+    window.BreakdanceFrontend.data = {"homeUrl":"https:\/\/www.zapsplat.com","ajaxUrl":"https:\/\/www.zapsplat.com\/wp-admin\/admin-ajax.php","elementsPluginUrl":"https:\/\/www.zapsplat.com\/wp-content\/plugins\/breakdance\/subplugins\/breakdance-elements\/","BASE_BREAKPOINT_ID":"breakpoint_base","breakpoints":[{"id":"breakpoint_base","label":"Desktop","defaultPreviewWidth":"100%"},{"id":"breakpoint_tablet_landscape","label":"Tablet Landscape","defaultPreviewWidth":1024,"maxWidth":1119},{"id":"breakpoint_tablet_portrait","label":"Tablet Portrait","defaultPreviewWidth":768,"maxWidth":1023},{"id":"breakpoint_phone_landscape","label":"Phone Landscape","defaultPreviewWidth":480,"maxWidth":767},{"id":"breakpoint_phone_portrait","label":"Phone Portrait","defaultPreviewWidth":400,"maxWidth":479}],"subscriptionMode":"pro"} }) </script>
+<script>document.addEventListener('DOMContentLoaded', function(){ 
+new BreakdanceHeaderBuilder(".breakdance .bde-header-builder-158524-100", "100", false);
+ }) </script>
+<script>document.addEventListener('DOMContentLoaded', function(){ 
+new AwesomeMenu(".breakdance .bde-menu-158524-102 .breakdance-menu", {
+  dropdown: {
+    openOnClick: false,
+    mode: {
+      desktop: 'dropdown'
+    },
+    placement: 'full-width',
+    width: null,
+    animation: 'fade'
+  },
+  link: {
+    effect: 'underline',
+    effectDirection: 'center',
+  },
+  mobile: {
+    breakpoint: '',
+    mode: 'offcanvas',
+    offcanvasPosition: 'left',
+    offset: null,
+    followLinks: false
+  }
+});
+ }) </script>
+<script>document.addEventListener('DOMContentLoaded', function(){ 
+new BreakdanceSearchForm('.breakdance .bde-search-form-158524-114', {});
+
+ }) </script>
+<script>document.addEventListener('DOMContentLoaded', function(){ 
+new BreakdanceMiniCart('.breakdance .bde-mini-cart-158524-119', 
+    {
+      ...{"cart":{"top_bar":"enable","primary_button":"checkout","open_cart_on_add":true,"hide_quantity_input":true},"link":{"hide_count_when_empty":true,"hide_subtotal_when_empty":true}},
+      style: 'sidebar',
+      full_screen_at: 'breakpoint_phone_landscape'
+    }
+);
+ }) </script>
+<script>document.addEventListener('DOMContentLoaded', function(){ 
+new AwesomeMenu(".breakdance .bde-wp-menu-158527-109 .breakdance-menu", {
+  dropdown: {
+    openOnClick: false,
+    mode: {
+      desktop: 'dropdown'
+    },
+    placement: 'left',
+    width: null,
+    animation: 'fade'
+  },
+  link: {
+    effect: '',
+    effectDirection: '',
+  },
+  mobile: {
+    breakpoint: 'never',
+    mode: 'default',
+    offcanvasPosition: 'left',
+    offset: null,
+    followLinks: false
+  }
+});
+ }) </script>
+<script>document.addEventListener('DOMContentLoaded', function(){ 
+new AwesomeMenu(".breakdance .bde-wp-menu-158527-112 .breakdance-menu", {
+  dropdown: {
+    openOnClick: false,
+    mode: {
+      desktop: 'dropdown'
+    },
+    placement: 'left',
+    width: null,
+    animation: 'fade'
+  },
+  link: {
+    effect: '',
+    effectDirection: '',
+  },
+  mobile: {
+    breakpoint: 'never',
+    mode: 'default',
+    offcanvasPosition: 'left',
+    offset: null,
+    followLinks: false
+  }
+});
+ }) </script>
+<script>document.addEventListener('DOMContentLoaded', function(){ 
+new AwesomeMenu(".breakdance .bde-wp-menu-158527-115 .breakdance-menu", {
+  dropdown: {
+    openOnClick: false,
+    mode: {
+      desktop: 'dropdown'
+    },
+    placement: 'left',
+    width: null,
+    animation: 'fade'
+  },
+  link: {
+    effect: '',
+    effectDirection: '',
+  },
+  mobile: {
+    breakpoint: 'never',
+    mode: 'default',
+    offcanvasPosition: 'left',
+    offset: null,
+    followLinks: false
+  }
+});
+ }) </script>
+</script>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-62774873-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-62774873-1');
+	</script><script>window.lazyLoadOptions=[{elements_selector:"img[data-lazy-src],.rocket-lazyload,iframe[data-lazy-src]",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,callback_loaded:function(element){if(element.tagName==="IFRAME"&&element.dataset.rocketLazyload=="fitvidscompatible"){if(element.classList.contains("lazyloaded")){if(typeof window.jQuery!="undefined"){if(jQuery.fn.fitVids){jQuery(element).parent().fitVids()}}}}}},{elements_selector:".rocket-lazyload",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,}];window.addEventListener('LazyLoad::Initialized',function(e){var lazyLoadInstance=e.detail.instance;if(window.MutationObserver){var observer=new MutationObserver(function(mutations){var image_count=0;var iframe_count=0;var rocketlazy_count=0;mutations.forEach(function(mutation){for(var i=0;i<mutation.addedNodes.length;i++){if(typeof mutation.addedNodes[i].getElementsByTagName!=='function'){continue}
+if(typeof mutation.addedNodes[i].getElementsByClassName!=='function'){continue}
+images=mutation.addedNodes[i].getElementsByTagName('img');is_image=mutation.addedNodes[i].tagName=="IMG";iframes=mutation.addedNodes[i].getElementsByTagName('iframe');is_iframe=mutation.addedNodes[i].tagName=="IFRAME";rocket_lazy=mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');image_count+=images.length;iframe_count+=iframes.length;rocketlazy_count+=rocket_lazy.length;if(is_image){image_count+=1}
+if(is_iframe){iframe_count+=1}}});if(image_count>0||iframe_count>0||rocketlazy_count>0){lazyLoadInstance.update()}});var b=document.getElementsByTagName("body")[0];var config={childList:!0,subtree:!0};observer.observe(b,config)}},!1)</script><script data-no-minify="1" async src="https://www.zapsplat.com/wp-content/plugins/wp-rocket/assets/js/lazyload/17.8.3/lazyload.min.js"></script>    </body>
+    </html>
+    

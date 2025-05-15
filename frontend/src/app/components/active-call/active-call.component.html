@@ -1,0 +1,61 @@
+<div *ngIf="activeCall" class="active-call-container" [ngClass]="{'video-call': isVideoCall()}">
+  <!-- Appel vidéo -->
+  <div *ngIf="isVideoCall()" class="video-container">
+    <div class="remote-video-wrapper">
+      <video #remoteVideo autoplay playsinline class="remote-video"></video>
+      
+      <!-- Afficher l'avatar si la vidéo est désactivée -->
+      <div *ngIf="!remoteVideo.srcObject" class="video-placeholder">
+        <img [src]="getOtherParticipantAvatar()" [alt]="getOtherParticipantName()" class="avatar-img">
+      </div>
+      
+      <!-- Informations sur l'appel -->
+      <div class="call-info">
+        <h3 class="participant-name">{{ getOtherParticipantName() }}</h3>
+        <p class="call-status">{{ getCallStatusText() }}</p>
+      </div>
+    </div>
+    
+    <div class="local-video-wrapper">
+      <video #localVideo autoplay playsinline muted class="local-video"></video>
+    </div>
+  </div>
+  
+  <!-- Appel audio -->
+  <div *ngIf="!isVideoCall()" class="audio-call-info">
+    <div class="participant-avatar">
+      <img [src]="getOtherParticipantAvatar()" [alt]="getOtherParticipantName()" class="avatar-img">
+    </div>
+    <h2 class="participant-name">{{ getOtherParticipantName() }}</h2>
+    <p class="call-status">{{ getCallStatusText() }}</p>
+  </div>
+  
+  <!-- Contrôles d'appel -->
+  <div class="call-controls">
+    <button 
+      (click)="toggleMicrophone()" 
+      class="control-btn" 
+      [ngClass]="{'active': !isAudioMuted}">
+      <i class="fas" [ngClass]="isAudioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
+    </button>
+    
+    <button 
+      *ngIf="isVideoCall()" 
+      (click)="toggleCamera()" 
+      class="control-btn" 
+      [ngClass]="{'active': !isVideoMuted}">
+      <i class="fas" [ngClass]="isVideoMuted ? 'fa-video-slash' : 'fa-video'"></i>
+    </button>
+    
+    <button 
+      (click)="toggleSpeaker()" 
+      class="control-btn" 
+      [ngClass]="{'active': isSpeakerOn}">
+      <i class="fas" [ngClass]="isSpeakerOn ? 'fa-volume-up' : 'fa-volume-mute'"></i>
+    </button>
+    
+    <button (click)="endCall()" class="end-call-btn">
+      <i class="fas fa-phone-slash"></i>
+    </button>
+  </div>
+</div>

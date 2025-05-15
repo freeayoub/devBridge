@@ -15,6 +15,7 @@ import {
   shareReplay,
   tap,
   throwError,
+  Subject,
 } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user.model';
@@ -26,6 +27,13 @@ export class AuthuserService {
   private currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private isInitialized = false;
+
+  // Subject pour notifier les changements d'authentification
+  private authChangeSubject = new Subject<{
+    type: 'login' | 'logout' | 'token_refresh';
+    token: string | null;
+  }>();
+  public authChange$ = this.authChangeSubject.asObservable();
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -112,6 +120,9 @@ export class AuthuserService {
   saveToken(token: string): void {
     localStorage.setItem('token', token);
     this.initializeCurrentUser();
+
+    // Notifier du changement d'authentification
+    this.authChangeSubject.next({ type: 'login', token });
   }
   getToken(): string | null {
     return localStorage.getItem('token');
@@ -159,30 +170,34 @@ export class AuthuserService {
       return throwError(() => new Error('User not logged in'));
     }
 
-    return this.http.put<void>(
-      `${environment.urlBackend}users/deactivateself`,
-      {},
-      {
-        headers: this.getUserHeaders(),
-        params: this.getCommonParams(),
-      }
-    ).pipe(
-      tap(() => this.clearAuthData())
-    );
+    return this.http
+      .put<void>(
+        `${environment.urlBackend}users/deactivateself`,
+        {},
+        {
+          headers: this.getUserHeaders(),
+          params: this.getCommonParams(),
+        }
+      )
+      .pipe(tap(() => this.clearAuthData()));
   }
   clearAuthData(): void {
     localStorage.removeItem('token');
     this.currentUserSubject.next(null);
     this.isInitialized = false;
+
+    // Notifier du changement d'authentification
+    this.authChangeSubject.next({ type: 'logout', token: null });
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = "Authentication error";
+    let errorMessage = 'Authentication error';
 
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Client error: ${error.error.message}`;
     } else {
-      errorMessage = error.error?.message || error.message || 'Unknown authentication error';
+      errorMessage =
+        error.error?.message || error.message || 'Unknown authentication error';
     }
 
     return throwError(() => new Error(errorMessage));

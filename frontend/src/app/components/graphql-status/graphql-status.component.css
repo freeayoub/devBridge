@@ -1,0 +1,53 @@
+.graphql-status {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  border-radius: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.3s ease-out, fadeOut 0.3s ease-out 2.7s;
+}
+
+.connected {
+  background-color: #4f5fad;
+  color: white;
+}
+
+.disconnected {
+  background-color: #ff9800;
+  color: white;
+}
+
+.status-icon {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.status-text {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

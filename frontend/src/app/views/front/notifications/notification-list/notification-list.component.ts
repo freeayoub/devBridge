@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageService } from 'src/app/services/message.service';
-import { Observable, Subject, of } from 'rxjs';
+import { Observable, Subject, of, throwError } from 'rxjs';
 import { Notification } from 'src/app/models/message.model';
 import { catchError, map, takeUntil, switchMap, take } from 'rxjs/operators';
 @Component({
@@ -15,30 +15,43 @@ export class NotificationListComponent implements OnInit, OnDestroy {
   error: Error | null = null;
   private destroy$ = new Subject<void>();
 
-  constructor(private MessageService: MessageService) {
-    this.notifications$ = this.MessageService.notifications$;
-    this.unreadCount$ = this.MessageService.notificationCount$;
+  constructor(private messageService: MessageService) {
+    this.notifications$ = this.messageService.notifications$;
+    this.unreadCount$ = this.messageService.notificationCount$;
   }
   ngOnInit(): void {
     this.loadNotifications();
     this.setupSubscriptions();
   }
   loadNotifications(): void {
+    console.log('NotificationListComponent: Loading notifications');
     this.loading = true;
     this.error = null;
 
-    this.MessageService.getNotifications(true)
+    this.messageService
+      .getNotifications(true)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => (this.loading = false),
-        error: (err) => {
+        next: (notifications) => {
+          console.log(
+            'NotificationListComponent: Notifications loaded successfully',
+            notifications
+          );
+          this.loading = false;
+        },
+        error: (err: Error) => {
+          console.error(
+            'NotificationListComponent: Error loading notifications',
+            err
+          );
           this.error = err;
           this.loading = false;
         },
       });
   }
   setupSubscriptions(): void {
-    this.MessageService.subscribeToNewNotifications()
+    this.messageService
+      .subscribeToNewNotifications()
       .pipe(
         takeUntil(this.destroy$),
         catchError((error) => {
@@ -47,7 +60,8 @@ export class NotificationListComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
-    this.MessageService.subscribeToNotificationsRead()
+    this.messageService
+      .subscribeToNotificationsRead()
       .pipe(
         takeUntil(this.destroy$),
         catchError((error) => {
@@ -58,13 +72,37 @@ export class NotificationListComponent implements OnInit, OnDestroy {
       .subscribe();
   }
   markAsRead(notificationId: string): void {
-    this.MessageService.markAsRead([notificationId]).subscribe({
-      next: (result) => {
+    console.log('Marking notification as read:', notificationId);
+
+    if (!notificationId) {
+      console.error('Invalid notification ID:', notificationId);
+      this.error = new Error('Invalid notification ID');
+      return;
+    }
+
+    this.messageService.markAsRead([notificationId]).subscribe({
+      next: (result: any) => {
+        console.log('Mark as read result:', result);
         if (!result.success) {
           console.error('Failed to mark notification as read');
+          this.error = new Error('Failed to mark notification as read');
+        } else {
+          console.log('Notification marked as read successfully');
+          // Si l'erreur était liée à cette opération, la réinitialiser
+          if (this.error && this.error.message.includes('mark')) {
+            this.error = null;
+          }
         }
       },
-      error: (err) => console.error('Error:', err),
+      error: (err: Error) => {
+        console.error('Error marking notification as read:', err);
+        console.error('Error details:', {
+          message: err.message,
+          stack: err.stack,
+          notificationId,
+        });
+        this.error = err;
+      },
     });
   }
   markAllAsRead(): void {
@@ -72,16 +110,53 @@ export class NotificationListComponent implements OnInit, OnDestroy {
       .pipe(
         take(1),
         switchMap((notifications) => {
+          console.log('All notifications:', notifications);
           const unreadIds = notifications
             .filter((n) => !n.isRead)
             .map((n) => n.id);
-          return unreadIds.length > 0
-            ? this.MessageService.markAsRead(unreadIds)
-            : of(null);
+
+          console.log('Unread notification IDs to mark as read:', unreadIds);
+
+          if (unreadIds.length === 0) {
+            console.log('No unread notifications to mark as read');
+            return of(null);
+          }
+
+          // Vérifier que tous les IDs sont valides
+          const validIds = unreadIds.filter(
+            (id) => id && typeof id === 'string' && id.trim() !== ''
+          );
+
+          if (validIds.length !== unreadIds.length) {
+            console.error('Some notification IDs are invalid:', unreadIds);
+            return throwError(() => new Error('Invalid notification IDs'));
+          }
+
+          console.log('Marking all notifications as read:', validIds);
+          return this.messageService.markAsRead(validIds);
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe();
+      .subscribe({
+        next: (result) => {
+          console.log('Mark all as read result:', result);
+          if (result && result.success) {
+            console.log('All notifications marked as read successfully');
+            // Si l'erreur était liée à cette opération, la réinitialiser
+            if (this.error && this.error.message.includes('mark')) {
+              this.error = null;
+            }
+          }
+        },
+        error: (err) => {
+          console.error('Error marking all notifications as read:', err);
+          console.error('Error details:', {
+            message: err.message,
+            stack: err.stack,
+          });
+          this.error = err;
+        },
+      });
   }
   hasNotifications(): Observable<boolean> {
     return this.notifications$.pipe(

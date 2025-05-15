@@ -3,14 +3,14 @@ export interface User {
   id?: string;
   username: string;
   email: string;
-  image?: string | null;  
+  image?: string | null;
   role: string;
   bio?: string;
   isActive: boolean;
-  isOnline?: boolean;   
-  lastActive?: Date;   
-  createdAt?: Date;     
-  updatedAt?: Date;  
+  isOnline?: boolean;
+  lastActive?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   followingCount?: number;
   followersCount?: number;
   postCount?: number;
@@ -36,17 +36,19 @@ export enum MessageType {
   FILE = 'FILE',
   AUDIO = 'AUDIO',
   VIDEO = 'VIDEO',
-  SYSTEM = 'SYSTEM'
+  SYSTEM = 'SYSTEM',
 }
 export enum MessageStatus {
   SENDING = 'SENDING',
   SENT = 'SENT',
   DELIVERED = 'DELIVERED',
   READ = 'READ',
-  FAILED = 'FAILED'
+  FAILED = 'FAILED',
 }
 export interface Attachment {
   url: string;
+  id?: string;
+  _id?: string; // Pour compatibilité avec MongoDB
   type: MessageType;
   name?: string;
   size?: number;
@@ -61,18 +63,21 @@ export interface Reaction {
   createdAt: Date | string;
 }
 export interface Message {
-  id: string;
+  id?: string;
+  _id?: string; // Pour compatibilité avec MongoDB
   content?: string;
-  type: MessageType;
-  timestamp: Date | string;
-  isRead: boolean;
+  type?: MessageType;
+  timestamp?: Date | string;
+  isRead?: boolean;
   readAt?: Date | string;
-  sender: Partial<User>;
+  sender?: Partial<User>;
+  senderId?: string; // Pour compatibilité avec MongoDB
   receiver?: Partial<User>;
+  receiverId?: string; // Pour compatibilité avec MongoDB
   group?: Partial<Group>;
-  conversationId: string;
-  attachments: Attachment[];
-  status: MessageStatus;
+  conversationId?: string;
+  attachments?: Attachment[];
+  status?: MessageStatus;
   isEdited?: boolean;
   isDeleted?: boolean;
   deletedAt?: Date | string;
@@ -97,14 +102,15 @@ export interface MessageFilter {
   dateTo?: Date | string;
 }
 export interface Conversation {
-  id: string;
-  participants: User[];
-  messages: Message[];
-  lastMessage: Message | null; 
+  id?: string;
+  _id?: string; // Pour compatibilité avec MongoDB
+  participants?: User[];
+  messages?: Message[];
+  lastMessage?: Message | null;
   lastMessageId?: string;
-  unreadCount: number;
-  messageCount: number;
-  isGroup: boolean;
+  unreadCount?: number;
+  messageCount?: number;
+  isGroup?: boolean;
   groupName?: string;
   groupPhoto?: string;
   groupDescription?: string;
@@ -112,8 +118,8 @@ export interface Conversation {
   pinnedMessages?: Message[];
   typingUsers?: User[];
   lastRead?: UserReadStatus[];
-  createdAt: Date | string;
-  updatedAt: Date | string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 export interface UserReadStatus {
   userId: string;
@@ -147,10 +153,10 @@ export interface GetAllUsersResponse {
   getAllUsers: User[];
 }
 export interface GetOneUserResponse {
-   getOneUser: User ;
+  getOneUser: User;
 }
 export interface getCurrentUserResponse {
-  getCurrentUser: User  ;
+  getCurrentUser: User;
 }
 export interface SearchMessagesResponse {
   searchMessages: Message[];
@@ -159,7 +165,7 @@ export interface GetUnreadMessagesResponse {
   getUnreadMessages: Message[];
 }
 export interface TypingIndicatorEvents {
-  typingIndicator: TypingIndicatorEvent 
+  typingIndicator: TypingIndicatorEvent;
 }
 export interface TypingIndicatorEvent {
   conversationId: string;
@@ -227,76 +233,71 @@ export interface SetUserOfflineResponse {
   setUserOffline: User;
 }
 export interface StopTypingResponse {
-  stopTyping: boolean ;
+  stopTyping: boolean;
 }
 export interface StartTupingResponse {
-  startTyping: boolean ;
+  startTyping: boolean;
 }
 export interface conversationUpdatedResponse {
-  conversationUpdated: Conversation 
+  conversationUpdated: Conversation;
 }
 export interface getNotificationAttachmentsEvent {
-  getNotificationAttachments: Attachment[] 
- }
+  getNotificationAttachments: Attachment[];
+}
 
 export interface NotificationAttachment {
- url: string;
- type: AttachmentType;
- name?: string;
- size?: number;
- mimeType?: string;
+  url: string;
+  type: AttachmentType;
+  name?: string;
+  size?: number;
+  mimeType?: string;
 }
 export interface NotificationMessage {
- id?: string;
- content: string;
- attachments?: NotificationAttachment[];
+  id?: string;
+  content: string;
+  attachments?: NotificationAttachment[];
 }
 export interface NotificationSender {
- id: string;
- username: string;
- image?: string | null;
+  id: string;
+  username: string;
+  image?: string | null;
 }
 export interface Notification {
- id: string;
- type: NotificationType;
- content: string;
- timestamp: Date | string;
- isRead: boolean;
- sender?: NotificationSender;
- message?: NotificationMessage;
- relatedEntityId?: string; 
- metadata?: Record<string, any>; 
+  id: string;
+  type: NotificationType;
+  content: string;
+  timestamp: Date | string;
+  isRead: boolean;
+  senderId?: NotificationSender;
+  message?: NotificationMessage;
+  readAt?: Date | string;
+  relatedEntity?: string;
+  metadata?: Record<string, any>;
 }
 export interface GetNotificationsResponse {
- getUserNotifications: Notification[];
+  getUserNotifications: Notification[];
 }
 export interface NotificationReceivedEvent {
- notificationReceived: Notification;
+  notificationReceived: Notification;
 }
 export interface NotificationsReadEvent {
- notificationsRead: string[];
+  notificationsRead: string[];
 }
 export interface MarkNotificationsAsReadResponse {
- markNotificationsAsRead: {
-   success: boolean;
-   readCount: number;
-   remainingCount: number;
- };
+  markNotificationsAsRead: {
+    success: boolean;
+    readCount: number;
+    remainingCount: number;
+  };
 }
 export interface getUserNotificationsResponse {
-  getUserNotifications: Notification[]
-  }
-  export type NotificationType = 
-  | 'NEW_MESSAGE' 
-  | 'FRIEND_REQUEST' 
-  | 'GROUP_INVITE' 
+  getUserNotifications: Notification[];
+}
+export type NotificationType =
+  | 'NEW_MESSAGE'
+  | 'FRIEND_REQUEST'
+  | 'GROUP_INVITE'
   | 'MESSAGE_REACTION'
-  | 'SYSTEM_ALERT'; 
- 
- export type AttachmentType = 
-  | 'IMAGE' 
-  | 'DOCUMENT' 
-  | 'AUDIO' 
-  | 'VIDEO' 
-  | 'OTHER';
- 
+  | 'SYSTEM_ALERT';
+
+export type AttachmentType = 'IMAGE' | 'DOCUMENT' | 'AUDIO' | 'VIDEO' | 'OTHER';

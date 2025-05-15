@@ -1,9 +1,31 @@
 import { gql } from 'apollo-angular';
 
+// Définir les types GraphQL
+export const typeDefs = gql`
+  enum MessageType {
+    TEXT
+    IMAGE
+    FILE
+    AUDIO
+    VIDEO
+    SYSTEM
+  }
+`;
+
 // Message Mutations
 export const SEND_MESSAGE_MUTATION = gql`
-  mutation SendMessage($receiverId: ID!, $content: String, $file: Upload) {
-    sendMessage(receiverId: $receiverId, content: $content, file: $file) {
+  mutation SendMessage(
+    $receiverId: ID!
+    $content: String
+    $file: Upload
+    $type: MessageType
+  ) {
+    sendMessage(
+      receiverId: $receiverId
+      content: $content
+      file: $file
+      type: $type
+    ) {
       id
       content
       type
@@ -53,8 +75,20 @@ export const DELETE_MESSAGE_MUTATION = gql`
   }
 `;
 export const GET_MESSAGES_QUERY = gql`
-  query GetMessages($senderId: ID!, $receiverId: ID!,$conversationId: ID!, $page: Int, $limit: Int) {
-    getMessages( senderId:$senderId, receiverId:$receiverId, conversationId: $conversationId, page: $page, limit: $limit) {
+  query GetMessages(
+    $senderId: ID!
+    $receiverId: ID!
+    $conversationId: ID!
+    $page: Int
+    $limit: Int
+  ) {
+    getMessages(
+      senderId: $senderId
+      receiverId: $receiverId
+      conversationId: $conversationId
+      page: $page
+      limit: $limit
+    ) {
       id
       content
       type
@@ -105,7 +139,7 @@ export const GET_CONVERSATIONS_QUERY = gql`
 export const GET_CONVERSATION_QUERY = gql`
   query GetConversation(
     $conversationId: ID!
-    $limit: Int = 50
+    $limit: Int = 10
     $offset: Int = 0
   ) {
     getConversation(conversationId: $conversationId) {
@@ -127,10 +161,16 @@ export const GET_CONVERSATION_QUERY = gql`
           username
           image
         }
+        receiver {
+          id
+          username
+          image
+        }
         attachments {
           url
           type
         }
+        conversationId
       }
     }
   }
@@ -275,7 +315,7 @@ export const GET_NOTIFICATIONS_QUERY = gql`
       content
       timestamp
       isRead
-      sender {
+      senderId {
         id
         username
         image
@@ -284,6 +324,9 @@ export const GET_NOTIFICATIONS_QUERY = gql`
         id
         content
       }
+      readAt
+      relatedEntity
+      metadata
     }
   }
 `;
@@ -314,7 +357,7 @@ export const NOTIFICATION_SUBSCRIPTION = gql`
       content
       timestamp
       isRead
-      sender {
+      senderId {
         id
         username
         image
@@ -323,6 +366,9 @@ export const NOTIFICATION_SUBSCRIPTION = gql`
         id
         content
       }
+      readAt
+      relatedEntity
+      metadata
     }
   }
 `;
@@ -506,6 +552,27 @@ export const PIN_MESSAGE_MUTATION = gql`
         id
         username
       }
+    }
+  }
+`;
+
+export const CREATE_CONVERSATION_MUTATION = gql`
+  mutation CreateConversation($userId: ID!) {
+    createConversation(userId: $userId) {
+      id
+      participants {
+        id
+        username
+        image
+        isOnline
+      }
+      lastMessage {
+        id
+        content
+        timestamp
+      }
+      unreadCount
+      updatedAt
     }
   }
 `;

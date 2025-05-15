@@ -17,7 +17,12 @@ const {
 
 // Configurations
 const { verifyTokenGraphql } = require("./src/middlewares/authUserMiddleware");
-const { createUserLoader, createMessageLoader, createConversationLoader, createGroupLoader } = require('./src/graphql/loaders');
+const {
+  createUserLoader,
+  createMessageLoader,
+  createConversationLoader,
+  createGroupLoader,
+} = require("./src/utils/loaders");
 const userRoutes = require("./src/routes/userRoutes");
 const reunionRoutes = require("./src/routes/reunionRoutes");
 const planningRoutes = require("./src/routes/plannigRoutes");
@@ -26,6 +31,11 @@ const resolvers = require("./src/graphql/messageResolvers");
 const connectDB = require("./src/config/connection");
 const config = require("./src/config/config");
 const pubsub = require("./src/config/pubsub");
+const {
+  logger,
+  httpLogger,
+  apolloLoggingPlugin,
+} = require("./src/utils/logger");
 
 // Initialisation
 const app = express();
@@ -33,7 +43,7 @@ const httpServer = createServer(app);
 const PORT = config.PORT || 3000;
 // 1. Connexion DB
 connectDB().catch((err) => {
-  console.error("Database connection error:", err);
+  logger.error("Database connection error:", err);
   process.exit(1);
 });
 // 2. Middlewares de base
@@ -51,6 +61,7 @@ app.use(cors(corsOptions));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(httpLogger); // Ajouter le middleware de journalisation HTTP
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -95,35 +106,113 @@ const wsServer = new WebSocketServer({
 const serverCleanup = useServer(
   {
     schema,
+    context: async (ctx, msg, args) => {
+      // Récupérer les paramètres de connexion
+      const connectionParams = ctx.connectionParams || {};
+      const token = connectionParams.authorization;
+
+      if (!token) {
+        logger.warn("Unauthorized connection attempt - No token provided");
+        throw new Error("Authentication token required");
+      }
+
+      // Extract Bearer token
+      const authToken = token?.startsWith("Bearer ")
+        ? token.split(" ")[1]
+        : token;
+
+      if (!authToken) {
+        logger.warn("Malformed authorization header");
+        throw new Error("Invalid token format");
+      }
+
+      try {
+        // Vérifier et décoder le token
+        const user = await verifyTokenGraphql(authToken);
+        const userId = user?.id || null;
+
+        if (!userId) {
+          logger.warn("User ID not found in token");
+          throw new Error("Invalid user ID");
+        }
+
+        logger.info(
+          `WebSocket operation for user ${userId}, operation: ${msg.type}`
+        );
+
+        // Créer les loaders pour ce contexte
+        const loaders = {
+          userLoader: createUserLoader(),
+          groupLoader: createGroupLoader(),
+          messageLoader: createMessageLoader(),
+          conversationLoader: createConversationLoader(),
+        };
+
+        // Retourner le contexte complet
+        return {
+          user,
+          userId,
+          pubsub,
+          loaders,
+        };
+      } catch (error) {
+        logger.error("WebSocket context error:", error.message);
+        throw error;
+      }
+    },
     onConnect: async (ctx) => {
       try {
         const token = (ctx.connectionParams || {}).authorization;
         if (!token) {
-          console.warn("Unauthorized connection attempt - No token provided");
-          throw new Error("Authentication token required");
+          logger.warn("Unauthorized connection attempt - No token provided");
+          return false;
         }
+
         // Extract Bearer token
-        const authToken = token?.startsWith('Bearer ') ? token.split(' ')[1] : token;
+        const authToken = token?.startsWith("Bearer ")
+          ? token.split(" ")[1]
+          : token;
+
         if (!authToken) {
-          console.warn("Malformed authorization header");
-          throw new Error("Invalid token format");
+          logger.warn("Malformed authorization header");
+          return false;
         }
+
         const user = await verifyTokenGraphql(authToken);
-       const userId= user?.id || null;
-        return { user, pubsub,userId };
+        const userId = user?.id || null;
+
+        if (!userId) {
+          logger.warn("User ID not found in token");
+          return false;
+        }
+
+        logger.info(`WebSocket connection authenticated for user ${userId}`);
+        return true;
       } catch (error) {
-        console.error(
-          "WebSocket authentication failed:",
-          error instanceof Error ? error.message : error
-        );
-        throw new Error("Authentication failed");
+        logger.error("WebSocket authentication failed:", error.message);
+        return false;
       }
     },
     onDisconnect(ctx, code, reason) {
-      // console.log(`Client disconnected (${code}): ${reason}`);
+      logger.info(
+        `Client disconnected (${code}): ${reason || "No reason provided"}`
+      );
     },
     onError: (ctx, msg, errors) => {
-      console.error("Subscription error:", { ctx, msg, errors });
+      logger.error("Subscription error:", {
+        ctx: {
+          connectionParams: ctx?.connectionParams,
+          subscriptions: ctx?.subscriptions
+            ? Object.keys(ctx.subscriptions)
+            : [],
+          hasUser: !!ctx?.extra?.user,
+          hasUserId: !!ctx?.extra?.userId,
+          hasPubsub: !!ctx?.extra?.pubsub,
+        },
+        msgType: msg?.type,
+        msgId: msg?.id,
+        errors: errors?.map((e) => e.message),
+      });
     },
   },
   wsServer
@@ -142,18 +231,27 @@ const apolloServer = new ApolloServer({
         };
       },
     },
+    apolloLoggingPlugin, // Ajouter le plugin de journalisation Apollo
   ],
-  context: async ({ req }) => ({
-    user: req.user,
-    userId: req.userId,
-    loaders: {
-      userLoader: createUserLoader(),
-      groupLoader: createGroupLoader(),
-      messageLoader: createMessageLoader(),
-      conversationLoader: createConversationLoader(),
-    },
-    pubsub
-  }),
+  context: async (contextValue) => {
+    // Pour les requêtes HTTP
+    if (contextValue.req) {
+      return {
+        user: contextValue.req.user,
+        userId: contextValue.req.userId,
+        loaders: {
+          userLoader: createUserLoader(),
+          groupLoader: createGroupLoader(),
+          messageLoader: createMessageLoader(),
+          conversationLoader: createConversationLoader(),
+        },
+        pubsub,
+      };
+    }
+
+    // Pour les abonnements WebSocket
+    return contextValue;
+  },
   formatError: (error) => ({
     message:
       process.env.NODE_ENV === "production"
@@ -185,7 +283,7 @@ async function initializeApolloServer() {
           };
           next();
         } catch (error) {
-          console.error("Auth middleware error:", error);
+          logger.error("Auth middleware error:", error);
           res.status(401).json({ error: "Invalid token" });
         }
       },
@@ -195,13 +293,13 @@ async function initializeApolloServer() {
           user: req.user,
           userId: req.userId,
           loaders: req.loaders,
-          pubsub
+          pubsub,
         }),
       })
     );
-    console.log("✅ Apollo Server ready");
+    logger.info("✅ Apollo Server ready");
   } catch (error) {
-    console.error("❌ Failed to start Apollo Server:", error);
+    logger.error("❌ Failed to start Apollo Server:", error);
     process.exit(1);
   }
 }
@@ -211,7 +309,7 @@ async function startServer() {
   await initializeApolloServer();
 
   httpServer.listen(PORT, () => {
-    console.log(`
+    logger.info(`
       🚀 Server running at http://localhost:${PORT}
       🔐 REST API: http://localhost:${PORT}/api/user
       🔮 GraphQL: http://localhost:${PORT}/graphql
@@ -221,6 +319,6 @@ async function startServer() {
 }
 
 startServer().catch((error) => {
-  console.error("❌ Server startup failed:", error);
+  logger.error("❌ Server startup failed:", error);
   process.exit(1);
 });

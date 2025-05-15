@@ -88,32 +88,93 @@ class NotificationService {
 
   async sendMessageNotification(message) {
     try {
-      const receiverId =
-        message.receiver ||
-        (message.group ? await this.getGroupParticipants(message.group) : null);
-      if (!receiverId) return;
+      console.log(
+        "[NotificationService] Sending message notification for message:",
+        message._id
+      );
+
+      // Déterminer le destinataire de la notification
+      let receiverId = null;
+
+      // Si c'est un message de groupe
+      if (message.group) {
+        console.log(
+          "[NotificationService] Group message detected, getting participants"
+        );
+        receiverId = await this.getGroupParticipants(message.group);
+      }
+      // Si c'est un message privé
+      else if (message.receiverId) {
+        console.log(
+          "[NotificationService] Private message detected, receiver:",
+          message.receiverId
+        );
+        receiverId = message.receiverId;
+      }
+      // Si le message a un champ receiver (objet)
+      else if (message.receiver) {
+        console.log(
+          "[NotificationService] Message with receiver object detected"
+        );
+        receiverId = message.receiver._id || message.receiver;
+      }
+
+      if (!receiverId) {
+        console.error(
+          "[NotificationService] No receiver found for message:",
+          message._id
+        );
+        return;
+      }
+
+      console.log("[NotificationService] Creating notification object");
       const notification = {
         type: "NEW_MESSAGE",
         messageId: message._id,
-        senderId: message.sender,
-        content: message.content.substring(0, 100),
+        senderId: message.senderId || message.sender,
+        content: message.content
+          ? message.content.substring(0, 100)
+          : "New message",
         isRead: false,
         createdAt: new Date(),
       };
 
+      console.log(
+        "[NotificationService] Notification object created:",
+        notification
+      );
+
       if (Array.isArray(receiverId)) {
+        console.log(
+          "[NotificationService] Sending to multiple recipients:",
+          receiverId.length
+        );
         await Promise.all(
           receiverId
-            .filter((id) => id.toString() !== message.sender.toString())
+            .filter(
+              (id) =>
+                id.toString() !==
+                (message.senderId || message.sender).toString()
+            )
             .map((id) => this.sendPushNotification(id, notification))
         );
       } else {
+        console.log(
+          "[NotificationService] Sending to single recipient:",
+          receiverId
+        );
         await this.sendPushNotification(receiverId, notification);
       }
+
+      console.log(
+        "[NotificationService] Message notification sent successfully"
+      );
     } catch (error) {
       console.error(
-        "[NotificationService] Error sending message notification:"
+        "[NotificationService] Error sending message notification:",
+        error
       );
+      console.error("[NotificationService] Error stack:", error.stack);
       throw new Error("Failed to send message notification");
     }
   }
@@ -131,37 +192,56 @@ class NotificationService {
   }
 
   async getUserNotifications(userId) {
-    return this.Notification.find({ userId })
-      .sort({ createdAt: -1 })
-      .populate("sender", "username image")
-      .populate("message", "content");
+    console.log(
+      "NotificationService.getUserNotifications called with userId:",
+      userId
+    );
+
+    try {
+      console.log("Executing Notification.find query");
+      const notifications = await this.Notification.find({ userId })
+        .sort({ createdAt: -1 })
+        .populate("senderId", "username image")
+        .populate("message", "content");
+
+      console.log("Notifications found:", notifications.length);
+      console.log("First notification (if any):", notifications[0]);
+
+      return notifications;
+    } catch (error) {
+      console.error(
+        "Error in NotificationService.getUserNotifications:",
+        error
+      );
+      console.error("Error stack:", error.stack);
+      throw error;
+    }
   }
-  
+
   async sendFriendRequestNotification({ senderId, receiverId }) {
     const notification = {
-      type: 'FRIEND_REQUEST',
+      type: "FRIEND_REQUEST",
       senderId,
-      content: 'You have a new friend request',
-      isRead: false
+      content: "You have a new friend request",
+      isRead: false,
     };
-    
+
     return this.sendPushNotification(receiverId, notification);
   }
 
   async sendGroupInviteNotification({ senderId, receiverId, groupId }) {
-    const group = await Conversation.findById(groupId).select('groupName');
-    
+    const group = await Conversation.findById(groupId).select("groupName");
+
     const notification = {
-      type: 'GROUP_INVITE',
+      type: "GROUP_INVITE",
       senderId,
       relatedEntity: groupId,
       content: `You've been invited to join ${group.groupName}`,
-      isRead: false
+      isRead: false,
     };
-    
+
     return this.sendPushNotification(receiverId, notification);
   }
-
 }
 
 module.exports = new NotificationService();

@@ -6,16 +6,10 @@ import {
   of,
   Subscription,
   throwError,
+  retry,
 } from 'rxjs';
-import {
-  map,
-  catchError,
-  tap,
-  filter,
-  retryWhen,
-  delay,
-  take,
-} from 'rxjs/operators';
+import { map, catchError, tap, filter } from 'rxjs/operators';
+import { MessageType } from '../models/message.model';
 import {
   GET_CONVERSATIONS_QUERY,
   GET_NOTIFICATIONS_QUERY,
@@ -49,6 +43,7 @@ import {
   GET_NOTIFICATIONS_ATTACHAMENTS,
   MARK_NOTIFICATION_READ_MUTATION,
   NOTIFICATIONS_READ_SUBSCRIPTION,
+  CREATE_CONVERSATION_MUTATION,
 } from '../graphql/message.graphql';
 import {
   Conversation,
@@ -103,6 +98,7 @@ export class MessageService implements OnDestroy {
   private readonly CACHE_DURATION = 300000;
   private lastFetchTime = 0;
   private usersCache: User[] = [];
+
   // Observables publics
   public activeConversation$ = this.activeConversation.asObservable();
   public notifications$ = this.notifications.asObservable();
@@ -198,12 +194,81 @@ export class MessageService implements OnDestroy {
     conversationId?: string,
     replyTo?: string
   ): Observable<Message> {
-    const variables: any = { receiverId, content };
-    if (file) variables.file = file;
-    if (conversationId) variables.conversationId = conversationId;
-    if (replyTo) variables.replyTo = replyTo;
+    this.logger.info(
+      `[MessageService] Sending message to: ${receiverId}, hasFile: ${!!file}`
+    );
+    this.logger.debug(
+      `[MessageService] Message content: "${content?.substring(0, 50)}${
+        content?.length > 50 ? '...' : ''
+      }"`
+    );
+
+    // Vérifier l'authentification
+    const token = localStorage.getItem('token');
+    this.logger.debug(
+      `[MessageService] Authentication check before sending message: token=${!!token}`
+    );
+
+    // Déterminer le type de message
+    let messageType = MessageType.TEXT;
+    if (file) {
+      // Déterminer le type de message en fonction du type de fichier
+      if (file.type.startsWith('image/')) {
+        messageType = MessageType.IMAGE;
+      } else if (file.type.startsWith('video/')) {
+        messageType = MessageType.VIDEO;
+      } else if (file.type.startsWith('audio/')) {
+        messageType = MessageType.AUDIO;
+      } else {
+        messageType = MessageType.FILE;
+      }
+    }
+
+    this.logger.debug(
+      `[MessageService] Message type determined: ${messageType}`
+    );
+
+    // Ajouter le type de message aux variables
+    // Utiliser directement la valeur de l'énumération sans conversion
+    const variables: any = {
+      receiverId,
+      content,
+      type: messageType, // Ajouter explicitement le type de message
+    };
+
+    // Forcer le type à être une valeur d'énumération GraphQL
+    // Cela empêche Apollo de convertir la valeur en minuscules
+    if (variables.type) {
+      Object.defineProperty(variables, 'type', {
+        value: messageType,
+        enumerable: true,
+        writable: false,
+      });
+    }
+
+    if (file) {
+      variables.file = file;
+      this.logger.debug(
+        `[MessageService] File attached: ${file.name}, size: ${file.size}, type: ${file.type}, messageType: ${messageType}`
+      );
+    }
+    if (conversationId) {
+      variables.conversationId = conversationId;
+      this.logger.debug(
+        `[MessageService] Using existing conversation: ${conversationId}`
+      );
+    }
+    if (replyTo) {
+      variables.replyTo = replyTo;
+      this.logger.debug(`[MessageService] Replying to message: ${replyTo}`);
+    }
 
     const context = file ? { useMultipart: true, file } : undefined;
+
+    this.logger.debug(
+      `[MessageService] Sending GraphQL mutation with variables:`,
+      variables
+    );
 
     return this.apollo
       .mutate<SendMessageResponse>({
@@ -213,12 +278,27 @@ export class MessageService implements OnDestroy {
       })
       .pipe(
         map((result) => {
-          if (!result.data?.sendMessage)
+          this.logger.debug(`[MessageService] Message send response:`, result);
+
+          if (!result.data?.sendMessage) {
+            this.logger.error(
+              `[MessageService] Failed to send message: No data returned`
+            );
             throw new Error('Failed to send message');
-          return this.normalizeMessage(result.data.sendMessage);
+          }
+
+          this.logger.debug(`[MessageService] Normalizing sent message`);
+          const normalizedMessage = this.normalizeMessage(
+            result.data.sendMessage
+          );
+
+          this.logger.info(
+            `[MessageService] Message sent successfully: ${normalizedMessage.id}`
+          );
+          return normalizedMessage;
         }),
         catchError((error) => {
-          console.error('Error sending message:', error);
+          this.logger.error(`[MessageService] Error sending message:`, error);
           return throwError(() => new Error('Failed to send message'));
         })
       );
@@ -280,7 +360,9 @@ export class MessageService implements OnDestroy {
             throw new Error('Failed to forward message');
           return result.data.forwardMessage.map((msg) => ({
             ...msg,
-            timestamp: new Date(msg.timestamp),
+            timestamp: msg.timestamp
+              ? this.normalizeDate(msg.timestamp)
+              : new Date(),
           }));
         }),
         catchError((error) => {
@@ -334,7 +416,7 @@ export class MessageService implements OnDestroy {
           (result) =>
             result.data?.searchMessages?.map((msg) => ({
               ...msg,
-              timestamp: new Date(msg.timestamp),
+              timestamp: this.safeDate(msg.timestamp),
               sender: this.normalizeUser(msg.sender),
             })) || []
         ),
@@ -357,7 +439,7 @@ export class MessageService implements OnDestroy {
           (result) =>
             result.data?.getUnreadMessages?.map((msg) => ({
               ...msg,
-              timestamp: new Date(msg.timestamp),
+              timestamp: this.safeDate(msg.timestamp),
               sender: this.normalizeUser(msg.sender),
             })) || []
         ),
@@ -390,22 +472,140 @@ export class MessageService implements OnDestroy {
       );
   }
 
-  getConversation(conversationId: string): Observable<Conversation> {
+  getConversation(
+    conversationId: string,
+    limit?: number,
+    page?: number
+  ): Observable<Conversation> {
+    this.logger.info(
+      `[MessageService] Getting conversation: ${conversationId}, limit: ${limit}, page: ${page}`
+    );
+
+    const variables: any = { conversationId };
+
+    // Ajouter les paramètres de pagination s'ils sont fournis
+    if (limit !== undefined) {
+      variables.limit = limit;
+    } else {
+      variables.limit = 10; // Valeur par défaut
+    }
+
+    // Calculer l'offset à partir de la page si elle est fournie
+    if (page !== undefined) {
+      // La requête GraphQL utilise offset, donc nous devons convertir la page en offset
+      const offset = (page - 1) * variables.limit;
+      variables.offset = offset;
+      this.logger.debug(
+        `[MessageService] Calculated offset: ${offset} from page: ${page} and limit: ${variables.limit}`
+      );
+    } else {
+      variables.offset = 0; // Valeur par défaut
+    }
+
+    this.logger.debug(
+      `[MessageService] Final pagination parameters: limit=${variables.limit}, offset=${variables.offset}`
+    );
+
     return this.apollo
       .watchQuery<GetConversationResponse>({
         query: GET_CONVERSATION_QUERY,
-        variables: { conversationId },
+        variables: variables,
         fetchPolicy: 'network-only',
       })
       .valueChanges.pipe(
         map((result) => {
+          this.logger.debug(
+            `[MessageService] Conversation response received:`,
+            result
+          );
+
           const conv = result.data?.getConversation;
-          if (!conv) throw new Error('Conversation not found');
-          return this.normalizeConversation(conv);
+          if (!conv) {
+            this.logger.error(
+              `[MessageService] Conversation not found: ${conversationId}`
+            );
+            throw new Error('Conversation not found');
+          }
+
+          this.logger.debug(
+            `[MessageService] Normalizing conversation: ${conversationId}`
+          );
+          const normalizedConversation = this.normalizeConversation(conv);
+
+          this.logger.info(
+            `[MessageService] Conversation loaded successfully: ${conversationId}, participants: ${
+              normalizedConversation.participants?.length || 0
+            }, messages: ${normalizedConversation.messages?.length || 0}`
+          );
+          return normalizedConversation;
         }),
         catchError((error) => {
-          console.error('Error fetching conversation:', error);
+          this.logger.error(
+            `[MessageService] Error fetching conversation:`,
+            error
+          );
           return throwError(() => new Error('Failed to load conversation'));
+        })
+      );
+  }
+
+  createConversation(userId: string): Observable<Conversation> {
+    this.logger.info(
+      `[MessageService] Creating conversation with user: ${userId}`
+    );
+
+    if (!userId) {
+      this.logger.error(
+        `[MessageService] Cannot create conversation: userId is undefined`
+      );
+      return throwError(
+        () => new Error('User ID is required to create a conversation')
+      );
+    }
+
+    return this.apollo
+      .mutate<{ createConversation: Conversation }>({
+        mutation: CREATE_CONVERSATION_MUTATION,
+        variables: { userId },
+      })
+      .pipe(
+        map((result) => {
+          this.logger.debug(
+            `[MessageService] Conversation creation response:`,
+            result
+          );
+
+          const conversation = result.data?.createConversation;
+          if (!conversation) {
+            this.logger.error(
+              `[MessageService] Failed to create conversation with user: ${userId}`
+            );
+            throw new Error('Failed to create conversation');
+          }
+
+          try {
+            const normalizedConversation =
+              this.normalizeConversation(conversation);
+            this.logger.info(
+              `[MessageService] Conversation created successfully: ${normalizedConversation.id}`
+            );
+            return normalizedConversation;
+          } catch (error) {
+            this.logger.error(
+              `[MessageService] Error normalizing created conversation:`,
+              error
+            );
+            throw new Error('Error processing created conversation');
+          }
+        }),
+        catchError((error) => {
+          this.logger.error(
+            `[MessageService] Error creating conversation with user ${userId}:`,
+            error
+          );
+          return throwError(
+            () => new Error(`Failed to create conversation: ${error.message}`)
+          );
         })
       );
   }
@@ -413,6 +613,14 @@ export class MessageService implements OnDestroy {
   // Section 2: Méthodes pour les Notifications
   // --------------------------------------------------------------------------
   getNotifications(refresh = false): Observable<Notification[]> {
+    this.logger.info(
+      'MessageService',
+      `Fetching notifications, refresh: ${refresh}`
+    );
+    this.logger.debug('MessageService', 'Using query', {
+      query: GET_NOTIFICATIONS_QUERY,
+    });
+
     return this.apollo
       .watchQuery<getUserNotificationsResponse>({
         query: GET_NOTIFICATIONS_QUERY,
@@ -420,14 +628,61 @@ export class MessageService implements OnDestroy {
       })
       .valueChanges.pipe(
         map((result) => {
+          this.logger.debug(
+            'MessageService',
+            'Notifications response received'
+          );
+
+          if (result.errors) {
+            this.logger.error(
+              'MessageService',
+              'GraphQL errors:',
+              result.errors
+            );
+            throw new Error(result.errors.map((e) => e.message).join(', '));
+          }
+
           const notifications = result.data?.getUserNotifications || [];
+          this.logger.debug(
+            'MessageService',
+            `Received ${notifications.length} notifications`
+          );
+
+          if (notifications.length === 0) {
+            this.logger.info(
+              'MessageService',
+              'No notifications received from server'
+            );
+          }
+
           this.updateCache(notifications);
           this.notifications.next(Array.from(this.notificationCache.values()));
           this.updateUnreadCount();
           return Array.from(this.notificationCache.values());
         }),
         catchError((error) => {
-          this.logger.error('Error loading notifications:', error);
+          this.logger.error(
+            'MessageService',
+            'Error loading notifications:',
+            error
+          );
+
+          if (error.graphQLErrors) {
+            this.logger.error(
+              'MessageService',
+              'GraphQL errors:',
+              error.graphQLErrors
+            );
+          }
+
+          if (error.networkError) {
+            this.logger.error(
+              'MessageService',
+              'Network error:',
+              error.networkError
+            );
+          }
+
           return throwError(() => new Error('Failed to load notifications'));
         })
       );
@@ -485,7 +740,13 @@ export class MessageService implements OnDestroy {
     readCount: number;
     remainingCount: number;
   }> {
+    this.logger.debug(
+      'MessageService',
+      `Marking notifications as read: ${notificationIds?.join(', ') || 'none'}`
+    );
+
     if (!notificationIds || notificationIds.length === 0) {
+      this.logger.warn('MessageService', 'No notification IDs provided');
       return of({
         success: false,
         readCount: 0,
@@ -493,35 +754,65 @@ export class MessageService implements OnDestroy {
       });
     }
 
+    // Vérifier que tous les IDs sont valides
+    const validIds = notificationIds.filter(
+      (id) => id && typeof id === 'string' && id.trim() !== ''
+    );
+
+    if (validIds.length !== notificationIds.length) {
+      this.logger.error('MessageService', 'Some notification IDs are invalid', {
+        provided: notificationIds,
+        valid: validIds,
+      });
+      return throwError(() => new Error('Some notification IDs are invalid'));
+    }
+
+    this.logger.debug(
+      'MessageService',
+      'Sending mutation to mark notifications as read',
+      validIds
+    );
+
     return this.apollo
       .mutate<MarkNotificationsAsReadResponse>({
         mutation: MARK_NOTIFICATION_READ_MUTATION,
-        variables: { notificationIds },
+        variables: { notificationIds: validIds },
         optimisticResponse: {
           markNotificationsAsRead: {
             success: true,
-            readCount: notificationIds.length,
+            readCount: validIds.length,
             remainingCount: Math.max(
               0,
-              this.notificationCount.value - notificationIds.length
+              this.notificationCount.value - validIds.length
             ),
           },
         },
         update: (cache) => {
           // Mise à jour optimiste du cache
-          notificationIds.forEach((id) => {
-            cache.modify({
-              id: `Notification:${id}`,
-              fields: {
-                isRead: () => true,
-                readAt: () => new Date().toISOString(),
-              },
-            });
+          this.logger.debug('MessageService', 'Updating cache optimistically');
+          validIds.forEach((id) => {
+            try {
+              cache.modify({
+                id: `Notification:${id}`,
+                fields: {
+                  isRead: () => true,
+                  readAt: () => new Date().toISOString(),
+                },
+              });
+            } catch (error) {
+              this.logger.warn(
+                'MessageService',
+                `Failed to update cache for notification ${id}`,
+                error
+              );
+            }
           });
         },
       })
       .pipe(
         map((result) => {
+          this.logger.debug('MessageService', 'Mutation result', result);
+
           const response = result.data?.markNotificationsAsRead ?? {
             success: false,
             readCount: 0,
@@ -529,12 +820,20 @@ export class MessageService implements OnDestroy {
           };
 
           if (response.success) {
-            this.updateNotificationStatus(notificationIds, true);
+            this.logger.debug(
+              'MessageService',
+              'Updating notification status in cache'
+            );
+            this.updateNotificationStatus(validIds, true);
           }
           return response;
         }),
         catchError((error: Error) => {
-          this.logger.error('Error marking notifications as read:', error);
+          this.logger.error(
+            'MessageService',
+            'Error marking notifications as read:',
+            error
+          );
           return throwError(
             () => new Error('Failed to mark notifications as read')
           );
@@ -546,13 +845,34 @@ export class MessageService implements OnDestroy {
   // --------------------------------------------------------------------------
   // User methods
   getAllUsers(forceRefresh = false, search?: string): Observable<User[]> {
+    this.logger.info(
+      'MessageService',
+      `Getting all users, forceRefresh=${forceRefresh}, search=${
+        search || '(empty)'
+      }`
+    );
+
     const now = Date.now();
     const cacheValid =
       !forceRefresh &&
       this.usersCache.length > 0 &&
       now - this.lastFetchTime <= this.CACHE_DURATION;
 
-    if (cacheValid && !search) return of([...this.usersCache]);
+    // Utiliser le cache si valide et pas de recherche
+    if (cacheValid && !search) {
+      this.logger.debug(
+        'MessageService',
+        `Using cached users (${this.usersCache.length} users)`
+      );
+      return of([...this.usersCache]);
+    }
+
+    this.logger.debug(
+      'MessageService',
+      `Fetching users from server, fetchPolicy=${
+        forceRefresh ? 'network-only' : 'cache-first'
+      }`
+    );
 
     return this.apollo
       .watchQuery<GetAllUsersResponse>({
@@ -562,17 +882,92 @@ export class MessageService implements OnDestroy {
       })
       .valueChanges.pipe(
         map((result) => {
-          const users =
-            result.data?.getAllUsers?.map((u) => this.normalizeUser(u)) || [];
+          this.logger.debug('MessageService', 'Users response received');
+
+          if (result.errors) {
+            this.logger.error(
+              'MessageService',
+              'GraphQL errors in getAllUsers:',
+              result.errors
+            );
+            throw new Error(result.errors.map((e) => e.message).join(', '));
+          }
+
+          if (!result.data?.getAllUsers) {
+            this.logger.warn(
+              'MessageService',
+              'No users data received from server'
+            );
+            return [];
+          }
+
+          // Normaliser les utilisateurs avec gestion d'erreur
+          const users: User[] = [];
+          for (const user of result.data.getAllUsers) {
+            try {
+              if (user) {
+                users.push(this.normalizeUser(user));
+              }
+            } catch (error) {
+              this.logger.warn(
+                'MessageService',
+                `Error normalizing user, skipping:`,
+                error
+              );
+            }
+          }
+
+          this.logger.info(
+            'MessageService',
+            `Received ${users.length} users from server`
+          );
+
+          // Mettre à jour le cache si ce n'est pas une recherche
           if (!search) {
             this.usersCache = [...users];
             this.lastFetchTime = Date.now();
+            this.logger.debug(
+              'MessageService',
+              `User cache updated with ${users.length} users`
+            );
           }
+
           return users;
         }),
         catchError((error) => {
-          console.error('Error fetching users:', error);
-          return throwError(() => new Error('Failed to fetch users'));
+          this.logger.error('MessageService', 'Error fetching users:', error);
+
+          if (error.graphQLErrors) {
+            this.logger.error(
+              'MessageService',
+              'GraphQL errors:',
+              error.graphQLErrors
+            );
+          }
+
+          if (error.networkError) {
+            this.logger.error(
+              'MessageService',
+              'Network error:',
+              error.networkError
+            );
+          }
+
+          // En cas d'erreur, retourner le cache si disponible
+          if (this.usersCache.length > 0) {
+            this.logger.warn(
+              'MessageService',
+              `Returning ${this.usersCache.length} cached users due to fetch error`
+            );
+            return of([...this.usersCache]);
+          }
+
+          return throwError(
+            () =>
+              new Error(
+                `Failed to fetch users: ${error.message || 'Unknown error'}`
+              )
+          );
         })
       );
   }
@@ -586,7 +981,7 @@ export class MessageService implements OnDestroy {
       .valueChanges.pipe(
         map((result) => this.normalizeUser(result.data?.getOneUser)),
         catchError((error) => {
-          console.error('Error fetching user:', error);
+          this.logger.error('MessageService', 'Error fetching user:', error);
           return throwError(() => new Error('Failed to fetch user'));
         })
       );
@@ -600,7 +995,11 @@ export class MessageService implements OnDestroy {
       .valueChanges.pipe(
         map((result) => this.normalizeUser(result.data?.getCurrentUser)),
         catchError((error) => {
-          console.error('Error fetching current user:', error);
+          this.logger.error(
+            'MessageService',
+            'Error fetching current user:',
+            error
+          );
           return throwError(() => new Error('Failed to fetch current user'));
         })
       );
@@ -618,7 +1017,11 @@ export class MessageService implements OnDestroy {
           return this.normalizeUser(result.data.setUserOnline);
         }),
         catchError((error) => {
-          console.error('Error setting user online:', error);
+          this.logger.error(
+            'MessageService',
+            'Error setting user online:',
+            error
+          );
           return throwError(() => new Error('Failed to set user online'));
         })
       );
@@ -636,7 +1039,11 @@ export class MessageService implements OnDestroy {
           return this.normalizeUser(result.data.setUserOffline);
         }),
         catchError((error) => {
-          console.error('Error setting user offline:', error);
+          this.logger.error(
+            'MessageService',
+            'Error setting user offline:',
+            error
+          );
           return throwError(() => new Error('Failed to set user offline'));
         })
       );
@@ -665,7 +1072,7 @@ export class MessageService implements OnDestroy {
           };
         }),
         catchError((error) => {
-          console.error('Error fetching group:', error);
+          this.logger.error('MessageService', 'Error fetching group:', error);
           return throwError(() => new Error('Failed to fetch group'));
         })
       );
@@ -690,7 +1097,11 @@ export class MessageService implements OnDestroy {
             })) || []
         ),
         catchError((error) => {
-          console.error('Error fetching user groups:', error);
+          this.logger.error(
+            'MessageService',
+            'Error fetching user groups:',
+            error
+          );
           return throwError(() => new Error('Failed to fetch user groups'));
         })
       );
@@ -735,7 +1146,7 @@ export class MessageService implements OnDestroy {
           };
         }),
         catchError((error) => {
-          console.error('Error creating group:', error);
+          this.logger.error('MessageService', 'Error creating group:', error);
           return throwError(() => new Error('Failed to create group'));
         })
       );
@@ -787,7 +1198,7 @@ export class MessageService implements OnDestroy {
           };
         }),
         catchError((error) => {
-          console.error('Error updating group:', error);
+          this.logger.error('MessageService', 'Error updating group:', error);
           return throwError(() => new Error('Failed to update group'));
         })
       );
@@ -808,12 +1219,16 @@ export class MessageService implements OnDestroy {
           if (!msg) throw new Error('No message payload received');
           return {
             ...msg,
-            timestamp: new Date(msg.timestamp),
+            timestamp: this.safeDate(msg.timestamp),
             sender: this.normalizeUser(msg.sender),
           };
         }),
         catchError((error) => {
-          console.error('Message subscription error:', error);
+          this.logger.error(
+            'MessageService',
+            'Message subscription error:',
+            error
+          );
           return throwError(() => new Error('Message subscription failed'));
         })
       );
@@ -823,20 +1238,40 @@ export class MessageService implements OnDestroy {
     return sub$;
   }
   subscribeToUserStatus(): Observable<User> {
+    // Vérifier si l'utilisateur est connecté avec un token valide
+    if (!this.isTokenValid()) {
+      this.logger.warn(
+        "Tentative d'abonnement au statut utilisateur avec un token invalide ou expiré"
+      );
+      return throwError(() => new Error('Invalid or expired token'));
+    }
+
+    this.logger.debug("Démarrage de l'abonnement au statut utilisateur");
+
     const sub$ = this.apollo
       .subscribe<{ userStatusChanged: User }>({
         query: USER_STATUS_SUBSCRIPTION,
       })
       .pipe(
+        tap((result) =>
+          this.logger.debug(
+            "Données reçues de l'abonnement au statut utilisateur:",
+            result
+          )
+        ),
         map((result) => {
           const user = result.data?.userStatusChanged;
-          if (!user) throw new Error('No status payload received');
+          if (!user) {
+            this.logger.error('No status payload received');
+            throw new Error('No status payload received');
+          }
           return this.normalizeUser(user);
         }),
         catchError((error) => {
-          console.error('Status subscription error:', error);
+          this.logger.error('Status subscription error:', error as Error);
           return throwError(() => new Error('Status subscription failed'));
-        })
+        }),
+        retry(3) // Réessayer 3 fois en cas d'erreur
       );
 
     const sub = sub$.subscribe();
@@ -864,9 +1299,9 @@ export class MessageService implements OnDestroy {
               ? {
                   ...conv.lastMessage,
                   sender: this.normalizeUser(conv.lastMessage.sender),
-                  timestamp: new Date(conv.lastMessage.timestamp),
+                  timestamp: this.safeDate(conv.lastMessage.timestamp),
                   readAt: conv.lastMessage.readAt
-                    ? new Date(conv.lastMessage.readAt)
+                    ? this.safeDate(conv.lastMessage.readAt)
                     : undefined,
                   // Conservez toutes les autres propriétés du message
                   id: conv.lastMessage.id,
@@ -881,7 +1316,11 @@ export class MessageService implements OnDestroy {
           return normalizedConversation as Conversation; // Assertion de type si nécessaire
         }),
         catchError((error) => {
-          console.error('Conversation subscription error:', error);
+          this.logger.error(
+            'MessageService',
+            'Conversation subscription error:',
+            error
+          );
           return throwError(
             () => new Error('Conversation subscription failed')
           );
@@ -904,7 +1343,11 @@ export class MessageService implements OnDestroy {
         map((result) => result.data?.typingIndicator),
         filter(Boolean),
         catchError((error) => {
-          console.error('Typing indicator subscription error:', error);
+          this.logger.error(
+            'MessageService',
+            'Typing indicator subscription error:',
+            error
+          );
           return throwError(
             () => new Error('Typing indicator subscription failed')
           );
@@ -915,25 +1358,92 @@ export class MessageService implements OnDestroy {
     this.subscriptions.push(sub);
     return sub$;
   }
+  private isTokenValid(): boolean {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.logger.warn('Aucun token trouvé');
+      return false;
+    }
+
+    try {
+      // Décoder le token JWT (format: header.payload.signature)
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        this.logger.warn('Format de token invalide');
+        return false;
+      }
+
+      // Décoder le payload (deuxième partie du token)
+      const payload = JSON.parse(atob(parts[1]));
+
+      // Vérifier l'expiration
+      if (!payload.exp) {
+        this.logger.warn("Token sans date d'expiration");
+        return false;
+      }
+
+      const expirationDate = new Date(payload.exp * 1000);
+      const now = new Date();
+
+      if (expirationDate < now) {
+        this.logger.warn('Token expiré', {
+          expiration: expirationDate.toISOString(),
+          now: now.toISOString(),
+        });
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      this.logger.error(
+        'Erreur lors de la vérification du token:',
+        error as Error
+      );
+      return false;
+    }
+  }
+
   subscribeToNotificationsRead(): Observable<string[]> {
+    // Vérifier si l'utilisateur est connecté avec un token valide
+    if (!this.isTokenValid()) {
+      this.logger.warn(
+        "Tentative d'abonnement aux notifications avec un token invalide ou expiré"
+      );
+      return of([]);
+    }
+
+    this.logger.debug("Démarrage de l'abonnement aux notifications lues");
+
     const sub$ = this.apollo
       .subscribe<NotificationsReadEvent>({
         query: NOTIFICATIONS_READ_SUBSCRIPTION,
       })
       .pipe(
+        tap((result) =>
+          this.logger.debug(
+            "Données reçues de l'abonnement aux notifications lues:",
+            result
+          )
+        ),
         map((result) => {
           const notificationIds = result.data?.notificationsRead || [];
+          this.logger.debug(
+            'Notifications marquées comme lues:',
+            notificationIds
+          );
           this.updateNotificationStatus(notificationIds, true);
           return notificationIds;
         }),
-        retryWhen((errors) =>
-          errors.pipe(
-            tap((err) =>
-              this.logger.error('Notifications read subscription error:', err)
-            ),
-            delay(1000)
-          )
-        )
+        catchError((err) => {
+          this.logger.error(
+            'Notifications read subscription error:',
+            err as Error
+          );
+          // Retourner un tableau vide au lieu de propager l'erreur
+          return of([]);
+        }),
+        // Réessayer après un délai en cas d'erreur
+        retry(3) // Réessayer 3 fois en cas d'erreur
       );
 
     const sub = sub$.subscribe();
@@ -941,13 +1451,37 @@ export class MessageService implements OnDestroy {
     return sub$;
   }
   subscribeToNewNotifications(): Observable<Notification> {
+    // Vérifier si l'utilisateur est connecté
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.logger.warn(
+        "Tentative d'abonnement aux notifications sans être connecté"
+      );
+      return of(null as unknown as Notification);
+    }
+
     const source$ = this.apollo.subscribe<NotificationReceivedEvent>({
       query: NOTIFICATION_SUBSCRIPTION,
     });
 
     const processed$ = source$.pipe(
-      map(this.processNotification),
-      retryWhen(this.handleRetry)
+      map((result) => {
+        const notification = result.data?.notificationReceived;
+        if (!notification) {
+          throw new Error('No notification payload received');
+        }
+
+        const normalized = this.normalizeNotification(notification);
+        this.updateNotificationCache(normalized);
+        return normalized;
+      }),
+      catchError((err) => {
+        this.logger.error('New notification subscription error:', err as Error);
+        // Retourner null au lieu de propager l'erreur
+        return of(null as unknown as Notification);
+      }),
+      // Filtrer les valeurs null
+      filter((notification) => !!notification)
     );
 
     const sub = processed$.subscribe();
@@ -987,12 +1521,111 @@ export class MessageService implements OnDestroy {
     return localStorage.getItem('userId') || '';
   }
   private normalizeMessage(message: Message): Message {
-    return {
-      ...message,
-      sender: this.normalizeUser(message.sender),
-      timestamp: this.normalizeDate(message.timestamp),
-      readAt: message.readAt ? this.normalizeDate(message.readAt) : undefined,
-    };
+    if (!message) {
+      this.logger.error(
+        '[MessageService] Cannot normalize null or undefined message'
+      );
+      throw new Error('Message object is required');
+    }
+
+    try {
+      // Vérification des champs obligatoires
+      if (!message.id && !message._id) {
+        this.logger.error(
+          '[MessageService] Message ID is missing',
+          undefined,
+          message
+        );
+        throw new Error('Message ID is required');
+      }
+
+      // Normaliser le sender avec gestion d'erreur
+      let normalizedSender;
+      try {
+        normalizedSender = message.sender
+          ? this.normalizeUser(message.sender)
+          : undefined;
+      } catch (error) {
+        this.logger.warn(
+          '[MessageService] Error normalizing message sender, using default values',
+          error
+        );
+        normalizedSender = {
+          _id: message.senderId || 'unknown',
+          id: message.senderId || 'unknown',
+          username: 'Unknown User',
+          email: 'unknown@example.com',
+          role: 'user',
+          isActive: true,
+        };
+      }
+
+      // Normaliser le receiver si présent
+      let normalizedReceiver;
+      if (message.receiver) {
+        try {
+          normalizedReceiver = this.normalizeUser(message.receiver);
+        } catch (error) {
+          this.logger.warn(
+            '[MessageService] Error normalizing message receiver, using default values',
+            error
+          );
+          normalizedReceiver = {
+            _id: message.receiverId || 'unknown',
+            id: message.receiverId || 'unknown',
+            username: 'Unknown User',
+            email: 'unknown@example.com',
+            role: 'user',
+            isActive: true,
+          };
+        }
+      }
+
+      // Normaliser les pièces jointes si présentes
+      const normalizedAttachments =
+        message.attachments?.map((att) => ({
+          id: att.id || att._id || `attachment-${Date.now()}`,
+          url: att.url || '',
+          type: att.type || 'unknown',
+          name: att.name || 'attachment',
+          size: att.size || 0,
+        })) || [];
+
+      // Construire le message normalisé
+      const normalizedMessage = {
+        ...message,
+        _id: message.id || message._id,
+        id: message.id || message._id,
+        content: message.content || '',
+        sender: normalizedSender,
+        timestamp: this.normalizeDate(message.timestamp),
+        readAt: message.readAt ? this.normalizeDate(message.readAt) : undefined,
+        attachments: normalizedAttachments,
+      };
+
+      // Ajouter le receiver seulement s'il existe
+      if (normalizedReceiver) {
+        normalizedMessage.receiver = normalizedReceiver;
+      }
+
+      this.logger.debug('[MessageService] Message normalized successfully', {
+        messageId: normalizedMessage.id,
+        senderId: normalizedMessage.sender?.id,
+      });
+
+      return normalizedMessage;
+    } catch (error) {
+      this.logger.error(
+        '[MessageService] Error normalizing message:',
+        error instanceof Error ? error : new Error(String(error)),
+        message
+      );
+      throw new Error(
+        `Failed to normalize message: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
   }
   private normalizeNotMessage(message: any) {
     return {
@@ -1011,33 +1644,34 @@ export class MessageService implements OnDestroy {
     if (!user) {
       throw new Error('User object is required');
     }
-    // Vérification des champs obligatoires
-    if (!user.id && !user._id) {
+
+    // Vérification des champs obligatoires avec valeurs par défaut
+    const userId = user.id || user._id;
+    if (!userId) {
       throw new Error('User ID is required');
     }
-    if (!user.username) {
-      throw new Error('Username is required');
-    }
-    if (!user.email) {
-      throw new Error('Email is required');
-    }
-    if (user.isActive === undefined || user.isActive === null) {
-      throw new Error('isActive status is required');
-    }
-    if (!user.role) {
-      throw new Error('Role is required');
-    }
+
+    // Utiliser des valeurs par défaut pour les champs manquants
+    const username = user.username || 'Unknown User';
+    const email = user.email || `user-${userId}@example.com`;
+    const isActive =
+      user.isActive !== undefined && user.isActive !== null
+        ? user.isActive
+        : true;
+    const role = user.role || 'user';
+
+    // Construire l'objet utilisateur normalisé
     return {
-      _id: user.id || user._id,
-      id: user.id || user._id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      isActive: user.isActive,
+      _id: userId,
+      id: userId,
+      username: username,
+      email: email,
+      role: role,
+      isActive: isActive,
       // Champs optionnels
       image: user.image ?? null,
       bio: user.bio,
-      isOnline: user.isOnline,
+      isOnline: user.isOnline || false,
       lastActive: user.lastActive ? new Date(user.lastActive) : undefined,
       createdAt: user.createdAt ? new Date(user.createdAt) : undefined,
       updatedAt: user.updatedAt ? new Date(user.updatedAt) : undefined,
@@ -1047,20 +1681,149 @@ export class MessageService implements OnDestroy {
     };
   }
   private normalizeConversation(conv: Conversation): Conversation {
-    return {
-      ...conv,
-      participants: conv.participants?.map((p) => this.normalizeUser(p)) || [],
-      messages: conv.messages?.map((msg) => this.normalizeMessage(msg)) || [],
-      lastMessage: conv.lastMessage
-        ? this.normalizeMessage(conv.lastMessage)
-        : null,
-      createdAt: this.normalizeDate(conv.createdAt),
-      updatedAt: this.normalizeDate(conv.updatedAt),
-    };
+    if (!conv) {
+      this.logger.error(
+        '[MessageService] Cannot normalize null or undefined conversation'
+      );
+      throw new Error('Conversation object is required');
+    }
+
+    try {
+      // Vérification des champs obligatoires
+      if (!conv.id && !conv._id) {
+        this.logger.error(
+          '[MessageService] Conversation ID is missing',
+          undefined,
+          conv
+        );
+        throw new Error('Conversation ID is required');
+      }
+
+      // Normaliser les participants avec gestion d'erreur
+      const normalizedParticipants = [];
+      if (conv.participants && Array.isArray(conv.participants)) {
+        for (const participant of conv.participants) {
+          try {
+            if (participant) {
+              normalizedParticipants.push(this.normalizeUser(participant));
+            }
+          } catch (error) {
+            this.logger.warn(
+              '[MessageService] Error normalizing participant, skipping',
+              error
+            );
+          }
+        }
+      } else {
+        this.logger.warn(
+          '[MessageService] Conversation has no participants or invalid participants array',
+          conv
+        );
+      }
+
+      // Normaliser les messages avec gestion d'erreur
+      const normalizedMessages = [];
+      if (conv.messages && Array.isArray(conv.messages)) {
+        this.logger.debug('[MessageService] Processing conversation messages', {
+          count: conv.messages.length,
+        });
+
+        for (const message of conv.messages) {
+          try {
+            if (message) {
+              const normalizedMessage = this.normalizeMessage(message);
+              this.logger.debug(
+                '[MessageService] Successfully normalized message',
+                {
+                  messageId: normalizedMessage.id,
+                  content: normalizedMessage.content?.substring(0, 20),
+                  sender: normalizedMessage.sender?.username,
+                }
+              );
+              normalizedMessages.push(normalizedMessage);
+            }
+          } catch (error) {
+            this.logger.warn(
+              '[MessageService] Error normalizing message in conversation, skipping',
+              error
+            );
+          }
+        }
+      } else {
+        this.logger.debug(
+          '[MessageService] No messages found in conversation or invalid messages array'
+        );
+      }
+
+      // Normaliser le dernier message avec gestion d'erreur
+      let normalizedLastMessage = null;
+      if (conv.lastMessage) {
+        try {
+          normalizedLastMessage = this.normalizeMessage(conv.lastMessage);
+        } catch (error) {
+          this.logger.warn(
+            '[MessageService] Error normalizing last message, using null',
+            error
+          );
+        }
+      }
+
+      // Construire la conversation normalisée
+      const normalizedConversation = {
+        ...conv,
+        _id: conv.id || conv._id,
+        id: conv.id || conv._id,
+        participants: normalizedParticipants,
+        messages: normalizedMessages,
+        lastMessage: normalizedLastMessage,
+        unreadCount: conv.unreadCount || 0,
+        isGroup: !!conv.isGroup,
+        createdAt: this.normalizeDate(conv.createdAt),
+        updatedAt: this.normalizeDate(conv.updatedAt),
+      };
+
+      this.logger.debug(
+        '[MessageService] Conversation normalized successfully',
+        {
+          conversationId: normalizedConversation.id,
+          participantCount: normalizedParticipants.length,
+          messageCount: normalizedMessages.length,
+        }
+      );
+
+      return normalizedConversation;
+    } catch (error) {
+      this.logger.error(
+        '[MessageService] Error normalizing conversation:',
+        error instanceof Error ? error : new Error(String(error)),
+        conv
+      );
+      throw new Error(
+        `Failed to normalize conversation: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
   }
   private normalizeDate(date: string | Date | undefined): Date {
     if (!date) return new Date();
-    return typeof date === 'string' ? new Date(date) : date;
+    try {
+      return typeof date === 'string' ? new Date(date) : date;
+    } catch (error) {
+      this.logger.warn(`Failed to parse date: ${date}`, error);
+      return new Date();
+    }
+  }
+
+  // Méthode sécurisée pour créer une date à partir d'une valeur potentiellement undefined
+  private safeDate(date: string | Date | undefined): Date {
+    if (!date) return new Date();
+    try {
+      return typeof date === 'string' ? new Date(date) : date;
+    } catch (error) {
+      this.logger.warn(`Failed to create safe date: ${date}`, error);
+      return new Date();
+    }
   }
   private toSafeISOString = (
     date: Date | string | undefined
@@ -1068,22 +1831,66 @@ export class MessageService implements OnDestroy {
     if (!date) return undefined;
     return typeof date === 'string' ? date : date.toISOString();
   };
-  private trackSubscription(sub$: Observable<any>): Subscription {
-    const sub = sub$.subscribe();
-    this.subscriptions.push(sub);
-    return sub;
-  }
   private normalizeNotification(notification: Notification): Notification {
-    return {
-      ...notification,
-      timestamp: new Date(notification.timestamp),
-      ...(notification.sender && {
-        sender: this.normalizeSender(notification.sender),
-      }),
-      ...(notification.message && {
-        message: this.normalizeNotMessage(notification.message),
-      }),
-    };
+    this.logger.debug(
+      'MessageService',
+      'Normalizing notification',
+      notification
+    );
+
+    if (!notification) {
+      this.logger.error('MessageService', 'Notification is null or undefined');
+      throw new Error('Notification is required');
+    }
+
+    // Vérifier et normaliser l'ID
+    const notificationId = notification.id || (notification as any)._id;
+    if (!notificationId) {
+      this.logger.error(
+        'MessageService',
+        'Notification ID is missing',
+        notification
+      );
+      throw new Error('Notification ID is required');
+    }
+
+    if (!notification.timestamp) {
+      this.logger.warn(
+        'MessageService',
+        'Notification timestamp is missing, using current time',
+        notification
+      );
+      notification.timestamp = new Date();
+    }
+
+    try {
+      const normalized = {
+        ...notification,
+        _id: notificationId, // Conserver l'ID MongoDB original
+        id: notificationId, // Utiliser le même ID pour les deux propriétés
+        timestamp: new Date(notification.timestamp),
+        ...(notification.senderId && {
+          senderId: this.normalizeSender(notification.senderId),
+        }),
+        ...(notification.message && {
+          message: this.normalizeNotMessage(notification.message),
+        }),
+      };
+
+      this.logger.debug(
+        'MessageService',
+        'Normalized notification result',
+        normalized
+      );
+      return normalized;
+    } catch (error) {
+      this.logger.error(
+        'MessageService',
+        'Error in normalizeNotification',
+        error
+      );
+      throw error;
+    }
   }
   private normalizeSender(sender: any) {
     return {
@@ -1093,10 +1900,38 @@ export class MessageService implements OnDestroy {
     };
   }
   private updateCache(notifications: Notification[]) {
+    this.logger.debug(
+      'MessageService',
+      `Updating notification cache with ${notifications.length} notifications`
+    );
+
+    if (notifications.length === 0) {
+      this.logger.warn('MessageService', 'No notifications to update in cache');
+    }
+
     notifications.forEach((notif) => {
-      const normalized = this.normalizeNotification(notif);
-      this.notificationCache.set(normalized.id, normalized);
+      try {
+        this.logger.debug('MessageService', 'Processing notification', notif);
+        const normalized = this.normalizeNotification(notif);
+        this.logger.debug(
+          'MessageService',
+          'Normalized notification',
+          normalized
+        );
+        this.notificationCache.set(normalized.id, normalized);
+      } catch (error) {
+        this.logger.error(
+          'MessageService',
+          'Error normalizing notification',
+          error
+        );
+      }
     });
+
+    this.logger.debug(
+      'MessageService',
+      `Notification cache updated, size: ${this.notificationCache.size}`
+    );
   }
   private updateUnreadCount() {
     const count = Array.from(this.notificationCache.values()).filter(
@@ -1109,22 +1944,6 @@ export class MessageService implements OnDestroy {
     this.notifications.next(Array.from(this.notificationCache.values()));
     this.updateUnreadCount();
   }
-  private processNotification(result: any): Notification {
-    const notification = result.data?.notificationReceived;
-    if (!notification) {
-      throw new Error('No notification payload received');
-    }
-
-    const normalized = this.normalizeNotification(notification);
-    this.updateNotificationCache(normalized);
-    return normalized;
-  }
-  private handleRetry(errors: Observable<any>): Observable<any> {
-    return errors.pipe(
-      tap((err) => this.logger.error('Notification subscription error:', err)),
-      delay(1000)
-    );
-  }
   private updateNotificationStatus(ids: string[], isRead: boolean) {
     ids.forEach((id) => {
       const notif = this.notificationCache.get(id);
@@ -1134,10 +1953,6 @@ export class MessageService implements OnDestroy {
     });
     this.notifications.next(Array.from(this.notificationCache.values()));
     this.updateUnreadCount();
-  }
-  private handleError(message: string, error: any): Observable<never> {
-    this.logger.error(message, error);
-    return throwError(() => new Error(message));
   }
   // Typing indicators
   startTyping(conversationId: string): Observable<boolean> {
@@ -1149,7 +1964,11 @@ export class MessageService implements OnDestroy {
       .pipe(
         map((result) => result.data?.startTyping || false),
         catchError((error) => {
-          console.error('Error starting typing indicator:', error);
+          this.logger.error(
+            'MessageService',
+            'Error starting typing indicator',
+            error
+          );
           return throwError(
             () => new Error('Failed to start typing indicator')
           );
@@ -1165,7 +1984,11 @@ export class MessageService implements OnDestroy {
       .pipe(
         map((result) => result.data?.stopTyping || false),
         catchError((error) => {
-          console.error('Error stopping typing indicator:', error);
+          this.logger.error(
+            'MessageService',
+            'Error stopping typing indicator',
+            error
+          );
           return throwError(() => new Error('Failed to stop typing indicator'));
         })
       );

@@ -1,0 +1,25 @@
+{
+  "name": "devbridge",
+  "version": "1.0.0",
+  "description": "DevBridge - Application de gestion de projets académiques",
+  "main": "index.js",
+  "scripts": {
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm start",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "angular",
+    "nodejs",
+    "mongodb",
+    "graphql",
+    "project-management"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

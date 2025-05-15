@@ -2,9 +2,115 @@ const { gql } = require("graphql-tag");
 
 const typeDefs = gql`
   scalar Upload
-  scalar Date
   scalar JSON
+  scalar Date
   scalar DateTime
+
+  """
+  Représente un appel audio ou vidéo entre deux utilisateurs
+  """
+  type Call {
+    id: ID!
+    caller: User!
+    recipient: User!
+    type: CallType!
+    status: CallStatus!
+    startTime: String!
+    endTime: String
+    duration: Int
+    conversationId: ID
+    metadata: JSON
+  }
+
+  """
+  Types d'appels possibles
+  """
+  enum CallType {
+    AUDIO
+    VIDEO
+    VIDEO_ONLY
+  }
+
+  """
+  États possibles d'un appel
+  """
+  enum CallStatus {
+    RINGING
+    CONNECTED
+    ENDED
+    MISSED
+    REJECTED
+    FAILED
+  }
+
+  """
+  Signal échangé pendant un appel (offre, réponse, candidats ICE, etc.)
+  """
+  type CallSignal {
+    callId: ID!
+    senderId: ID!
+    type: String!
+    data: String!
+    timestamp: String!
+  }
+
+  """
+  Réponse simple indiquant le succès d'une opération liée aux appels
+  """
+  type CallSuccess {
+    success: Boolean!
+    message: String
+  }
+
+  """
+  Information sur un appel entrant
+  """
+  type IncomingCall {
+    id: ID!
+    caller: User!
+    type: CallType!
+    conversationId: ID
+    offer: String!
+    timestamp: String!
+  }
+
+  """
+  Entrée pour les options d'appel
+  """
+  input CallOptions {
+    enableVideo: Boolean
+    enableAudio: Boolean
+    quality: String
+  }
+
+  """
+  Statistiques d'appels pour l'utilisateur
+  """
+  type CallStatistics {
+    totalCalls: Int!
+    totalDuration: Int!
+    missedCalls: Int!
+    callsByType: [CallTypeCount!]!
+    averageCallDuration: Float!
+    mostCalledUser: User
+  }
+
+  """
+  Nombre d'appels par type
+  """
+  type CallTypeCount {
+    type: CallType!
+    count: Int!
+  }
+
+  """
+  Entrée pour le feedback d'un appel
+  """
+  input CallFeedbackInput {
+    quality: Int
+    issues: [String]
+    comment: String
+  }
   type Message {
     id: ID!
     content: String
@@ -105,10 +211,13 @@ const typeDefs = gql`
     id: ID!
     type: String!
     message: Message
-    sender: User
+    senderId: User
     content: String!
     timestamp: Date!
     isRead: Boolean!
+    readAt: Date
+    relatedEntity: ID
+    metadata: JSON
   }
   type MessageReadEvent {
     messageId: ID!
@@ -135,11 +244,17 @@ const typeDefs = gql`
   }
   enum MessageType {
     TEXT
+    text
     IMAGE
+    image
     FILE
+    file
     AUDIO
+    audio
     VIDEO
+    video
     SYSTEM
+    system
   }
 
   enum AttachmentType {
@@ -217,8 +332,8 @@ const typeDefs = gql`
       senderId: ID
       receiverId: ID
       conversationId: ID
-      page: Int 
-      limit: Int 
+      page: Int
+      limit: Int
     ): [Message!]!
 
     getUnreadMessages(userId: ID!): [Message!]!
@@ -258,10 +373,37 @@ const typeDefs = gql`
     getUserGroups: [Group!]!
 
     getUserNotifications: [Notification!]!
+
+    """
+    Récupère l'historique des appels de l'utilisateur connecté
+    """
+    callHistory(
+      limit: Int = 20
+      offset: Int = 0
+      status: [CallStatus]
+      type: [CallType]
+      startDate: String
+      endDate: String
+    ): [Call!]!
+
+    """
+    Récupère les détails d'un appel spécifique
+    """
+    callDetails(callId: ID!): Call
+
+    """
+    Récupère les statistiques d'appels de l'utilisateur
+    """
+    callStats: CallStatistics!
   }
 
   type Mutation {
-    sendMessage(receiverId: ID!, content: String, file: Upload): Message!
+    sendMessage(
+      receiverId: ID!
+      content: String
+      file: Upload
+      type: MessageType = TEXT
+    ): Message!
 
     markNotificationsAsRead(notificationIds: [ID!]!): Boolean!
 
@@ -292,6 +434,52 @@ const typeDefs = gql`
     setUserOffline(userId: ID!): User!
 
     updateUserProfile(input: UpdateProfileInput!): User!
+
+    """
+    Crée ou récupère une conversation avec un utilisateur
+    """
+    createConversation(userId: ID!): Conversation!
+
+    """
+    Initie un appel vers un autre utilisateur
+    """
+    initiateCall(
+      recipientId: ID!
+      callType: CallType!
+      callId: String!
+      offer: String!
+      conversationId: ID
+      options: CallOptions
+    ): Call!
+
+    """
+    Envoie un signal pendant un appel (réponse, candidats ICE, etc.)
+    """
+    sendCallSignal(
+      callId: ID!
+      signalType: String!
+      signalData: String!
+    ): CallSuccess!
+
+    """
+    Accepte un appel entrant
+    """
+    acceptCall(callId: ID!, answer: String!): Call!
+
+    """
+    Rejette un appel entrant
+    """
+    rejectCall(callId: ID!, reason: String): Call!
+
+    """
+    Termine un appel en cours
+    """
+    endCall(callId: ID!, feedback: CallFeedbackInput): Call!
+
+    """
+    Bascule la caméra ou le micro pendant un appel
+    """
+    toggleCallMedia(callId: ID!, video: Boolean, audio: Boolean): CallSuccess!
   }
 
   type Subscription {
@@ -307,6 +495,21 @@ const typeDefs = gql`
     userStatusChanged: User!
     unreadMessages(receiverId: ID!): [Message!]!
     notificationsRead: [ID!]!
+
+    """
+    Signaux échangés pendant un appel
+    """
+    callSignal(callId: ID): CallSignal!
+
+    """
+    Notification d'appel entrant
+    """
+    incomingCall: IncomingCall!
+
+    """
+    Changements d'état d'un appel
+    """
+    callStatusChanged(callId: ID): Call!
   }
 `;
 

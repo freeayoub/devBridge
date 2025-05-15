@@ -1,0 +1,29 @@
+<div *ngIf="incomingCall" class="incoming-call-container">
+  <div class="incoming-call-card">
+    <div class="caller-info">
+      <div class="caller-avatar">
+        <img [src]="incomingCall.caller.image || 'assets/images/default-avatar.png'" 
+             [alt]="incomingCall.caller.username" 
+             class="avatar-img">
+      </div>
+      <div class="caller-details">
+        <h3 class="caller-name">{{ incomingCall.caller.username }}</h3>
+        <p class="call-type">
+          <i class="fas fa-{{ getCallTypeIcon() }}"></i> 
+          {{ getCallTypeText() }}
+        </p>
+      </div>
+    </div>
+    
+    <div class="call-actions">
+      <button (click)="rejectCall()" class="reject-btn">
+        <i class="fas fa-phone-slash"></i>
+        <span>Refuser</span>
+      </button>
+      <button (click)="acceptCall()" class="accept-btn">
+        <i class="fas fa-phone"></i>
+        <span>Accepter</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NotificationsRoutingModule } from './notifications-routing.module';
 import { RouterModule } from '@angular/router';
 import { NotificationListComponent } from './notification-list/notification-list.component';
-import { MessageService } from '@app/services/message.service';
+import { MessageService } from 'src/app/services/message.service';
 
 @NgModule({
   declarations: [NotificationListComponent],

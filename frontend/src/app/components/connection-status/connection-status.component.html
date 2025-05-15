@@ -1,0 +1,8 @@
+<div *ngIf="showStatus" class="connection-status" [ngClass]="{'online': isOnline, 'offline': !isOnline}">
+  <div class="status-icon">
+    <i class="fas" [ngClass]="isOnline ? 'fa-wifi' : 'fa-exclamation-triangle'"></i>
+  </div>
+  <div class="status-text">
+    {{ isOnline ? 'Connexion rétablie' : 'Connexion perdue' }}
+  </div>
+</div>

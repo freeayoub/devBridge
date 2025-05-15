@@ -3,12 +3,9 @@ import { filter } from 'rxjs/operators';
 import { User } from '@app/models/user.model';
 import { LoggerService } from './logger.service';
 import { MessageService } from './message.service';
-import {
-  Observable,
-  Subscription,
-} from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserStatusService implements OnDestroy {
   private statusSub?: Subscription;
@@ -18,7 +15,7 @@ export class UserStatusService implements OnDestroy {
   private reconnectionDelay = 1000;
 
   constructor(
-    private MessageService:MessageService,
+    private messageService: MessageService,
     private logger: LoggerService,
     private ngZone: NgZone
   ) {
@@ -26,23 +23,44 @@ export class UserStatusService implements OnDestroy {
   }
   //helper methode
   private initStatusSubscription(): void {
+    this.logger.debug('Initializing user status subscription');
+
     this.ngZone.runOutsideAngular(() => {
-      this.statusSub = this.MessageService.subscribeToUserStatus().subscribe({
-        next: (user: User) => this.handleUserStatusUpdate(user),
-        error: (error: Error) => this.handleSubscriptionError(error),
-      });
+      try {
+        this.statusSub?.unsubscribe(); // Unsubscribe from any existing subscription
+
+        this.statusSub = this.messageService.subscribeToUserStatus().subscribe({
+          next: (user: User) => this.handleUserStatusUpdate(user),
+          error: (error: Error) => this.handleSubscriptionError(error),
+          complete: () =>
+            this.logger.debug('User status subscription completed'),
+        });
+
+        this.logger.debug('User status subscription initialized successfully');
+      } catch (error) {
+        this.logger.error(
+          'Error initializing user status subscription:',
+          error as Error
+        );
+        // Schedule a retry after a delay
+        setTimeout(() => this.initStatusSubscription(), 5000);
+      }
     });
   }
   private handleUserStatusUpdate(user: User): void {
     this.ngZone.run(() => {
       const isOnline = user.isOnline ?? false;
-      
+
       if (isOnline) {
         this.onlineUsers.set(user._id, user);
-        this.logger.debug(`User ${user.username} is now online`, { userId: user._id });
+        this.logger.debug(`User ${user.username} is now online`, {
+          userId: user._id,
+        });
       } else {
         this.onlineUsers.delete(user._id);
-        this.logger.debug(`User ${user.username} is now offline`, { userId: user._id });
+        this.logger.debug(`User ${user.username} is now offline`, {
+          userId: user._id,
+        });
       }
       this.reconnectionAttempts = 0;
     });
@@ -75,11 +93,11 @@ export class UserStatusService implements OnDestroy {
   //  méthodes
   trackUserPresence(userId: string): Observable<boolean> {
     return new Observable<boolean>((observer) => {
-    // État initial - avec vérification que isOnline est défini
-    const user = this.onlineUsers.get(userId);
-    observer.next(user?.isOnline ?? false);
+      // État initial - avec vérification que isOnline est défini
+      const user = this.onlineUsers.get(userId);
+      observer.next(user?.isOnline ?? false);
       // Abonnement aux changements
-      const sub = this.MessageService
+      const sub = this.messageService
         .subscribeToUserStatus()
         .pipe(filter((user) => user._id === userId))
         .subscribe({
@@ -102,7 +120,7 @@ export class UserStatusService implements OnDestroy {
     const user = this.onlineUsers.get(userId);
     return {
       isOnline: user?.isOnline ?? false,
-      lastSeen: user?.lastActive ? new Date(user.lastActive) : undefined
+      lastSeen: user?.lastActive ? new Date(user.lastActive) : undefined,
     };
   }
   ngOnDestroy(): void {

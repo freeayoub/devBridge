@@ -11,12 +11,13 @@ const NotificationService = require("./notification.service");
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
+const { logger } = require("../utils/logger");
 
 class MessageService {
   constructor() {
     this.pubsub = pubsub || {
       publish: (channel, payload) => {
-        console.log(`Would publish to ${channel}:`, payload);
+        logger.debug(`Would publish to ${channel}:`, payload);
       },
     };
     this.User = User || require("../models/user.model");
@@ -90,7 +91,7 @@ class MessageService {
       await sharp(originalUrl).resize(200, 200).toFile(thumbPath);
       return `/thumbnails/${thumbFilename}`;
     } catch (error) {
-      console.error("Error generating thumbnail:", error);
+      logger.error("Error generating thumbnail:", error);
       return originalUrl;
     }
   }
@@ -453,7 +454,7 @@ class MessageService {
 
       return this.formatMessageResponse(updatedMessage);
     } catch (error) {
-      console.error(`[Message Read Error] ID: ${messageId}`, error);
+      logger.error(`[Message Read Error] ID: ${messageId}`, error);
       throw error; // Re-throw the original error
     }
   }
@@ -616,11 +617,17 @@ class MessageService {
 
     try {
       await newConversation.save();
+      logger.info(
+        `[MessageService] New conversation created: ${newConversation._id}`
+      );
       return newConversation;
     } catch (error) {
       if (error.code === 11000) {
         // Duplicate key error
         // Retenter la recherche si la création a échoué
+        logger.warn(
+          `[MessageService] Duplicate key error when creating conversation, retrying search`
+        );
         const existingAfterError = await Conversation.findOne({
           isGroup: false,
           $and: [
@@ -629,28 +636,74 @@ class MessageService {
             { $expr: { $eq: [{ $size: "$participants" }, 2] } },
           ],
         });
-        if (existingAfterError) return existingAfterError;
+        if (existingAfterError) {
+          logger.info(
+            `[MessageService] Found existing conversation after error: ${existingAfterError._id}`
+          );
+          return existingAfterError;
+        }
+        logger.error(
+          `[MessageService] Failed to find conversation after duplicate key error`
+        );
       }
-      throw error;
+      logger.error(`[MessageService] Error creating conversation:`, {
+        error: error.message,
+        stack: error.stack,
+        user1Id: user1Id.toString(),
+        user2Id: user2Id.toString(),
+      });
+      throw new Error(`Failed to create conversation: ${error.message}`);
     }
   }
   async sendMessage({ senderId, receiverId, content, file }) {
     try {
+      logger.info(
+        `[MessageService] Starting sendMessage flow: senderId=${senderId}, receiverId=${receiverId}`
+      );
+
       // Vérification que les utilisateurs existent
+      logger.debug(
+        `[MessageService] Finding sender and receiver users: ${senderId}, ${receiverId}`
+      );
       const [sender, receiver] = await Promise.all([
         User.findById(senderId).lean(),
         User.findById(receiverId).lean(),
       ]);
 
-      if (!sender) throw new Error("Sender user not found");
-      if (!receiver) throw new Error("Receiver user not found");
+      if (!sender) {
+        logger.error(`[MessageService] Sender user not found: ${senderId}`);
+        throw new Error("Sender user not found");
+      }
+      if (!receiver) {
+        logger.error(`[MessageService] Receiver user not found: ${receiverId}`);
+        throw new Error("Receiver user not found");
+      }
 
+      logger.debug(
+        `[MessageService] Users found: sender=${sender.username}, receiver=${receiver.username}`
+      );
+
+      logger.debug(
+        `[MessageService] Getting or creating conversation between ${senderId} and ${receiverId}`
+      );
       const conversation = await this.getOrCreateConversation(
         senderId,
         receiverId
       );
-      const attachments = file ? [await this.handleFileUpload(file)] : [];
+      logger.debug(
+        `[MessageService] Conversation retrieved/created: ${conversation._id}`
+      );
 
+      let attachments = [];
+      if (file) {
+        logger.debug(`[MessageService] Processing file attachment`);
+        attachments = [await this.handleFileUpload(file)];
+        logger.debug(
+          `[MessageService] File processed successfully: ${attachments[0].url}`
+        );
+      }
+
+      logger.debug(`[MessageService] Creating new message object`);
       const message = new Message({
         senderId,
         receiverId,
@@ -661,9 +714,16 @@ class MessageService {
         status: "sent",
       });
 
+      logger.debug(`[MessageService] Saving message to database`);
       const savedMessage = await message.save();
+      logger.info(
+        `[MessageService] Message saved successfully: ${savedMessage._id}`
+      );
 
       // Mise à jour de la conversation
+      logger.debug(
+        `[MessageService] Updating conversation with new last message: ${savedMessage._id}`
+      );
       await Conversation.findByIdAndUpdate(conversation._id, {
         $set: {
           lastMessage: savedMessage._id,
@@ -671,9 +731,31 @@ class MessageService {
           [`lastRead.${senderId}`]: new Date(),
         },
       });
+      logger.debug(`[MessageService] Conversation updated successfully`);
+
+      // Publier l'événement de message
+      logger.debug(`[MessageService] Publishing message event`);
+      this.publishMessageEvent({
+        eventType: "MESSAGE_SENT",
+        conversationId: conversation._id,
+        senderId,
+        receiverId,
+        message: savedMessage,
+      });
+
+      // Envoyer une notification
+      logger.debug(`[MessageService] Sending message notification`);
+      try {
+        await NotificationService.sendMessageNotification(savedMessage);
+        logger.debug(`[MessageService] Notification sent successfully`);
+      } catch (error) {
+        logger.error(`[MessageService] Error sending notification:`, error);
+        // Ne pas bloquer l'envoi du message si la notification échoue
+      }
 
       // Formatage de la réponse
-      return this.formatMessageResponse({
+      logger.debug(`[MessageService] Formatting message response`);
+      const formattedMessage = this.formatMessageResponse({
         ...savedMessage.toObject(),
         sender: {
           _id: sender._id,
@@ -688,8 +770,13 @@ class MessageService {
           image: receiver.image,
         },
       });
+
+      logger.info(
+        `[MessageService] Message flow completed successfully: messageId=${savedMessage._id}`
+      );
+      return formattedMessage;
     } catch (error) {
-      console.error("Send message error:", {
+      logger.error("Send message error:", {
         error: error.message,
         stack: error.stack,
         senderId,
@@ -767,73 +854,6 @@ class MessageService {
       // Don't throw error here as it would prevent message sending
     }
   }
-  async getConversation(conversationId, userId) {
-    const conversation = await Conversation.findOne({
-      _id: conversationId,
-      participants: userId,
-    })
-      .populate({
-        path: "participants",
-        select: "_id username email image isOnline lastActive role",
-        // Retirez le match: { isActive: true } si ce champ n'existe pas
-      })
-      .populate({
-        path: "lastMessage",
-        select: "_id content timestamp isRead",
-      })
-      .lean();
-
-    if (!conversation) return null;
-
-    // Formatage des participants avec des valeurs par défaut
-    const participants =
-      conversation.participants?.map((p) => ({
-        id: p?._id?.toString() || "unknown",
-        username: p?.username || "Utilisateur inconnu",
-        email: p?.email || null,
-        image: p?.image || null,
-        isOnline: p?.isOnline || false,
-        lastActive: p?.lastActive?.toISOString() || null,
-        role: p?.role || "user",
-      })) || [];
-
-    return {
-      id: conversation._id.toString(),
-      participants,
-      lastMessage: conversation.lastMessage
-        ? {
-            id: conversation.lastMessage._id.toString(),
-            content: conversation.lastMessage.content,
-            timestamp: conversation.lastMessage.timestamp?.toISOString(),
-            isRead: conversation.lastMessage.isRead,
-          }
-        : null,
-      lastMessageId: conversation.lastMessage?._id.toString(),
-      unreadCount: await this.getUnreadCount(conversation._id, userId),
-      messageCount: await Message.countDocuments({
-        conversationId: conversation._id,
-      }),
-      isGroup: conversation.isGroup,
-      groupName: conversation.groupName,
-      groupPhoto: conversation.groupPhoto,
-      groupDescription: conversation.groupDescription,
-      groupAdmins:
-        conversation.groupAdmins?.map((a) => ({
-          id: a._id.toString(),
-          username: a.username,
-          email: a.email,
-        })) || [],
-      pinnedMessages: [], // Seront chargés via le resolver
-      typingUsers:
-        conversation.typingUsers?.map((u) => ({
-          id: u._id.toString(),
-          username: u.username,
-        })) || [],
-      lastRead: [], // À implémenter selon votre modèle
-      createdAt: conversation.createdAt.toISOString(),
-      updatedAt: conversation.updatedAt.toISOString(),
-    };
-  }
 
   async getConversations(userId) {
     try {
@@ -842,62 +862,104 @@ class MessageService {
         .populate({
           path: "participants",
           select: "_id username email image isOnline lastActive role",
-          model: "User"
+          model: "User",
         })
         .populate("lastMessage")
         .lean({ virtuals: true });
-  
+
       // 2. Debug: Verify populated data
-      if (conversations.length > 0 && conversations[0].participants[0] instanceof mongoose.Types.ObjectId) {
-        console.warn("⚠ Population failed - Manual fallback triggered");
+      if (
+        conversations.length > 0 &&
+        conversations[0].participants.length > 0 &&
+        conversations[0].participants[0] instanceof mongoose.Types.ObjectId
+      ) {
+        logger.warn("⚠ Population failed - Manual fallback triggered");
       }
-  
+
       // 3. Fallback manual population if needed
       const enhancedConversations = await Promise.all(
         conversations.map(async (conv) => {
-          if (!conv.participants || conv.participants.some(p => p instanceof mongoose.Types.ObjectId)) {
-            conv.participants = await User.find({ 
-              _id: { $in: conv.participants } 
-            })
-            .select("_id username email image isOnline lastActive role")
-            .lean();
+          try {
+            if (
+              !conv.participants ||
+              conv.participants.length === 0 ||
+              conv.participants.some(
+                (p) => p instanceof mongoose.Types.ObjectId
+              )
+            ) {
+              logger.debug(
+                `[MessageService] Manual population needed for conversation ${conv._id}`
+              );
+
+              // Ensure we have valid participant IDs
+              const participantIds = conv.participants
+                .map((p) => (p instanceof mongoose.Types.ObjectId ? p : p._id))
+                .filter((id) => id); // Filter out any undefined/null values
+
+              if (participantIds.length === 0) {
+                logger.warn(
+                  `[MessageService] No valid participant IDs found for conversation ${conv._id}`
+                );
+                conv.participants = [];
+                return conv;
+              }
+
+              conv.participants = await User.find({
+                _id: { $in: participantIds },
+              })
+                .select("_id username email image isOnline lastActive role")
+                .lean();
+
+              logger.debug(
+                `[MessageService] Manual population completed for conversation ${conv._id} - found ${conv.participants.length} participants`
+              );
+            }
+            return conv;
+          } catch (error) {
+            logger.error(
+              `[MessageService] Error during manual population for conversation ${conv._id}:`,
+              error
+            );
+            // Return conversation with empty participants rather than failing completely
+            conv.participants = conv.participants || [];
+            return conv;
           }
-          return conv;
         })
       );
-  
+
       // 4. Get unread counts using the robust method
       const unreadCounts = await this.getBulkUnreadCounts(
-        enhancedConversations.map(c => c._id), 
+        enhancedConversations.map((c) => c._id),
         userId
       );
-  
+
       // 5. Format final output
-      return enhancedConversations.map(conv => ({
+      return enhancedConversations.map((conv) => ({
         id: conv._id.toString(),
-        participants: conv.participants.map(p => ({
+        participants: conv.participants.map((p) => ({
           id: p._id.toString(),
           username: p.username,
           email: p.email,
           image: p.image,
           isOnline: p.isOnline,
           lastActive: p.lastActive?.toISOString(),
-          role: p.role
+          role: p.role,
         })),
-        lastMessage: conv.lastMessage ? {
-          id: conv.lastMessage._id.toString(),
-          content: conv.lastMessage.content,
-          timestamp: conv.lastMessage.timestamp?.toISOString(),
-          isRead: conv.lastMessage.isRead
-        } : null,
+        lastMessage: conv.lastMessage
+          ? {
+              id: conv.lastMessage._id.toString(),
+              content: conv.lastMessage.content,
+              timestamp: conv.lastMessage.timestamp?.toISOString(),
+              isRead: conv.lastMessage.isRead,
+            }
+          : null,
         unreadCount: unreadCounts.get(conv._id.toString()) || 0,
         isGroup: conv.isGroup || false,
         groupName: conv.groupName || null,
         groupPhoto: conv.groupPhoto || null,
         createdAt: conv.createdAt.toISOString(),
-        updatedAt: conv.updatedAt.toISOString()
+        updatedAt: conv.updatedAt.toISOString(),
       }));
-  
     } catch (error) {
       console.error("Conversation fetch error:", error);
       throw new Error(`Failed to load conversations: ${error.message}`);
@@ -905,52 +967,133 @@ class MessageService {
   }
   // New helper function for bulk unread counts
   async getBulkUnreadCounts(conversationIds, userId) {
+    if (!conversationIds || conversationIds.length === 0) {
+      logger.warn(
+        `[MessageService] getBulkUnreadCounts called with empty conversationIds`
+      );
+      return new Map();
+    }
+
+    if (!userId) {
+      logger.warn(
+        `[MessageService] getBulkUnreadCounts called with empty userId`
+      );
+      return new Map();
+    }
+
     try {
+      logger.debug(
+        `[MessageService] Getting unread counts for ${conversationIds.length} conversations`
+      );
+
+      // Ensure all IDs are valid ObjectIds
+      const validConversationIds = conversationIds.filter((id) =>
+        mongoose.Types.ObjectId.isValid(id)
+      );
+
+      if (validConversationIds.length === 0) {
+        logger.warn(
+          `[MessageService] No valid conversation IDs found for unread counts`
+        );
+        return new Map();
+      }
+
       const results = await Message.aggregate([
         {
           $match: {
-            conversationId: { $in: conversationIds },
+            conversationId: {
+              $in: validConversationIds.map(
+                (id) => new mongoose.Types.ObjectId(id)
+              ),
+            },
             receiverId: new mongoose.Types.ObjectId(userId),
             isRead: false,
-            isDeleted: false
-          }
+            isDeleted: false,
+          },
         },
         {
           $group: {
             _id: "$conversationId",
-            count: { $sum: 1 }
-          }
-        }
+            count: { $sum: 1 },
+          },
+        },
       ]);
-  
-      return new Map(
-        results.map(r => [r._id.toString(), r.count])
+
+      logger.debug(
+        `[MessageService] Found unread counts for ${results.length} conversations`
       );
+
+      // Create a map with all conversations (including those with 0 unread)
+      const unreadMap = new Map();
+      validConversationIds.forEach((id) => unreadMap.set(id.toString(), 0));
+
+      // Update with actual counts
+      results.forEach((r) => unreadMap.set(r._id.toString(), r.count));
+
+      return unreadMap;
     } catch (error) {
-      console.error("Bulk unread count error:", error);
-      return new Map(); // Fail gracefully
+      logger.error(`[MessageService] Bulk unread count error:`, {
+        error: error.message,
+        stack: error.stack,
+        userId,
+        conversationCount: conversationIds?.length || 0,
+      });
+
+      // Return a map with zeros rather than empty map
+      return new Map(conversationIds.map((id) => [id.toString(), 0]));
     }
   }
   // Your existing single-conversation unread count
   async getUnreadCount(conversationId, userId) {
+    if (!conversationId || !userId) {
+      logger.warn(
+        `[MessageService] getUnreadCount called with missing parameters: conversationId=${conversationId}, userId=${userId}`
+      );
+      return 0;
+    }
+
+    if (
+      !mongoose.Types.ObjectId.isValid(conversationId) ||
+      !mongoose.Types.ObjectId.isValid(userId)
+    ) {
+      logger.warn(
+        `[MessageService] getUnreadCount called with invalid IDs: conversationId=${conversationId}, userId=${userId}`
+      );
+      return 0;
+    }
+
     try {
+      logger.debug(
+        `[MessageService] Getting unread count for conversation ${conversationId}, user ${userId}`
+      );
+
       const result = await Message.aggregate([
         {
           $match: {
             conversationId: new mongoose.Types.ObjectId(conversationId),
             receiverId: new mongoose.Types.ObjectId(userId),
             isRead: false,
-            isDeleted: false
-          }
+            isDeleted: false,
+          },
         },
         {
-          $count: "unreadCount"
-        }
+          $count: "unreadCount",
+        },
       ]);
-      
-      return result[0]?.unreadCount || 0;
+
+      const unreadCount = result[0]?.unreadCount || 0;
+      logger.debug(
+        `[MessageService] Found ${unreadCount} unread messages for conversation ${conversationId}`
+      );
+
+      return unreadCount;
     } catch (error) {
-      console.error("Unread count error:", error);
+      logger.error(`[MessageService] Unread count error:`, {
+        error: error.message,
+        stack: error.stack,
+        conversationId,
+        userId,
+      });
       return 0;
     }
   }
@@ -1093,66 +1236,129 @@ class MessageService {
     limit = 10,
     userId,
     loaders,
+    offset,
   }) {
-    // Parameter validation
-    if (conversationId) {
-      if (!mongoose.Types.ObjectId.isValid(conversationId)) {
-        throw new Error("Invalid conversation ID");
+    logger.info(
+      `[MessageService] Getting messages: conversationId=${conversationId}, senderId=${senderId}, receiverId=${receiverId}, page=${page}, limit=${limit}, userId=${userId}, offset=${offset}`
+    );
+
+    try {
+      // Parameter validation
+      logger.debug(`[MessageService] Validating parameters`);
+      if (conversationId) {
+        if (!mongoose.Types.ObjectId.isValid(conversationId)) {
+          logger.error(
+            `[MessageService] Invalid conversation ID: ${conversationId}`
+          );
+          throw new Error("Invalid conversation ID");
+        }
+
+        // Verify user is part of the conversation
+        logger.debug(
+          `[MessageService] Verifying user ${userId} is part of conversation ${conversationId}`
+        );
+        const conversation = await Conversation.findById(
+          conversationId
+        ).populate(
+          "participants",
+          "_id username email image isOnline lastActive"
+        );
+        if (
+          !conversation ||
+          !conversation.participants.some((p) => p._id.equals(userId))
+        ) {
+          logger.error(
+            `[MessageService] User ${userId} not authorized to view messages in conversation ${conversationId}`
+          );
+          throw new AuthenticationError(
+            "Not authorized to view these messages"
+          );
+        }
+        logger.debug(
+          `[MessageService] User authorization verified for conversation ${conversationId}`
+        );
+      } else if (senderId && receiverId) {
+        // Verify current user is either sender or receiver
+        logger.debug(
+          `[MessageService] Verifying user ${userId} is either sender ${senderId} or receiver ${receiverId}`
+        );
+        const currentUserId = userId.toString();
+        if (
+          currentUserId !== senderId.toString() &&
+          currentUserId !== receiverId.toString()
+        ) {
+          logger.error(
+            `[MessageService] User ${userId} not authorized to view messages between ${senderId} and ${receiverId}`
+          );
+          throw new AuthenticationError(
+            "Not authorized to view these messages"
+          );
+        }
+        logger.debug(
+          `[MessageService] Validating user IDs: ${senderId}, ${receiverId}`
+        );
+        await this.validateUserIds(senderId, receiverId);
+        logger.debug(`[MessageService] User IDs validated successfully`);
+      } else {
+        logger.error(
+          `[MessageService] Missing required parameters: conversationId or senderId/receiverId`
+        );
+        throw new Error(
+          "Either conversationId or both senderId/receiverId must be provided"
+        );
       }
 
-      // Verify user is part of the conversation
-      const conversation = await Conversation.findById(conversationId).populate(
-        "participants",
-        "_id username email image isOnline lastActive"
+      const safeLimit = Math.min(limit, 100);
+      // Si offset est fourni, l'utiliser directement, sinon calculer à partir de page
+      const skip = offset !== undefined ? offset : (page - 1) * safeLimit;
+      logger.debug(
+        `[MessageService] Using pagination: skip=${skip}, limit=${safeLimit}, original offset=${offset}, page=${page}`
       );
-      if (
-        !conversation ||
-        !conversation.participants.some((p) => p._id.equals(userId))
-      ) {
-        throw new AuthenticationError("Not authorized to view these messages");
-      }
-    } else if (senderId && receiverId) {
-      // Verify current user is either sender or receiver
-      const currentUserId = userId.toString();
-      if (
-        currentUserId !== senderId.toString() &&
-        currentUserId !== receiverId.toString()
-      ) {
-        throw new AuthenticationError("Not authorized to view these messages");
-      }
-      await this.validateUserIds(senderId, receiverId);
-    } else {
-      throw new Error(
-        "Either conversationId or both senderId/receiverId must be provided"
+
+      // Build query
+      const query = conversationId
+        ? { conversationId }
+        : {
+            $or: [
+              { senderId, receiverId },
+              { senderId: receiverId, receiverId: senderId },
+            ],
+          };
+      logger.debug(`[MessageService] Built query: ${JSON.stringify(query)}`);
+
+      logger.debug(`[MessageService] Fetching messages from database`);
+      const messages = await Message.find(query)
+        .populate("sender", "_id username email image isOnline lastActive")
+        .populate("receiver", "_id username email image isOnline lastActive")
+        .populate("pinnedBy", "_id username email image")
+        .populate("forwardedFrom")
+        .populate("replyTo")
+        .sort({ timestamp: -1 })
+        .skip(skip)
+        .limit(safeLimit)
+        .lean();
+
+      logger.info(`[MessageService] Retrieved ${messages.length} messages`);
+
+      // Ensure all required fields are present
+      logger.debug(`[MessageService] Formatting message responses`);
+      const formattedMessages = messages.map((msg) =>
+        this.formatMessageResponse(msg)
       );
+
+      logger.info(`[MessageService] Messages retrieval completed successfully`);
+      return formattedMessages;
+    } catch (error) {
+      logger.error(`[MessageService] Error getting messages:`, {
+        error: error.message,
+        stack: error.stack,
+        conversationId,
+        senderId,
+        receiverId,
+        userId,
+      });
+      throw error;
     }
-
-    const safeLimit = Math.min(limit, 100);
-    const skip = (page - 1) * safeLimit;
-
-    // Build query
-    const query = conversationId
-      ? { conversationId }
-      : {
-          $or: [
-            { senderId, receiverId },
-            { senderId: receiverId, receiverId: senderId },
-          ],
-        };
-
-    const messages = await Message.find(query)
-      .populate("sender", "_id username email image isOnline lastActive")
-      .populate("receiver", "_id username email image isOnline lastActive")
-      .populate("pinnedBy", "_id username email image")
-      .populate("forwardedFrom")
-      .populate("replyTo")
-      .sort({ timestamp: -1 })
-      .skip(skip)
-      .limit(safeLimit)
-      .lean();
-
-    // Ensure all required fields are present
-    return messages.map((msg) => this.formatMessagesResponse(msg));
   }
   // Formatage cohérent des messages
   formatMessageResponse(message) {
@@ -1309,6 +1515,112 @@ class MessageService {
         : new Date(date).toISOString();
     } catch {
       return null;
+    }
+  }
+  async getConversation(conversationId, userId) {
+    logger.info(
+      `[MessageService] Getting conversation: conversationId=${conversationId}, userId=${userId}`
+    );
+
+    try {
+      logger.debug(`[MessageService] Finding conversation in database`);
+      const conversation = await Conversation.findOne({
+        _id: conversationId,
+        participants: userId,
+      })
+        .populate({
+          path: "participants",
+          select: "_id username email image isOnline lastActive role",
+        })
+        .populate({
+          path: "lastMessage",
+          select: "_id content timestamp isRead",
+        })
+        .lean();
+
+      if (!conversation) {
+        logger.warn(
+          `[MessageService] Conversation not found or unauthorized: ${conversationId}`
+        );
+        throw new Error(
+          `Conversation not found or user ${userId} not authorized to access it`
+        );
+      }
+
+      logger.debug(`[MessageService] Conversation found: ${conversation._id}`);
+
+      // Formatage des participants avec des valeurs par défaut
+      const participants =
+        conversation.participants?.map((p) => ({
+          id: p?._id?.toString() || "unknown",
+          username: p?.username || "Utilisateur inconnu",
+          email: p?.email || null,
+          image: p?.image || null,
+          isOnline: p?.isOnline || false,
+          lastActive: p?.lastActive?.toISOString() || null,
+          role: p?.role || "user",
+        })) || [];
+
+      logger.debug(
+        `[MessageService] Getting unread count for conversation: ${conversationId}`
+      );
+      const unreadCount = await this.getUnreadCount(conversation._id, userId);
+
+      logger.debug(
+        `[MessageService] Getting message count for conversation: ${conversationId}`
+      );
+      const messageCount = await Message.countDocuments({
+        conversationId: conversation._id,
+      });
+
+      logger.debug(`[MessageService] Formatting conversation response`);
+      const result = {
+        id: conversation._id.toString(),
+        participants,
+        lastMessage: conversation.lastMessage
+          ? {
+              id: conversation.lastMessage._id.toString(),
+              content: conversation.lastMessage.content,
+              timestamp: conversation.lastMessage.timestamp?.toISOString(),
+              isRead: conversation.lastMessage.isRead,
+            }
+          : null,
+        lastMessageId: conversation.lastMessage?._id.toString(),
+        unreadCount,
+        messageCount,
+        isGroup: conversation.isGroup,
+        groupName: conversation.groupName,
+        groupPhoto: conversation.groupPhoto,
+        groupDescription: conversation.groupDescription,
+        groupAdmins:
+          conversation.groupAdmins?.map((a) => ({
+            id: a._id.toString(),
+            username: a.username,
+            email: a.email,
+          })) || [],
+        pinnedMessages: [], // Seront chargés via le resolver
+        typingUsers:
+          conversation.typingUsers?.map((u) => ({
+            id: u._id.toString(),
+            username: u.username,
+          })) || [],
+        lastRead: [], // À implémenter selon votre modèle
+        createdAt: conversation.createdAt.toISOString(),
+        updatedAt: conversation.updatedAt.toISOString(),
+      };
+
+      logger.info(
+        `[MessageService] Conversation retrieval completed: ${conversationId}, unread: ${unreadCount}, messages: ${messageCount}`
+      );
+      return result;
+    } catch (error) {
+      logger.error(`[MessageService] Error getting conversation:`, {
+        error: error.message,
+        stack: error.stack,
+        conversationId,
+        userId,
+      });
+      throw error;
     }
   }
 }
