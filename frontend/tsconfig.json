@@ -1,3 +1,4 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -20,29 +21,13 @@
     "useDefineForClassFields": false,
     "lib": [
       "ES2022",
-      "dom",
-      "dom.iterable",
-      "esnext.asynciterable",
-      "webworker"
-    ],
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "types": ["graphql-ws"],
-    "paths": {
-      "@app/*": ["src/app/*"],
-      "@env/*": ["src/environments/*"],
-      "graphql-ws": ["node_modules/graphql-ws"],
-      "subscriptions-transport-ws": ["node_modules/graphql-ws"]
-    },
-    "esModuleInterop": true
+      "dom"
+    ]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true,
-    "strictNullInputTypes": false
-  },
-  "exclude": ["node_modules", "**/*.spec.ts", "**/__test__/*", "**/*.mock.ts"],
-  "include": ["src/**/*.ts", "projects/**/*.ts"]
+    "strictTemplates": true
+  }
 }

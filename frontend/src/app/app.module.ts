@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LayoutsModule } from './layouts/layouts.module';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+<<<<<<< HEAD
 import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -28,13 +29,28 @@ export function jwtOptionsFactory() {
   };
 }
 
+=======
+import { DashboardComponent } from './admin/dashboard/dashboard.component';
+import { ProfileComponent } from './admin/profile/profile.component';
+import { HomeComponent } from './home/home.component';
+import { NavbarComponent } from './shared/navbar/navbar.component';
+import { DashboardComponent as UserDashboardComponent } from './user/dashboard/dashboard.component';
+>>>>>>> 529d335ac204b46aff690c931b4ea4cc979f0d19
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+    DashboardComponent,
+    HomeComponent,
+    NavbarComponent,
+    UserDashboardComponent,
+    ProfileComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    LayoutsModule,
+    ReactiveFormsModule,
     FormsModule,
+<<<<<<< HEAD
     HttpClientModule,
     BrowserAnimationsModule,
     JwtModule.forRoot({
@@ -54,3 +70,11 @@ export function jwtOptionsFactory() {
   bootstrap: [AppComponent],
 })
 export class AppModule {}
+=======
+    HttpClientModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+>>>>>>> 529d335ac204b46aff690c931b4ea4cc979f0d19

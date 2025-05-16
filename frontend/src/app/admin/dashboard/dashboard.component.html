@@ -1,0 +1,210 @@
+<!-- Include the navbar -->
+<app-navbar></app-navbar>
+
+<div class="min-h-screen bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+  <div class="container mx-auto px-4 py-6">
+    <!-- Admin Dashboard Header -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+      <h1 class="text-xl font-medium text-gray-900 dark:text-white">Admin Dashboard</h1>
+
+      <!-- Search Box -->
+      <div class="relative mt-3 md:mt-0 w-full md:w-64">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <input
+          type="text"
+          [value]="searchTerm"
+          (input)="searchTerm = $any($event.target).value; searchUsers()"
+          placeholder="Search users..."
+          class="w-full pl-9 pr-8 py-1.5 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary-light dark:focus:ring-primary-dark"
+        >
+        <button
+          *ngIf="searchTerm"
+          (click)="clearSearch()"
+          class="absolute inset-y-0 right-0 pr-2 flex items-center"
+        >
+          <svg class="h-4 w-4 text-gray-400 hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div *ngIf="message" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 px-3 py-2 rounded text-sm mb-4 animate-pulse">
+      {{ message }}
+    </div>
+    <div *ngIf="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-3 py-2 rounded text-sm mb-4 animate-pulse">
+      {{ error }}
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-light dark:border-primary-dark"></div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div *ngIf="!loading && filteredUsers.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <!-- Total Users with Progress Bar -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+        <div class="flex justify-between items-center mb-2">
+          <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Users</div>
+          <div class="text-lg font-medium text-gray-900 dark:text-white">{{ users.length }}</div>
+        </div>
+        <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div class="bg-primary-light dark:bg-primary-dark h-full rounded-full" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- Active/Inactive Users -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+        <div class="flex justify-between items-center mb-2">
+          <div class="text-sm font-medium text-gray-700 dark:text-gray-300">User Status</div>
+          <div class="flex space-x-2 text-xs">
+            <span class="text-green-600 dark:text-green-400 font-medium">{{ getActiveCount() }} Active</span>
+            <span class="text-gray-400">|</span>
+            <span class="text-red-600 dark:text-red-400 font-medium">{{ getInactiveCount() }} Inactive</span>
+          </div>
+        </div>
+        <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
+          <div class="bg-green-500 dark:bg-green-600 h-full" [style.width.%]="users.length ? (getActiveCount() / users.length) * 100 : 0"></div>
+          <div class="bg-red-500 dark:bg-red-600 h-full" [style.width.%]="users.length ? (getInactiveCount() / users.length) * 100 : 0"></div>
+        </div>
+      </div>
+
+      <!-- Role Distribution -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+        <div class="flex justify-between items-center mb-2">
+          <div class="text-sm font-medium text-gray-700 dark:text-gray-300">User Roles</div>
+          <div class="flex space-x-2 text-xs">
+            <span class="text-blue-600 dark:text-blue-400 font-medium">{{ getStudentCount() }}</span>
+            <span class="text-gray-400">|</span>
+            <span class="text-purple-600 dark:text-purple-400 font-medium">{{ getTeacherCount() }}</span>
+            <span class="text-gray-400">|</span>
+            <span class="text-yellow-600 dark:text-yellow-400 font-medium">{{ getAdminCount() }}</span>
+          </div>
+        </div>
+        <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
+          <div class="bg-blue-500 dark:bg-blue-600 h-full" [style.width.%]="users.length ? (getStudentCount() / users.length) * 100 : 0"></div>
+          <div class="bg-purple-500 dark:bg-purple-600 h-full" [style.width.%]="users.length ? (getTeacherCount() / users.length) * 100 : 0"></div>
+          <div class="bg-yellow-500 dark:bg-yellow-600 h-full" [style.width.%]="users.length ? (getAdminCount() / users.length) * 100 : 0"></div>
+        </div>
+        <div class="flex justify-between mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <span>Students</span>
+          <span>Teachers</span>
+          <span>Admins</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <div *ngIf="!loading && filteredUsers.length > 0" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Verified</th>
+              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
+              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr *ngFor="let user of filteredUsers" class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-7 w-7 rounded-full bg-primary-light dark:bg-primary-dark text-white flex items-center justify-center text-xs">
+                    {{ user.fullName.charAt(0) }}
+                  </div>
+                  <div class="ml-3">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user.fullName }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</div>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span [ngClass]="user.emailVerified ? 'badge verified' : 'badge not-verified'">
+                  {{ user.emailVerified ? 'Verified' : 'Not Verified' }}
+                </span>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span [ngClass]="user.isActive !== false ? 'badge active' : 'badge inactive'">
+                  {{ user.isActive !== false ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <select
+                  class="text-xs py-1 px-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary-light dark:focus:ring-primary-dark"
+                  [value]="user.role"
+                  (change)="onRoleChange(user._id, $any($event.target).value)"
+                >
+                  <option *ngFor="let role of roles" [value]="role">
+                    {{ role | titlecase }}
+                  </option>
+                </select>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="flex space-x-1">
+                  <button
+                    class="px-2 py-1 text-xs rounded border font-medium flex items-center"
+                    [ngClass]="user.isActive !== false ?
+                      'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' :
+                      'border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20'"
+                    (click)="toggleUserActivation(user._id, user.isActive !== false)"
+                  >
+                    <svg *ngIf="user.isActive !== false" class="h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+                    </svg>
+                    <svg *ngIf="user.isActive === false" class="h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    {{ user.isActive !== false ? 'Deactivate' : 'Activate' }}
+                  </button>
+                  <button
+                    class="px-2 py-1 text-xs rounded border border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium flex items-center"
+                    (click)="onDeleteUser(user._id)"
+                  >
+                    <svg class="h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- No Users State -->
+    <div *ngIf="!loading && filteredUsers.length === 0" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 text-center">
+      <svg class="mx-auto h-8 w-8 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">No users found</h3>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        {{ searchTerm ? 'No users match your search criteria.' : 'There are no users in the system yet.' }}
+      </p>
+      <div class="mt-4">
+        <button
+          *ngIf="searchTerm"
+          (click)="clearSearch()"
+          class="inline-flex items-center px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+        >
+          <svg class="h-3.5 w-3.5 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          Clear search
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

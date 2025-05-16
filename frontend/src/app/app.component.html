@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 <router-outlet></router-outlet>
 <app-incoming-call></app-incoming-call>
 <app-active-call></app-active-call>
 <app-connection-status></app-connection-status>
 <app-graphql-status></app-graphql-status>
+=======
+<div class="app-container" [ngClass]="{'dark': isDarkMode$ | async}">
+  <router-outlet></router-outlet>
+</div>
+>>>>>>> 529d335ac204b46aff690c931b4ea4cc979f0d19

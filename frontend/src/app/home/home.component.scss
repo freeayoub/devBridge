@@ -1,0 +1,31 @@
+// Custom styles for the home component
+// Most styling is handled by Tailwind CSS classes in the template
+
+// Add any additional custom styles here if needed
+:host {
+  display: block;
+}
+
+// Animation for the hero section
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.container h1,
+.container p,
+.container .flex {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.container h1 {
+  animation-delay: 0.2s;
+}
+
+.container p {
+  animation-delay: 0.4s;
+}
+
+.container .flex {
+  animation-delay: 0.6s;
+}
