@@ -13,6 +13,7 @@ import { ApolloModule } from 'apollo-angular';
 import { CallModule } from './components/call/call.module';
 import { ConnectionStatusModule } from './components/connection-status/connection-status.module';
 import { GraphqlStatusModule } from './components/graphql-status/graphql-status.module';
+import { VoiceMessageModule } from './components/voice-message/voice-message.module';
 // Factory simplifiée sans injection de JwtHelperService
 export function jwtOptionsFactory() {
   return {
@@ -47,6 +48,7 @@ export function jwtOptionsFactory() {
     CallModule,
     ConnectionStatusModule,
     GraphqlStatusModule,
+    VoiceMessageModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

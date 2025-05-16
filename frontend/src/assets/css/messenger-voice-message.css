@@ -1,0 +1,202 @@
+/* Styles globaux pour les messages vocaux style Facebook Messenger (2023) */
+
+/* Supprimer tous les contours bleus des messages vocaux */
+.messenger-style-voice-message,
+.messenger-style-voice-message *,
+app-voice-message-player,
+app-voice-message-player *,
+.voice-message-player,
+.voice-message-player * {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Style pour le conteneur principal du message vocal */
+.messenger-style-voice-message {
+  display: flex !important;
+  align-items: center !important;
+  background-color: transparent !important;
+  padding: 8px 12px !important;
+  border-radius: 18px !important;
+  width: 100% !important;
+  max-width: 240px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Style pour le bouton de lecture */
+.messenger-style-voice-message .play-button {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-right: 12px !important;
+  flex-shrink: 0 !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+  cursor: pointer !important;
+}
+
+/* Effet de survol sur le bouton de lecture */
+.messenger-style-voice-message .play-button:hover {
+  transform: scale(1.05) !important;
+  filter: brightness(0.95) !important;
+}
+
+/* Effet d'appui sur le bouton de lecture */
+.messenger-style-voice-message .play-button:active {
+  transform: scale(0.95) !important;
+}
+
+/* Style pour l'icône du bouton de lecture */
+.messenger-style-voice-message .play-button i {
+  font-size: 14px !important;
+  transition: transform 0.2s ease !important;
+}
+
+/* Animation de l'icône pendant la lecture */
+.messenger-style-voice-message.is-playing .play-button i {
+  transform: scale(0.9) !important;
+}
+
+/* Style pour le conteneur de l'onde sonore */
+.messenger-style-voice-message .waveform-container {
+  width: 100% !important;
+  position: relative !important;
+}
+
+/* Style pour l'onde sonore */
+.messenger-style-voice-message .waveform {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  height: 28px !important;
+  margin-bottom: 4px !important;
+}
+
+/* Style pour les barres de l'onde sonore */
+.messenger-style-voice-message .waveform-bar {
+  width: 3px !important;
+  border-radius: 1.5px !important;
+  transition: background-color 0.2s ease, height 0.2s ease !important;
+}
+
+/* Effet de survol sur l'onde sonore */
+.messenger-style-voice-message .waveform:hover .waveform-bar:not(.active) {
+  opacity: 0.8 !important;
+}
+
+/* Style pour l'affichage du temps */
+.messenger-style-voice-message .time-display {
+  display: flex !important;
+  justify-content: flex-end !important;
+  font-size: 12px !important;
+  margin-top: 2px !important;
+}
+
+/* Style pour la durée */
+.messenger-style-voice-message .duration {
+  font-weight: 500 !important;
+}
+
+/* Animation de pulsation pendant la lecture */
+@keyframes messenger-pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* Appliquer l'animation aux barres actives pendant la lecture */
+.messenger-style-voice-message.is-playing .waveform-bar.active {
+  animation: messenger-pulse 1.5s infinite !important;
+}
+
+/* Styles pour les messages vocaux dans les messages de l'utilisateur actuel */
+.message-current-user .messenger-style-voice-message {
+  background-color: #0084ff !important;
+}
+
+.message-current-user .messenger-style-voice-message .play-button {
+  background-color: #ffffff !important;
+  color: #0084ff !important;
+}
+
+.message-current-user .messenger-style-voice-message .waveform-bar {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.message-current-user .messenger-style-voice-message .waveform-bar.active {
+  background-color: #ffffff !important;
+}
+
+.message-current-user .messenger-style-voice-message .time-display {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Styles pour les messages vocaux dans les messages des autres utilisateurs */
+.message-other-user .messenger-style-voice-message {
+  background-color: #e4e6eb !important;
+}
+
+.message-other-user .messenger-style-voice-message .play-button {
+  background-color: #0084ff !important;
+  color: #ffffff !important;
+}
+
+.message-other-user .messenger-style-voice-message .waveform-bar {
+  background-color: rgba(0, 132, 255, 0.3) !important;
+}
+
+.message-other-user .messenger-style-voice-message .waveform-bar.active {
+  background-color: #0084ff !important;
+}
+
+.message-other-user .messenger-style-voice-message .time-display {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Supprimer les contours bleus des éléments audio */
+audio:focus,
+audio:active,
+audio:hover,
+.voice-message-player:focus,
+.voice-message-player:active,
+.voice-message-player:hover {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Style spécifique pour les messages vocaux dans le chat */
+.message-bubble app-voice-message-player {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+/* Supprimer les contours bleus des éléments audio dans les messages */
+.message-bubble audio,
+.message-bubble .voice-message-player {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Styles pour le conteneur de message vocal */
+.messenger-voice-message-container {
+  padding: 0 !important;
+  overflow: hidden !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}

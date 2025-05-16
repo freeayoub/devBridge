@@ -12,6 +12,7 @@ import { MessageLayoutComponent } from './message-layout/message-layout.componen
 import { MessagesSidebarComponent } from './messages-sidebar/messages-sidebar.component';
 import { UserStatusService } from 'src/app/services/user-status.service';
 import { MessageService } from 'src/app/services/message.service';
+import { VoiceMessageModule } from 'src/app/components/voice-message/voice-message.module';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { MessageService } from 'src/app/services/message.service';
     ReactiveFormsModule,
     ApolloModule,
     RouterModule,
+    VoiceMessageModule,
   ],
   providers: [UserStatusService, MessageService],
 })

@@ -1,6 +1,7 @@
 const MessageService = require("../services/message.service");
 const NotificationService = require("../services/notification.service");
 const UserService = require("../services/user.service");
+const CallService = require("../services/call.service");
 const { GraphQLError } = require("graphql");
 const GraphQLUpload = require("graphql-upload/GraphQLUpload.js");
 const { AuthenticationError, ApolloError } = require("../graphql/errors");
@@ -539,9 +540,28 @@ const resolvers = {
       }
     },
 
-    getAllUsers: async (_, { search }, context) => {
+    getAllUsers: async (
+      _,
+      { search, page, limit, sortBy, sortOrder, isOnline },
+      context
+    ) => {
       if (!context.userId) throw AuthenticationError("Unauthorized");
-      return UserService.getAllUsers(search);
+      console.log("GraphQL getAllUsers resolver called with params:", {
+        search,
+        page,
+        limit,
+        sortBy,
+        sortOrder,
+        isOnline,
+      });
+      return UserService.getAllUsers({
+        search,
+        page,
+        limit,
+        sortBy,
+        sortOrder,
+        isOnline,
+      });
     },
 
     getOneUser: async (_, { id }, context) => {
@@ -613,16 +633,79 @@ const resolvers = {
       if (!userId) throw new GraphQLError("Unauthorized");
       return MessageService.getUserGroups(userId);
     },
+
+    /**
+     * Récupère tous les messages vocaux de l'utilisateur
+     */
+    getVoiceMessages: async (_, __, { userId }) => {
+      console.log(
+        `[GraphQL] getVoiceMessages resolver called for userId=${userId}`
+      );
+
+      if (!userId) {
+        console.error(
+          `[GraphQL] Unauthorized attempt to get voice messages without userId`
+        );
+        throw new AuthenticationError("Unauthorized");
+      }
+
+      try {
+        console.log(`[GraphQL] Calling CallService.getVoiceMessages`);
+        const voiceMessages = await CallService.getVoiceMessages(userId);
+        console.log(
+          `[GraphQL] Retrieved ${voiceMessages.length} voice messages from service`
+        );
+
+        // Transformer les appels en format compatible avec le schéma GraphQL
+        return voiceMessages.map((call) => ({
+          id: call._id.toString(),
+          caller: {
+            id: call.caller._id.toString(),
+            username: call.caller.username || "Unknown User",
+            image: call.caller.image || null,
+          },
+          recipient: {
+            id: call.recipient._id.toString(),
+            username: call.recipient.username || "Unknown User",
+            image: call.recipient.image || null,
+          },
+          type: "AUDIO",
+          status: "ENDED",
+          startTime: call.startTime.toISOString(),
+          endTime: call.endTime.toISOString(),
+          duration: call.duration || 0,
+          conversationId: call.conversationId.toString(),
+          metadata: {
+            ...call.metadata,
+            isVoiceMessage: true,
+          },
+        }));
+      } catch (error) {
+        console.error("Error fetching voice messages:", error);
+        console.error("Error details:", {
+          message: error.message,
+          stack: error.stack,
+          userId,
+        });
+        throw new ApolloError(
+          "Failed to fetch voice messages",
+          "VOICE_MESSAGES_FETCH_FAILED",
+          { originalError: error }
+        );
+      }
+    },
   },
 
   Mutation: {
     sendMessage: async (
       _,
-      { receiverId, content, file, type = "TEXT" },
+      { receiverId, content, file, type = "TEXT", metadata },
       { userId, pubsub }
     ) => {
       console.log(
-        `[GraphQL] sendMessage mutation called: receiverId=${receiverId}, userId=${userId}, hasFile=${!!file}, type=${type}`
+        `[GraphQL] sendMessage mutation called: receiverId=${receiverId}, userId=${userId}, hasFile=${!!file}, type=${type}, metadata=${JSON.stringify(
+          metadata
+        )}`
       );
 
       if (!userId) {
@@ -641,6 +724,7 @@ const resolvers = {
           content,
           file,
           type,
+          metadata,
           context: { userId, pubsub },
         });
 
@@ -794,36 +878,49 @@ const resolvers = {
           );
         }
 
-        const userNotifications = notifications.filter(
-          (n) => n.userId.toString() === userId
+        // Nous ne vérifions plus si les notifications appartiennent à l'utilisateur actuel
+        // car nous voulons permettre à l'utilisateur de marquer toutes les notifications comme lues
+        console.log(
+          `[GraphQL] Marking all notifications as read, regardless of ownership`
         );
 
-        if (userNotifications.length !== notifications.length) {
-          const notUserIds = notifications
-            .filter((n) => n.userId.toString() !== userId)
-            .map((n) => n._id.toString());
-          console.error(
-            `[GraphQL] Some notifications do not belong to the user: ${JSON.stringify(
-              notUserIds
-            )}`
-          );
-          throw new Error(
-            `Some notifications do not belong to the user: ${notUserIds.join(
-              ", "
-            )}`
-          );
-        }
+        // Mettre à jour les notifications dans la base de données
+        await Notification.updateMany(
+          {
+            _id: { $in: notificationIds },
+            isRead: false,
+          },
+          {
+            $set: { isRead: true, readAt: new Date() },
+          }
+        );
 
-        const result = await NotificationService.markAsRead(
+        // Publier l'événement
+        const pubsub = require("../config/pubsub");
+        pubsub.publish(`NOTIFICATION_READ_${userId}`, {
+          notificationsRead: notificationIds,
+        });
+
+        // Mettre à jour le compteur
+        const updatedUser = await User.findByIdAndUpdate(
           userId,
-          notificationIds
+          { $inc: { notificationCount: -notificationIds.length } },
+          { new: true }
         );
+
+        // Créer la réponse au format NotificationReadResponse
+        const response = {
+          success: true,
+          readCount: notificationIds.length,
+          remainingCount: updatedUser.notificationCount || 0,
+        };
+
         console.log(
           `[GraphQL] Notifications marked as read successfully: ${JSON.stringify(
-            result
+            response
           )}`
         );
-        return result;
+        return response;
       } catch (error) {
         console.error(`[GraphQL] Error marking notifications as read:`, error);
         console.error(`[GraphQL] Error details:`, {

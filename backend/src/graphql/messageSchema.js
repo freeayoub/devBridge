@@ -195,6 +195,15 @@ const typeDefs = gql`
     readAt: Date!
   }
 
+  type UserPaginatedResponse {
+    users: [User!]!
+    totalCount: Int!
+    totalPages: Int!
+    currentPage: Int!
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+  }
+
   type Group {
     id: ID!
     name: String!
@@ -230,6 +239,12 @@ const typeDefs = gql`
     reactions: [Reaction!]!
   }
 
+  type NotificationReadResponse {
+    success: Boolean!
+    readCount: Int!
+    remainingCount: Int!
+  }
+
   type TypingIndicatorEvent {
     conversationId: ID!
     userId: ID!
@@ -255,6 +270,8 @@ const typeDefs = gql`
     video
     SYSTEM
     system
+    VOICE_MESSAGE
+    voice_message
   }
 
   enum AttachmentType {
@@ -262,6 +279,12 @@ const typeDefs = gql`
     FILE
     AUDIO
     VIDEO
+    VOICE_MESSAGE
+    image
+    file
+    audio
+    video
+    voice_message
   }
 
   enum MessageStatus {
@@ -362,7 +385,14 @@ const typeDefs = gql`
       offset: Int
     ): [Conversation!]!
 
-    getAllUsers(search: String): [User!]!
+    getAllUsers(
+      search: String
+      page: Int = 1
+      limit: Int = 10
+      sortBy: String = "username"
+      sortOrder: String = "asc"
+      isOnline: Boolean
+    ): UserPaginatedResponse!
 
     getOneUser(id: ID!): User!
 
@@ -395,6 +425,11 @@ const typeDefs = gql`
     Récupère les statistiques d'appels de l'utilisateur
     """
     callStats: CallStatistics!
+
+    """
+    Récupère tous les messages vocaux de l'utilisateur
+    """
+    getVoiceMessages: [Call!]!
   }
 
   type Mutation {
@@ -403,9 +438,10 @@ const typeDefs = gql`
       content: String
       file: Upload
       type: MessageType = TEXT
+      metadata: JSON
     ): Message!
 
-    markNotificationsAsRead(notificationIds: [ID!]!): Boolean!
+    markNotificationsAsRead(notificationIds: [ID!]!): NotificationReadResponse!
 
     sendGroupMessage(input: SendGroupMessageInput!): Message!
 

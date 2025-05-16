@@ -1,14 +1,14 @@
 const cloudinary = require("../config/cloudinaryConfig");
 const mime = require("mime-types");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 // Helper to generate a secure public_id with either timestamp or UUID
 const generatePublicId = (filename, folder, useUuid = true) => {
-  const baseFolder = folder || 'uploads';
+  const baseFolder = folder || "uploads";
   if (useUuid) {
     return `${baseFolder}/${uuidv4()}`;
   }
-  const sanitized = filename.replace(/[^\w.-]/g, '_');
+  const sanitized = filename.replace(/[^\w.-]/g, "_");
   return `${baseFolder}/${Date.now()}-${sanitized}`;
 };
 
@@ -23,12 +23,17 @@ const uploadFile = async (stream, filename, options = {}) => {
     const uploadOptions = {
       resource_type: "auto",
       public_id: generatePublicId(filename, options.folder, true),
-      allowed_formats: ['jpg', 'png', 'webp', 'pdf', 'mp4', 'mp3'],
-      format: options.format || 'auto',
-      quality: 'auto:good',
+      // Accepter tous les formats d'image
+      // allowed_formats: ["jpg", "jpeg", "png", "webp", "pdf", "mp4", "mp3", "avif", "gif"],
+      // format: options.format || 'auto', // 'auto' is not a valid format
+      format: options.format, // Let Cloudinary determine the format automatically
+      quality: "auto:good",
       timeout: 30000, // 30s timeout
-      mime_type: options.mime_type || mime.lookup(filename) || "application/octet-stream",
-      ...options
+      mime_type:
+        options.mime_type ||
+        mime.lookup(filename) ||
+        "application/octet-stream",
+      ...options,
     };
 
     return await new Promise((resolve, reject) => {
@@ -36,20 +41,20 @@ const uploadFile = async (stream, filename, options = {}) => {
         uploadOptions,
         (error, result) => {
           if (error) {
-            console.error('Cloudinary upload error:', error);
+            console.error("Cloudinary upload error:", error);
             reject(new Error(`Upload failed: ${error.message}`));
           } else {
             resolve(result.secure_url);
           }
         }
       );
-      
+
       // Handle stream errors
-      stream.on('error', (error) => {
+      stream.on("error", (error) => {
         uploadStream.end();
         reject(new Error(`Stream error: ${error.message}`));
       });
-      
+
       stream.pipe(uploadStream);
     });
   } catch (error) {

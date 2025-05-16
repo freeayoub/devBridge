@@ -37,6 +37,14 @@ export enum MessageType {
   AUDIO = 'AUDIO',
   VIDEO = 'VIDEO',
   SYSTEM = 'SYSTEM',
+  VOICE_MESSAGE = 'VOICE_MESSAGE',
+  TEXT_LOWER = 'text',
+  IMAGE_LOWER = 'image',
+  FILE_LOWER = 'file',
+  AUDIO_LOWER = 'audio',
+  VIDEO_LOWER = 'video',
+  SYSTEM_LOWER = 'system',
+  VOICE_MESSAGE_LOWER = 'voice_message',
 }
 export enum MessageStatus {
   SENDING = 'SENDING',
@@ -88,6 +96,10 @@ export interface Message {
   replyTo?: Partial<Message>;
   reactions?: Reaction[];
   metadata?: any;
+  // Propriétés pour l'état d'envoi du message
+  isPending?: boolean;
+  isError?: boolean;
+  isDelivered?: boolean; // Indique si le message a été livré
 }
 export interface MessageFilter {
   isRead?: boolean;
@@ -149,8 +161,17 @@ export interface GetGroupResponse {
 export interface GetUserGroupsResponse {
   getUserGroups: Group[];
 }
+export interface UserPaginatedResponse {
+  users: User[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
 export interface GetAllUsersResponse {
-  getAllUsers: User[];
+  getAllUsers: UserPaginatedResponse;
 }
 export interface GetOneUserResponse {
   getOneUser: User;
@@ -300,4 +321,104 @@ export type NotificationType =
   | 'MESSAGE_REACTION'
   | 'SYSTEM_ALERT';
 
-export type AttachmentType = 'IMAGE' | 'DOCUMENT' | 'AUDIO' | 'VIDEO' | 'OTHER';
+export type AttachmentType =
+  | 'IMAGE'
+  | 'FILE'
+  | 'AUDIO'
+  | 'VIDEO'
+  | 'OTHER'
+  | 'image'
+  | 'file'
+  | 'audio'
+  | 'video'
+  | 'other';
+
+// --------------------------------------------------------------------------
+// Types et interfaces pour les appels
+// --------------------------------------------------------------------------
+
+/**
+ * Types d'appels possibles
+ */
+export enum CallType {
+  AUDIO = 'AUDIO',
+  VIDEO = 'VIDEO',
+  VIDEO_ONLY = 'VIDEO_ONLY',
+}
+
+/**
+ * États possibles d'un appel
+ */
+export enum CallStatus {
+  RINGING = 'RINGING',
+  CONNECTED = 'CONNECTED',
+  ENDED = 'ENDED',
+  MISSED = 'MISSED',
+  REJECTED = 'REJECTED',
+  FAILED = 'FAILED',
+}
+
+/**
+ * Interface pour un appel
+ */
+export interface Call {
+  id: string;
+  caller: User;
+  recipient: User;
+  type: CallType;
+  status: CallStatus;
+  startTime: string;
+  endTime?: string;
+  duration?: number;
+  conversationId?: string;
+  metadata?: any;
+}
+
+/**
+ * Interface pour un signal d'appel
+ */
+export interface CallSignal {
+  callId: string;
+  senderId: string;
+  type: string;
+  data: string;
+  timestamp: string;
+}
+
+/**
+ * Interface pour un appel entrant
+ */
+export interface IncomingCall {
+  id: string;
+  caller: User;
+  type: CallType;
+  conversationId?: string;
+  offer: string;
+  timestamp: string;
+}
+
+/**
+ * Interface pour les options d'appel
+ */
+export interface CallOptions {
+  enableVideo?: boolean;
+  enableAudio?: boolean;
+  quality?: string;
+}
+
+/**
+ * Interface pour les commentaires sur un appel
+ */
+export interface CallFeedback {
+  quality?: number;
+  issues?: string[];
+  comment?: string;
+}
+
+/**
+ * Interface pour le résultat d'une opération d'appel
+ */
+export interface CallSuccess {
+  success: boolean;
+  message?: string;
+}

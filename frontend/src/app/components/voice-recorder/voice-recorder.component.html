@@ -1,0 +1,17 @@
+<div class="voice-recorder">
+  <div class="recording-status" [ngClass]="{'active': isRecording}">
+    <div class="recording-indicator" *ngIf="isRecording">
+      <span class="recording-dot"></span>
+      <span class="recording-time">{{ formattedTime }}</span>
+    </div>
+    <div class="recording-controls">
+      <button class="btn-record" (click)="isRecording ? stopRecording() : startRecording()" 
+              [ngClass]="{'recording': isRecording}">
+        <i class="fas" [ngClass]="isRecording ? 'fa-stop' : 'fa-microphone'"></i>
+      </button>
+      <button class="btn-cancel" *ngIf="isRecording" (click)="cancelRecording()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+</div>

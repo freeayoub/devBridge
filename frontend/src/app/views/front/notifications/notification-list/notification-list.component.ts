@@ -80,84 +80,159 @@ export class NotificationListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.messageService.markAsRead([notificationId]).subscribe({
-      next: (result: any) => {
-        console.log('Mark as read result:', result);
-        if (!result.success) {
-          console.error('Failed to mark notification as read');
-          this.error = new Error('Failed to mark notification as read');
-        } else {
-          console.log('Notification marked as read successfully');
-          // Si l'erreur était liée à cette opération, la réinitialiser
-          if (this.error && this.error.message.includes('mark')) {
-            this.error = null;
-          }
-        }
-      },
-      error: (err: Error) => {
-        console.error('Error marking notification as read:', err);
-        console.error('Error details:', {
-          message: err.message,
-          stack: err.stack,
-          notificationId,
+    // Afficher des informations de débogage sur la notification
+    this.notifications$.pipe(take(1)).subscribe((notifications) => {
+      const notification = notifications.find((n) => n.id === notificationId);
+      if (notification) {
+        console.log('Found notification to mark as read:', {
+          id: notification.id,
+          type: notification.type,
+          isRead: notification.isRead,
         });
-        this.error = err;
-      },
+
+        // Mettre à jour localement la notification
+        const updatedNotifications = notifications.map((n) =>
+          n.id === notificationId
+            ? { ...n, isRead: true, readAt: new Date().toISOString() }
+            : n
+        );
+
+        // Mettre à jour l'interface utilisateur immédiatement
+        (this.messageService as any).notifications.next(updatedNotifications);
+
+        // Mettre à jour le compteur de notifications non lues
+        const unreadCount = updatedNotifications.filter(
+          (n) => !n.isRead
+        ).length;
+        (this.messageService as any).notificationCount.next(unreadCount);
+
+        // Mettre à jour le cache de notifications dans le service
+        this.updateNotificationCache(updatedNotifications);
+
+        // Appeler le service pour marquer la notification comme lue
+        this.messageService
+          .markAsRead([notificationId])
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (result) => {
+              console.log('Mark as read result:', result);
+              if (result && result.success) {
+                console.log('Notification marked as read successfully');
+                // Si l'erreur était liée à cette opération, la réinitialiser
+                if (this.error && this.error.message.includes('mark')) {
+                  this.error = null;
+                }
+              }
+            },
+            error: (err) => {
+              console.error('Error marking notification as read:', err);
+              console.error('Error details:', {
+                message: err.message,
+                stack: err.stack,
+                notificationId,
+              });
+              // Ne pas définir d'erreur pour éviter de perturber l'interface utilisateur
+              // this.error = err;
+            },
+          });
+      } else {
+        console.warn('Notification not found in local cache:', notificationId);
+
+        // Forcer le rechargement des notifications
+        this.loadNotifications();
+      }
     });
   }
-  markAllAsRead(): void {
-    this.notifications$
-      .pipe(
-        take(1),
-        switchMap((notifications) => {
-          console.log('All notifications:', notifications);
-          const unreadIds = notifications
-            .filter((n) => !n.isRead)
-            .map((n) => n.id);
 
-          console.log('Unread notification IDs to mark as read:', unreadIds);
-
-          if (unreadIds.length === 0) {
-            console.log('No unread notifications to mark as read');
-            return of(null);
-          }
-
-          // Vérifier que tous les IDs sont valides
-          const validIds = unreadIds.filter(
-            (id) => id && typeof id === 'string' && id.trim() !== ''
-          );
-
-          if (validIds.length !== unreadIds.length) {
-            console.error('Some notification IDs are invalid:', unreadIds);
-            return throwError(() => new Error('Invalid notification IDs'));
-          }
-
-          console.log('Marking all notifications as read:', validIds);
-          return this.messageService.markAsRead(validIds);
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe({
-        next: (result) => {
-          console.log('Mark all as read result:', result);
-          if (result && result.success) {
-            console.log('All notifications marked as read successfully');
-            // Si l'erreur était liée à cette opération, la réinitialiser
-            if (this.error && this.error.message.includes('mark')) {
-              this.error = null;
-            }
-          }
-        },
-        error: (err) => {
-          console.error('Error marking all notifications as read:', err);
-          console.error('Error details:', {
-            message: err.message,
-            stack: err.stack,
-          });
-          this.error = err;
-        },
+  // Méthode pour mettre à jour le cache de notifications dans le service
+  private updateNotificationCache(notifications: any[]): void {
+    // Mettre à jour le cache de notifications dans le service
+    const notificationCache = (this.messageService as any).notificationCache;
+    if (notificationCache) {
+      notifications.forEach((notification) => {
+        notificationCache.set(notification.id, notification);
       });
+
+      // Forcer la mise à jour du compteur
+      const unreadCount = notifications.filter((n) => !n.isRead).length;
+      (this.messageService as any).notificationCount.next(unreadCount);
+
+      console.log('Notification cache updated, new unread count:', unreadCount);
+    }
   }
+
+  markAllAsRead(): void {
+    console.log('Marking all notifications as read');
+
+    this.notifications$.pipe(take(1)).subscribe((notifications) => {
+      console.log('All notifications:', notifications);
+      const unreadIds = notifications.filter((n) => !n.isRead).map((n) => n.id);
+
+      console.log('Unread notification IDs to mark as read:', unreadIds);
+
+      if (unreadIds.length === 0) {
+        console.log('No unread notifications to mark as read');
+        return;
+      }
+
+      // Vérifier que tous les IDs sont valides
+      const validIds = unreadIds.filter(
+        (id) => id && typeof id === 'string' && id.trim() !== ''
+      );
+
+      if (validIds.length !== unreadIds.length) {
+        console.error('Some notification IDs are invalid:', unreadIds);
+        this.error = new Error('Invalid notification IDs');
+        return;
+      }
+
+      console.log('Marking all notifications as read:', validIds);
+
+      // Mettre à jour localement toutes les notifications
+      const updatedNotifications = notifications.map((n) =>
+        validIds.includes(n.id)
+          ? { ...n, isRead: true, readAt: new Date().toISOString() }
+          : n
+      );
+
+      // Mettre à jour l'interface utilisateur immédiatement
+      (this.messageService as any).notifications.next(updatedNotifications);
+
+      // Mettre à jour le compteur de notifications non lues
+      const unreadCount = updatedNotifications.filter((n) => !n.isRead).length;
+      (this.messageService as any).notificationCount.next(unreadCount);
+
+      // Mettre à jour le cache de notifications dans le service
+      this.updateNotificationCache(updatedNotifications);
+
+      // Appeler le service pour marquer toutes les notifications comme lues
+      this.messageService
+        .markAsRead(validIds)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (result) => {
+            console.log('Mark all as read result:', result);
+            if (result && result.success) {
+              console.log('All notifications marked as read successfully');
+              // Si l'erreur était liée à cette opération, la réinitialiser
+              if (this.error && this.error.message.includes('mark')) {
+                this.error = null;
+              }
+            }
+          },
+          error: (err) => {
+            console.error('Error marking all notifications as read:', err);
+            console.error('Error details:', {
+              message: err.message,
+              stack: err.stack,
+            });
+            // Ne pas définir d'erreur pour éviter de perturber l'interface utilisateur
+            // this.error = err;
+          },
+        });
+    });
+  }
+
   hasNotifications(): Observable<boolean> {
     return this.notifications$.pipe(
       map((notifications) => notifications?.length > 0)

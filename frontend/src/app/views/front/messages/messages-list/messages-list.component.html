@@ -1,159 +1,162 @@
-<div class="flex h-screen bg-gray-50">
+<div class="flex h-screen futuristic-messages-page">
   <!-- Sidebar -->
   <div
-    class="w-full md:w-80 lg:w-96 border-r border-gray-200 bg-white flex flex-col"
+    class="w-full md:w-80 lg:w-96 border-r border-accent-transparent futuristic-sidebar flex flex-col"
   >
-    <!-- Header -->
-    <div class="p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
+    <!-- Header futuriste -->
+    <div
+      class="p-4 border-b border-accent-transparent futuristic-header sticky top-0 z-10"
+    >
       <div class="flex justify-between items-center mb-4">
-        <h1 class="text-xl font-semibold text-gray-800">Messages</h1>
+        <h1 class="text-xl font-semibold futuristic-title">Messages</h1>
         <div class="flex items-center space-x-2">
           <button
             (click)="startNewConversation()"
-            class="p-2 rounded-full hover:bg-gray-100 text-gray-600"
+            class="futuristic-action-button"
+            title="Nouvelle conversation"
           >
             <i class="fas fa-edit"></i>
           </button>
-          <span
-            *ngIf="unreadCount$ | async as count"
-            class="bg-purple-600 text-white text-xs font-medium rounded-full px-2 py-1 min-w-[1.5rem] text-center"
-          >
+          <span *ngIf="unreadCount$ | async as count" class="futuristic-badge">
             {{ count }}
           </span>
         </div>
       </div>
 
-      <!-- Search -->
+      <!-- Recherche futuriste -->
       <div class="relative">
         <input
           [(ngModel)]="searchQuery"
           (ngModelChange)="filterConversations()"
           type="text"
-          placeholder="Search conversations..."
-          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
+          placeholder="Rechercher des conversations..."
+          class="w-full pl-10 pr-4 py-2 futuristic-input-field"
         />
-        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        <i class="fas fa-search absolute left-3 top-3 text-accent"></i>
       </div>
     </div>
 
-    <!-- Conversations List -->
-    <div class="flex-1 overflow-y-auto">
-      <!-- Loading State -->
+    <!-- Liste des conversations futuriste -->
+    <div class="flex-1 overflow-y-auto futuristic-conversations-list">
+      <!-- État de chargement futuriste -->
       <div
         *ngIf="loading"
         class="flex flex-col items-center justify-center h-full p-4"
       >
-        <div
-          class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-600"
-        ></div>
-        <p class="mt-3 text-gray-500">Loading conversations...</p>
+        <div class="futuristic-loading-circle"></div>
+        <p class="mt-3 futuristic-loading-text">
+          Chargement des conversations...
+        </p>
       </div>
 
-      <!-- Error State -->
-      <div *ngIf="error" class="p-4 bg-red-50 border-l-4 border-red-500">
-        <div class="flex items-start">
-          <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-2"></i>
-          <div>
-            <h3 class="text-sm font-medium text-red-800">
-              Error loading conversations
-            </h3>
-            <p class="text-sm text-red-700 mt-1">{{ error }}</p>
-            <button
-              (click)="loadConversations()"
-              class="mt-2 text-sm text-red-600 hover:text-red-800"
-            >
-              <i class="fas fa-sync-alt mr-1"></i> Try again
-            </button>
-          </div>
+      <!-- État d'erreur futuriste -->
+      <div *ngIf="error" class="futuristic-error-container">
+        <div class="futuristic-error-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="futuristic-error-content">
+          <h3 class="futuristic-error-title">
+            Erreur de chargement des conversations
+          </h3>
+          <p class="futuristic-error-message">{{ error }}</p>
+          <button (click)="loadConversations()" class="futuristic-retry-button">
+            <i class="fas fa-sync-alt mr-1"></i> Réessayer
+          </button>
         </div>
       </div>
 
-      <!-- Empty State -->
+      <!-- État vide futuriste -->
       <div
         *ngIf="!loading && filteredConversations.length === 0 && !searchQuery"
-        class="flex flex-col items-center justify-center h-full p-6 text-center"
+        class="flex flex-col items-center justify-center h-full p-6 text-center futuristic-empty-state"
       >
-        <i class="fas fa-comments text-4xl text-gray-300 mb-4"></i>
-        <h3 class="text-lg font-medium text-gray-900">No conversations yet</h3>
-        <p class="mt-1 text-gray-500">
-          Start a new conversation to connect with your team
+        <div class="futuristic-empty-icon">
+          <i class="fas fa-comments"></i>
+        </div>
+        <h3 class="futuristic-empty-title">Aucune conversation</h3>
+        <p class="futuristic-empty-text">
+          Démarrez une nouvelle conversation pour communiquer
         </p>
         <button
           (click)="startNewConversation()"
-          class="mt-4 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 transition-colors"
+          class="futuristic-start-button"
         >
-          New Conversation
+          <i class="fas fa-plus-circle mr-2"></i>
+          Nouvelle Conversation
         </button>
       </div>
 
-      <!-- No Results State -->
+      <!-- État sans résultats futuriste -->
       <div
         *ngIf="!loading && filteredConversations.length === 0 && searchQuery"
-        class="flex flex-col items-center justify-center h-full p-6 text-center"
+        class="flex flex-col items-center justify-center h-full p-6 text-center futuristic-no-results"
       >
-        <i class="fas fa-search text-3xl text-gray-300 mb-3"></i>
-        <h3 class="text-lg font-medium text-gray-900">No matches found</h3>
-        <p class="mt-1 text-gray-500">Try a different search term</p>
+        <div class="futuristic-empty-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <h3 class="futuristic-empty-title">Aucun résultat trouvé</h3>
+        <p class="futuristic-empty-text">Essayez un autre terme de recherche</p>
       </div>
 
-      <!-- Conversations -->
+      <!-- Conversations futuristes -->
       <ul
         *ngIf="!loading && filteredConversations.length > 0"
-        class="divide-y divide-gray-100"
+        class="futuristic-conversations"
       >
         <li
           *ngFor="let conv of filteredConversations"
           (click)="openConversation(conv.id)"
-          [class.bg-purple-50]="selectedConversationId === conv.id"
-          class="p-4 hover:bg-gray-50 cursor-pointer flex items-center transition-colors"
+          [class.futuristic-conversation-selected]="
+            selectedConversationId === conv.id
+          "
+          class="futuristic-conversation-item"
         >
-          <!-- Avatar with status indicator -->
-
-          <div class="relative flex-shrink-0 mr-3">
+          <!-- Avatar avec indicateur de statut -->
+          <div class="futuristic-avatar">
             <img
               [src]="
                 (conv.participants
                   ? getOtherParticipant(conv.participants)?.image
                   : null) || 'assets/images/default-avatar.png'
               "
-              class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+              alt="User avatar"
             />
             <span
               *ngIf="
                 conv.participants &&
                 getOtherParticipant(conv.participants)?.isOnline
               "
-              class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
+              class="futuristic-online-indicator"
             ></span>
           </div>
 
-          <!-- Conversation details -->
-          <div class="min-w-0 flex-1">
-            <div class="flex justify-between items-baseline">
-              <h3 class="text-sm font-medium text-gray-900 truncate">
+          <!-- Détails de la conversation -->
+          <div class="futuristic-conversation-details">
+            <div class="futuristic-conversation-header">
+              <h3 class="futuristic-conversation-name">
                 {{
                   (conv.participants
                     ? getOtherParticipant(conv.participants)?.username
-                    : null) || "Unknown User"
+                    : null) || "Utilisateur inconnu"
                 }}
               </h3>
-              <span class="text-xs text-gray-500 whitespace-nowrap ml-2">
+              <span class="futuristic-conversation-time">
                 {{ (conv.lastMessage?.timestamp | date : "shortTime") || "" }}
               </span>
             </div>
 
-            <div class="flex justify-between items-center mt-1">
-              <p class="text-sm text-gray-500 truncate">
+            <div class="futuristic-conversation-preview">
+              <p class="futuristic-conversation-message">
                 <span
                   *ngIf="conv.lastMessage?.sender?.id === currentUserId"
-                  class="text-gray-400"
-                  >You:
+                  class="futuristic-you-prefix"
+                  >Vous:
                 </span>
-                {{ conv.lastMessage?.content || "No messages yet" }}
+                {{ conv.lastMessage?.content || "Pas encore de messages" }}
               </p>
               <span
                 *ngIf="conv.unreadCount && conv.unreadCount > 0"
-                class="ml-2 bg-purple-600 text-white text-xs font-medium rounded-full w-5 h-5 flex items-center justify-center"
+                class="futuristic-unread-badge"
               >
                 {{ conv.unreadCount }}
               </span>
@@ -164,22 +167,25 @@
     </div>
   </div>
 
-  <!-- Main Content Area -->
-  <div class="flex-1 hidden md:flex flex-col bg-gray-50">
-    <!-- Default empty state -->
-    <!-- <div *ngIf="!selectedConversationId" class="flex-1 flex items-center justify-center">
+  <!-- Zone de contenu principal futuriste -->
+  <div class="flex-1 hidden md:flex flex-col futuristic-main-area">
+    <!-- État par défaut vide -->
+    <!-- <div *ngIf="!selectedConversationId" class="flex-1 flex items-center justify-center futuristic-empty-chat">
       <div class="text-center p-8">
-        <i class="fas fa-comment-dots text-4xl text-gray-300 mb-4"></i>
-        <h3 class="text-lg font-medium text-gray-900">Select a conversation</h3>
-        <p class="mt-1 text-gray-500">Choose an existing chat or start a new one</p>
+        <div class="futuristic-empty-icon">
+          <i class="fas fa-comment-dots"></i>
+        </div>
+        <h3 class="futuristic-empty-title">Sélectionnez une conversation</h3>
+        <p class="futuristic-empty-text">Choisissez un chat existant ou démarrez-en un nouveau</p>
         <button (click)="startNewConversation()"
-                class="mt-4 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 transition-colors">
-          New Conversation
+                class="futuristic-start-button">
+          <i class="fas fa-plus-circle mr-2"></i>
+          Nouvelle Conversation
         </button>
       </div>
     </div> -->
 
-    <!-- Router outlet for chat component -->
+    <!-- Router outlet pour le composant de chat -->
     <router-outlet></router-outlet>
   </div>
 </div>

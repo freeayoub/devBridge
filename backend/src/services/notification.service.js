@@ -198,16 +198,34 @@ class NotificationService {
     );
 
     try {
-      console.log("Executing Notification.find query");
-      const notifications = await this.Notification.find({ userId })
+      console.log("Executing Notification.find query for all notifications");
+
+      // Récupérer toutes les notifications dans la base de données
+      const allNotifications = await this.Notification.find({})
         .sort({ createdAt: -1 })
         .populate("senderId", "username image")
         .populate("message", "content");
 
-      console.log("Notifications found:", notifications.length);
-      console.log("First notification (if any):", notifications[0]);
+      console.log(
+        "Total notifications found in database:",
+        allNotifications.length
+      );
 
-      return notifications;
+      // Afficher toutes les notifications pour le débogage
+      allNotifications.forEach((notif, index) => {
+        console.log(`Notification ${index + 1}:`, {
+          id: notif._id.toString(),
+          userId: notif.userId.toString(),
+          type: notif.type,
+          content: notif.content,
+          isRead: notif.isRead,
+          senderId: notif.senderId ? notif.senderId._id.toString() : "N/A",
+        });
+      });
+
+      console.log("First notification (if any):", allNotifications[0]);
+
+      return allNotifications;
     } catch (error) {
       console.error(
         "Error in NotificationService.getUserNotifications:",

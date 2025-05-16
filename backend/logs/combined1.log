@@ -1,0 +1,23 @@
+{"level":"http","message":"GraphQL anonymous completed in 51ms","timestamp":"2025-05-16 05:57:52"}
+{"level":"http","message":"POST / 200 - 54ms","timestamp":"2025-05-16 05:57:52"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetVoiceMessages {\n  getVoiceMessages {\n    id\n    caller {\n      id\n      username\n      image\n    }\n    recipient {\n      id\n      username\n      image\n    }\n    type\n    status\n    startTime\n    endTime\n    duration\n    conversationId\n    metadata\n  }\n}","timestamp":"2025-05-16 05:57:52","variables":{}}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetConversation($conversationId: ID!, $limit: Int = 10, $offset: Int = 0) {\n  getConversation(conversationId: $conversationId) {\n    id\n    participants {\n      id\n      username\n      image\n      isOnline\n    }\n    messages(limit: $limit, offset: $offset) {\n      id\n      content\n      type\n      timestamp\n      isRead\n      sender {\n        id\n        username\n        image\n      }\n      receiver {\n        id\n        username\n        image\n      }\n      attachments {\n        url\n        type\n        duration\n      }\n      metadata\n      conversationId\n    }\n  }\n}","timestamp":"2025-05-16 05:57:52","variables":{"conversationId":"682646597beda7db3d661415","limit":10,"offset":0}}
+{"level":"info","message":"[MessageService] Getting conversation: conversationId=682646597beda7db3d661415, userId=681fe4cb06c918479d74ae97","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"WebSocket operation for user 681fe4cb06c918479d74ae97, operation: subscribe","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"WebSocket operation for user 681fe4cb06c918479d74ae97, operation: subscribe","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"WebSocket operation for user 681fe4cb06c918479d74ae97, operation: subscribe","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"WebSocket operation for user 681fe4cb06c918479d74ae97, operation: subscribe","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"WebSocket operation for user 681fe4cb06c918479d74ae97, operation: subscribe","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"WebSocket operation for user 681fe4cb06c918479d74ae97, operation: subscribe","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"WebSocket operation for user 681fe4cb06c918479d74ae97, operation: subscribe","timestamp":"2025-05-16 05:57:52"}
+{"level":"http","message":"GraphQL anonymous completed in 30ms","timestamp":"2025-05-16 05:57:52"}
+{"level":"http","message":"POST / 200 - 33ms","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"[MessageService] Conversation retrieval completed: 682646597beda7db3d661415, unread: 0, messages: 12","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"[MessageService] Getting messages: conversationId=682646597beda7db3d661415, senderId=undefined, receiverId=undefined, page=1, limit=10, userId=681fe4cb06c918479d74ae97, offset=0","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"[MessageService] Retrieved 10 messages","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"[MessageService] Messages retrieval completed successfully","timestamp":"2025-05-16 05:57:52"}
+{"level":"http","message":"GraphQL anonymous completed in 49ms","timestamp":"2025-05-16 05:57:52"}
+{"level":"http","message":"POST / 200 - 52ms","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"WebSocket operation for user 681fe4cb06c918479d74ae97, operation: subscribe","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"WebSocket operation for user 681fe4cb06c918479d74ae97, operation: subscribe","timestamp":"2025-05-16 05:57:52"}
+{"level":"info","message":"WebSocket operation for user 681fe4cb06c918479d74ae97, operation: subscribe","timestamp":"2025-05-16 05:57:52"}

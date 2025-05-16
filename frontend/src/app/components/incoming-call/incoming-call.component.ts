@@ -1,31 +1,37 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { CallService, IncomingCall, CallType } from '../../services/call.service';
+import { IncomingCall, CallType } from '../../models/message.model';
+import { MessageService } from '../../services/message.service';
 import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'app-incoming-call',
   templateUrl: './incoming-call.component.html',
-  styleUrls: ['./incoming-call.component.css']
+  styleUrls: ['./incoming-call.component.css'],
 })
 export class IncomingCallComponent implements OnInit, OnDestroy {
   incomingCall: IncomingCall | null = null;
   private subscriptions: Subscription[] = [];
 
   constructor(
-    private callService: CallService,
+    private messageService: MessageService,
     private logger: LoggerService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     // S'abonner aux appels entrants
-    const incomingCallSub = this.callService.incomingCall$.subscribe(call => {
-      this.incomingCall = call;
-      if (call) {
-        this.logger.debug('Displaying incoming call UI', { callId: call.id, caller: call.caller.username });
+    const incomingCallSub = this.messageService.incomingCall$.subscribe(
+      (call) => {
+        this.incomingCall = call;
+        if (call) {
+          this.logger.debug('Displaying incoming call UI', {
+            callId: call.id,
+            caller: call.caller.username,
+          });
+        }
       }
-    });
-    
+    );
+
     this.subscriptions.push(incomingCallSub);
   }
 
@@ -34,16 +40,16 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
     if (!this.incomingCall) {
       return;
     }
-    
+
     this.logger.debug('Accepting call', { callId: this.incomingCall.id });
-    
-    this.callService.acceptCall(this.incomingCall).subscribe({
+
+    this.messageService.acceptCall(this.incomingCall).subscribe({
       next: (call) => {
         this.logger.debug('Call accepted successfully', { callId: call.id });
       },
       error: (error) => {
         this.logger.error('Error accepting call', error);
-      }
+      },
     });
   }
 
@@ -52,16 +58,16 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
     if (!this.incomingCall) {
       return;
     }
-    
+
     this.logger.debug('Rejecting call', { callId: this.incomingCall.id });
-    
-    this.callService.rejectCall(this.incomingCall.id).subscribe({
+
+    this.messageService.rejectCall(this.incomingCall.id).subscribe({
       next: (call) => {
         this.logger.debug('Call rejected successfully', { callId: call.id });
       },
       error: (error) => {
         this.logger.error('Error rejecting call', error);
-      }
+      },
     });
   }
 
@@ -70,7 +76,7 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
     if (!this.incomingCall) {
       return '';
     }
-    
+
     switch (this.incomingCall.type) {
       case CallType.AUDIO:
         return 'Appel audio';
@@ -88,7 +94,7 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
     if (!this.incomingCall) {
       return 'phone';
     }
-    
+
     switch (this.incomingCall.type) {
       case CallType.AUDIO:
         return 'phone';
@@ -102,6 +108,6 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // Nettoyer les abonnements
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 }

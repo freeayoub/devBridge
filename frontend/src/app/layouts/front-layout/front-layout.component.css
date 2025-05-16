@@ -1,30 +1,343 @@
-/* Dans votre CSS */
-.profile-dropdown {
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  transform-origin: top right;
+/* Styles futuristes pour le layout */
+
+/* Layout principal */
+.futuristic-layout {
+  background-color: var(--dark-bg);
+  color: var(--text-light);
+  min-height: 100vh;
+  position: relative;
 }
 
-.profile-dropdown-enter {
-  opacity: 0;
-  transform: scale(0.95);
+/* Effet de grille en arrière-plan */
+.futuristic-layout::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+      rgba(0, 247, 255, 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(0, 247, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.profile-dropdown-enter-active {
-  opacity: 1;
-  transform: scale(1);
-}
-/* messages-list.component.css */
-.h-screen-calc {
-  height: calc(100vh - 4rem);
+/* En-tête futuriste */
+.futuristic-header {
+  background-color: var(--medium-bg);
+  border-bottom: 1px solid rgba(0, 247, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* message-chat.component.css */
-.message-bubble {
-  max-width: 70%;
+/* Logo futuriste */
+.futuristic-logo {
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
 }
 
-@media (min-width: 768px) {
-  .message-bubble {
-    max-width: 50%;
+.futuristic-subtitle {
+  color: var(--text-dim);
+}
+
+/* Navigation futuriste */
+.futuristic-nav-link {
+  color: var(--text-dim);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.futuristic-nav-link::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
+  transition: width var(--transition-fast);
+}
+
+.futuristic-nav-link:hover {
+  color: var(--text-light);
+}
+
+.futuristic-nav-link:hover::before {
+  width: 80%;
+}
+
+.futuristic-nav-link-active {
+  color: var(--accent-color);
+}
+
+.futuristic-nav-link-active::before {
+  width: 80%;
+}
+
+/* Bouton de profil futuriste */
+.futuristic-profile-button {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+}
+
+.futuristic-profile-button:hover {
+  background-color: rgba(0, 247, 255, 0.1);
+}
+
+.futuristic-username {
+  color: var(--text-light);
+}
+
+/* Menu déroulant futuriste */
+.futuristic-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.5rem;
+  width: 12rem;
+  background-color: var(--medium-bg);
+  border: 1px solid rgba(0, 247, 255, 0.2);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  z-index: 50;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.futuristic-dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: var(--text-dim);
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.futuristic-dropdown-item:hover {
+  background-color: rgba(0, 247, 255, 0.1);
+  color: var(--text-light);
+}
+
+/* Boutons d'authentification futuristes */
+.futuristic-login-button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  color: var(--accent-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+  border: 1px solid rgba(0, 247, 255, 0.3);
+}
+
+.futuristic-login-button:hover {
+  background-color: rgba(0, 247, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: var(--glow-effect);
+}
+
+.futuristic-register-button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
+  color: var(--text-light);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.futuristic-register-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-effect);
+}
+/* Barre latérale futuriste */
+.futuristic-sidebar {
+  background-color: var(--medium-bg);
+  border-right: 1px solid rgba(0, 247, 255, 0.2);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.futuristic-sidebar-header {
+  border-bottom: 1px solid rgba(0, 247, 255, 0.2);
+}
+
+.futuristic-close-button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 247, 255, 0.1);
+  color: var(--accent-color);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.futuristic-close-button:hover {
+  background-color: rgba(0, 247, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.futuristic-sidebar-nav {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-color) transparent;
+}
+
+.futuristic-sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.futuristic-sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.futuristic-sidebar-nav::-webkit-scrollbar-thumb {
+  background-color: var(--accent-color);
+  border-radius: 10px;
+}
+
+.futuristic-sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: var(--text-dim);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.futuristic-sidebar-link:hover {
+  background-color: rgba(0, 247, 255, 0.1);
+  color: var(--text-light);
+}
+
+.futuristic-sidebar-link-active {
+  background-color: rgba(0, 247, 255, 0.15);
+  color: var(--accent-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.futuristic-sidebar-icon {
+  margin-right: 0.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--text-dim);
+  transition: color var(--transition-fast);
+}
+
+.futuristic-sidebar-icon-fa {
+  margin-right: 0.75rem;
+  width: 1.5rem;
+  font-size: 1.25rem;
+  color: var(--text-dim);
+  transition: color var(--transition-fast);
+  text-align: center;
+}
+
+.futuristic-sidebar-link:hover .futuristic-sidebar-icon,
+.futuristic-sidebar-link:hover .futuristic-sidebar-icon-fa,
+.futuristic-sidebar-link-active .futuristic-sidebar-icon,
+.futuristic-sidebar-link-active .futuristic-sidebar-icon-fa {
+  color: var(--accent-color);
+}
+
+.futuristic-separator {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 247, 255, 0.2),
+    transparent
+  );
+}
+
+/* Badge futuriste */
+.futuristic-badge {
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
+  color: var(--text-light);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  min-width: 1.5rem;
+  text-align: center;
+  box-shadow: var(--glow-effect);
+}
+
+/* Contenu principal futuriste */
+.futuristic-main-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Message de statut futuriste */
+.futuristic-status-message {
+  background-color: rgba(0, 247, 255, 0.1);
+  border-left: 4px solid var(--accent-color);
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.futuristic-status-icon {
+  color: var(--accent-color);
+  font-size: 1.25rem;
+}
+
+.futuristic-status-text {
+  color: var(--text-light);
+}
+
+/* Animation pour les éléments qui apparaissent */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

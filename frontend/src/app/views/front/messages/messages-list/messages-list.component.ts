@@ -265,7 +265,11 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   }
 
   startNewConversation(): void {
-    this.router.navigate(['new'], { relativeTo: this.route });
+    this.logger.info(
+      'MessagesList',
+      'Starting new conversation, navigating to users list'
+    );
+    this.router.navigate(['/messages/users']);
   }
 
   formatLastActive(lastActive: string): string {

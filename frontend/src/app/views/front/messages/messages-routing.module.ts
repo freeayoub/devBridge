@@ -31,6 +31,7 @@ const routes: Routes = [
         component: UserListComponent,
         data: { title: 'Utilisateurs' },
       },
+
       {
         path: 'new',
         redirectTo: 'users',

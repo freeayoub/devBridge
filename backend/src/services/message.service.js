@@ -8,6 +8,7 @@ const { isValidObjectId } = require("mongoose");
 const { AuthenticationError } = require("../graphql/errors");
 const uploadFile = require("../services/fileUpload.service");
 const NotificationService = require("./notification.service");
+const CallService = require("./call.service");
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
@@ -53,19 +54,22 @@ class MessageService {
     const validTypes = ["image", "video", "audio"];
     const fileType = validTypes.includes(type) ? type : "file";
 
+    // Convertir le type de fichier en majuscules pour correspondre à l'énumération AttachmentType
+    const attachmentType = fileType.toUpperCase();
+
     const attachment = {
       url,
-      type: fileType,
+      type: attachmentType, // Utiliser la valeur en majuscules
       name: filename,
       size: 0, // À remplacer par la taille réelle si possible
       mimeType: fileType !== "file" ? mimetype : undefined,
     };
 
-    if (["image", "video"].includes(fileType)) {
+    if (["image", "video"].includes(fileType.toLowerCase())) {
       attachment.thumbnailUrl = await this.generateThumbnail(url);
     }
 
-    if (["audio", "video"].includes(fileType)) {
+    if (["audio", "video"].includes(fileType.toLowerCase())) {
       attachment.duration = await this.getMediaDuration(url);
     }
 
@@ -655,11 +659,17 @@ class MessageService {
       throw new Error(`Failed to create conversation: ${error.message}`);
     }
   }
-  async sendMessage({ senderId, receiverId, content, file }) {
+  async sendMessage({ senderId, receiverId, content, file, type, metadata }) {
     try {
       logger.info(
-        `[MessageService] Starting sendMessage flow: senderId=${senderId}, receiverId=${receiverId}`
+        `[MessageService] Starting sendMessage flow: senderId=${senderId}, receiverId=${receiverId}, type=${type}, hasMetadata=${!!metadata}`
       );
+
+      if (metadata) {
+        logger.debug(
+          `[MessageService] Message metadata: ${JSON.stringify(metadata)}`
+        );
+      }
 
       // Vérification que les utilisateurs existent
       logger.debug(
@@ -701,17 +711,36 @@ class MessageService {
         logger.debug(
           `[MessageService] File processed successfully: ${attachments[0].url}`
         );
+
+        // Si c'est un message vocal, ajouter la durée à l'attachement
+        if (type === "VOICE_MESSAGE" && metadata && metadata.duration) {
+          attachments[0].duration = metadata.duration;
+          logger.debug(
+            `[MessageService] Added duration ${metadata.duration} to voice message attachment`
+          );
+        }
       }
 
       logger.debug(`[MessageService] Creating new message object`);
+      // Déterminer le type de message
+      let messageType = type || "TEXT";
+
+      // Si le type est VOICE_MESSAGE, le conserver même s'il y a des pièces jointes
+      if (messageType !== "VOICE_MESSAGE" && attachments.length > 0) {
+        messageType = attachments[0].type;
+      }
+
+      logger.debug(`[MessageService] Final message type: ${messageType}`);
+
       const message = new Message({
         senderId,
         receiverId,
         content: content || "",
         attachments,
-        type: attachments.length ? attachments[0].type : "text",
+        type: messageType,
         conversationId: conversation._id,
         status: "sent",
+        metadata: metadata || undefined,
       });
 
       logger.debug(`[MessageService] Saving message to database`);
@@ -774,6 +803,37 @@ class MessageService {
       logger.info(
         `[MessageService] Message flow completed successfully: messageId=${savedMessage._id}`
       );
+
+      // Si c'est un message vocal, créer un enregistrement d'appel
+      if (messageType === "VOICE_MESSAGE" || messageType === "voice_message") {
+        try {
+          logger.debug(
+            `[MessageService] Creating call record for voice message: ${savedMessage._id}`
+          );
+          await CallService.createVoiceMessageCall({
+            senderId,
+            receiverId,
+            conversationId: conversation._id,
+            messageId: savedMessage._id.toString(),
+            duration: metadata?.duration || 0,
+            metadata,
+          });
+          logger.debug(
+            `[MessageService] Call record created successfully for voice message: ${savedMessage._id}`
+          );
+        } catch (callError) {
+          logger.error(
+            `[MessageService] Error creating call record for voice message:`,
+            {
+              error: callError.message,
+              stack: callError.stack,
+              messageId: savedMessage._id,
+            }
+          );
+          // Ne pas bloquer l'envoi du message si la création de l'enregistrement d'appel échoue
+        }
+      }
+
       return formattedMessage;
     } catch (error) {
       logger.error("Send message error:", {
