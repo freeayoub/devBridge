@@ -1,7 +1,10 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const { createServer } = require("http");
+require("dotenv").config();
 
 const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@apollo/server/express4");
@@ -34,6 +37,9 @@ const {
   httpLogger,
   apolloLoggingPlugin,
 } = require("./src/utils/logger");
+const adminRoutes = require("./src/routes/adminRoutes");
+const authRoutes = require("./src/routes/authRoutes");
+const groupRoutes = require("./src/routes/groupRoutes");
 
 // Initialisation
 const app = express();
@@ -69,6 +75,10 @@ app.use(
 );
 
 // 3. REST Routes
+app.use("/api/admin", adminRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/groups", groupRoutes);
+
 app.use("/api/plannings", planningRoutes);
 app.use("/api/reunions", reunionRoutes);
 app.use("/api/users", userRoutes);

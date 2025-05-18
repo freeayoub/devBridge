@@ -11,7 +11,7 @@ import { LoggerService } from '../../services/logger.service';
 @Component({
   selector: 'app-voice-recorder',
   templateUrl: './voice-recorder.component.html',
-  styleUrls: ['./voice-recorder.component.scss'],
+  styleUrls: ['./voice-recorder.component.css'],
 })
 export class VoiceRecorderComponent implements OnInit, OnDestroy {
   @Output() recordingComplete = new EventEmitter<Blob>();

@@ -1,5 +1,5 @@
 const Conversation = require("../models/conversation.model");
-const User = require("../models/user.model");
+const User = require("../models/User");
 const pubsub = require("../config/pubsub");
 const Notification = require("../models/notification.model");
 

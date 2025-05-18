@@ -1,4 +1,4 @@
-const User = require("../models/user.model");
+const User = require("../models/User");
 const pubsub = require("../config/pubsub");
 const mongoose = require("mongoose");
 const { logger } = require("../utils/logger");

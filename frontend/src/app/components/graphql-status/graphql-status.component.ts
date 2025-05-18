@@ -79,3 +79,4 @@ export class GraphqlStatusComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }
+

@@ -1,0 +1,192 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- Hero Section -->
+  <section class="hero bg-gradient-to-r from-[#4f5fad] to-[#7826b5] text-white rounded-2xl p-8 md:p-12 mb-12 shadow-lg">
+    <div class="flex flex-col md:flex-row items-center">
+      <div class="md:w-1/2 mb-8 md:mb-0">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <ng-container *ngIf="!authService.userLoggedIn(); else welcomeBack">
+            Project Management <br> Made Simple
+          </ng-container>
+          <ng-template #welcomeBack>
+            Welcome Back, {{ authService.getCurrentUser()?.username }}!
+            <span *ngIf="isAdmin()" class="block text-sm text-[#dac4ea]">(Administrator)</span>
+          </ng-template>
+        </h1>
+        
+        <p class="text-xl mb-6 text-[#dac4ea]">
+          <ng-container *ngIf="!authService.userLoggedIn(); else userStats">
+            Streamline your workflow, collaborate with your team, and deliver projects on time with DevBridge.
+          </ng-container>
+          <ng-template #userStats>
+            You have <strong>3 active projects</strong> with <strong>5 pending tasks</strong>.
+          </ng-template>
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+          <ng-container *ngIf="!authService.userLoggedIn(); else dashboardLink">
+            <a routerLink="/registeruser" 
+               class="bg-white text-[#4f5fad] hover:bg-[#edf1f4] font-bold py-3 px-6 rounded-lg text-center transition-all">
+              Get Started
+            </a>
+            <a href="#features" 
+               class="border-2 border-white text-white hover:bg-white hover:text-[#4f5fad] font-bold py-3 px-6 rounded-lg text-center transition-all">
+              Learn More
+            </a>
+
+          </ng-container>
+
+      <ng-template #dashboardLink>
+  <!-- Affiche le bouton Dashboard seulement pour les admins -->
+  <a *ngIf="isAdmin()" 
+     routerLink="/admin/dashboard" 
+     class="bg-white text-[#4f5fad] hover:bg-[#edf1f4] font-bold py-3 px-6 rounded-lg text-center transition-all">
+    Go to Dashboard
+  </a>
+  
+  <!-- Bouton View Projects pour tous les utilisateurs connectés -->
+  <a routerLink="/projects" 
+     class="border-2 border-white text-white hover:bg-white hover:text-[#4f5fad] font-bold py-3 px-6 rounded-lg text-center transition-all">
+    View Projects
+  </a>
+</ng-template>
+
+        </div>
+      </div>
+      
+      <div class="md:w-1/2">
+        <img 
+          [src]="authService.userLoggedIn() ? 'assets/images/dashboard-preview.png' : 'assets/images/project-management.png'" 
+          [alt]="authService.userLoggedIn() ? 'Dashboard Preview' : 'Project Management Illustration'"
+          class="rounded-xl shadow-2xl border-4 border-white"
+        >
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="mb-16">
+    <h2 class="text-3xl font-bold text-[#4f5fad] mb-8 text-center">
+      {{ authService.userLoggedIn() ? 'Your Productivity Tools' : 'Powerful Features' }}
+    </h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Feature 1 -->
+      <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all border-t-4 border-[#7826b5]">
+        <div class="text-[#7826b5] mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold mb-3 text-[#6d6870]">Real-time Analytics</h3>
+        <p class="text-[#6d6870]">Get instant insights into your project's progress with our comprehensive analytics dashboard.</p>
+      </div>
+      
+      <!-- Feature 2 -->
+      <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all border-t-4 border-[#4a89ce]">
+        <div class="text-[#4a89ce] mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold mb-3 text-[#6d6870]">Team Collaboration</h3>
+        <p class="text-[#6d6870]">Seamlessly collaborate with your team through integrated chat, file sharing, and task management.</p>
+      </div>
+      
+      <!-- Feature 3 -->
+      <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all border-t-4 border-[#afcf75]">
+        <div class="text-[#afcf75] mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold mb-3 text-[#6d6870]">Project Scheduling</h3>
+        <p class="text-[#6d6870]">Plan and track your projects with our intuitive calendar and milestone tracking system.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboard Preview - Only for logged-in users -->
+  <section *ngIf="authService.userLoggedIn()" class="mb-16 bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div class="p-8">
+      <h2 class="text-3xl font-bold text-[#4f5fad] mb-4">Recent Activity</h2>
+      <p class="text-[#6d6870] mb-6 max-w-2xl">Here's what's been happening with your projects.</p>
+      
+      <!-- Recent Projects -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let project of recentProjects" 
+             class="border border-[#bdc6cc] rounded-lg p-4 hover:shadow-md transition-all">
+          <div class="flex justify-between items-start mb-3">
+            <h3 class="font-bold text-lg text-[#4f5fad]">{{ project.name }}</h3>
+            <span class="bg-[#dac4ea] text-[#7826b5] text-xs px-2 py-1 rounded-full">{{ project.category }}</span>
+          </div>
+          <p class="text-sm text-[#6d6870] mb-4">{{ project.description }}</p>
+          <div class="flex justify-between items-center">
+            <div class="flex -space-x-2">
+              <img *ngFor="let member of project.team" 
+                   [src]="member.avatar" 
+                   [alt]="member.name" 
+                   class="w-8 h-8 rounded-full border-2 border-white">
+            </div>
+            <div class="text-xs text-[#6d6870]">{{ project.dueDate }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="mb-16">
+    <h2 class="text-3xl font-bold text-[#4f5fad] mb-8 text-center">
+      {{ authService.userLoggedIn() ? 'What Our Users Say' : 'Trusted by Teams Worldwide' }}
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div *ngFor="let testimonial of testimonials" 
+           class="bg-white p-6 rounded-xl shadow-md">
+        <div class="flex items-center mb-4">
+          <div class="text-[#7826b5] mr-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+            </svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-[#4f5fad]">{{ testimonial.name }}</h4>
+            <p class="text-sm text-[#6d6870]">{{ testimonial.position }}</p>
+          </div>
+        </div>
+        <p class="text-[#6d6870]">"{{ testimonial.quote }}"</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section - Different for logged-in users -->
+  <section class="bg-gradient-to-r from-[#4f5fad] to-[#7826b5] text-white rounded-2xl p-8 md:p-12 text-center">
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+      {{ authService.userLoggedIn() ? 'Need Help With Your Projects?' : 'Ready to Transform Your Workflow?' }}
+    </h2>
+    <p class="text-xl mb-8 text-[#dac4ea] max-w-2xl mx-auto">
+      {{ authService.userLoggedIn() ? 'Our support team is available 24/7 to help you get the most out of DevBridge.' : 'Join thousands of teams who are already managing their projects more efficiently with DevBridge.' }}
+    </p>
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <ng-container *ngIf="!authService.userLoggedIn(); else supportCta">
+        <a routerLink="/registeruser" 
+           class="bg-white text-[#4f5fad] hover:bg-[#edf1f4] font-bold py-3 px-8 rounded-lg transition-all">
+          Start Free Trial
+        </a>
+        <a href="#" 
+           class="border-2 border-white text-white hover:bg-white hover:text-[#4f5fad] font-bold py-3 px-8 rounded-lg transition-all">
+          Schedule Demo
+        </a>
+      </ng-container>
+      <ng-template #supportCta>
+        <a routerLink="/support" 
+           class="bg-white text-[#4f5fad] hover:bg-[#edf1f4] font-bold py-3 px-8 rounded-lg transition-all">
+          Contact Support
+        </a>
+        <a routerLink="/upgrade" 
+           class="border-2 border-white text-white hover:bg-white hover:text-[#4f5fad] font-bold py-3 px-8 rounded-lg transition-all">
+          Upgrade Plan
+        </a>
+      </ng-template>
+    </div>
+  </section>
+</div>

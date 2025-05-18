@@ -15,7 +15,7 @@ import { LoggerService } from '../../services/logger.service';
 @Component({
   selector: 'app-voice-message-player',
   templateUrl: './voice-message-player.component.html',
-  styleUrls: ['./voice-message-player.component.scss'],
+  styleUrls: ['./voice-message-player.component.css'],
 })
 export class VoiceMessagePlayerComponent
   implements OnInit, OnDestroy, AfterViewInit

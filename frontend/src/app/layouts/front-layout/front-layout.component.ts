@@ -88,19 +88,20 @@ export class FrontLayoutComponent implements OnInit, OnDestroy {
   toggleProfileMenu(): void {
     this.profileMenuOpen = !this.profileMenuOpen;
   }
+  
   logout(): void {
     this.authService.logout().subscribe({
       next: () => {
         this.profileMenuOpen = false;
         this.sidebarOpen = false;
         this.currentUser = null;
-        this.router.navigate(['/loginuser']);
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         console.error('Logout error:', err);
         this.authService.clearAuthData();
         this.currentUser = null;
-        this.router.navigate(['/loginuser']);
+        this.router.navigate(['/login']);
       },
     });
   }
@@ -109,4 +110,5 @@ export class FrontLayoutComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 }
+
 

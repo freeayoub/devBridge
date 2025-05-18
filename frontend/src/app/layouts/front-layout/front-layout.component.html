@@ -36,35 +36,35 @@
 
           <!-- Navigation futuriste -->
           <nav class="hidden md:ml-6 md:flex md:space-x-8">
-            <a
+            <a *ngIf="authService.userLoggedIn()"
               routerLink="/"
               class="futuristic-nav-link"
               routerLinkActive="futuristic-nav-link-active"
               >Accueil</a
             >
 
-            <a
+            <a *ngIf="authService.userLoggedIn()" class="futuristic-nav-link"
               routerLink="/plannings"
               class="futuristic-nav-link"
               routerLinkActive="futuristic-nav-link-active"
               >Plannings</a
             >
 
-            <a
+            <a *ngIf="authService.userLoggedIn()" class="futuristic-nav-link"
               routerLink="/reunions"
               class="futuristic-nav-link"
               routerLinkActive="futuristic-nav-link-active"
               >Réunions</a
             >
 
-            <a
+            <a *ngIf="authService.userLoggedIn()" class="futuristic-nav-link"
               routerLink="/messages"
               class="futuristic-nav-link"
               routerLinkActive="futuristic-nav-link-active"
               >Messages</a
             >
 
-            <a
+            <a *ngIf="authService.userLoggedIn()" class="futuristic-nav-link"
               routerLink="/notifications"
               class="futuristic-nav-link relative"
               routerLinkActive="futuristic-nav-link-active"
@@ -148,11 +148,11 @@
 
           <ng-template #authButtons>
             <div class="flex space-x-4">
-              <a routerLink="/loginuser" class="futuristic-login-button">
+              <a routerLink="/login" class="futuristic-login-button">
                 <i class="fas fa-sign-in-alt mr-2"></i>
                 Connexion
               </a>
-              <a routerLink="/registeruser" class="futuristic-register-button">
+              <a routerLink="/signup" class="futuristic-register-button">
                 <i class="fas fa-user-plus mr-2"></i>
                 Inscription
               </a>
@@ -260,7 +260,7 @@
 
           <ng-container *ngIf="!authService.userLoggedIn()">
             <a
-              routerLink="/loginuser"
+              routerLink="/login"
               (click)="toggleSidebar()"
               class="futuristic-sidebar-link"
             >
@@ -269,7 +269,7 @@
             </a>
 
             <a
-              routerLink="/registeruser"
+              routerLink="/signup"
               (click)="toggleSidebar()"
               class="futuristic-sidebar-link"
             >
@@ -320,7 +320,9 @@
 
     <!-- Router outlet -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Router outlet -->
       <router-outlet></router-outlet>
+
     </div>
   </main>
 </div>

@@ -1,0 +1,64 @@
+@charset "UTF-8";
+/* Styles pour les notifications */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  max-width: 350px;
+  animation: slideIn 0.3s ease-out forwards;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notification-info {
+  background-color: #e6f7ff;
+  color: #0052cc;
+  border-left: 4px solid #1890ff;
+}
+
+.notification-error {
+  background-color: #fff1f0;
+  color: #cf1322;
+  border-left: 4px solid #ff4d4f;
+}
+
+.notification-success {
+  background-color: #f6ffed;
+  color: #389e0d;
+  border-left: 4px solid #52c41a;
+}
+
+/* Icône optionnelle */
+.notification-icon {
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+/* Pour la disparition automatique */
+.notification-auto-hide {
+  animation: fadeOut 0.5s ease-in 4.5s forwards;
+}

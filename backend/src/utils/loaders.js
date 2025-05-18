@@ -1,7 +1,7 @@
 const DataLoader = require("dataloader");
 const mongoose = require("mongoose");
-const User = require("../models/user.model");
-const Group = require("../models/group.model");
+const User = require("../models/User");
+const GroupConversation = require("../models/groupConversation.model");
 const Message = require("../models/message.model");
 const Conversation = require("../models/conversation.model");
 
@@ -23,7 +23,7 @@ const createUserLoader = () => {
 
 const createGroupLoader = () =>
   new DataLoader(async (groupIds) => {
-    const groups = await Group.find({ _id: { $in: groupIds } });
+    const groups = await GroupConversation.find({ _id: { $in: groupIds } });
     const groupMap = groups.reduce((map, group) => {
       map[group._id.toString()] = group;
       return map;

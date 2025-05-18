@@ -1,5 +1,5 @@
 const Call = require("../models/call.model");
-const User = require("../models/user.model");
+const User = require("../models/User");
 const Conversation = require("../models/conversation.model");
 const { GraphQLError } = require("graphql");
 const mongoose = require("mongoose");

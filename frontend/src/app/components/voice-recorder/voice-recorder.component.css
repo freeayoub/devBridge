@@ -1,0 +1,98 @@
+.voice-recorder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+.voice-recorder .recording-status {
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  padding: 5px 10px;
+  transition: all 0.3s ease;
+}
+.voice-recorder .recording-status.active {
+  background-color: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+.voice-recorder .recording-indicator {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+.voice-recorder .recording-indicator .recording-dot {
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  margin-right: 5px;
+  animation: pulse 1.5s infinite;
+}
+.voice-recorder .recording-indicator .recording-time {
+  font-size: 14px;
+  font-weight: bold;
+}
+.voice-recorder .recording-controls {
+  display: flex;
+  align-items: center;
+}
+.voice-recorder .recording-controls .btn-record {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.voice-recorder .recording-controls .btn-record:hover {
+  background-color: #0062cc;
+}
+.voice-recorder .recording-controls .btn-record.recording {
+  background-color: red;
+}
+.voice-recorder .recording-controls .btn-record.recording:hover {
+  background-color: #cc0000;
+}
+.voice-recorder .recording-controls .btn-record i {
+  font-size: 18px;
+}
+.voice-recorder .recording-controls .btn-cancel {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: all 0.3s ease;
+}
+.voice-recorder .recording-controls .btn-cancel:hover {
+  background-color: #545b62;
+}
+.voice-recorder .recording-controls .btn-cancel i {
+  font-size: 14px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

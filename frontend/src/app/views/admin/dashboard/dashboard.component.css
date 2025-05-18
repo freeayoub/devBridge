@@ -1,0 +1,196 @@
+:host {
+  display: block;
+}
+:host .min-h-screen {
+  background: linear-gradient(135deg, var(--dark-bg), var(--medium-bg));
+  background-image: linear-gradient(rgba(0, 247, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 247, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.grid .bg-white {
+  background: rgba(31, 41, 55, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 247, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+.grid .bg-white:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 15px rgba(0, 247, 255, 0.2);
+  border-color: rgba(0, 247, 255, 0.3);
+}
+.grid .bg-white .h-1\.5 {
+  height: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  border-radius: 4px;
+}
+.grid .bg-white .h-1\.5 div {
+  position: relative;
+  overflow: hidden;
+}
+.grid .bg-white .h-1\.5 div::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+.grid .bg-white .h-1\.5 .bg-primary-light, .grid .bg-white .h-1\.5 .bg-primary-dark {
+  background: linear-gradient(90deg, var(--accent-color-dark), var(--accent-color));
+}
+.grid .bg-white .h-1\.5 .bg-green-500, .grid .bg-white .h-1\.5 .bg-green-600 {
+  background: linear-gradient(90deg, #059669, #10B981);
+}
+.grid .bg-white .h-1\.5 .bg-red-500, .grid .bg-white .h-1\.5 .bg-red-600 {
+  background: linear-gradient(90deg, #DC2626, #EF4444);
+}
+.grid .bg-white .h-1\.5 .bg-blue-500, .grid .bg-white .h-1\.5 .bg-blue-600 {
+  background: linear-gradient(90deg, #3B82F6, #60A5FA);
+}
+.grid .bg-white .h-1\.5 .bg-purple-500, .grid .bg-white .h-1\.5 .bg-purple-600 {
+  background: linear-gradient(90deg, #8B5CF6, #A78BFA);
+}
+.grid .bg-white .h-1\.5 .bg-yellow-500, .grid .bg-white .h-1\.5 .bg-yellow-600 {
+  background: linear-gradient(90deg, #F59E0B, #FBBF24);
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+table thead th {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(4px);
+  color: var(--accent-color);
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 12px 16px;
+  position: relative;
+}
+table thead th:first-child {
+  border-top-left-radius: var(--border-radius-md);
+}
+table thead th:last-child {
+  border-top-right-radius: var(--border-radius-md);
+}
+table thead th::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 247, 255, 0.5), transparent);
+}
+table tbody tr {
+  transition: all 0.2s ease;
+}
+table tbody tr:hover {
+  background: rgba(0, 247, 255, 0.05) !important;
+}
+table tbody tr:hover td {
+  color: white;
+}
+table tbody tr td {
+  padding: 12px 16px;
+  transition: all 0.2s ease;
+}
+table tbody tr td .flex-shrink-0 {
+  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+  box-shadow: var(--glow-effect);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.badge.verified {
+  background-color: rgba(5, 150, 105, 0.1);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.badge.not-verified {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.badge.active {
+  background-color: rgba(5, 150, 105, 0.1);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.badge.inactive {
+  background-color: rgba(156, 163, 175, 0.1);
+  color: #9CA3AF;
+  border: 1px solid rgba(156, 163, 175, 0.2);
+}
+
+button {
+  transition: all 0.2s ease;
+}
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--glow-effect);
+}
+button:active {
+  transform: translateY(0);
+}
+
+input[type=text] {
+  background: rgba(31, 41, 55, 0.7);
+  border: 1px solid rgba(0, 247, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+}
+input[type=text]:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 1px rgba(0, 247, 255, 0.2), var(--glow-effect);
+  outline: none;
+}
+input[type=text]::placeholder {
+  color: rgba(156, 163, 175, 0.7);
+}
+
+select {
+  background: rgba(31, 41, 55, 0.7);
+  border: 1px solid rgba(0, 247, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2300f7ff'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1rem;
+  padding-right: 2rem;
+}
+select:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 1px rgba(0, 247, 255, 0.2), var(--glow-effect);
+  outline: none;
+}
+select option {
+  background-color: #1F2937;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+.animate-spin {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+}

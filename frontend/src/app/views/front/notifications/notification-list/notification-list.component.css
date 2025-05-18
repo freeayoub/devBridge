@@ -1,5 +1,5 @@
+@charset "UTF-8";
 /* Styles futuristes pour les notifications */
-
 .futuristic-notifications-container {
   padding: 1rem;
   min-height: calc(100vh - 4rem);
@@ -21,12 +21,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 247, 255, 0.5),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(0, 247, 255, 0.5), transparent);
   z-index: 1;
 }
 
@@ -42,11 +37,7 @@
 .futuristic-title {
   font-size: 1.5rem;
   font-weight: 600;
-  background: linear-gradient(
-    135deg,
-    var(--accent-color),
-    var(--secondary-color)
-  );
+  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -77,11 +68,7 @@
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: linear-gradient(
-    135deg,
-    var(--accent-color),
-    var(--secondary-color)
-  );
+  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
   color: var(--text-light);
   font-size: 0.875rem;
   font-weight: 500;
@@ -125,7 +112,6 @@
     transform: rotate(360deg);
   }
 }
-
 .futuristic-loading-text {
   margin-top: 1rem;
   color: var(--text-dim);
@@ -279,7 +265,6 @@
     box-shadow: 0 0 0 0 rgba(0, 247, 255, 0);
   }
 }
-
 .futuristic-avatar {
   position: relative;
   width: 48px;
@@ -319,11 +304,7 @@
   right: -2px;
   width: 18px;
   height: 18px;
-  background: linear-gradient(
-    135deg,
-    var(--accent-color),
-    var(--secondary-color)
-  );
+  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
   color: var(--text-light);
   border-radius: 50%;
   display: flex;

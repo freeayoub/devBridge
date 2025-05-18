@@ -1,0 +1,132 @@
+@charset "UTF-8";
+.voice-message-player {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border-radius: 18px;
+  padding: 8px 12px;
+  width: 100%;
+  max-width: 240px; /* Largeur plus compacte comme Messenger */
+  border: none;
+  outline: none;
+  box-shadow: none;
+  /* Bouton de lecture style Messenger */
+  /* Animation de pulsation pendant la lecture */
+  /* Animation de pulsation pour le bouton de lecture */
+  /* Animation pour les barres de l'onde sonore */
+  /* Animation de fondu pour l'affichage du temps */
+  /* Appliquer les animations */
+}
+.voice-message-player .play-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #0084ff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 12px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.voice-message-player .play-button:hover {
+  background-color: #f0f2f5;
+}
+.voice-message-player .play-button i {
+  font-size: 12px;
+  margin-left: 2px; /* Léger décalage pour centrer visuellement l'icône de lecture */
+}
+.voice-message-player .progress-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  /* Conteneur de l'onde sonore */
+}
+.voice-message-player .progress-container .waveform-container {
+  width: 100%;
+  position: relative;
+  /* Style de l'onde sonore */
+  /* Affichage du temps */
+}
+.voice-message-player .progress-container .waveform-container .waveform {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 24px;
+  margin-bottom: 4px;
+  /* Barres individuelles de l'onde sonore */
+}
+.voice-message-player .progress-container .waveform-container .waveform .waveform-bar {
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 1px;
+  transition: background-color 0.2s ease;
+  /* Barres actives (déjà lues) */
+}
+.voice-message-player .progress-container .waveform-container .waveform .waveform-bar.active {
+  background-color: #ffffff;
+}
+.voice-message-player .progress-container .waveform-container .time-display {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 2px;
+}
+.voice-message-player .progress-container .waveform-container .time-display .duration {
+  font-weight: 500;
+}
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+@keyframes pulse-button {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes bar-animation {
+  0% {
+    transform: scaleY(0.8);
+  }
+  50% {
+    transform: scaleY(1.1);
+  }
+  100% {
+    transform: scaleY(0.8);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.voice-message-player.is-playing .waveform-bar.active {
+  animation: pulse 1.5s infinite, bar-animation 1.2s ease-in-out infinite;
+}
+.voice-message-player .pulse-animation {
+  animation: pulse-button 2s infinite;
+}
+.voice-message-player .fade-in {
+  animation: fade-in 0.5s ease-in-out;
+}
