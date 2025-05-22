@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { map, Subscription, BehaviorSubject } from 'rxjs';
+import { map, Subscription, BehaviorSubject, Observable } from 'rxjs';
 import { AuthuserService } from 'src/app/services/authuser.service';
 import { Conversation, Message } from 'src/app/models/message.model';
 import { User } from '@app/models/user.model';
@@ -7,6 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ToastService } from 'src/app/services/toast.service';
 import { MessageService } from '@app/services/message.service';
 import { LoggerService } from 'src/app/services/logger.service';
+import { ThemeService } from '@app/services/theme.service';
 @Component({
   selector: 'app-messages-list',
   templateUrl: './messages-list.component.html',
@@ -20,6 +21,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   currentUserId: string | null = null;
   searchQuery = '';
   selectedConversationId: string | null = null;
+  isDarkMode$: Observable<boolean>;
 
   private unreadCount = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCount.asObservable();
@@ -31,8 +33,11 @@ export class MessagesListComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private toastService: ToastService,
-    private logger: LoggerService
-  ) {}
+    private logger: LoggerService,
+    private themeService: ThemeService
+  ) {
+    this.isDarkMode$ = this.themeService.darkMode$;
+  }
 
   ngOnInit(): void {
     this.currentUserId = this.authService.getCurrentUserId();

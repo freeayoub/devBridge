@@ -1,0 +1,358 @@
+/* Variables pour le thème futuriste sombre */
+:root {
+  --accent-color: #00f7ff;
+  --secondary-color: #00c3ff;
+  --dark-bg: #0a0e17;
+  --medium-bg: #111827;
+  --light-bg: #1f2937;
+  --text-light: #f9fafb;
+  --text-dim: #9ca3af;
+  --border-radius-md: 0.375rem;
+  --transition-fast: 0.2s ease;
+  --glow-effect: 0 0 15px rgba(0, 247, 255, 0.4);
+  --glow-effect-strong: 0 0 25px rgba(0, 247, 255, 0.6);
+}
+
+/* Styles futuristes pour le layout */
+.dark .futuristic-layout {
+  background-color: var(--dark-bg);
+  color: var(--text-light);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Effet de grille en arrière-plan */
+.dark body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+      rgba(0, 247, 255, 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(0, 247, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* En-tête futuriste */
+.dark header {
+  background-color: var(--medium-bg) !important;
+  border-bottom: 1px solid rgba(0, 247, 255, 0.2) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Logo futuriste */
+.dark .logo-text,
+.dark .text-xl.font-bold {
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  text-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+}
+
+/* Navigation futuriste */
+.dark a.px-3.py-2 {
+  color: var(--text-dim);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.dark a.px-3.py-2::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
+  transition: width var(--transition-fast);
+}
+
+.dark a.px-3.py-2:hover {
+  color: var(--text-light) !important;
+}
+
+.dark a.px-3.py-2:hover::before {
+  width: 80%;
+}
+
+.dark a.px-3.py-2.text-\[\#4f5fad\] {
+  color: var(--accent-color) !important;
+}
+
+.dark a.px-3.py-2.text-\[\#4f5fad\]::before {
+  width: 80%;
+}
+
+/* Bouton de profil futuriste */
+.dark button.flex.items-center {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dark button.flex.items-center:hover {
+  background-color: rgba(0, 247, 255, 0.1) !important;
+}
+
+/* Menu déroulant futuriste */
+.dark .absolute.right-0.mt-2 {
+  background-color: var(--medium-bg) !important;
+  border: 1px solid rgba(0, 247, 255, 0.2) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dark .block.px-4.py-2 {
+  color: var(--text-dim);
+  transition: all var(--transition-fast);
+}
+
+.dark .block.px-4.py-2:hover {
+  background-color: rgba(0, 247, 255, 0.1) !important;
+  color: var(--text-light) !important;
+}
+
+/* Boutons d'authentification futuristes */
+.dark .inline-flex.items-center.relative {
+  transition: all var(--transition-fast);
+}
+
+.dark .inline-flex.items-center.relative:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-effect) !important;
+}
+
+/* Barre latérale futuriste */
+.dark .fixed.inset-y-0.left-0 {
+  background-color: var(--medium-bg) !important;
+  border-right: 1px solid rgba(0, 247, 255, 0.2) !important;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .flex.items-center.justify-between.h-16.px-4 {
+  border-bottom: 1px solid rgba(0, 247, 255, 0.2) !important;
+}
+
+.dark .group.flex.items-center.px-4.py-3 {
+  color: var(--text-dim);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.dark .group.flex.items-center.px-4.py-3:hover {
+  background-color: rgba(0, 247, 255, 0.1) !important;
+  color: var(--text-light) !important;
+}
+
+.dark .group.flex.items-center.px-4.py-3.text-\[\#4f5fad\] {
+  background-color: rgba(0, 247, 255, 0.15) !important;
+  color: var(--accent-color) !important;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Badge futuriste */
+.dark .absolute.-top-1.-right-1 {
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  ) !important;
+  color: var(--text-light) !important;
+  box-shadow: var(--glow-effect) !important;
+}
+
+/* Contenu principal futuriste */
+.dark main {
+  background-color: var(--dark-bg) !important;
+}
+
+/* Message de statut futuriste */
+.dark .bg-\[\#ff6b69\]\/10 {
+  background-color: rgba(0, 247, 255, 0.1) !important;
+  border-left: 4px solid var(--accent-color) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark .text-\[\#ff6b69\] {
+  color: var(--accent-color) !important;
+}
+
+/* Animation pour les éléments qui apparaissent */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles pour les boutons */
+.dark button {
+  transition: all var(--transition-fast);
+}
+
+.dark button:hover {
+  box-shadow: var(--glow-effect);
+}
+
+/* Style spécifique pour le bouton de basculement du mode sombre */
+.dark button[aria-label="Toggle dark mode"] {
+  background-color: var(--medium-bg) !important;
+  color: var(--accent-color) !important;
+  border: 1px solid rgba(0, 247, 255, 0.2) !important;
+}
+
+.dark button[aria-label="Toggle dark mode"]:hover {
+  box-shadow: var(--glow-effect-strong) !important;
+  transform: scale(1.05);
+}
+
+.dark button[aria-label="Toggle dark mode"] i {
+  color: var(--accent-color) !important;
+}
+
+/* Styles pour les inputs */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--medium-bg) !important;
+  border: 1px solid rgba(0, 247, 255, 0.2) !important;
+  color: var(--text-light) !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px rgba(0, 247, 255, 0.2) !important;
+}
+
+/* Styles pour les cartes et conteneurs */
+.dark .bg-white {
+  background-color: var(--medium-bg) !important;
+  border: 1px solid rgba(0, 247, 255, 0.1) !important;
+}
+
+/* Styles pour les tableaux */
+.dark table {
+  background-color: var(--medium-bg) !important;
+  border: 1px solid rgba(0, 247, 255, 0.1) !important;
+}
+
+.dark th {
+  background-color: rgba(0, 247, 255, 0.05) !important;
+  color: var(--accent-color) !important;
+}
+
+.dark td {
+  border-color: rgba(0, 247, 255, 0.1) !important;
+}
+
+.dark tr:hover {
+  background-color: rgba(0, 247, 255, 0.05) !important;
+}
+
+/* Styles pour les scrollbars */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: var(--dark-bg);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(0, 247, 255, 0.3);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 247, 255, 0.5);
+}
+
+/* Styles pour les liens */
+.dark a {
+  transition: all var(--transition-fast);
+}
+
+.dark a:hover {
+  text-shadow: 0 0 8px rgba(0, 247, 255, 0.5);
+}
+
+/* Styles pour les icônes */
+.dark i.fas,
+.dark i.far,
+.dark i.fab {
+  transition: all var(--transition-fast);
+}
+
+.dark .text-\[\#4f5fad\] {
+  color: var(--accent-color) !important;
+}
+
+/* Effet de pulsation pour certains éléments */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 10px 3px rgba(255, 0, 0, 0.5);
+    transform: scale(1.1);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    transform: scale(1);
+  }
+}
+
+/* Style amélioré pour le badge de notification */
+.dark .notification-badge {
+  animation: pulse 2s infinite;
+  font-weight: bold;
+  z-index: 20;
+  transform-origin: center;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  padding: 0 5px !important;
+  font-size: 0.8rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  position: absolute !important;
+  top: -10px !important;
+  right: -10px !important;
+  border: 2px solid #1e1e1e !important;
+  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.3), 0 0 10px rgba(255, 0, 0, 0.5) !important;
+}
+
+/* Style spécifique pour le badge de notification dans la barre latérale en mode sombre */
+.dark .relative.z-10.flex.items-center .notification-badge {
+  position: relative !important;
+  top: 0 !important;
+  right: 0 !important;
+  margin-left: 8px !important;
+  margin-right: -5px !important;
+}

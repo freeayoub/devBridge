@@ -245,6 +245,12 @@ const typeDefs = gql`
     remainingCount: Int!
   }
 
+  type NotificationDeleteResponse {
+    success: Boolean!
+    count: Int
+    message: String
+  }
+
   type TypingIndicatorEvent {
     conversationId: ID!
     userId: ID!
@@ -442,6 +448,14 @@ const typeDefs = gql`
     ): Message!
 
     markNotificationsAsRead(notificationIds: [ID!]!): NotificationReadResponse!
+
+    deleteNotification(notificationId: ID!): NotificationDeleteResponse!
+
+    deleteMultipleNotifications(
+      notificationIds: [ID!]!
+    ): NotificationDeleteResponse!
+
+    deleteAllNotifications: NotificationDeleteResponse!
 
     sendGroupMessage(input: SendGroupMessageInput!): Message!
 

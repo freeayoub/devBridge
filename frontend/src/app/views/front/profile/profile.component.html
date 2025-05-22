@@ -1,138 +1,578 @@
 <!-- Begin Page Content -->
-<!-- Profile Page -->
-<div class="container mx-auto px-4 py-8">
-<div class="min-h-screen bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
-  <div class="container mx-auto px-4 py-6">
+<div
+  class="container-fluid p-4 md:p-6 bg-[#edf1f4] dark:bg-[#121212] min-h-screen relative"
+>
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+    ></div>
+
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 opacity-5 dark:opacity-[0.03]">
+      <div class="h-full grid grid-cols-12">
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 py-6 relative z-10">
+    <!-- Page Title -->
+    <div class="mb-8">
+      <h1
+        class="text-2xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+      >
+        Mon Profil
+      </h1>
+      <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0] mt-1">
+        Gérez vos informations personnelles et vos préférences
+      </p>
+    </div>
+
     <!-- Loading State -->
     <div *ngIf="!user" class="flex justify-center items-center py-20">
-      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-light dark:border-primary-dark"></div>
+      <div class="relative">
+        <div
+          class="w-14 h-14 border-4 border-[#4f5fad]/20 dark:border-[#6d78c9]/20 border-t-[#4f5fad] dark:border-t-[#6d78c9] rounded-full animate-spin"
+        ></div>
+        <!-- Glow effect -->
+        <div
+          class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 blur-xl rounded-full transform scale-150 -z-10"
+        ></div>
+      </div>
     </div>
 
     <!-- Error Message -->
-    <div *ngIf="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-3 py-2 rounded text-sm mb-4 animate-pulse">
-      {{ error }}
+    <div
+      *ngIf="error"
+      class="bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 border border-[#ff6b69] dark:border-[#ff6b69]/30 rounded-lg p-4 mx-auto max-w-3xl my-4 backdrop-blur-sm"
+    >
+      <div class="flex items-start">
+        <div class="text-[#ff6b69] dark:text-[#ff8785] mr-3 text-xl relative">
+          <i class="fas fa-exclamation-triangle"></i>
+          <!-- Glow effect -->
+          <div
+            class="absolute inset-0 bg-[#ff6b69]/20 dark:bg-[#ff8785]/20 blur-xl rounded-full transform scale-150 -z-10"
+          ></div>
+        </div>
+        <div>
+          <h3 class="font-medium text-[#ff6b69] dark:text-[#ff8785] mb-1">
+            Erreur
+          </h3>
+          <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0]">{{ error }}</p>
+        </div>
+      </div>
     </div>
 
     <!-- Success Message -->
-    <div *ngIf="message" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 px-3 py-2 rounded text-sm mb-4 animate-pulse">
-      {{ message }}
+    <div
+      *ngIf="message"
+      class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/5 border border-[#4f5fad] dark:border-[#6d78c9]/30 rounded-lg p-4 mx-auto max-w-3xl my-4 backdrop-blur-sm"
+    >
+      <div class="flex items-start">
+        <div class="text-[#4f5fad] dark:text-[#6d78c9] mr-3 text-xl relative">
+          <i class="fas fa-check-circle"></i>
+          <!-- Glow effect -->
+          <div
+            class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 blur-xl rounded-full transform scale-150 -z-10"
+          ></div>
+        </div>
+        <div>
+          <h3 class="font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-1">
+            Succès
+          </h3>
+          <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0]">
+            {{ message }}
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- User Profile -->
-    <div *ngIf="user" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div *ngIf="user" class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- Profile Card -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+      <div
+        class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] p-6 backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative overflow-hidden group"
+      >
+        <!-- Decorative gradient top border -->
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"
+        ></div>
+
+        <!-- Glow effect on hover -->
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+        ></div>
+
         <div class="flex flex-col items-center">
-          <div class="w-16 h-16 rounded-full bg-primary-light dark:bg-primary-dark flex items-center justify-center text-white text-xl mb-3">
-            <span *ngIf="!user.profileImageURL">{{ user.fullName.charAt(0) }}</span>
-            <img *ngIf="user.profileImageURL" [src]="user.profileImageURL" alt="Profile" class="w-16 h-16 rounded-full object-cover">
+          <!-- Profile Image with Glow Effect -->
+          <div class="relative mb-5 group/avatar">
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full opacity-0 group-hover/avatar:opacity-100 blur-xl transition-opacity duration-300 -z-10"
+            ></div>
+
+            <div
+              class="w-28 h-28 rounded-full border-4 border-[#edf1f4] dark:border-[#2a2a2a] group-hover/avatar:border-[#4f5fad] dark:group-hover/avatar:border-[#6d78c9] overflow-hidden flex items-center justify-center transition-colors duration-300 relative z-10"
+              style="min-height: 112px; min-width: 112px"
+            >
+              <img
+                *ngIf="!previewUrl || uploadLoading"
+                [src]="getProfileImageUrl()"
+                alt="Profile"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover/avatar:scale-105"
+              />
+              <img
+                *ngIf="previewUrl && !uploadLoading"
+                [src]="previewUrl"
+                alt="Preview"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover/avatar:scale-105"
+              />
+            </div>
           </div>
-          <h2 class="text-base font-medium text-gray-900 dark:text-white">{{ user.fullName }}</h2>
-          <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</p>
-          <div class="mt-1.5 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-full">
+
+          <h2
+            class="text-lg font-medium bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent mb-1"
+          >
+            {{ user.fullName }}
+          </h2>
+          <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0] mb-2">
+            {{ user.email }}
+          </p>
+          <div
+            class="px-3 py-1 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 text-[#4f5fad] dark:text-[#6d78c9] text-xs rounded-full backdrop-blur-sm"
+          >
             {{ user.role | titlecase }}
           </div>
 
           <!-- Upload Profile Image -->
-          <div class="mt-4 w-full">
-            <label for="profile-upload" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Upload Profile Image</label>
-            <div class="flex items-center space-x-2">
-              <input
-                type="file"
-                id="profile-upload"
-                (change)="onFileSelected($event)"
-                class="text-xs text-gray-700 dark:text-gray-300 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-primary-light file:text-white hover:file:bg-primary-light/90"
-              />
-              <button
-                *ngIf="selectedImage"
-                (click)="onUpload()"
-                class="px-2 py-1 text-xs bg-primary-light dark:bg-primary-dark text-white rounded hover:bg-opacity-90 transition-colors"
-              >
-                Upload
-              </button>
+          <div class="mt-6 w-full">
+            <label
+              for="profile-upload"
+              class="flex items-center text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2"
+            >
+              <i class="fas fa-camera mr-1.5"></i>
+              Photo de profil
+            </label>
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="relative w-full group/upload">
+                <input
+                  type="file"
+                  id="profile-upload"
+                  accept="image/*"
+                  (change)="onFileSelected($event)"
+                  class="text-xs text-[#6d6870] dark:text-[#a0a0a0] w-full px-3 py-2 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-[#4f5fad] dark:file:bg-[#6d78c9] file:text-white hover:file:bg-[#3d4a85] dark:hover:file:bg-[#4f5fad] file:transition-colors"
+                />
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none opacity-0 group-focus-within/upload:opacity-100 transition-opacity"
+                >
+                  <div
+                    class="w-0.5 h-4 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full"
+                  ></div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 w-full mt-3">
+                <!-- Upload Button -->
+                <button
+                  *ngIf="selectedImage"
+                  (click)="onUpload()"
+                  class="relative overflow-hidden group/btn flex-1"
+                  [disabled]="uploadLoading"
+                >
+                  <div
+                    class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-lg transition-transform duration-300 group-hover/btn:scale-105 disabled:opacity-50"
+                  ></div>
+                  <div
+                    class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-lg opacity-0 group-hover/btn:opacity-100 blur-md transition-opacity duration-300 disabled:opacity-0"
+                  ></div>
+                  <span
+                    class="relative flex items-center justify-center text-white font-medium py-2 px-3 rounded-lg transition-all z-10"
+                  >
+                    <i *ngIf="!uploadLoading" class="fas fa-upload mr-1.5"></i>
+                    <svg
+                      *ngIf="uploadLoading"
+                      class="animate-spin mr-1.5 h-3.5 w-3.5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <span>{{
+                      uploadLoading ? "Téléchargement..." : "Télécharger"
+                    }}</span>
+                  </span>
+                </button>
+
+                <!-- Remove Button -->
+                <button
+                  *ngIf="
+                    user.profileImage || user.image || user.profileImageURL
+                  "
+                  (click)="removeProfileImage()"
+                  class="relative overflow-hidden group/btn flex-1"
+                  [disabled]="removeLoading"
+                >
+                  <div
+                    class="absolute inset-0 bg-gradient-to-r from-[#ff6b69] to-[#ff8785] rounded-lg transition-transform duration-300 group-hover/btn:scale-105 disabled:opacity-50"
+                  ></div>
+                  <div
+                    class="absolute inset-0 bg-gradient-to-r from-[#ff6b69] to-[#ff8785] rounded-lg opacity-0 group-hover/btn:opacity-100 blur-md transition-opacity duration-300 disabled:opacity-0"
+                  ></div>
+                  <span
+                    class="relative flex items-center justify-center text-white font-medium py-2 px-3 rounded-lg transition-all z-10"
+                  >
+                    <i
+                      *ngIf="!removeLoading"
+                      class="fas fa-trash-alt mr-1.5"
+                    ></i>
+                    <svg
+                      *ngIf="removeLoading"
+                      class="animate-spin mr-1.5 h-3.5 w-3.5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <span>{{
+                      removeLoading ? "Suppression..." : "Supprimer"
+                    }}</span>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Account Information -->
-      <div class="md:col-span-2 space-y-4">
+      <div class="md:col-span-2 space-y-6">
         <!-- Account Details -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary-light dark:text-primary-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            Account Information
+        <div
+          class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] p-6 backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative overflow-hidden group"
+        >
+          <!-- Decorative gradient top border -->
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"
+          ></div>
+
+          <!-- Glow effect on hover -->
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+          ></div>
+
+          <h3
+            class="text-base font-medium bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent mb-4 flex items-center"
+          >
+            <div class="relative mr-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-[#4f5fad] dark:text-[#6d78c9] relative z-10"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <!-- Glow effect -->
+              <div
+                class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+              ></div>
+            </div>
+            Informations du compte
           </h3>
 
-          <div class="space-y-3">
-            <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-100 dark:border-gray-700">
-              <div class="text-xs text-gray-500 dark:text-gray-400">Full Name</div>
-              <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user.fullName }}</div>
+          <div class="space-y-4">
+            <div
+              class="bg-[#edf1f4]/70 dark:bg-[#2a2a2a]/70 p-4 rounded-lg backdrop-blur-sm group/item hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] transition-colors"
+            >
+              <div class="flex items-center mb-1">
+                <div
+                  class="w-1 h-4 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full mr-2"
+                ></div>
+                <div
+                  class="text-xs text-[#6d6870] dark:text-[#a0a0a0] uppercase tracking-wider font-medium"
+                >
+                  Nom complet
+                </div>
+              </div>
+              <div
+                class="text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] ml-3 group-hover/item:translate-x-1 transition-transform"
+              >
+                {{ user.fullName }}
+              </div>
             </div>
 
-            <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-100 dark:border-gray-700">
-              <div class="text-xs text-gray-500 dark:text-gray-400">Email Address</div>
-              <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user.email }}</div>
+            <div
+              class="bg-[#edf1f4]/70 dark:bg-[#2a2a2a]/70 p-4 rounded-lg backdrop-blur-sm group/item hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] transition-colors"
+            >
+              <div class="flex items-center mb-1">
+                <div
+                  class="w-1 h-4 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full mr-2"
+                ></div>
+                <div
+                  class="text-xs text-[#6d6870] dark:text-[#a0a0a0] uppercase tracking-wider font-medium"
+                >
+                  Adresse email
+                </div>
+              </div>
+              <div
+                class="text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] ml-3 group-hover/item:translate-x-1 transition-transform"
+              >
+                {{ user.email }}
+              </div>
             </div>
 
-            <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-100 dark:border-gray-700">
-              <div class="text-xs text-gray-500 dark:text-gray-400">Account Type</div>
-              <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user.role | titlecase }}</div>
+            <div
+              class="bg-[#edf1f4]/70 dark:bg-[#2a2a2a]/70 p-4 rounded-lg backdrop-blur-sm group/item hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] transition-colors"
+            >
+              <div class="flex items-center mb-1">
+                <div
+                  class="w-1 h-4 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full mr-2"
+                ></div>
+                <div
+                  class="text-xs text-[#6d6870] dark:text-[#a0a0a0] uppercase tracking-wider font-medium"
+                >
+                  Type de compte
+                </div>
+              </div>
+              <div
+                class="text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] ml-3 group-hover/item:translate-x-1 transition-transform"
+              >
+                {{ user.role | titlecase }}
+              </div>
             </div>
 
-            <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-100 dark:border-gray-700">
-              <div class="text-xs text-gray-500 dark:text-gray-400">Member Since</div>
-              <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user.createdAt | date:'mediumDate' }}</div>
+            <div
+              class="bg-[#edf1f4]/70 dark:bg-[#2a2a2a]/70 p-4 rounded-lg backdrop-blur-sm group/item hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] transition-colors"
+            >
+              <div class="flex items-center mb-1">
+                <div
+                  class="w-1 h-4 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full mr-2"
+                ></div>
+                <div
+                  class="text-xs text-[#6d6870] dark:text-[#a0a0a0] uppercase tracking-wider font-medium"
+                >
+                  Membre depuis
+                </div>
+              </div>
+              <div
+                class="text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] ml-3 group-hover/item:translate-x-1 transition-transform"
+              >
+                {{ user.createdAt | date : "mediumDate" }}
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Account Actions -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary-light dark:text-primary-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Account Actions
+        <div
+          class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] p-6 backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative overflow-hidden group"
+        >
+          <!-- Decorative gradient top border -->
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"
+          ></div>
+
+          <!-- Glow effect on hover -->
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+          ></div>
+
+          <h3
+            class="text-base font-medium bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent mb-4 flex items-center"
+          >
+            <div class="relative mr-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-[#4f5fad] dark:text-[#6d78c9] relative z-10"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              <!-- Glow effect -->
+              <div
+                class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+              ></div>
+            </div>
+            Actions du compte
           </h3>
 
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-3">
+            <!-- Change Password Button -->
             <a
               routerLink="/change-password"
-              class="px-3 py-1.5 text-xs bg-white dark:bg-gray-700 text-primary-light dark:text-white border border-primary-light dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center"
+              class="relative overflow-hidden group/btn"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-              </svg>
-              Change Password
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#6d78c9]/10 dark:to-[#4f5fad]/10 rounded-lg transition-transform duration-300 group-hover/btn:scale-105"
+              ></div>
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#6d78c9]/10 dark:to-[#4f5fad]/10 rounded-lg opacity-0 group-hover/btn:opacity-100 blur-md transition-opacity duration-300"
+              ></div>
+              <span
+                class="relative flex items-center text-[#4f5fad] dark:text-[#6d78c9] font-medium py-2 px-3 rounded-lg transition-all z-10 border border-[#4f5fad] dark:border-[#6d78c9]"
+              >
+                <div class="relative mr-1.5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 relative z-10 group-hover/btn:scale-110 transition-transform"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                    />
+                  </svg>
+                  <!-- Glow effect -->
+                  <div
+                    class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover/btn:opacity-100 transition-opacity blur-md rounded-full"
+                  ></div>
+                </div>
+                Changer le mot de passe
+              </span>
             </a>
 
+            <!-- Logout Button -->
             <button
               (click)="logout()"
-              class="px-3 py-1.5 text-xs bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors flex items-center"
+              class="relative overflow-hidden group/btn"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Logout
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-[#ff6b69]/10 to-[#ff8785]/10 rounded-lg transition-transform duration-300 group-hover/btn:scale-105"
+              ></div>
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-[#ff6b69]/10 to-[#ff8785]/10 rounded-lg opacity-0 group-hover/btn:opacity-100 blur-md transition-opacity duration-300"
+              ></div>
+              <span
+                class="relative flex items-center text-[#ff6b69] dark:text-[#ff8785] font-medium py-2 px-3 rounded-lg transition-all z-10 border border-[#ff6b69] dark:border-[#ff8785]"
+              >
+                <div class="relative mr-1.5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 relative z-10 group-hover/btn:scale-110 transition-transform"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  <!-- Glow effect -->
+                  <div
+                    class="absolute inset-0 bg-[#ff6b69]/20 dark:bg-[#ff8785]/20 opacity-0 group-hover/btn:opacity-100 transition-opacity blur-md rounded-full"
+                  ></div>
+                </div>
+                Déconnexion
+              </span>
             </button>
 
+            <!-- Dashboard Button -->
             <a
-              [routerLink]="user.role === 'admin' ? '/admin/dashboard' : '/home'"
-              class="px-3 py-1.5 text-xs bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center"
+              [routerLink]="
+                user.role === 'admin' ? '/admin/dashboard' : '/home'
+              "
+              class="relative overflow-hidden group/btn"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              Dashboard
+              <div
+                class="absolute inset-0 bg-[#6d6870]/10 dark:bg-[#a0a0a0]/10 rounded-lg transition-transform duration-300 group-hover/btn:scale-105"
+              ></div>
+              <div
+                class="absolute inset-0 bg-[#6d6870]/10 dark:bg-[#a0a0a0]/10 rounded-lg opacity-0 group-hover/btn:opacity-100 blur-md transition-opacity duration-300"
+              ></div>
+              <span
+                class="relative flex items-center text-[#6d6870] dark:text-[#a0a0a0] font-medium py-2 px-3 rounded-lg transition-all z-10 border border-[#6d6870] dark:border-[#a0a0a0]"
+              >
+                <div class="relative mr-1.5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 relative z-10 group-hover/btn:scale-110 transition-transform"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    />
+                  </svg>
+                  <!-- Glow effect -->
+                  <div
+                    class="absolute inset-0 bg-[#6d6870]/20 dark:bg-[#a0a0a0]/20 opacity-0 group-hover/btn:opacity-100 transition-opacity blur-md rounded-full"
+                  ></div>
+                </div>
+                Tableau de bord
+              </span>
             </a>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </div>

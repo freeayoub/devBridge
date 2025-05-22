@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthadminService } from '@app/services/authadmin.service';
+import { AuthuserService } from '@app/services/authuser.service';
+import { DataService } from '@app/services/data.service';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
   user: any = null;
@@ -15,24 +18,39 @@ export class ProfileComponent implements OnInit {
   error = '';
   loading = true;
   uploadLoading = false;
+  removeLoading = false;
   stats = {
     totalUsers: 0,
     activeUsers: 0,
     inactiveUsers: 0,
     students: 0,
     teachers: 0,
-    admins: 0
+    admins: 0,
   };
   recentActivity = [
-    { action: 'User Deactivated', target: 'John Doe', timestamp: new Date(Date.now() - 3600000) },
-    { action: 'Role Changed', target: 'Jane Smith', timestamp: new Date(Date.now() - 7200000) },
-    { action: 'User Added', target: 'Robert Johnson', timestamp: new Date(Date.now() - 86400000) }
+    {
+      action: 'User Deactivated',
+      target: 'John Doe',
+      timestamp: new Date(Date.now() - 3600000),
+    },
+    {
+      action: 'Role Changed',
+      target: 'Jane Smith',
+      timestamp: new Date(Date.now() - 7200000),
+    },
+    {
+      action: 'User Added',
+      target: 'Robert Johnson',
+      timestamp: new Date(Date.now() - 86400000),
+    },
   ];
-
+  previewUrl: string | ArrayBuffer | null = null;
   constructor(
     private authService: AuthService,
-    private router: Router,
-    private themeService: ThemeService
+    private dataService: DataService,
+    private authAdminService: AuthadminService,
+    private authUserService: AuthuserService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -43,7 +61,7 @@ export class ProfileComponent implements OnInit {
   loadUserData(): void {
     const token = localStorage.getItem('token');
     if (!token) {
-      this.router.navigate(['/auth/login']);
+      this.router.navigate(['/admin/login']);
       return;
     }
 
@@ -53,10 +71,10 @@ export class ProfileComponent implements OnInit {
         this.user = res;
         this.loading = false;
       },
-      error: (err: { error: { message: string; }; }) => {
+      error: (err: { error: { message: string } }) => {
         this.error = err.error?.message || 'Failed to load profile.';
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -68,69 +86,182 @@ export class ProfileComponent implements OnInit {
       next: (res: any) => {
         const users = res as any[];
         this.stats.totalUsers = users.length;
-        this.stats.activeUsers = users.filter(u => u.isActive !== false).length;
-        this.stats.inactiveUsers = users.filter(u => u.isActive === false).length;
-        this.stats.students = users.filter(u => u.role === 'student').length;
-        this.stats.teachers = users.filter(u => u.role === 'teacher').length;
-        this.stats.admins = users.filter(u => u.role === 'admin').length;
+        this.stats.activeUsers = users.filter(
+          (u) => u.isActive !== false
+        ).length;
+        this.stats.inactiveUsers = users.filter(
+          (u) => u.isActive === false
+        ).length;
+        this.stats.students = users.filter((u) => u.role === 'student').length;
+        this.stats.teachers = users.filter((u) => u.role === 'teacher').length;
+        this.stats.admins = users.filter((u) => u.role === 'admin').length;
       },
       error: () => {
         // Silently fail, stats are not critical
-      }
+      },
     });
   }
 
-  onFileSelected(event: any): void {
-    this.selectedImage = event.target.files[0];
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.length) {
+      const file = input.files[0];
+
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        this.error = 'Seuls les JPEG, PNG et WebP sont autorisés';
+        this.resetFileInput();
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        this.error = "L'image ne doit pas dépasser 2MB";
+        this.resetFileInput();
+        return;
+      }
+
+      this.selectedImage = file;
+      this.error = '';
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewUrl = (e.target?.result as string) || null;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+  private resetFileInput(): void {
+    this.selectedImage = null;
+    this.previewUrl = null;
+    const fileInput = document.getElementById(
+      'profile-upload'
+    ) as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
   }
 
   onUpload(): void {
     if (!this.selectedImage) return;
 
-    const formData = new FormData();
-    formData.append('image', this.selectedImage);
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    this.uploadLoading = true;
+    this.uploadLoading = true; // Activer l'état de chargement
     this.message = '';
     this.error = '';
 
-    this.authService.updateProfile(formData, token).subscribe({
-      next: (res: any) => {
-        this.message = res.message || 'Profile updated successfully';
-        this.user.profileImageURL = res.user.profileImageURL;
-        this.selectedImage = null;
-        this.uploadLoading = false;
+    console.log('Upload started, uploadLoading:', this.uploadLoading);
 
-        // Auto-hide message after 3 seconds
-        setTimeout(() => {
-          this.message = '';
-        }, 3000);
-      },
-      error: (err) => {
-        this.error = err.error?.message || 'Upload failed';
-        this.uploadLoading = false;
+    this.dataService
+      .uploadProfileImage(this.selectedImage)
+      .pipe(
+        finalize(() => {
+          this.uploadLoading = false;
+          console.log('Upload finished, uploadLoading:', this.uploadLoading);
+        })
+      )
+      .subscribe({
+        next: (response: any) => {
+          this.message = response.message || 'Profile updated successfully';
 
-        // Auto-hide error after 3 seconds
-        setTimeout(() => {
-          this.error = '';
-        }, 3000);
-      }
-    });
+          // Update both properties to ensure consistency
+          this.user.profileImageURL = response.imageUrl;
+          this.user.profileImage = response.imageUrl;
+
+          // Mettre à jour l'utilisateur dans le service pour synchroniser avec le layout
+          this.dataService.updateCurrentUser({
+            profileImage: response.imageUrl,
+            image: response.imageUrl,
+          });
+
+          this.selectedImage = null;
+          this.previewUrl = null;
+          this.resetFileInput();
+
+          if (response.token) {
+            localStorage.setItem('token', response.token);
+          }
+
+          // Auto-hide message after 3 seconds
+          setTimeout(() => {
+            this.message = '';
+          }, 3000);
+        },
+        error: (err: { error: { message: string } }) => {
+          this.error = err.error?.message || 'Upload failed';
+          // Auto-hide error after 3 seconds
+          setTimeout(() => {
+            this.error = '';
+          }, 3000);
+        },
+      });
+  }
+  removeProfileImage(): void {
+    if (!confirm('Are you sure you want to remove your profile picture?'))
+      return;
+
+    this.removeLoading = true;
+    this.message = '';
+    this.error = '';
+
+    this.dataService
+      .removeProfileImage()
+      .pipe(finalize(() => (this.removeLoading = false)))
+      .subscribe({
+        next: (response: any) => {
+          this.message =
+            response.message || 'Profile picture removed successfully';
+
+          // Update both properties to ensure consistency
+          this.user.profileImageURL = null;
+          this.user.profileImage = null;
+
+          // Mettre à jour l'utilisateur dans le service pour synchroniser avec le layout
+          this.dataService.updateCurrentUser({
+            profileImage: 'assets/images/default-profile.png',
+            image: 'assets/images/default-profile.png',
+          });
+
+          if (response.token) {
+            localStorage.setItem('token', response.token);
+          }
+
+          // Auto-hide message after 3 seconds
+          setTimeout(() => {
+            this.message = '';
+          }, 3000);
+        },
+        error: (err: { error: { message: string } }) => {
+          this.error = err.error?.message || 'Removal failed';
+          // Auto-hide error after 3 seconds
+          setTimeout(() => {
+            this.error = '';
+          }, 3000);
+        },
+      });
   }
 
   navigateTo(path: string): void {
     this.router.navigate([path]);
   }
 
-  toggleDarkMode(): void {
-    this.themeService.toggleDarkMode();
-  }
-
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
+    this.authUserService.logout().subscribe({
+      next: () => {
+        this.authUserService.clearAuthData();
+        this.authAdminService.clearAuthData();
+        setTimeout(() => {
+          this.router.navigate(['/admin/login'], {
+            queryParams: { message: 'Déconnexion réussie' },
+            replaceUrl: true,
+          });
+        }, 100);
+      },
+      error: (err: any) => {
+        console.error('Logout error:', err);
+        this.authUserService.clearAuthData();
+        this.authAdminService.clearAuthData();
+        setTimeout(() => {
+          this.router.navigate(['/admin/login'], {});
+        }, 100);
+      },
+    });
   }
 
   formatDate(date: Date): string {
@@ -139,6 +270,10 @@ export class ProfileComponent implements OnInit {
 
   getInitials(name: string): string {
     if (!name) return 'A';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase();
   }
 }

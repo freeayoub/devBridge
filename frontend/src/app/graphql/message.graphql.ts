@@ -383,6 +383,35 @@ export const MARK_NOTIFICATION_READ_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_NOTIFICATION_MUTATION = gql`
+  mutation DeleteNotification($notificationId: ID!) {
+    deleteNotification(notificationId: $notificationId) {
+      success
+      message
+    }
+  }
+`;
+
+export const DELETE_MULTIPLE_NOTIFICATIONS_MUTATION = gql`
+  mutation DeleteMultipleNotifications($notificationIds: [ID!]!) {
+    deleteMultipleNotifications(notificationIds: $notificationIds) {
+      success
+      count
+      message
+    }
+  }
+`;
+
+export const DELETE_ALL_NOTIFICATIONS_MUTATION = gql`
+  mutation DeleteAllNotifications {
+    deleteAllNotifications {
+      success
+      count
+      message
+    }
+  }
+`;
 export const NOTIFICATION_SUBSCRIPTION = gql`
   subscription NotificationReceived {
     notificationReceived {

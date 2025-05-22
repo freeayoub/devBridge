@@ -1,8 +1,22 @@
-<div class="futuristic-notifications-container">
-  <div class="futuristic-notifications-card">
+<div
+  class="futuristic-notifications-container main-grid-container"
+  [class.dark]="isDarkMode$ | async"
+>
+  <!-- Background decorative elements -->
+  <div class="background-elements background-grid">
+    <!-- Grid pattern and scan line will be added via CSS -->
+  </div>
+
+  <div class="futuristic-notifications-card content-card relative z-10">
     <div class="futuristic-notifications-header">
-      <h2 class="futuristic-title">Notifications</h2>
-      <div class="flex space-x-2">
+      <h2 class="futuristic-title">
+        <i class="fas fa-bell mr-2"></i>
+        Notifications
+      </h2>
+
+      <!-- Barre d'actions normale -->
+      <div class="flex space-x-2" *ngIf="!showSelectionBar">
+        <!-- Bouton de rafraîchissement -->
         <button
           (click)="loadNotifications()"
           class="futuristic-action-button"
@@ -10,12 +24,94 @@
         >
           <i class="fas fa-sync-alt"></i>
         </button>
+
+        <!-- Case à cocher "Tout sélectionner" (déplacée après le bouton de rafraîchissement) -->
+        <div *ngIf="hasNotifications() | async" class="select-all-checkbox">
+          <label class="futuristic-checkbox">
+            <input
+              type="checkbox"
+              [checked]="allSelected"
+              (click)="toggleSelectAll($event)"
+            />
+            <span class="checkmark"></span>
+          </label>
+        </div>
+
+        <!-- Bouton de filtrage des notifications non lues -->
+        <button
+          (click)="toggleUnreadFilter()"
+          class="futuristic-action-button"
+          [class.active]="showOnlyUnread"
+          title="Filtrer les non lues"
+        >
+          <i class="fas fa-filter"></i>
+        </button>
+
+        <!-- Bouton pour activer/désactiver le son -->
+        <button
+          (click)="toggleSound()"
+          class="futuristic-action-button"
+          [class.active]="!isSoundMuted"
+          title="{{ isSoundMuted ? 'Activer le son' : 'Désactiver le son' }}"
+        >
+          <i
+            class="fas"
+            [ngClass]="isSoundMuted ? 'fa-volume-mute' : 'fa-volume-up'"
+          ></i>
+        </button>
+
+        <!-- Bouton pour marquer toutes les notifications comme lues -->
         <button
           *ngIf="(unreadCount$ | async) || 0"
           (click)="markAllAsRead()"
           class="futuristic-primary-button"
         >
           <i class="fas fa-check-double mr-1"></i> Tout marquer comme lu
+        </button>
+
+        <!-- Bouton pour supprimer toutes les notifications -->
+        <button
+          *ngIf="hasNotifications() | async"
+          (click)="deleteAllNotifications()"
+          class="futuristic-danger-button"
+          title="Supprimer toutes les notifications"
+        >
+          <i class="fas fa-trash-alt mr-1"></i> Tout supprimer
+        </button>
+      </div>
+
+      <!-- Barre d'actions pour les notifications sélectionnées -->
+      <div class="flex space-x-2 selection-actions" *ngIf="showSelectionBar">
+        <span class="selection-count"
+          >{{ selectedNotifications.size }} sélectionné(s)</span
+        >
+
+        <!-- Bouton pour marquer les notifications sélectionnées comme lues -->
+        <button
+          (click)="markSelectedAsRead()"
+          class="futuristic-primary-button"
+        >
+          <i class="fas fa-check mr-1"></i> Marquer comme lu
+        </button>
+
+        <!-- Bouton pour supprimer les notifications sélectionnées -->
+        <button
+          (click)="deleteSelectedNotifications()"
+          class="futuristic-danger-button"
+        >
+          <i class="fas fa-trash-alt mr-1"></i> Supprimer
+        </button>
+
+        <!-- Bouton pour annuler la sélection -->
+        <button
+          (click)="
+            selectedNotifications.clear();
+            showSelectionBar = false;
+            allSelected = false
+          "
+          class="futuristic-cancel-button"
+        >
+          <i class="fas fa-times mr-1"></i> Annuler
         </button>
       </div>
     </div>
@@ -62,93 +158,258 @@
     <div
       *ngIf="!loading && (hasNotifications() | async)"
       class="futuristic-notifications-list"
+      #notificationContainer
+      (scroll)="onScroll(notificationContainer)"
     >
-      <ng-container *ngFor="let notification of notifications$ | async">
+      <ng-container *ngFor="let notification of filteredNotifications$ | async">
         <div
           [class.futuristic-notification-unread]="!notification.isRead"
+          [class.futuristic-notification-read]="notification.isRead"
+          [class.futuristic-notification-selected]="isSelected(notification.id)"
           class="futuristic-notification-card"
         >
-          <!-- Badge de notification futuriste -->
-          <div
-            *ngIf="!notification.isRead"
-            class="futuristic-notification-badge"
-          >
-            <span class="futuristic-notification-indicator"></span>
+          <!-- Case à cocher pour la sélection (déplacée en haut à gauche) -->
+          <div class="notification-checkbox">
+            <label class="futuristic-checkbox">
+              <input
+                type="checkbox"
+                [checked]="isSelected(notification.id)"
+                (click)="toggleSelection(notification.id, $event)"
+              />
+              <span class="checkmark"></span>
+            </label>
           </div>
 
-          <div class="flex items-start space-x-3">
-            <!-- Avatar de l'expéditeur futuriste -->
-            <div class="futuristic-avatar">
-              <img
-                *ngIf="notification.senderId?.image"
-                [src]="notification.senderId?.image"
-                alt="Avatar"
-              />
-              <div
-                *ngIf="!notification.senderId?.image"
-                class="futuristic-avatar-placeholder"
-              >
-                <i class="fas fa-user"></i>
-              </div>
-              <div
-                *ngIf="notification.type === 'FRIEND_REQUEST'"
-                class="futuristic-notification-type-icon"
-              >
-                <i class="fas fa-user-plus"></i>
-              </div>
-            </div>
+          <!-- Avatar de l'expéditeur simplifié -->
+          <div class="notification-avatar">
+            <img
+              [src]="
+                notification.senderId?.image ||
+                'assets/images/default-avatar.png'
+              "
+              alt="Avatar"
+              onerror="this.src='assets/images/default-avatar.png'"
+            />
+          </div>
 
-            <!-- Contenu de notification futuriste -->
-            <div class="futuristic-notification-content">
-              <div class="flex items-baseline justify-between">
-                <p class="futuristic-notification-text">
-                  <span class="futuristic-notification-sender">{{
+          <!-- Contenu principal de la notification -->
+          <div class="notification-main-content">
+            <!-- Contenu de notification simplifié -->
+            <div class="notification-content">
+              <div class="notification-header">
+                <div class="notification-header-top">
+                  <span class="notification-sender">{{
                     notification.senderId?.username || "Système"
                   }}</span>
-                  {{ notification.content }}
-                </p>
-                <span class="futuristic-notification-time">
-                  {{ notification.timestamp | date : "shortTime" }}
-                </span>
+
+                  <!-- Heure de la notification (placée à droite du nom d'utilisateur) -->
+                  <div class="notification-time">
+                    {{ notification.timestamp | date : "shortTime" }}
+                  </div>
+                </div>
               </div>
 
-              <!-- Aperçu du message futuriste -->
+              <!-- Contenu du message (déplacé après l'en-tête) -->
+              <div class="notification-text-container">
+                <span class="notification-text">{{
+                  notification.content
+                }}</span>
+              </div>
+
+              <!-- Aperçu du message simplifié -->
               <div
                 *ngIf="notification.message?.content"
-                class="futuristic-message-preview"
+                class="notification-message-preview"
               >
                 {{ notification.message?.content }}
               </div>
 
-              <!-- Boutons d'action futuristes -->
-              <div class="futuristic-notification-actions">
-                <button
-                  *ngIf="!notification.isRead"
-                  (click)="
-                    markAsRead(notification.id); $event.stopPropagation()
-                  "
-                  class="futuristic-read-button"
-                >
-                  <i class="fas fa-check mr-1"></i> Marquer comme lu
-                </button>
-
-                <button
-                  *ngIf="
-                    notification.type === 'FRIEND_REQUEST' &&
-                    !notification.isRead
-                  "
-                  (click)="
-                    acceptFriendRequest(notification); $event.stopPropagation()
-                  "
-                  class="futuristic-accept-button"
-                >
-                  <i class="fas fa-user-plus mr-1"></i> Accepter
-                </button>
+              <!-- Indicateur de pièces jointes -->
+              <div
+                *ngIf="notification.message?.attachments?.length"
+                class="notification-attachments-indicator"
+              >
+                <i class="fas fa-paperclip"></i>
+                {{ notification.message?.attachments?.length }} pièce(s)
+                jointe(s)
               </div>
             </div>
+
+            <!-- Indicateur de non-lu (petit point bleu) -->
+            <div *ngIf="!notification.isRead" class="unread-indicator"></div>
+          </div>
+
+          <!-- Actions de notification -->
+          <div class="notification-actions">
+            <!-- Bouton pour afficher les pièces jointes -->
+            <button
+              *ngIf="notification.message?.attachments?.length"
+              (click)="
+                getNotificationAttachments(notification.id);
+                $event.stopPropagation()
+              "
+              class="notification-action-button notification-attachment-button"
+              title="Voir les pièces jointes"
+            >
+              <i class="fas fa-paperclip"></i>
+            </button>
+
+            <!-- Bouton pour rejoindre la conversation -->
+            <button
+              *ngIf="
+                notification.type === 'NEW_MESSAGE' ||
+                notification.type === 'GROUP_INVITE'
+              "
+              (click)="joinConversation(notification); $event.stopPropagation()"
+              class="notification-action-button notification-join-button"
+              title="Rejoindre la conversation"
+            >
+              <i class="fas fa-comments"></i>
+            </button>
+
+            <!-- Bouton pour voir les détails de la notification -->
+            <button
+              (click)="
+                openNotificationDetails(notification); $event.stopPropagation()
+              "
+              class="notification-action-button notification-details-button"
+              title="Voir les détails"
+            >
+              <i class="fas fa-info-circle"></i>
+            </button>
+
+            <!-- Bouton marquer comme lu -->
+            <button
+              *ngIf="!notification.isRead"
+              (click)="markAsRead(notification.id); $event.stopPropagation()"
+              class="notification-action-button notification-read-button"
+              title="Marquer comme lu"
+            >
+              <i class="fas fa-check"></i>
+            </button>
+
+            <!-- Bouton pour supprimer la notification -->
+            <button
+              (click)="
+                deleteNotification(notification.id); $event.stopPropagation()
+              "
+              class="notification-action-button notification-delete-button"
+              title="Supprimer cette notification"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </button>
           </div>
         </div>
       </ng-container>
+
+      <!-- Indicateur de chargement des anciennes notifications -->
+      <div *ngIf="loadingMore" class="futuristic-loading-more">
+        <div class="futuristic-loading-circle-small"></div>
+        <p class="futuristic-loading-text-small">
+          Chargement des notifications plus anciennes...
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pour afficher les pièces jointes -->
+<div
+  class="futuristic-modal-overlay"
+  [style.display]="showAttachmentsModal ? 'flex' : 'none'"
+  (click)="closeAttachmentsModal()"
+>
+  <div class="futuristic-modal-container" (click)="$event.stopPropagation()">
+    <div class="futuristic-modal-header">
+      <h3 class="futuristic-modal-title">
+        <i class="fas fa-paperclip mr-2"></i>
+        Pièces jointes
+      </h3>
+      <button class="futuristic-modal-close" (click)="closeAttachmentsModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="futuristic-modal-body">
+      <div *ngIf="loadingAttachments" class="futuristic-loading-container">
+        <div class="futuristic-loading-circle"></div>
+        <p class="futuristic-loading-text">Chargement des pièces jointes...</p>
+      </div>
+
+      <div
+        *ngIf="!loadingAttachments && currentAttachments.length === 0"
+        class="futuristic-empty-state"
+      >
+        <div class="futuristic-empty-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <h3 class="futuristic-empty-title">Aucune pièce jointe</h3>
+        <p class="futuristic-empty-text">
+          Aucune pièce jointe n'a été trouvée pour cette notification.
+        </p>
+      </div>
+
+      <div
+        *ngIf="!loadingAttachments && currentAttachments.length > 0"
+        class="futuristic-attachments-list"
+      >
+        <div
+          *ngFor="let attachment of currentAttachments"
+          class="futuristic-attachment-item"
+        >
+          <!-- Image -->
+          <div
+            *ngIf="isImage(attachment.type)"
+            class="futuristic-attachment-preview"
+          >
+            <img
+              [src]="attachment.url"
+              alt="Image"
+              (click)="openAttachment(attachment.url)"
+            />
+          </div>
+
+          <!-- Document -->
+          <div
+            *ngIf="!isImage(attachment.type)"
+            class="futuristic-attachment-icon"
+          >
+            <i [class]="getFileIcon(attachment.type)"></i>
+          </div>
+
+          <div class="futuristic-attachment-info">
+            <div class="futuristic-attachment-name">
+              {{ attachment.name || "Pièce jointe" }}
+            </div>
+            <div class="futuristic-attachment-meta">
+              <span class="futuristic-attachment-type">{{
+                getFileTypeLabel(attachment.type)
+              }}</span>
+              <span
+                *ngIf="attachment.size"
+                class="futuristic-attachment-size"
+                >{{ formatFileSize(attachment.size) }}</span
+              >
+            </div>
+          </div>
+
+          <div class="futuristic-attachment-actions">
+            <button
+              class="futuristic-attachment-button"
+              (click)="openAttachment(attachment.url)"
+              title="Ouvrir"
+            >
+              <i class="fas fa-external-link-alt"></i>
+            </button>
+            <button
+              class="futuristic-attachment-button"
+              (click)="downloadAttachment(attachment)"
+              title="Télécharger"
+            >
+              <i class="fas fa-download"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

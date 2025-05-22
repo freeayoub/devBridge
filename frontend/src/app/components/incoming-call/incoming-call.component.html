@@ -1,29 +1,135 @@
-<div *ngIf="incomingCall" class="incoming-call-container">
-  <div class="incoming-call-card">
-    <div class="caller-info">
-      <div class="caller-avatar">
-        <img [src]="incomingCall.caller.image || 'assets/images/default-avatar.png'" 
-             [alt]="incomingCall.caller.username" 
-             class="avatar-img">
+<div
+  *ngIf="incomingCall"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fadeIn"
+>
+  <div
+    class="w-full max-w-md bg-white dark:bg-[#1e1e1e] rounded-xl shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative animate-slideUp"
+  >
+    <!-- Decorative top border with gradient and glow -->
+    <div
+      class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"
+    ></div>
+    <div
+      class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] blur-md"
+    ></div>
+
+    <!-- Pulse animation for incoming call -->
+    <div
+      class="absolute inset-0 border-2 border-[#4f5fad]/20 dark:border-[#6d78c9]/20 rounded-xl animate-ping opacity-30"
+    ></div>
+
+    <div class="p-6">
+      <div class="flex items-center mb-6">
+        <div class="relative mr-4 group">
+          <div
+            class="w-16 h-16 rounded-full overflow-hidden border-2 border-[#4f5fad] dark:border-[#6d78c9] group-hover:border-[#4f5fad] dark:group-hover:border-[#6d78c9] transition-colors"
+          >
+            <img
+              [src]="
+                incomingCall.caller.image || 'assets/images/default-avatar.png'
+              "
+              [alt]="incomingCall.caller.username"
+              class="w-full h-full object-cover"
+            />
+          </div>
+
+          <!-- Glow effect -->
+          <div
+            class="absolute inset-0 bg-[#4f5fad]/30 dark:bg-[#6d78c9]/30 rounded-full blur-md"
+          ></div>
+
+          <!-- Animated rings -->
+          <div
+            class="absolute inset-0 border-2 border-[#4f5fad]/40 dark:border-[#6d78c9]/40 rounded-full animate-ping opacity-75"
+          ></div>
+        </div>
+
+        <div>
+          <h3
+            class="text-xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+          >
+            {{ incomingCall.caller.username }}
+          </h3>
+          <p
+            class="text-sm text-[#6d6870] dark:text-[#a0a0a0] flex items-center mt-1"
+          >
+            <i
+              class="fas fa-{{
+                getCallTypeIcon()
+              }} text-[#4f5fad] dark:text-[#6d78c9] mr-2 animate-pulse"
+            ></i>
+            {{ getCallTypeText() }}
+          </p>
+        </div>
       </div>
-      <div class="caller-details">
-        <h3 class="caller-name">{{ incomingCall.caller.username }}</h3>
-        <p class="call-type">
-          <i class="fas fa-{{ getCallTypeIcon() }}"></i> 
-          {{ getCallTypeText() }}
-        </p>
+
+      <div class="flex space-x-3 mt-6">
+        <button
+          (click)="rejectCall()"
+          class="flex-1 relative overflow-hidden group rounded-lg"
+        >
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-[#ff6b69] to-[#ff8785] rounded-lg transition-transform duration-300 group-hover:scale-105"
+          ></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-[#ff6b69] to-[#ff8785] rounded-lg opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+          ></div>
+          <span
+            class="relative flex items-center justify-center text-white font-medium py-3 px-4 rounded-lg transition-all z-10"
+          >
+            <i class="fas fa-phone-slash mr-2"></i>
+            Refuser
+          </span>
+        </button>
+
+        <button
+          (click)="acceptCall()"
+          class="flex-1 relative overflow-hidden group rounded-lg"
+        >
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-[#2a5a03] to-[#afcf75] dark:from-[#2a5a03] dark:to-[#afcf75] rounded-lg transition-transform duration-300 group-hover:scale-105"
+          ></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-[#2a5a03] to-[#afcf75] dark:from-[#2a5a03] dark:to-[#afcf75] rounded-lg opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+          ></div>
+          <span
+            class="relative flex items-center justify-center text-white font-medium py-3 px-4 rounded-lg transition-all z-10"
+          >
+            <i class="fas fa-phone mr-2"></i>
+            Accepter
+          </span>
+        </button>
       </div>
-    </div>
-    
-    <div class="call-actions">
-      <button (click)="rejectCall()" class="reject-btn">
-        <i class="fas fa-phone-slash"></i>
-        <span>Refuser</span>
-      </button>
-      <button (click)="acceptCall()" class="accept-btn">
-        <i class="fas fa-phone"></i>
-        <span>Accepter</span>
-      </button>
     </div>
   </div>
 </div>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  .animate-slideUp {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+</style>

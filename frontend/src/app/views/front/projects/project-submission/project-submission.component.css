@@ -1,0 +1,35 @@
+/* Styles pour le composant de soumission de projet */
+.submission-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.file-upload {
+  border: 2px dashed #ccc;
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.file-upload:hover {
+  border-color: #6366f1;
+}
+
+.file-list {
+  margin-top: 1rem;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background-color: #f9fafb;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+}

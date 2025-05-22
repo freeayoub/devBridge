@@ -1,61 +1,248 @@
-<div *ngIf="activeCall" class="active-call-container" [ngClass]="{'video-call': isVideoCall()}">
+<div
+  *ngIf="activeCall"
+  class="fixed inset-0 z-50 bg-[#121212]/90 backdrop-blur-sm flex flex-col"
+>
   <!-- Appel vidéo -->
-  <div *ngIf="isVideoCall()" class="video-container">
-    <div class="remote-video-wrapper">
-      <video #remoteVideo autoplay playsinline class="remote-video"></video>
-      
+  <div *ngIf="isVideoCall()" class="flex-1 relative">
+    <!-- Vidéo distante -->
+    <div class="absolute inset-0 overflow-hidden">
+      <video
+        #remoteVideo
+        autoplay
+        playsinline
+        class="w-full h-full object-cover"
+      ></video>
+
+      <!-- Overlay gradient -->
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-[#121212]/80 to-transparent pointer-events-none"
+      ></div>
+
       <!-- Afficher l'avatar si la vidéo est désactivée -->
-      <div *ngIf="!remoteVideo.srcObject" class="video-placeholder">
-        <img [src]="getOtherParticipantAvatar()" [alt]="getOtherParticipantName()" class="avatar-img">
+      <div
+        *ngIf="!remoteVideo.srcObject"
+        class="absolute inset-0 flex items-center justify-center bg-[#121212]/70"
+      >
+        <div class="relative">
+          <div
+            class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#4f5fad] dark:border-[#6d78c9]"
+          >
+            <img
+              [src]="getOtherParticipantAvatar()"
+              [alt]="getOtherParticipantName()"
+              class="w-full h-full object-cover"
+            />
+          </div>
+
+          <!-- Glow effect -->
+          <div
+            class="absolute inset-0 bg-[#4f5fad]/30 dark:bg-[#6d78c9]/30 rounded-full blur-md"
+          ></div>
+
+          <!-- Animated rings -->
+          <div
+            class="absolute inset-0 border-2 border-[#4f5fad]/40 dark:border-[#6d78c9]/40 rounded-full animate-ping opacity-75"
+          ></div>
+        </div>
       </div>
-      
+
       <!-- Informations sur l'appel -->
-      <div class="call-info">
-        <h3 class="participant-name">{{ getOtherParticipantName() }}</h3>
-        <p class="call-status">{{ getCallStatusText() }}</p>
+      <div
+        class="absolute top-6 left-0 right-0 flex justify-center pointer-events-none"
+      >
+        <div
+          class="px-4 py-2 rounded-full bg-[#121212]/50 backdrop-blur-sm border border-[#2a2a2a] flex items-center space-x-2"
+        >
+          <div
+            class="w-2 h-2 rounded-full bg-[#4f5fad] dark:bg-[#6d78c9] animate-pulse"
+          ></div>
+          <span class="text-white text-sm font-medium">{{
+            getCallStatusText()
+          }}</span>
+        </div>
+      </div>
+
+      <div
+        class="absolute bottom-24 left-0 right-0 text-center pointer-events-none"
+      >
+        <h3
+          class="text-xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+        >
+          {{ getOtherParticipantName() }}
+        </h3>
       </div>
     </div>
-    
-    <div class="local-video-wrapper">
-      <video #localVideo autoplay playsinline muted class="local-video"></video>
+
+    <!-- Vidéo locale -->
+    <div
+      class="absolute top-4 right-4 w-32 h-48 rounded-lg overflow-hidden shadow-lg border border-[#2a2a2a] z-10"
+    >
+      <video
+        #localVideo
+        autoplay
+        playsinline
+        muted
+        class="w-full h-full object-cover"
+      ></video>
+
+      <!-- Overlay gradient -->
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-[#121212]/30 to-transparent pointer-events-none"
+      ></div>
     </div>
   </div>
-  
+
   <!-- Appel audio -->
-  <div *ngIf="!isVideoCall()" class="audio-call-info">
-    <div class="participant-avatar">
-      <img [src]="getOtherParticipantAvatar()" [alt]="getOtherParticipantName()" class="avatar-img">
+  <div
+    *ngIf="!isVideoCall()"
+    class="flex-1 flex flex-col items-center justify-center"
+  >
+    <div class="relative mb-8">
+      <div
+        class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#4f5fad] dark:border-[#6d78c9]"
+      >
+        <img
+          [src]="getOtherParticipantAvatar()"
+          [alt]="getOtherParticipantName()"
+          class="w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Glow effect -->
+      <div
+        class="absolute inset-0 bg-[#4f5fad]/30 dark:bg-[#6d78c9]/30 rounded-full blur-md"
+      ></div>
+
+      <!-- Animated rings -->
+      <div
+        class="absolute -inset-4 border-2 border-[#4f5fad]/10 dark:border-[#6d78c9]/10 rounded-full animate-ping opacity-75"
+      ></div>
+      <div
+        class="absolute -inset-8 border border-[#4f5fad]/5 dark:border-[#6d78c9]/5 rounded-full animate-ping opacity-50 delay-300"
+      ></div>
     </div>
-    <h2 class="participant-name">{{ getOtherParticipantName() }}</h2>
-    <p class="call-status">{{ getCallStatusText() }}</p>
+
+    <h2
+      class="text-2xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent mb-2"
+    >
+      {{ getOtherParticipantName() }}
+    </h2>
+
+    <div
+      class="px-4 py-2 rounded-full bg-[#1e1e1e]/80 backdrop-blur-sm border border-[#2a2a2a] flex items-center space-x-2 mb-8"
+    >
+      <div
+        class="w-2 h-2 rounded-full bg-[#4f5fad] dark:bg-[#6d78c9] animate-pulse"
+      ></div>
+      <span class="text-white text-sm font-medium">{{
+        getCallStatusText()
+      }}</span>
+    </div>
+
+    <!-- Visualisation audio -->
+    <div class="flex items-center h-16 space-x-1 mb-8">
+      <div
+        *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+        class="w-1 bg-gradient-to-t from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full"
+        [style.height.px]="10 + (i % 5) * 6"
+        [style.animation-delay.ms]="i * 100"
+      ></div>
+    </div>
   </div>
-  
+
   <!-- Contrôles d'appel -->
-  <div class="call-controls">
-    <button 
-      (click)="toggleMicrophone()" 
-      class="control-btn" 
-      [ngClass]="{'active': !isAudioMuted}">
-      <i class="fas" [ngClass]="isAudioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
+  <div class="p-6 flex justify-center space-x-4">
+    <button
+      (click)="toggleMicrophone()"
+      class="w-14 h-14 rounded-full flex items-center justify-center relative group"
+      [ngClass]="{
+        'bg-[#4f5fad] dark:bg-[#6d78c9] text-white': !isAudioMuted,
+        'bg-[#1e1e1e] text-[#6d6870] border border-[#2a2a2a]': isAudioMuted
+      }"
+    >
+      <!-- Glow effect -->
+      <div
+        class="absolute inset-0 rounded-full blur-md transition-opacity"
+        [ngClass]="{
+          'opacity-100 bg-[#4f5fad]/50 dark:bg-[#6d78c9]/50': !isAudioMuted,
+          'opacity-0 group-hover:opacity-30 bg-[#4f5fad]/30 dark:bg-[#6d78c9]/30':
+            isAudioMuted
+        }"
+      ></div>
+      <i
+        class="fas text-lg relative z-10"
+        [ngClass]="isAudioMuted ? 'fa-microphone-slash' : 'fa-microphone'"
+      ></i>
     </button>
-    
-    <button 
-      *ngIf="isVideoCall()" 
-      (click)="toggleCamera()" 
-      class="control-btn" 
-      [ngClass]="{'active': !isVideoMuted}">
-      <i class="fas" [ngClass]="isVideoMuted ? 'fa-video-slash' : 'fa-video'"></i>
+
+    <button
+      *ngIf="isVideoCall()"
+      (click)="toggleCamera()"
+      class="w-14 h-14 rounded-full flex items-center justify-center relative group"
+      [ngClass]="{
+        'bg-[#4f5fad] dark:bg-[#6d78c9] text-white': !isVideoMuted,
+        'bg-[#1e1e1e] text-[#6d6870] border border-[#2a2a2a]': isVideoMuted
+      }"
+    >
+      <!-- Glow effect -->
+      <div
+        class="absolute inset-0 rounded-full blur-md transition-opacity"
+        [ngClass]="{
+          'opacity-100 bg-[#4f5fad]/50 dark:bg-[#6d78c9]/50': !isVideoMuted,
+          'opacity-0 group-hover:opacity-30 bg-[#4f5fad]/30 dark:bg-[#6d78c9]/30':
+            isVideoMuted
+        }"
+      ></div>
+      <i
+        class="fas text-lg relative z-10"
+        [ngClass]="isVideoMuted ? 'fa-video-slash' : 'fa-video'"
+      ></i>
     </button>
-    
-    <button 
-      (click)="toggleSpeaker()" 
-      class="control-btn" 
-      [ngClass]="{'active': isSpeakerOn}">
-      <i class="fas" [ngClass]="isSpeakerOn ? 'fa-volume-up' : 'fa-volume-mute'"></i>
+
+    <button
+      (click)="toggleSpeaker()"
+      class="w-14 h-14 rounded-full flex items-center justify-center relative group"
+      [ngClass]="{
+        'bg-[#4f5fad] dark:bg-[#6d78c9] text-white': isSpeakerOn,
+        'bg-[#1e1e1e] text-[#6d6870] border border-[#2a2a2a]': !isSpeakerOn
+      }"
+    >
+      <!-- Glow effect -->
+      <div
+        class="absolute inset-0 rounded-full blur-md transition-opacity"
+        [ngClass]="{
+          'opacity-100 bg-[#4f5fad]/50 dark:bg-[#6d78c9]/50': isSpeakerOn,
+          'opacity-0 group-hover:opacity-30 bg-[#4f5fad]/30 dark:bg-[#6d78c9]/30':
+            !isSpeakerOn
+        }"
+      ></div>
+      <i
+        class="fas text-lg relative z-10"
+        [ngClass]="isSpeakerOn ? 'fa-volume-up' : 'fa-volume-mute'"
+      ></i>
     </button>
-    
-    <button (click)="endCall()" class="end-call-btn">
-      <i class="fas fa-phone-slash"></i>
+
+    <button
+      (click)="endCall()"
+      class="w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-r from-[#ff6b69] to-[#ff8785] text-white relative group"
+    >
+      <!-- Glow effect -->
+      <div
+        class="absolute inset-0 bg-[#ff6b69]/50 rounded-full blur-md opacity-70 group-hover:opacity-100 transition-opacity"
+      ></div>
+      <i class="fas fa-phone-slash text-lg relative z-10"></i>
     </button>
   </div>
 </div>
+
+<style>
+  @keyframes audio-visualizer {
+    0%,
+    100% {
+      height: var(--min-height, 10px);
+    }
+    50% {
+      height: var(--max-height, 40px);
+    }
+  }
+</style>

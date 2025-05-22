@@ -9,7 +9,15 @@ import {
   retry,
   EMPTY,
 } from 'rxjs';
-import { map, catchError, tap, filter, switchMap } from 'rxjs/operators';
+import {
+  map,
+  catchError,
+  tap,
+  filter,
+  switchMap,
+  concatMap,
+  toArray,
+} from 'rxjs/operators';
 import { from } from 'rxjs';
 import {
   MessageType,
@@ -56,6 +64,9 @@ import {
   MARK_NOTIFICATION_READ_MUTATION,
   NOTIFICATIONS_READ_SUBSCRIPTION,
   CREATE_CONVERSATION_MUTATION,
+  DELETE_NOTIFICATION_MUTATION,
+  DELETE_MULTIPLE_NOTIFICATIONS_MUTATION,
+  DELETE_ALL_NOTIFICATIONS_MUTATION,
   // Requêtes et mutations pour les appels
   CALL_HISTORY_QUERY,
   CALL_DETAILS_QUERY,
@@ -178,9 +189,53 @@ export class MessageService implements OnDestroy {
     private logger: LoggerService,
     private zone: NgZone
   ) {
+    this.loadNotificationsFromLocalStorage();
     this.initSubscriptions();
     this.startCleanupInterval();
     this.preloadSounds();
+  }
+
+  /**
+   * Charge les notifications depuis le localStorage
+   * @private
+   */
+  private loadNotificationsFromLocalStorage(): void {
+    try {
+      const savedNotifications = localStorage.getItem('notifications');
+      if (savedNotifications) {
+        const notifications = JSON.parse(savedNotifications) as Notification[];
+        this.logger.debug(
+          'MessageService',
+          `Chargement de ${notifications.length} notifications depuis le localStorage`
+        );
+
+        // Vider le cache avant de charger les notifications pour éviter les doublons
+        this.notificationCache.clear();
+
+        // Mettre à jour le cache avec les notifications sauvegardées
+        notifications.forEach((notification) => {
+          // Vérifier que la notification a un ID valide
+          if (notification && notification.id) {
+            this.notificationCache.set(notification.id, notification);
+          }
+        });
+
+        // Mettre à jour le BehaviorSubject avec les notifications chargées
+        this.notifications.next(Array.from(this.notificationCache.values()));
+        this.updateUnreadCount();
+
+        this.logger.debug(
+          'MessageService',
+          `${this.notificationCache.size} notifications chargées dans le cache`
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        'MessageService',
+        'Erreur lors du chargement des notifications depuis le localStorage:',
+        error
+      );
+    }
   }
   private initSubscriptions(): void {
     this.zone.runOutsideAngular(() => {
@@ -375,7 +430,67 @@ export class MessageService implements OnDestroy {
    * Joue le son de notification
    */
   playNotificationSound(): void {
-    this.play('notification');
+    console.log('MessageService: Tentative de lecture du son de notification');
+
+    if (this.muted) {
+      console.log('MessageService: Son désactivé, notification ignorée');
+      return;
+    }
+
+    // Utiliser l'API Web Audio pour générer un son de notification simple
+    try {
+      // Créer un contexte audio
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+
+      // Créer un oscillateur pour générer un son
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      // Configurer l'oscillateur
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // La note A5
+
+      // Configurer le volume
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        0.5,
+        audioContext.currentTime + 0.01
+      );
+      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.3);
+
+      // Connecter les nœuds
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      // Démarrer et arrêter l'oscillateur
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+
+      console.log('MessageService: Son de notification généré avec succès');
+    } catch (error) {
+      console.error(
+        'MessageService: Erreur lors de la génération du son:',
+        error
+      );
+
+      // Fallback à la méthode originale en cas d'erreur
+      try {
+        const audio = new Audio('assets/sounds/notification.mp3');
+        audio.volume = 1.0; // Volume maximum
+        audio.play().catch((err) => {
+          console.error(
+            'MessageService: Erreur lors de la lecture du fichier son:',
+            err
+          );
+        });
+      } catch (audioError) {
+        console.error(
+          'MessageService: Exception lors de la lecture du fichier son:',
+          audioError
+        );
+      }
+    }
   }
   // --------------------------------------------------------------------------
   // Section 1: Méthodes pour les Messages
@@ -1033,30 +1148,116 @@ export class MessageService implements OnDestroy {
         })
       );
   }
+
+  /**
+   * Récupère une conversation existante ou en crée une nouvelle si elle n'existe pas
+   * @param userId ID de l'utilisateur avec qui créer/récupérer une conversation
+   * @returns Observable avec la conversation
+   */
+  getOrCreateConversation(userId: string): Observable<Conversation> {
+    this.logger.info(
+      `[MessageService] Getting or creating conversation with user: ${userId}`
+    );
+
+    if (!userId) {
+      this.logger.error(
+        `[MessageService] Cannot get/create conversation: userId is undefined`
+      );
+      return throwError(
+        () => new Error('User ID is required to get/create a conversation')
+      );
+    }
+
+    // D'abord, essayons de trouver une conversation existante entre les deux utilisateurs
+    return this.getConversations().pipe(
+      map((conversations) => {
+        // Récupérer l'ID de l'utilisateur actuel
+        const currentUserId = this.getCurrentUserId();
+
+        // Chercher une conversation directe (non groupe) entre les deux utilisateurs
+        const existingConversation = conversations.find((conv) => {
+          if (conv.isGroup) return false;
+
+          // Vérifier si la conversation contient les deux utilisateurs
+          const participantIds =
+            conv.participants?.map((p) => p.id || p._id) || [];
+          return (
+            participantIds.includes(userId) &&
+            participantIds.includes(currentUserId)
+          );
+        });
+
+        if (existingConversation) {
+          this.logger.info(
+            `[MessageService] Found existing conversation: ${existingConversation.id}`
+          );
+          return existingConversation;
+        }
+
+        // Si aucune conversation n'est trouvée, en créer une nouvelle
+        throw new Error('No existing conversation found');
+      }),
+      catchError((error) => {
+        this.logger.info(
+          `[MessageService] No existing conversation found, creating new one: ${error.message}`
+        );
+        return this.createConversation(userId);
+      })
+    );
+  }
+
   // --------------------------------------------------------------------------
   // Section 2: Méthodes pour les Notifications
   // --------------------------------------------------------------------------
-  getNotifications(refresh = false): Observable<Notification[]> {
+  // Propriétés pour la pagination des notifications
+  private notificationPagination = {
+    currentPage: 1,
+    limit: 10,
+    hasMoreNotifications: true,
+  };
+
+  getNotifications(
+    refresh = false,
+    page = 1,
+    limit = 10
+  ): Observable<Notification[]> {
     this.logger.info(
       'MessageService',
-      `Fetching notifications, refresh: ${refresh}`
+      `Fetching notifications, refresh: ${refresh}, page: ${page}, limit: ${limit}`
     );
     this.logger.debug('MessageService', 'Using query', {
       query: GET_NOTIFICATIONS_QUERY,
     });
 
-    // Si refresh est true, vider le cache
+    // Si refresh est true, réinitialiser la pagination mais ne pas vider le cache
+    // pour conserver les suppressions locales
     if (refresh) {
       this.logger.debug(
         'MessageService',
-        'Clearing notification cache due to refresh'
+        'Resetting pagination due to refresh'
       );
-      this.notificationCache.clear();
+      this.notificationPagination.currentPage = 1;
+      this.notificationPagination.hasMoreNotifications = true;
     }
+
+    // Mettre à jour les paramètres de pagination
+    this.notificationPagination.currentPage = page;
+    this.notificationPagination.limit = limit;
+
+    // Récupérer les IDs des notifications supprimées du localStorage
+    const deletedNotificationIds = this.getDeletedNotificationIds();
+    this.logger.debug(
+      'MessageService',
+      `Found ${deletedNotificationIds.size} deleted notification IDs in localStorage`
+    );
 
     return this.apollo
       .watchQuery<getUserNotificationsResponse>({
         query: GET_NOTIFICATIONS_QUERY,
+        variables: {
+          page: page,
+          limit: limit,
+        },
         fetchPolicy: refresh ? 'network-only' : 'cache-first',
       })
       .valueChanges.pipe(
@@ -1078,19 +1279,36 @@ export class MessageService implements OnDestroy {
           const notifications = result.data?.getUserNotifications || [];
           this.logger.debug(
             'MessageService',
-            `Received ${notifications.length} notifications from server`
+            `Received ${notifications.length} notifications from server for page ${page}`
           );
+
+          // Vérifier s'il y a plus de notifications à charger
+          this.notificationPagination.hasMoreNotifications =
+            notifications.length >= limit;
 
           if (notifications.length === 0) {
             this.logger.info(
               'MessageService',
               'No notifications received from server'
             );
+            this.notificationPagination.hasMoreNotifications = false;
           }
 
+          // Filtrer les notifications supprimées
+          const filteredNotifications = notifications.filter(
+            (notif) => !deletedNotificationIds.has(notif.id)
+          );
+
+          this.logger.debug(
+            'MessageService',
+            `Filtered out ${
+              notifications.length - filteredNotifications.length
+            } deleted notifications`
+          );
+
           // Afficher les notifications reçues pour le débogage
-          notifications.forEach((notif, index) => {
-            console.log(`Notification ${index + 1}:`, {
+          filteredNotifications.forEach((notif, index) => {
+            console.log(`Notification ${index + 1} (page ${page}):`, {
               id: notif.id || (notif as any)._id,
               type: notif.type,
               content: notif.content,
@@ -1098,8 +1316,9 @@ export class MessageService implements OnDestroy {
             });
           });
 
+          // Vérifier si les notifications existent déjà dans le cache avant de les ajouter
           // Mettre à jour le cache avec les nouvelles notifications
-          this.updateCache(notifications);
+          this.updateCache(filteredNotifications);
 
           // Récupérer toutes les notifications du cache
           const cachedNotifications = Array.from(
@@ -1115,6 +1334,9 @@ export class MessageService implements OnDestroy {
 
           // Mettre à jour le compteur de notifications non lues
           this.updateUnreadCount();
+
+          // Sauvegarder les notifications dans le localStorage
+          this.saveNotificationsToLocalStorage();
 
           return cachedNotifications;
         }),
@@ -1144,6 +1366,65 @@ export class MessageService implements OnDestroy {
           return throwError(() => new Error('Failed to load notifications'));
         })
       );
+  }
+
+  /**
+   * Récupère les IDs des notifications supprimées du localStorage
+   * @private
+   * @returns Set contenant les IDs des notifications supprimées
+   */
+  private getDeletedNotificationIds(): Set<string> {
+    try {
+      const deletedIds = new Set<string>();
+      const savedNotifications = localStorage.getItem('notifications');
+
+      // Si aucune notification n'est sauvegardée, retourner un ensemble vide
+      if (!savedNotifications) {
+        return deletedIds;
+      }
+
+      // Récupérer les IDs des notifications sauvegardées
+      const savedNotificationIds = new Set(
+        JSON.parse(savedNotifications).map((n: Notification) => n.id)
+      );
+
+      // Récupérer les notifications du serveur (si disponibles dans le cache Apollo)
+      const serverNotifications =
+        this.apollo.client.readQuery<getUserNotificationsResponse>({
+          query: GET_NOTIFICATIONS_QUERY,
+        })?.getUserNotifications || [];
+
+      // Pour chaque notification du serveur, vérifier si elle est dans les notifications sauvegardées
+      serverNotifications.forEach((notification) => {
+        if (!savedNotificationIds.has(notification.id)) {
+          deletedIds.add(notification.id);
+        }
+      });
+
+      return deletedIds;
+    } catch (error) {
+      this.logger.error(
+        'MessageService',
+        'Erreur lors de la récupération des IDs de notifications supprimées:',
+        error
+      );
+      return new Set<string>();
+    }
+  }
+
+  // Méthode pour vérifier s'il y a plus de notifications à charger
+  hasMoreNotifications(): boolean {
+    return this.notificationPagination.hasMoreNotifications;
+  }
+
+  // Méthode pour charger la page suivante de notifications
+  loadMoreNotifications(): Observable<Notification[]> {
+    const nextPage = this.notificationPagination.currentPage + 1;
+    return this.getNotifications(
+      false,
+      nextPage,
+      this.notificationPagination.limit
+    );
   }
   getNotificationById(id: string): Observable<Notification | undefined> {
     return this.notifications$.pipe(
@@ -1176,6 +1457,227 @@ export class MessageService implements OnDestroy {
     return this.notifications$.pipe(
       map((notifications) => notifications.filter((n) => !n.isRead))
     );
+  }
+
+  /**
+   * Supprime une notification
+   * @param notificationId ID de la notification à supprimer
+   * @returns Observable avec le résultat de l'opération
+   */
+  deleteNotification(
+    notificationId: string
+  ): Observable<{ success: boolean; message: string }> {
+    this.logger.debug(
+      'MessageService',
+      `Suppression de la notification ${notificationId}`
+    );
+
+    if (!notificationId) {
+      this.logger.warn('MessageService', 'ID de notification invalide');
+      return throwError(() => new Error('ID de notification invalide'));
+    }
+
+    // Supprimer localement d'abord pour une meilleure expérience utilisateur
+    this.notificationCache.delete(notificationId);
+    this.notifications.next(Array.from(this.notificationCache.values()));
+    this.updateUnreadCount();
+    this.saveNotificationsToLocalStorage();
+
+    // Appeler le backend pour supprimer la notification
+    return this.apollo
+      .mutate<{ deleteNotification: { success: boolean; message: string } }>({
+        mutation: DELETE_NOTIFICATION_MUTATION,
+        variables: { notificationId },
+      })
+      .pipe(
+        map((result) => {
+          const response = result.data?.deleteNotification;
+          if (!response) {
+            throw new Error('Réponse de suppression invalide');
+          }
+
+          this.logger.debug(
+            'MessageService',
+            'Résultat de la suppression:',
+            response
+          );
+
+          return response;
+        }),
+        catchError((error) => {
+          this.logger.error(
+            'MessageService',
+            'Erreur lors de la suppression de la notification:',
+            error
+          );
+
+          // En cas d'erreur, on garde la suppression locale
+          return of({
+            success: true,
+            message: 'Notification supprimée localement (erreur serveur)',
+          });
+        })
+      );
+  }
+
+  /**
+   * Sauvegarde les notifications dans le localStorage
+   * @private
+   */
+  private saveNotificationsToLocalStorage(): void {
+    try {
+      const notifications = Array.from(this.notificationCache.values());
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+      this.logger.debug(
+        'MessageService',
+        'Notifications sauvegardées localement'
+      );
+    } catch (error) {
+      this.logger.error(
+        'MessageService',
+        'Erreur lors de la sauvegarde des notifications:',
+        error
+      );
+    }
+  }
+
+  /**
+   * Supprime toutes les notifications de l'utilisateur
+   * @returns Observable avec le résultat de l'opération
+   */
+  deleteAllNotifications(): Observable<{
+    success: boolean;
+    count: number;
+    message: string;
+  }> {
+    this.logger.debug(
+      'MessageService',
+      'Suppression de toutes les notifications'
+    );
+
+    // Supprimer localement d'abord pour une meilleure expérience utilisateur
+    const count = this.notificationCache.size;
+    this.notificationCache.clear();
+    this.notifications.next([]);
+    this.notificationCount.next(0);
+    this.saveNotificationsToLocalStorage();
+
+    // Appeler le backend pour supprimer toutes les notifications
+    return this.apollo
+      .mutate<{
+        deleteAllNotifications: {
+          success: boolean;
+          count: number;
+          message: string;
+        };
+      }>({
+        mutation: DELETE_ALL_NOTIFICATIONS_MUTATION,
+      })
+      .pipe(
+        map((result) => {
+          const response = result.data?.deleteAllNotifications;
+          if (!response) {
+            throw new Error('Réponse de suppression invalide');
+          }
+
+          this.logger.debug(
+            'MessageService',
+            'Résultat de la suppression de toutes les notifications:',
+            response
+          );
+
+          return response;
+        }),
+        catchError((error) => {
+          this.logger.error(
+            'MessageService',
+            'Erreur lors de la suppression de toutes les notifications:',
+            error
+          );
+
+          // En cas d'erreur, on garde la suppression locale
+          return of({
+            success: true,
+            count,
+            message: `${count} notifications supprimées localement (erreur serveur)`,
+          });
+        })
+      );
+  }
+
+  /**
+   * Supprime plusieurs notifications
+   * @param notificationIds IDs des notifications à supprimer
+   * @returns Observable avec le résultat de l'opération
+   */
+  deleteMultipleNotifications(
+    notificationIds: string[]
+  ): Observable<{ success: boolean; count: number; message: string }> {
+    this.logger.debug(
+      'MessageService',
+      `Suppression de ${notificationIds.length} notifications`
+    );
+
+    if (!notificationIds || notificationIds.length === 0) {
+      this.logger.warn('MessageService', 'Aucun ID de notification fourni');
+      return throwError(() => new Error('Aucun ID de notification fourni'));
+    }
+
+    // Supprimer localement d'abord pour une meilleure expérience utilisateur
+    let count = 0;
+    notificationIds.forEach((id) => {
+      if (this.notificationCache.has(id)) {
+        this.notificationCache.delete(id);
+        count++;
+      }
+    });
+
+    this.notifications.next(Array.from(this.notificationCache.values()));
+    this.updateUnreadCount();
+    this.saveNotificationsToLocalStorage();
+
+    // Appeler le backend pour supprimer les notifications
+    return this.apollo
+      .mutate<{
+        deleteMultipleNotifications: {
+          success: boolean;
+          count: number;
+          message: string;
+        };
+      }>({
+        mutation: DELETE_MULTIPLE_NOTIFICATIONS_MUTATION,
+        variables: { notificationIds },
+      })
+      .pipe(
+        map((result) => {
+          const response = result.data?.deleteMultipleNotifications;
+          if (!response) {
+            throw new Error('Réponse de suppression invalide');
+          }
+
+          this.logger.debug(
+            'MessageService',
+            'Résultat de la suppression multiple:',
+            response
+          );
+
+          return response;
+        }),
+        catchError((error) => {
+          this.logger.error(
+            'MessageService',
+            'Erreur lors de la suppression multiple de notifications:',
+            error
+          );
+
+          // En cas d'erreur, on garde la suppression locale
+          return of({
+            success: count > 0,
+            count,
+            message: `${count} notifications supprimées localement (erreur serveur)`,
+          });
+        })
+      );
   }
   groupNotificationsByType(): Observable<
     Map<NotificationType, Notification[]>
@@ -2322,7 +2824,30 @@ export class MessageService implements OnDestroy {
 
           try {
             // Utiliser normalizeMessage pour une normalisation complète
-            return this.normalizeMessage(msg);
+            const normalizedMessage = this.normalizeMessage(msg);
+
+            // Si c'est un message vocal, s'assurer qu'il est correctement traité
+            if (
+              normalizedMessage.type === MessageType.AUDIO ||
+              (normalizedMessage.attachments &&
+                normalizedMessage.attachments.some(
+                  (att) => att.type === 'audio'
+                ))
+            ) {
+              this.logger.debug(
+                'MessageService',
+                'Voice message received in real-time',
+                normalizedMessage
+              );
+
+              // Mettre à jour la conversation avec le nouveau message
+              this.updateConversationWithNewMessage(
+                conversationId,
+                normalizedMessage
+              );
+            }
+
+            return normalizedMessage;
           } catch (err) {
             this.logger.error('Error normalizing message:', err);
 
@@ -2360,6 +2885,13 @@ export class MessageService implements OnDestroy {
       );
 
     const sub = sub$.subscribe({
+      next: (message) => {
+        // Traitement supplémentaire pour s'assurer que le message est bien affiché
+        this.logger.debug('MessageService', 'New message received:', message);
+
+        // Mettre à jour la conversation avec le nouveau message
+        this.updateConversationWithNewMessage(conversationId, message);
+      },
       error: (err) => {
         this.logger.error('Error in message subscription:', err);
       },
@@ -2367,6 +2899,38 @@ export class MessageService implements OnDestroy {
 
     this.subscriptions.push(sub);
     return sub$;
+  }
+
+  /**
+   * Met à jour une conversation avec un nouveau message
+   * @param conversationId ID de la conversation
+   * @param message Nouveau message
+   */
+  private updateConversationWithNewMessage(
+    conversationId: string,
+    message: Message
+  ): void {
+    // Forcer une mise à jour de la conversation en récupérant les données à jour
+    this.getConversation(conversationId).subscribe({
+      next: (conversation) => {
+        this.logger.debug(
+          'MessageService',
+          `Conversation ${conversationId} refreshed with new message ${
+            message.id
+          }, has ${conversation?.messages?.length || 0} messages`
+        );
+
+        // Émettre un événement pour informer les composants que la conversation a été mise à jour
+        this.activeConversation.next(conversationId);
+      },
+      error: (error) => {
+        this.logger.error(
+          'MessageService',
+          `Error refreshing conversation ${conversationId}:`,
+          error
+        );
+      },
+    });
   }
   subscribeToUserStatus(): Observable<User> {
     // Vérifier si l'utilisateur est connecté avec un token valide
@@ -2588,7 +3152,8 @@ export class MessageService implements OnDestroy {
       this.logger.warn(
         "Tentative d'abonnement aux notifications sans être connecté"
       );
-      return of(null as unknown as Notification);
+      // Créer un Observable vide plutôt que de retourner null
+      return EMPTY;
     }
 
     const source$ = this.apollo.subscribe<NotificationReceivedEvent>({
@@ -2602,23 +3167,65 @@ export class MessageService implements OnDestroy {
           throw new Error('No notification payload received');
         }
 
+        const normalized = this.normalizeNotification(notification);
+
+        // Vérifier si cette notification existe déjà dans le cache
+        if (this.notificationCache.has(normalized.id)) {
+          this.logger.debug(
+            'MessageService',
+            `Notification ${normalized.id} already exists in cache, skipping`
+          );
+          // Utiliser une technique différente pour ignorer cette notification
+          throw new Error('Notification already exists in cache');
+        }
+
         // Jouer le son de notification
         this.playNotificationSound();
 
-        const normalized = this.normalizeNotification(notification);
+        // Mettre à jour le cache et émettre immédiatement la nouvelle notification
         this.updateNotificationCache(normalized);
+
+        this.logger.debug(
+          'MessageService',
+          'New notification received and processed',
+          normalized
+        );
+
         return normalized;
       }),
+      // Utiliser catchError pour gérer les erreurs spécifiques
       catchError((err) => {
+        // Si c'est l'erreur spécifique pour les notifications déjà existantes, on ignore silencieusement
+        if (
+          err instanceof Error &&
+          err.message === 'Notification already exists in cache'
+        ) {
+          return EMPTY;
+        }
+
         this.logger.error('New notification subscription error:', err as Error);
-        // Retourner null au lieu de propager l'erreur
-        return of(null as unknown as Notification);
-      }),
-      // Filtrer les valeurs null
-      filter((notification) => !!notification)
+        // Retourner un Observable vide au lieu de null
+        return EMPTY;
+      })
     );
 
-    const sub = processed$.subscribe();
+    const sub = processed$.subscribe({
+      next: (notification) => {
+        this.logger.debug(
+          'MessageService',
+          'Notification subscription next handler',
+          notification
+        );
+      },
+      error: (error) => {
+        this.logger.error(
+          'MessageService',
+          'Error in notification subscription',
+          error
+        );
+      },
+    });
+
     this.subscriptions.push(sub);
     return processed$;
   }
@@ -3066,10 +3673,6 @@ export class MessageService implements OnDestroy {
     // Traiter chaque notification
     validNotifications.forEach((notif, index) => {
       try {
-        console.log(
-          `Processing notification ${index + 1}/${validNotifications.length}`
-        );
-
         // S'assurer que la notification a un ID
         const notifId = notif.id || (notif as any)._id;
         if (!notifId) {
@@ -3079,6 +3682,14 @@ export class MessageService implements OnDestroy {
 
         // Normaliser la notification
         const normalized = this.normalizeNotification(notif);
+
+        // Vérifier si cette notification existe déjà dans le cache
+        if (this.notificationCache.has(normalized.id)) {
+          console.log(
+            `Notification ${normalized.id} already exists in cache, skipping`
+          );
+          return;
+        }
 
         // Ajouter au cache
         this.notificationCache.set(normalized.id, normalized);
@@ -3094,17 +3705,8 @@ export class MessageService implements OnDestroy {
       `Notification cache updated, now contains ${this.notificationCache.size} notifications`
     );
 
-    // Afficher toutes les notifications dans le cache pour le débogage
-    console.log('Current notifications in cache:');
-    Array.from(this.notificationCache.entries()).forEach(
-      ([id, notification], index) => {
-        console.log(
-          `Cache entry ${index + 1}: ID=${id}, Type=${
-            notification.type
-          }, Content=${notification.content}`
-        );
-      }
-    );
+    // Sauvegarder les notifications dans le localStorage après la mise à jour du cache
+    this.saveNotificationsToLocalStorage();
   }
   private updateUnreadCount() {
     const count = Array.from(this.notificationCache.values()).filter(
@@ -3113,9 +3715,19 @@ export class MessageService implements OnDestroy {
     this.notificationCount.next(count);
   }
   private updateNotificationCache(notification: Notification): void {
-    this.notificationCache.set(notification.id, notification);
-    this.notifications.next(Array.from(this.notificationCache.values()));
-    this.updateUnreadCount();
+    // Vérifier si la notification existe déjà dans le cache (pour éviter les doublons)
+    if (!this.notificationCache.has(notification.id)) {
+      this.notificationCache.set(notification.id, notification);
+      this.notifications.next(Array.from(this.notificationCache.values()));
+      this.updateUnreadCount();
+      // Sauvegarder les notifications dans le localStorage après chaque mise à jour
+      this.saveNotificationsToLocalStorage();
+    } else {
+      this.logger.debug(
+        'MessageService',
+        `Notification ${notification.id} already exists in cache, skipping`
+      );
+    }
   }
   private updateNotificationStatus(ids: string[], isRead: boolean) {
     ids.forEach((id) => {
@@ -3129,10 +3741,21 @@ export class MessageService implements OnDestroy {
   }
   // Typing indicators
   startTyping(conversationId: string): Observable<boolean> {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
+      this.logger.warn('MessageService', 'Cannot start typing: no user ID');
+      return of(false);
+    }
+
     return this.apollo
       .mutate<StartTupingResponse>({
         mutation: START_TYPING_MUTATION,
-        variables: { conversationId },
+        variables: {
+          input: {
+            conversationId,
+            userId,
+          },
+        },
       })
       .pipe(
         map((result) => result.data?.startTyping || false),
@@ -3148,11 +3771,23 @@ export class MessageService implements OnDestroy {
         })
       );
   }
+
   stopTyping(conversationId: string): Observable<boolean> {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
+      this.logger.warn('MessageService', 'Cannot stop typing: no user ID');
+      return of(false);
+    }
+
     return this.apollo
       .mutate<StopTypingResponse>({
         mutation: STOP_TYPING_MUTATION,
-        variables: { conversationId },
+        variables: {
+          input: {
+            conversationId,
+            userId,
+          },
+        },
       })
       .pipe(
         map((result) => result.data?.stopTyping || false),

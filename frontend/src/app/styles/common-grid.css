@@ -1,0 +1,125 @@
+/* Styles communs pour la grille et le fond d'écran
+   Ce fichier contient des styles réutilisables pour créer une grille cohérente
+   et un fond d'écran unifié pour toutes les pages de l'application.
+*/
+
+/* Conteneur principal avec grille - Mode clair */
+.main-grid-container {
+  position: relative;
+  min-height: calc(100vh - 4rem);
+  width: 100%;
+  background-color: #edf1f4;
+  color: #6d6870;
+  padding-top: 4rem; /* Espace pour le header fixe */
+  overflow: hidden;
+}
+
+/* Conteneur principal avec grille - Mode sombre */
+.dark .main-grid-container {
+  background-color: #121212;
+  color: #a0a0a0;
+}
+
+/* Élément de grille d'arrière-plan */
+.background-grid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Grille d'arrière-plan - Mode clair */
+:not(.dark) .background-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: 
+    linear-gradient(to right, #4f5fad 1px, transparent 1px),
+    linear-gradient(to bottom, #4f5fad 1px, transparent 1px);
+  background-size: calc(100% / 12) 100%, 100% calc(100% / 12);
+  z-index: 0;
+}
+
+/* Grille d'arrière-plan - Mode sombre */
+.dark .background-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: 
+    linear-gradient(to right, #6d78c9 1px, transparent 1px),
+    linear-gradient(to bottom, #6d78c9 1px, transparent 1px);
+  background-size: calc(100% / 12) 100%, 100% calc(100% / 12);
+  z-index: 0;
+}
+
+/* Conteneur de contenu principal */
+.main-content-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Carte de contenu - Style commun */
+.content-card {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Carte de contenu - Mode sombre */
+.dark .content-card {
+  background-color: #1e1e1e;
+  border: 1px solid rgba(109, 120, 201, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* En-tête de carte - Style commun */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(79, 95, 173, 0.1);
+}
+
+/* En-tête de carte - Mode sombre */
+.dark .card-header {
+  border-bottom: 1px solid rgba(109, 120, 201, 0.1);
+}
+
+/* Corps de carte - Style commun */
+.card-body {
+  padding: 1rem;
+}
+
+/* Pied de carte - Style commun */
+.card-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(79, 95, 173, 0.1);
+}
+
+/* Pied de carte - Mode sombre */
+.dark .card-footer {
+  border-top: 1px solid rgba(109, 120, 201, 0.1);
+}
+
+/* Styles pour les écrans mobiles */
+@media (max-width: 768px) {
+  .main-content-container {
+    padding: 1rem;
+  }
+  
+  .content-card {
+    margin-bottom: 1rem;
+  }
+}

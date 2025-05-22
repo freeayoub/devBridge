@@ -1,0 +1,364 @@
+<!-- Begin Page Content -->
+<div class="container-fluid p-4 md:p-6 bg-[#edf1f4] min-h-screen">
+  <!-- Loading Spinner -->
+  <div
+    *ngIf="isLoading"
+    class="flex flex-col items-center justify-center py-12"
+  >
+    <div
+      class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#4f5fad]"
+    ></div>
+    <p class="mt-4 text-[#6d6870]">Chargement des données utilisateur...</p>
+  </div>
+
+  <!-- Success Message -->
+  <div
+    *ngIf="messageSuccess"
+    class="bg-[#afcf75]/20 border border-[#afcf75] text-[#2a5a03] p-4 rounded-lg mb-6 flex justify-between items-center"
+  >
+    <span>{{ messageSuccess }}</span>
+    <button
+      (click)="messageSuccess = ''"
+      class="text-[#2a5a03] hover:text-[#1a3a01]"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="messageErr && !isLoading" class="flex justify-center mb-6">
+    <div
+      class="bg-[#ff6b69]/20 border border-[#ff6b69] text-[#ff6b69] p-4 rounded-lg max-w-md w-full text-center"
+    >
+      {{ messageErr }}
+    </div>
+  </div>
+
+  <!-- User Details Card -->
+  <div
+    *ngIf="userObject && !isLoading"
+    class="bg-white rounded-xl shadow-md overflow-hidden max-w-5xl mx-auto"
+  >
+    <!-- Header with gradient -->
+    <div class="bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] p-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-2xl font-bold text-white">
+            Détails de l'utilisateur
+          </h1>
+          <p class="text-white/80 text-sm">
+            Informations complètes sur le profil
+          </p>
+        </div>
+        <div class="flex space-x-2">
+          <span
+            class="px-3 py-1 text-xs rounded-full backdrop-blur-sm bg-white/20 text-white font-medium"
+          >
+            ID: {{ userObject._id }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Profile Header -->
+    <div class="px-6 py-6 flex items-center border-b border-[#edf1f4]">
+      <div class="flex-shrink-0">
+        <div *ngIf="userObject.image" class="relative group">
+          <img
+            [src]="userObject.image"
+            alt="Profile"
+            class="h-24 w-24 rounded-full object-cover border-2 border-[#4f5fad]"
+          />
+          <div
+            class="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+          >
+            <span class="text-white text-xs">Voir</span>
+          </div>
+        </div>
+        <div
+          *ngIf="!userObject.image"
+          class="h-24 w-24 rounded-full bg-gradient-to-br from-[#4f5fad] to-[#3d4a85] flex items-center justify-center text-white text-3xl font-bold"
+        >
+          {{
+            (userObject.fullName ? userObject.fullName.charAt(0) : "") ||
+              (userObject.username ? userObject.username.charAt(0) : "") ||
+              "U"
+          }}
+        </div>
+      </div>
+      <div class="ml-6">
+        <h2 class="text-2xl font-bold text-[#3d4a85]">
+          {{ userObject.fullName || userObject.username }}
+        </h2>
+        <div class="flex items-center mt-2 space-x-3">
+          <span
+            class="px-3 py-1 text-sm rounded-full font-medium"
+            [ngClass]="{
+              'bg-[#dac4ea]/30 text-[#7826b5]': userObject.role === 'admin',
+              'bg-[#afcf75]/20 text-[#2a5a03]': userObject.role === 'teacher',
+              'bg-[#4a89ce]/20 text-[#4f5fad]': userObject.role === 'student'
+            }"
+          >
+            {{ userObject.role | titlecase }}
+          </span>
+          <span
+            class="px-3 py-1 text-sm rounded-full font-medium flex items-center"
+            [ngClass]="
+              userObject.isActive
+                ? 'bg-[#afcf75]/20 text-[#2a5a03]'
+                : 'bg-[#ff6b69]/20 text-[#ff6b69]'
+            "
+          >
+            <span
+              class="w-2 h-2 rounded-full mr-2"
+              [ngClass]="userObject.isActive ? 'bg-[#2a5a03]' : 'bg-[#ff6b69]'"
+            ></span>
+            {{ userObject.isActive ? "Actif" : "Inactif" }}
+          </span>
+          <span
+            *ngIf="userObject.isOnline"
+            class="px-3 py-1 text-sm rounded-full bg-[#4a89ce]/20 text-[#4a89ce] font-medium flex items-center"
+          >
+            <span
+              class="w-2 h-2 rounded-full bg-[#4a89ce] mr-2 animate-pulse"
+            ></span>
+            En ligne
+          </span>
+        </div>
+        <div class="mt-2">
+          <a
+            href="mailto:{{ userObject.email }}"
+            class="text-[#4a89ce] hover:text-[#7826b5] transition-colors flex items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+            {{ userObject.email }}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Details Grid -->
+    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+      <!-- Column 1: Basic Info -->
+      <div class="space-y-4">
+        <h3
+          class="text-lg font-semibold text-[#3d4a85] mb-4 pb-2 border-b border-[#edf1f4]"
+        >
+          Informations de base
+        </h3>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">Nom d'utilisateur :</span>
+          <span class="text-[#4f5fad]">{{ userObject.username }}</span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">Nom complet :</span>
+          <span class="text-[#4f5fad]">{{ userObject.fullName }}</span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">Email :</span>
+          <span class="text-[#4f5fad]">{{ userObject.email }}</span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">Rôle :</span>
+          <span class="text-[#4f5fad]">{{ userObject.role | titlecase }}</span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">Groupe :</span>
+          <span class="text-[#4f5fad]">{{
+            userObject.group ? userObject.group : "Aucun groupe"
+          }}</span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">Vérifié :</span>
+          <span
+            [ngClass]="
+              userObject.verified ? 'text-[#2a5a03]' : 'text-[#ff6b69]'
+            "
+          >
+            {{ userObject.verified ? "Oui" : "Non" }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Column 2: Status & Dates -->
+      <div class="space-y-4">
+        <h3
+          class="text-lg font-semibold text-[#3d4a85] mb-4 pb-2 border-b border-[#edf1f4]"
+        >
+          Statut et dates
+        </h3>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">Statut :</span>
+          <span
+            [ngClass]="
+              userObject.isActive ? 'text-[#2a5a03]' : 'text-[#ff6b69]'
+            "
+          >
+            {{ userObject.isActive ? "Actif" : "Inactif" }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">En ligne :</span>
+          <span
+            [ngClass]="
+              userObject.isOnline ? 'text-[#4a89ce]' : 'text-[#6d6870]'
+            "
+          >
+            {{ userObject.isOnline ? "Oui" : "Non" }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">Dernière activité :</span>
+          <span class="text-[#4f5fad]">{{
+            userObject.lastActive | date : "dd/MM/yyyy HH:mm"
+          }}</span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">Créé le :</span>
+          <span class="text-[#4f5fad]">{{
+            userObject.createdAt | date : "dd/MM/yyyy HH:mm"
+          }}</span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-[#6d6870]">Mis à jour le :</span>
+          <span class="text-[#4f5fad]">{{
+            userObject.updatedAt | date : "dd/MM/yyyy HH:mm"
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Details (Collapsible) -->
+    <div class="px-6 pb-6">
+      <details class="group">
+        <summary
+          class="flex justify-between items-center cursor-pointer text-[#3d4a85] font-medium"
+        >
+          <span>Détails techniques</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 transform group-open:rotate-180 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </summary>
+        <div class="mt-4 p-4 bg-[#f8f9fa] rounded-lg text-sm font-mono">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p class="text-[#6d6870]">
+                ID: <span class="text-[#4f5fad]">{{ userObject._id }}</span>
+              </p>
+              <p class="text-[#6d6870]">
+                Version:
+                <span class="text-[#4f5fad]">{{ userObject.__v }}</span>
+              </p>
+            </div>
+            <div>
+              <p class="text-[#6d6870]">
+                Image URL:
+                <span class="text-[#4f5fad] break-all">{{
+                  userObject.image
+                }}</span>
+              </p>
+              <p class="text-[#6d6870]">
+                Profile Image URL:
+                <span class="text-[#4f5fad] break-all">{{
+                  userObject.profileImage
+                }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- Footer with actions -->
+    <div
+      class="p-6 border-t border-[#edf1f4] flex justify-between items-center bg-[#f8f9fa]"
+    >
+      <div class="flex items-center">
+        <span class="text-sm text-[#6d6870]">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 inline mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Dernière activité:
+          {{ userObject.lastActive | date : "dd/MM/yyyy HH:mm" }}
+        </span>
+      </div>
+
+      <!-- Bouton Retour -->
+      <button
+        (click)="goBack()"
+        class="px-4 py-2 text-sm rounded-lg bg-[#4f5fad] text-white hover:bg-[#3d4a85] font-medium flex items-center transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-2"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        Retour au tableau de bord
+      </button>
+    </div>
+  </div>
+</div>

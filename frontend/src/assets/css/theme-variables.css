@@ -1,0 +1,78 @@
+:root {
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Border radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+
+  /* Glow effects */
+  --glow-effect: 0 0 15px rgba(0, 247, 255, 0.4);
+  --glow-effect-strong: 0 0 25px rgba(0, 247, 255, 0.6);
+
+  /* Default theme colors */
+  --accent-color: #00f7ff;
+  --secondary-color: #9d4edd;
+  --dark-bg: #0a0e17;
+  --medium-bg: #111827;
+  --light-bg: #1f2937;
+  --text-light: #f9fafb;
+  --text-dim: #9ca3af;
+}
+
+/* Theme féminin */
+.theme-feminine {
+  --accent-color: #ff6b9d;
+  --secondary-color: #ff9fb6;
+  --glow-effect: 0 0 15px rgba(255, 107, 157, 0.4);
+  --glow-effect-strong: 0 0 25px rgba(255, 107, 157, 0.6);
+}
+
+/* Theme masculin */
+.theme-masculine {
+  --accent-color: #3d85c6;
+  --secondary-color: #5c9ce6;
+  --glow-effect: 0 0 15px rgba(61, 133, 198, 0.4);
+  --glow-effect-strong: 0 0 25px rgba(61, 133, 198, 0.6);
+}
+
+/* Theme neutre */
+.theme-neutral {
+  --accent-color: #6aa84f;
+  --secondary-color: #93c47d;
+  --glow-effect: 0 0 15px rgba(106, 168, 79, 0.4);
+  --glow-effect-strong: 0 0 25px rgba(106, 168, 79, 0.6);
+}
+
+/* Mode sombre */
+.dark {
+  --dark-bg: #0a0e17;
+  --medium-bg: #111827;
+  --light-bg: #1f2937;
+  --text-light: #f9fafb;
+  --text-dim: #9ca3af;
+}
+
+/* Mode clair - Style futuriste */
+.light {
+  --dark-bg: #f0f4f8;
+  --medium-bg: #e6edf2;
+  --light-bg: #ffffff;
+  --text-light: #0f172a;
+  --text-dim: #64748b;
+  --accent-color: #4f5fad;
+  --secondary-color: #7826b5;
+  --glow-effect: 0 0 15px rgba(79, 95, 173, 0.4);
+  --glow-effect-strong: 0 0 25px rgba(79, 95, 173, 0.6);
+}

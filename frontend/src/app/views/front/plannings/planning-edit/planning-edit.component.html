@@ -1,0 +1,111 @@
+<section class="bg-gray-50 p-5 sm:p-6 rounded-xl">
+  <div class="mb-4">
+    <h2 class="text-lg font-medium text-gray-900">Planning Form</h2>
+    <p class="text-sm text-gray-500 mt-1">Fill in the details for the event</p>
+  </div>
+
+  <form [formGroup]="planningForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
+      <!-- Titre -->
+      <div class="sm:col-span-3">
+        <label class="block text-sm font-medium text-gray-700">Titre</label>
+        <input
+          type="text"
+          formControlName="titre"
+          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+          [class.border-red-300]="planningForm.get('titre')?.invalid && planningForm.get('titre')?.touched"
+        />
+        <div *ngIf="planningForm.get('titre')?.invalid && planningForm.get('titre')?.touched" class="text-sm text-red-600 mt-1">
+          <span *ngIf="planningForm.get('titre')?.errors?.['required']">Titre is required</span>
+          <span *ngIf="planningForm.get('titre')?.errors?.['minlength']">At least 3 characters</span>
+        </div>
+      </div>
+
+      <!-- Lieu -->
+      <div class="sm:col-span-3">
+        <label class="block text-sm font-medium text-gray-700">Lieu</label>
+        <input
+          type="text"
+          formControlName="lieu"
+          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+        />
+      </div>
+
+      <!-- Date début -->
+      <div class="sm:col-span-3">
+        <label class="block text-sm font-medium text-gray-700">Date de début</label>
+        <input
+          type="date"
+          formControlName="dateDebut"
+          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+        />
+      </div>
+
+      <!-- Date fin -->
+      <div class="sm:col-span-3">
+        <label class="block text-sm font-medium text-gray-700">Date de fin</label>
+        <input
+          type="date"
+          formControlName="dateFin"
+          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+        />
+      </div>
+
+      <!-- Participants -->
+      <div class="sm:col-span-6">
+        <label class="block text-sm font-medium text-gray-700">Participants</label>
+        <select
+          formControlName="participants"
+          multiple
+          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+        >
+          <option *ngFor="let user of users$ | async" [value]="user._id">{{ user.username }}</option>
+        </select>
+        <div *ngIf="planningForm.get('participants')?.invalid && planningForm.get('participants')?.touched" class="text-sm text-red-600 mt-1">
+          Please select at least one participant
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="sm:col-span-6">
+        <label class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea
+          formControlName="description"
+          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+          rows="3"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end">
+      <button
+        type="submit"
+        [disabled]="planningForm.invalid || isLoading"
+        class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        <svg
+          *ngIf="isLoading"
+          class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        {{ isLoading ? 'Saving...' : 'Save Planning' }}
+      </button>
+    </div>
+  </form>
+</section>

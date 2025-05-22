@@ -1,0 +1,147 @@
+<div class="min-h-screen bg-[#edf1f4] p-4 md:p-6">
+  <!-- Header -->
+  <div class="max-w-6xl mx-auto flex justify-between items-center mb-6">
+    <h1 class="text-2xl md:text-3xl font-bold text-[#4f5fad]">Liste des Rendus</h1>
+  </div>
+
+  <!-- Filtres -->
+  <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-md p-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrer par groupe</label>
+        <select 
+          [(ngModel)]="filtreGroupe" 
+          (ngModelChange)="applyFilters()"
+          class="w-full p-2 border border-gray-300 rounded-md focus:ring-[#4f5fad] focus:border-[#4f5fad]"
+        >
+          <option value="">Tous les groupes</option>
+          <option *ngFor="let groupe of groupes" [value]="groupe">{{ groupe }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrer par projet</label>
+        <select 
+          [(ngModel)]="filtreProjet" 
+          (ngModelChange)="applyFilters()"
+          class="w-full p-2 border border-gray-300 rounded-md focus:ring-[#4f5fad] focus:border-[#4f5fad]"
+        >
+          <option value="">Tous les projets</option>
+          <option *ngFor="let projet of projets" [value]="projet._id">{{ projet.titre }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="max-w-6xl mx-auto flex justify-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#4f5fad]"></div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="max-w-6xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    {{ error }}
+  </div>
+
+  <!-- Rendus Table -->
+  <div *ngIf="!isLoading && filteredRendus.length > 0" class="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Étudiant
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Groupe
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Projet
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Date de soumission
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Statut
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let rendu of filteredRendus">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="h-8 w-8 rounded-full bg-[#6C63FF] flex items-center justify-center text-white text-xs font-bold">
+                  {{ rendu.etudiant?.nom?.charAt(0) }}{{ rendu.etudiant?.prenom?.charAt(0) }}
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">
+                    {{ rendu.etudiant?.nom }} {{ rendu.etudiant?.prenom }}
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    {{ rendu.etudiant?.email }}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">{{ rendu.etudiant?.groupe || 'Non spécifié' }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">{{ rendu.projet?.titre }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">{{ formatDate(rendu.dateSoumission) }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                    [ngClass]="getClasseStatut(rendu)">
+                {{ getStatutEvaluation(rendu) }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex space-x-2">
+                <!-- Si déjà évalué, afficher le bouton de visualisation -->
+                <a *ngIf="rendu.evaluation" 
+                   [routerLink]="['/admin/projects/evaluation-details', rendu._id]" 
+                   class="text-indigo-600 hover:text-indigo-900">
+                  Voir l'évaluation
+                </a>
+                
+                <!-- Si non évalué, afficher les boutons d'évaluation -->
+                <div *ngIf="!rendu.evaluation" class="flex space-x-2">
+                  <button (click)="evaluerRendu(rendu._id, 'manual')" 
+                          class="text-green-600 hover:text-green-900 bg-green-100 px-2 py-1 rounded">
+                    Évaluer manuellement
+                  </button>
+                  <button (click)="evaluerRendu(rendu._id, 'ai')" 
+                          class="text-blue-600 hover:text-blue-900 bg-blue-100 px-2 py-1 rounded">
+                    Évaluer par IA
+                  </button>
+                </div>
+
+                <!-- Bouton pour modifier l'évaluation si elle existe déjà -->
+                <button *ngIf="rendu.evaluation" 
+                  (click)="navigateToEditEvaluation(rendu._id)"
+                  class="text-blue-600 hover:text-blue-800 mr-2">
+                  Modifier l'évaluation
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredRendus.length === 0" class="max-w-6xl mx-auto text-center py-12">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-[#bdc6cc]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <h3 class="mt-4 text-lg font-medium text-[#6d6870]">Aucun rendu disponible</h3>
+    <p class="mt-1 text-sm text-[#6d6870]">Aucun rendu ne correspond à vos critères de filtrage</p>
+  </div>
+</div>
+

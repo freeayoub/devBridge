@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
@@ -41,6 +40,10 @@ const adminRoutes = require("./src/routes/adminRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const groupRoutes = require("./src/routes/groupRoutes");
 
+const projetRoute = require("./src/routes/projetRoute");
+const renduRoutes = require("./src/routes/renduRoute");
+const evaluationRoute = require("./src/routes/evaluationRoute");
+
 // Initialisation
 const app = express();
 const httpServer = createServer(app);
@@ -57,7 +60,7 @@ const corsOptions = {
     "ws://localhost:4200",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Apollo-Require-Preflight"],
+  allowedHeaders: ["Content-Type", "Authorization", "Apollo-Require-Preflight","role"],
   credentials: true,
 };
 
@@ -75,6 +78,10 @@ app.use(
 );
 
 // 3. REST Routes
+app.use("/api/projets", projetRoute);
+app.use("/api/rendus", renduRoutes);
+app.use("/api/evaluations", evaluationRoute);
+
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/groups", groupRoutes);

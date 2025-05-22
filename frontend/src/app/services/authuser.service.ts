@@ -68,14 +68,42 @@ export class AuthuserService {
     }
 
     const decodedToken = this.jwtHelper.decodeToken(token);
+
+    // Déterminer l'image de profil à utiliser
+    let profileImage = 'assets/images/default-profile.png';
+
+    // Vérifier d'abord profileImage
+    if (
+      decodedToken.profileImage &&
+      decodedToken.profileImage !== 'null' &&
+      decodedToken.profileImage !== 'undefined' &&
+      decodedToken.profileImage.trim() !== ''
+    ) {
+      profileImage = decodedToken.profileImage;
+    }
+    // Ensuite vérifier image si profileImage n'est pas valide
+    else if (
+      decodedToken.image &&
+      decodedToken.image !== 'null' &&
+      decodedToken.image !== 'undefined' &&
+      decodedToken.image.trim() !== ''
+    ) {
+      profileImage = decodedToken.image;
+    }
+
+    console.log('AuthuserService - Using profile image:', profileImage);
+
     const fallbackUser: User = {
       _id: decodedToken.id,
       username: decodedToken.username,
+      fullName: decodedToken.fullName,
       email: decodedToken.email,
       role: decodedToken.role,
-      image: decodedToken.image || 'assets/images/default-profile.png',
+      image: profileImage,
+      profileImage: profileImage,
       isActive: true,
     };
+
     this.currentUserSubject.next(fallbackUser);
     this.isInitialized = true;
   }

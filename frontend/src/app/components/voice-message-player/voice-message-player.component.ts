@@ -22,11 +22,17 @@ export class VoiceMessagePlayerComponent
 {
   @Input() audioUrl: string = '';
   @Input() duration: number = 0;
+  @Input() isCurrentUser: boolean = false;
   @ViewChild('audioPlayer') audioPlayerRef!: ElementRef<HTMLAudioElement>;
 
   // Ajouter une classe CSS lorsque l'audio est en lecture
   @HostBinding('class.is-playing') get playingClass() {
     return this.isPlaying;
+  }
+
+  // Ajouter une classe CSS pour les messages de l'utilisateur courant
+  @HostBinding('class.is-current-user') get currentUserClass() {
+    return this.isCurrentUser;
   }
 
   isPlaying = false;

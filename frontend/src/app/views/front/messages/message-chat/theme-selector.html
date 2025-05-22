@@ -1,0 +1,42 @@
+<!-- Sélecteur de thème -->
+<div class="relative theme-selector">
+  <button
+    (click)="toggleThemeSelector()"
+    class="p-2 rounded-full text-[#4f5fad] dark:text-[#6d78c9] hover:bg-[#4f5fad]/10 dark:hover:bg-[#6d78c9]/10 transition-all relative group overflow-hidden"
+  >
+    <div
+      class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full blur-md"
+    ></div>
+    <i
+      class="fas fa-palette relative z-10 group-hover:scale-110 transition-transform"
+    ></i>
+  </button>
+  
+  <!-- Menu déroulant des thèmes -->
+  <div *ngIf="showThemeSelector" class="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1e1e1e] rounded-lg shadow-lg z-50 border border-[#edf1f4]/50 dark:border-[#2a2a2a] overflow-hidden theme-selector">
+    <div class="p-2 text-xs text-[#6d6870] dark:text-[#a0a0a0] border-b border-[#edf1f4]/50 dark:border-[#2a2a2a]">
+      Choisir un thème
+    </div>
+    <div class="p-1">
+      <div (click)="changeTheme('theme-default')" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-[#4f5fad]/10 dark:hover:bg-[#6d78c9]/10 transition-colors flex items-center cursor-pointer" [class.bg-[#4f5fad]/10]="selectedTheme === 'theme-default'">
+        <div class="w-4 h-4 rounded-full bg-[#4f5fad] mr-2"></div>
+        <div class="text-[#6d6870] dark:text-[#e0e0e0]">Par défaut</div>
+      </div>
+      
+      <div (click)="changeTheme('theme-feminine')" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-[#ff6b9d]/10 dark:hover:bg-[#ff6b9d]/10 transition-colors flex items-center cursor-pointer" [class.bg-[#ff6b9d]/10]="selectedTheme === 'theme-feminine'">
+        <div class="w-4 h-4 rounded-full bg-[#ff6b9d] mr-2"></div>
+        <div class="text-[#6d6870] dark:text-[#e0e0e0]">Rose</div>
+      </div>
+      
+      <div (click)="changeTheme('theme-masculine')" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-[#3d85c6]/10 dark:hover:bg-[#3d85c6]/10 transition-colors flex items-center cursor-pointer" [class.bg-[#3d85c6]/10]="selectedTheme === 'theme-masculine'">
+        <div class="w-4 h-4 rounded-full bg-[#3d85c6] mr-2"></div>
+        <div class="text-[#6d6870] dark:text-[#e0e0e0]">Bleu</div>
+      </div>
+      
+      <div (click)="changeTheme('theme-neutral')" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-[#6aa84f]/10 dark:hover:bg-[#6aa84f]/10 transition-colors flex items-center cursor-pointer" [class.bg-[#6aa84f]/10]="selectedTheme === 'theme-neutral'">
+        <div class="w-4 h-4 rounded-full bg-[#6aa84f] mr-2"></div>
+        <div class="text-[#6d6870] dark:text-[#e0e0e0]">Vert</div>
+      </div>
+    </div>
+  </div>
+</div>

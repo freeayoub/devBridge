@@ -13,4 +13,3 @@ export interface Reunion {
     createdAt: Date;
     updatedAt: Date;
   }
-  

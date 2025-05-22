@@ -10,7 +10,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthuserService } from 'src/app/services/authuser.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subscription, combineLatest } from 'rxjs';
+import { Subscription, combineLatest, Observable, of } from 'rxjs';
 import { User } from '@app/models/user.model';
 import { UserStatusService } from 'src/app/services/user-status.service';
 import {
@@ -18,6 +18,7 @@ import {
   Conversation,
   Attachment,
   MessageType,
+  CallType,
 } from 'src/app/models/message.model';
 import { ToastService } from 'src/app/services/toast.service';
 import { switchMap, distinctUntilChanged, filter } from 'rxjs/operators';
@@ -26,7 +27,7 @@ import { LoggerService } from 'src/app/services/logger.service';
 @Component({
   selector: 'app-message-chat',
   templateUrl: 'message-chat.component.html',
-  styleUrls: ['./message-chat.component.css'],
+  styleUrls: ['./message-chat.component.css', './message-chat-magic.css'],
 })
 export class MessageChatComponent
   implements OnInit, OnDestroy, AfterViewChecked
@@ -59,6 +60,100 @@ export class MessageChatComponent
   hasMoreMessages = true; // Indique s'il y a plus de messages à charger (public pour le template)
   private subscriptions: Subscription = new Subscription();
 
+  // Variables pour le sélecteur de thème
+  selectedTheme: string = 'theme-default'; // Thème par défaut
+  showThemeSelector: boolean = false; // Affichage du sélecteur de thème
+
+  // Variables pour le sélecteur d'émojis
+  showEmojiPicker: boolean = false;
+
+  // Variables pour les appels
+  incomingCall: any = null;
+  showCallModal: boolean = false;
+
+  commonEmojis: string[] = [
+    '😀',
+    '😃',
+    '😄',
+    '😁',
+    '😆',
+    '😅',
+    '😂',
+    '🤣',
+    '😊',
+    '😇',
+    '🙂',
+    '🙃',
+    '😉',
+    '😌',
+    '😍',
+    '🥰',
+    '😘',
+    '😗',
+    '😙',
+    '😚',
+    '😋',
+    '😛',
+    '😝',
+    '😜',
+    '🤪',
+    '🤨',
+    '🧐',
+    '🤓',
+    '😎',
+    '🤩',
+    '😏',
+    '😒',
+    '😞',
+    '😔',
+    '😟',
+    '😕',
+    '🙁',
+    '☹️',
+    '😣',
+    '😖',
+    '😫',
+    '😩',
+    '🥺',
+    '😢',
+    '😭',
+    '😤',
+    '😠',
+    '😡',
+    '🤬',
+    '🤯',
+    '😳',
+    '🥵',
+    '🥶',
+    '😱',
+    '😨',
+    '😰',
+    '😥',
+    '😓',
+    '🤗',
+    '🤔',
+    '👍',
+    '👎',
+    '👏',
+    '🙌',
+    '👐',
+    '🤲',
+    '🤝',
+    '🙏',
+    '✌️',
+    '🤞',
+    '❤️',
+    '🧡',
+    '💛',
+    '💚',
+    '💙',
+    '💜',
+    '🖤',
+    '💔',
+    '💯',
+    '💢',
+  ];
+
   constructor(
     private MessageService: MessageService,
     public route: ActivatedRoute,
@@ -77,8 +172,18 @@ export class MessageChatComponent
   ngOnInit(): void {
     this.currentUserId = this.authService.getCurrentUserId();
 
+    // Charger le thème sauvegardé
+    const savedTheme = localStorage.getItem('chat-theme');
+    if (savedTheme) {
+      this.selectedTheme = savedTheme;
+      this.logger.debug('MessageChat', `Loaded saved theme: ${savedTheme}`);
+    }
+
     // Récupérer les messages vocaux pour assurer leur persistance
     this.loadVoiceMessages();
+
+    // S'abonner aux notifications en temps réel
+    this.subscribeToNotifications();
 
     const routeSub = this.route.params
       .pipe(
@@ -470,15 +575,109 @@ export class MessageChatComponent
     }
   }
 
+  private typingTimer: any;
+  private isCurrentlyTyping = false;
+  private readonly TYPING_DELAY = 500; // Délai en ms avant d'envoyer l'événement de frappe
+  private readonly TYPING_TIMEOUT = 3000; // Délai en ms avant d'arrêter l'indicateur de frappe
+
+  /**
+   * Gère l'événement de frappe de l'utilisateur
+   * Envoie un indicateur de frappe avec un délai pour éviter trop de requêtes
+   */
   onTyping(): void {
-    // if (this.conversation?.id && this.currentUserId) {
-    //   this.graphqlService
-    //     .startTyping({
-    //       userId: this.currentUserId,
-    //       conversationId: this.conversation.id,
-    //     })
-    //     .subscribe();
-    // }
+    if (!this.conversation?.id || !this.currentUserId) {
+      return;
+    }
+
+    // Stocker l'ID de conversation pour éviter les erreurs TypeScript
+    const conversationId = this.conversation.id;
+
+    // Annuler le timer précédent
+    clearTimeout(this.typingTimer);
+
+    // Si l'utilisateur n'est pas déjà en train de taper, envoyer l'événement immédiatement
+    if (!this.isCurrentlyTyping) {
+      this.isCurrentlyTyping = true;
+      this.logger.debug('MessageChat', 'Starting typing indicator');
+
+      this.MessageService.startTyping(conversationId).subscribe({
+        next: () => {
+          this.logger.debug(
+            'MessageChat',
+            'Typing indicator started successfully'
+          );
+        },
+        error: (error) => {
+          this.logger.error(
+            'MessageChat',
+            'Error starting typing indicator:',
+            error
+          );
+        },
+      });
+    }
+
+    // Définir un timer pour arrêter l'indicateur de frappe après un délai d'inactivité
+    this.typingTimer = setTimeout(() => {
+      if (this.isCurrentlyTyping) {
+        this.isCurrentlyTyping = false;
+        this.logger.debug(
+          'MessageChat',
+          'Stopping typing indicator due to inactivity'
+        );
+
+        this.MessageService.stopTyping(conversationId).subscribe({
+          next: () => {
+            this.logger.debug(
+              'MessageChat',
+              'Typing indicator stopped successfully'
+            );
+          },
+          error: (error) => {
+            this.logger.error(
+              'MessageChat',
+              'Error stopping typing indicator:',
+              error
+            );
+          },
+        });
+      }
+    }, this.TYPING_TIMEOUT);
+  }
+
+  /**
+   * Affiche ou masque le sélecteur de thème
+   */
+  toggleThemeSelector(): void {
+    this.showThemeSelector = !this.showThemeSelector;
+
+    // Fermer le sélecteur de thème lorsqu'on clique ailleurs
+    if (this.showThemeSelector) {
+      setTimeout(() => {
+        const clickHandler = (event: MouseEvent) => {
+          const target = event.target as HTMLElement;
+          if (!target.closest('.theme-selector')) {
+            this.showThemeSelector = false;
+            document.removeEventListener('click', clickHandler);
+          }
+        };
+        document.addEventListener('click', clickHandler);
+      }, 0);
+    }
+  }
+
+  /**
+   * Change le thème de la conversation
+   * @param theme Nom du thème à appliquer
+   */
+  changeTheme(theme: string): void {
+    this.selectedTheme = theme;
+    this.showThemeSelector = false;
+
+    // Sauvegarder le thème dans le localStorage pour le conserver entre les sessions
+    localStorage.setItem('chat-theme', theme);
+
+    this.logger.debug('MessageChat', `Theme changed to: ${theme}`);
   }
 
   sendMessage(): void {
@@ -502,6 +701,9 @@ export class MessageChatComponent
       );
       return;
     }
+
+    // Arrêter l'indicateur de frappe lorsqu'un message est envoyé
+    this.stopTypingIndicator();
 
     const content = this.messageForm.get('content')?.value;
 
@@ -1294,17 +1496,44 @@ export class MessageChatComponent
     }
   }
 
+  /**
+   * Arrête l'indicateur de frappe
+   */
+  private stopTypingIndicator(): void {
+    if (this.isCurrentlyTyping && this.conversation?.id) {
+      this.isCurrentlyTyping = false;
+      clearTimeout(this.typingTimer);
+
+      this.logger.debug('MessageChat', 'Stopping typing indicator');
+
+      // Utiliser l'opérateur de chaînage optionnel pour éviter les erreurs TypeScript
+      const conversationId = this.conversation?.id;
+      if (conversationId) {
+        this.MessageService.stopTyping(conversationId).subscribe({
+          next: () => {
+            this.logger.debug(
+              'MessageChat',
+              'Typing indicator stopped successfully'
+            );
+          },
+          error: (error) => {
+            this.logger.error(
+              'MessageChat',
+              'Error stopping typing indicator:',
+              error
+            );
+          },
+        });
+      }
+    }
+  }
+
   ngOnDestroy(): void {
+    // Arrêter l'indicateur de frappe lorsque l'utilisateur quitte la conversation
+    this.stopTypingIndicator();
+
     this.subscriptions.unsubscribe();
     clearTimeout(this.typingTimeout);
-
-    // Envoyer un stop typing au départ
-    // if (this.conversation?.id && this.currentUserId) {
-    //   this.graphqlService.stopTyping({
-    //     userId: this.currentUserId,
-    //     conversationId: this.conversation.id
-    //   }).subscribe();
-    // }
   }
 
   /**
@@ -1312,5 +1541,226 @@ export class MessageChatComponent
    */
   goBackToConversations(): void {
     this.router.navigate(['/messages/conversations']);
+  }
+
+  /**
+   * Bascule l'affichage du sélecteur d'émojis
+   */
+  toggleEmojiPicker(): void {
+    this.showEmojiPicker = !this.showEmojiPicker;
+    if (this.showEmojiPicker) {
+      this.showThemeSelector = false;
+    }
+  }
+
+  /**
+   * Insère un emoji dans le champ de message
+   * @param emoji Emoji à insérer
+   */
+  insertEmoji(emoji: string): void {
+    const control = this.messageForm.get('content');
+    if (control) {
+      const currentValue = control.value || '';
+      control.setValue(currentValue + emoji);
+      control.markAsDirty();
+      // Garder le focus sur le champ de saisie
+      setTimeout(() => {
+        const inputElement = document.querySelector(
+          '.whatsapp-input-field'
+        ) as HTMLInputElement;
+        if (inputElement) {
+          inputElement.focus();
+        }
+      }, 0);
+    }
+  }
+
+  /**
+   * S'abonne aux notifications en temps réel
+   */
+  private subscribeToNotifications(): void {
+    // S'abonner aux nouvelles notifications
+    const notificationSub =
+      this.MessageService.subscribeToNewNotifications().subscribe({
+        next: (notification) => {
+          this.logger.debug(
+            'MessageChat',
+            `Nouvelle notification reçue: ${notification.type}`
+          );
+
+          // Si c'est une notification de message et que nous sommes dans la conversation concernée
+          if (
+            notification.type === 'NEW_MESSAGE' &&
+            notification.conversationId === this.conversation?.id
+          ) {
+            // Marquer automatiquement comme lue
+            if (notification.id) {
+              this.MessageService.markNotificationAsRead(
+                notification.id
+              ).subscribe();
+            }
+          }
+        },
+        error: (error) => {
+          this.logger.error(
+            'MessageChat',
+            'Erreur lors de la réception des notifications:',
+            error
+          );
+        },
+      });
+    this.subscriptions.add(notificationSub);
+
+    // S'abonner aux appels entrants
+    const callSub = this.MessageService.incomingCall$.subscribe({
+      next: (call) => {
+        if (call) {
+          this.logger.debug(
+            'MessageChat',
+            `Appel entrant de: ${call.caller.username}`
+          );
+          this.incomingCall = call;
+          this.showCallModal = true;
+
+          // Jouer la sonnerie
+          this.MessageService.play('ringtone');
+        } else {
+          this.showCallModal = false;
+          this.incomingCall = null;
+        }
+      },
+    });
+    this.subscriptions.add(callSub);
+  }
+
+  /**
+   * Initie un appel audio ou vidéo avec l'autre participant
+   * @param type Type d'appel (AUDIO ou VIDEO)
+   */
+  initiateCall(type: 'AUDIO' | 'VIDEO'): void {
+    if (!this.otherParticipant || !this.otherParticipant.id) {
+      console.error("Impossible d'initier un appel: participant invalide");
+      return;
+    }
+
+    this.logger.info(
+      'MessageChat',
+      `Initiation d'un appel ${type} avec ${this.otherParticipant.username}`
+    );
+
+    // Utiliser le service d'appel pour initier l'appel
+    this.MessageService.initiateCall(
+      this.otherParticipant.id,
+      type === 'AUDIO' ? CallType.AUDIO : CallType.VIDEO,
+      this.conversation?.id
+    ).subscribe({
+      next: (call) => {
+        this.logger.info('MessageChat', 'Appel initié avec succès:', call);
+        // Ici, vous pourriez ouvrir une fenêtre d'appel ou rediriger vers une page d'appel
+      },
+      error: (error) => {
+        this.logger.error(
+          'MessageChat',
+          "Erreur lors de l'initiation de l'appel:",
+          error
+        );
+        this.toastService.showError(
+          "Impossible d'initier l'appel. Veuillez réessayer."
+        );
+      },
+    });
+  }
+
+  /**
+   * Accepte un appel entrant
+   */
+  acceptCall(): void {
+    if (!this.incomingCall) {
+      this.logger.error('MessageChat', 'Aucun appel entrant à accepter');
+      return;
+    }
+
+    this.logger.info(
+      'MessageChat',
+      `Acceptation de l'appel de ${this.incomingCall.caller.username}`
+    );
+
+    this.MessageService.acceptCall(this.incomingCall.id).subscribe({
+      next: (call) => {
+        this.logger.info('MessageChat', 'Appel accepté avec succès:', call);
+        this.showCallModal = false;
+        // Ici, vous pourriez ouvrir une fenêtre d'appel ou rediriger vers une page d'appel
+      },
+      error: (error) => {
+        this.logger.error(
+          'MessageChat',
+          "Erreur lors de l'acceptation de l'appel:",
+          error
+        );
+        this.toastService.showError(
+          "Impossible d'accepter l'appel. Veuillez réessayer."
+        );
+        this.showCallModal = false;
+        this.incomingCall = null;
+      },
+    });
+  }
+
+  /**
+   * Rejette un appel entrant
+   */
+  rejectCall(): void {
+    if (!this.incomingCall) {
+      this.logger.error('MessageChat', 'Aucun appel entrant à rejeter');
+      return;
+    }
+
+    this.logger.info(
+      'MessageChat',
+      `Rejet de l'appel de ${this.incomingCall.caller.username}`
+    );
+
+    this.MessageService.rejectCall(this.incomingCall.id).subscribe({
+      next: (call) => {
+        this.logger.info('MessageChat', 'Appel rejeté avec succès:', call);
+        this.showCallModal = false;
+        this.incomingCall = null;
+      },
+      error: (error) => {
+        this.logger.error(
+          'MessageChat',
+          "Erreur lors du rejet de l'appel:",
+          error
+        );
+        this.showCallModal = false;
+        this.incomingCall = null;
+      },
+    });
+  }
+
+  /**
+   * Termine un appel en cours
+   */
+  endCall(): void {
+    const activeCall = this.MessageService.activeCall$.getValue();
+    if (!activeCall) {
+      this.logger.error('MessageChat', 'Aucun appel actif à terminer');
+      return;
+    }
+
+    this.logger.info('MessageChat', `Fin de l'appel`);
+
+    this.MessageService.endCall(activeCall.id).subscribe({
+      next: (call) => {
+        this.logger.info('MessageChat', 'Appel terminé avec succès:', call);
+      },
+      error: (error) => {
+        this.logger.error(
+          'MessageChat',
+          "Erreur lors de la fin de l'appel:",
+          error
+        );
+      },
+    });
   }
 }

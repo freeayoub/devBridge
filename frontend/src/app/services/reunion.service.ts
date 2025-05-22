@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpHeaders,HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Reunion } from 'src/app/models/reunion.model';
+import { Reunion } from '../models/reunion.model';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
@@ -23,7 +23,7 @@ export class ReunionService {
    }
 
  getAllReunions(): Observable<Reunion[]> {
-   return this.http.get<Reunion[]>(`${environment.urlBackend}reunions/getall`); 
+   return this.http.get<Reunion[]>(`${environment.urlBackend}reunions/getall`);
  }
  getReunionById(id: string): Observable<Reunion> {
    return this.http.get<Reunion>(`${environment.urlBackend}reunions/getone/${id}`);
@@ -39,13 +39,13 @@ export class ReunionService {
  deleteReunion(id: string): Observable<void> {
    return this.http.delete<void>(`${environment.urlBackend}reunions/delete/${id}`,{headers: this.getUserHeaders()});
  }
- 
+
  getReunionsByPlanning(planningId: string): Observable<Reunion[]> {
-   return this.http.get<Reunion[]>(`${environment.urlBackend}reunions/planning/${planningId}`,{headers: this.getUserHeaders()});
+   return this.http.get<Reunion[]>(`${environment.urlBackend}reunions/planning/${planningId}`);
  }
 
  getProchainesReunions(userId: string): Observable<Reunion[]> {
-   return this.http.get<Reunion[]>(`${environment.urlBackend}reunions/upcoming/${userId}`,{headers: this.getUserHeaders()});
+   return this.http.get<Reunion[]>(`${environment.urlBackend}reunions/user/${userId}`);
  }
- 
+
 }

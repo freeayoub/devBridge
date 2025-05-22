@@ -1,0 +1,113 @@
+<div class="container mx-auto px-4 py-6 max-w-3xl">
+
+
+  <form [formGroup]="reunionForm" (ngSubmit)="onSubmit()" class="bg-white rounded-lg shadow-md p-6">
+    <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      {{ error.message || 'Une erreur est survenue' }}
+    </div>
+
+    <div class="grid grid-cols-1 gap-6">
+      <!-- Titre -->
+      <div>
+        <label for="titre" class="block text-sm font-medium text-gray-700">Titre *</label>
+        <input id="titre" type="text" formControlName="titre"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+        <div *ngIf="reunionForm.get('titre')?.invalid && reunionForm.get('titre')?.touched"
+             class="text-red-500 text-sm mt-1">
+          Le titre est obligatoire
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea id="description" formControlName="description" rows="3"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"></textarea>
+      </div>
+
+      <!-- Date and Time -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label for="date" class="block text-sm font-medium text-gray-700">Date *</label>
+          <input id="date" type="date" formControlName="date"
+                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+          <div *ngIf="reunionForm.get('date')?.invalid && reunionForm.get('date')?.touched"
+               class="text-red-500 text-sm mt-1">
+            La date est obligatoire
+          </div>
+        </div>
+
+        <div>
+          <label for="heureDebut" class="block text-sm font-medium text-gray-700">Heure de début *</label>
+          <input id="heureDebut" type="time" formControlName="heureDebut"
+                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+          <div *ngIf="reunionForm.get('heureDebut')?.invalid && reunionForm.get('heureDebut')?.touched"
+               class="text-red-500 text-sm mt-1">
+            L'heure de début est obligatoire
+          </div>
+        </div>
+
+        <div>
+          <label for="heureFin" class="block text-sm font-medium text-gray-700">Heure de fin *</label>
+          <input id="heureFin" type="time" formControlName="heureFin"
+                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+          <div *ngIf="reunionForm.get('heureFin')?.invalid && reunionForm.get('heureFin')?.touched"
+               class="text-red-500 text-sm mt-1">
+            L'heure de fin est obligatoire
+          </div>
+        </div>
+      </div>
+
+      <!-- Lieu / Lien visio -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="lieu" class="block text-sm font-medium text-gray-700">Lieu</label>
+          <input id="lieu" type="text" formControlName="lieu"
+                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+        </div>
+
+        <div>
+          <label for="lienVisio" class="block text-sm font-medium text-gray-700">Lien Visio</label>
+          <input id="lienVisio" type="url" formControlName="lienVisio"
+                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+        </div>
+      </div>
+
+      <!-- Planning -->
+      <div>
+        <label for="planning" class="block text-sm font-medium text-gray-700">Planning *</label>
+        <select id="planning" formControlName="planning"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+          <option value="">Sélectionnez un planning</option>
+          <option *ngFor="let planning of plannings" [value]="planning.id">{{ planning.titre }}</option>
+        </select>
+        <div *ngIf="reunionForm.get('planning')?.invalid && reunionForm.get('planning')?.touched"
+             class="text-red-500 text-sm mt-1">
+          Le planning est obligatoire
+        </div>
+      </div>
+
+      <!-- Participants -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Participants</label>
+        <select formControlName="participants" multiple
+                class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+          <ng-container *ngIf="users">
+            <option *ngFor="let user of users" [value]="user._id">{{ user.username }}</option>
+          </ng-container>
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end space-x-3">
+      <button type="button" (click)="goReunion()"
+              class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Annuler
+      </button>
+      <button type="submit" [disabled]="reunionForm.invalid || isSubmitting"
+              class="px-4 py-2 rounded-md text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:opacity-50">
+        {{ isSubmitting ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
+    </div>
+  </form>
+</div>

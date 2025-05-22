@@ -44,7 +44,26 @@ export class PlanningService {
     return this.http.delete<void>(`${environment.urlBackend}plannings/delete/${id}`,{headers: this.getUserHeaders()});
   }
 
-  getPlanningsByUser(userId: string): Observable<Planning[]> {
-    return this.http.get<Planning[]>(`${environment.urlBackend}plannings/getPlannigByUser/${userId}`,{headers: this.getUserHeaders()});
+
+getPlanningsByUser(userId: string): Observable<Planning[]> {
+  return this.http.get<Planning[]>(
+    `${environment.urlBackend}plannings/user/${userId}`,
+    {
+      headers: this.getUserHeaders()
+    }
+  );
+}
+getPlanningsWithDetails(): Observable<Planning[]> {
+  return this.http.get<Planning[]>(
+    `${environment.urlBackend}plannings/with-details`,
+    { headers: this.getUserHeaders() }
+  );
+}
+
+getPlanningWithReunions(id: string): Observable<Planning> {
+  return this.http.get<Planning>(
+    `${environment.urlBackend}plannings/with-reunions/${id}`,
+    { headers: this.getUserHeaders() }
+  );
 }
 }

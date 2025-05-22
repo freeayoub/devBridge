@@ -4,6 +4,7 @@ import { ReunionListComponent } from './reunion-list/reunion-list.component';
 import { ReunionFormComponent } from './reunion-form/reunion-form.component';
 import { ReunionDetailComponent } from './reunion-detail/reunion-detail.component';
 import { ReunionSchedulerComponent } from './reunion-scheduler/reunion-scheduler.component';
+import {ReunionEditComponent} from "./reunion-edit/reunion-edit.component";
 
 const routes: Routes = [
 
@@ -11,8 +12,8 @@ const routes: Routes = [
     { path: 'nouvelleReunion', component: ReunionFormComponent},
     { path: 'planifierReunion', component: ReunionSchedulerComponent },
     { path: 'reunionDetails/:id', component: ReunionDetailComponent },
-    { path: 'modifier/:id', component: ReunionFormComponent }
-    
+    { path: 'modifier/:id', component: ReunionEditComponent }
+
   ];
 
 @NgModule({

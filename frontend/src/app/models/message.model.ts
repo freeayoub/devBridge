@@ -294,6 +294,9 @@ export interface Notification {
   readAt?: Date | string;
   relatedEntity?: string;
   metadata?: Record<string, any>;
+  conversationId?: string;
+  groupId?: string;
+  isDeleting?: boolean; // Indique si la notification est en cours de suppression
 }
 export interface GetNotificationsResponse {
   getUserNotifications: Notification[];

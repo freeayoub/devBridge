@@ -979,6 +979,162 @@ const resolvers = {
       return UserService.updateProfile(userId, input);
     },
 
+    /**
+     * Supprime une notification spécifique
+     */
+    deleteNotification: async (_, { notificationId }, { userId }) => {
+      console.log(
+        `[GraphQL] deleteNotification mutation called: notificationId=${notificationId}, userId=${userId}`
+      );
+
+      if (!userId) {
+        console.error(
+          `[GraphQL] Unauthorized attempt to delete notification without userId`
+        );
+        throw new AuthenticationError("Not authenticated");
+      }
+
+      if (!notificationId) {
+        console.error(`[GraphQL] Missing notificationId in deleteNotification`);
+        throw new ApolloError("Missing notificationId", "BAD_USER_INPUT");
+      }
+
+      try {
+        console.log(`[GraphQL] Calling NotificationService.deleteNotification`);
+
+        const result = await NotificationService.deleteNotification(
+          notificationId,
+          userId
+        );
+
+        console.log(`[GraphQL] Notification deletion result:`, result);
+
+        return result;
+      } catch (error) {
+        console.error(`[GraphQL] Error deleting notification:`, error);
+        console.error(`[GraphQL] Error details:`, {
+          message: error.message,
+          stack: error.stack,
+          notificationId,
+          userId,
+        });
+
+        throw new ApolloError(
+          error.message || "Failed to delete notification",
+          "NOTIFICATION_DELETE_FAILED",
+          { originalError: error }
+        );
+      }
+    },
+
+    /**
+     * Supprime toutes les notifications d'un utilisateur
+     */
+    deleteAllNotifications: async (_, __, { userId }) => {
+      console.log(
+        `[GraphQL] deleteAllNotifications mutation called for userId=${userId}`
+      );
+
+      if (!userId) {
+        console.error(
+          `[GraphQL] Unauthorized attempt to delete all notifications without userId`
+        );
+        throw new AuthenticationError("Not authenticated");
+      }
+
+      try {
+        console.log(
+          `[GraphQL] Calling NotificationService.deleteAllNotifications`
+        );
+
+        const result = await NotificationService.deleteAllNotifications(userId);
+
+        console.log(`[GraphQL] All notifications deletion result:`, result);
+
+        return result;
+      } catch (error) {
+        console.error(`[GraphQL] Error deleting all notifications:`, error);
+        console.error(`[GraphQL] Error details:`, {
+          message: error.message,
+          stack: error.stack,
+          userId,
+        });
+
+        throw new ApolloError(
+          error.message || "Failed to delete all notifications",
+          "NOTIFICATIONS_DELETE_FAILED",
+          { originalError: error }
+        );
+      }
+    },
+
+    /**
+     * Supprime plusieurs notifications
+     */
+    deleteMultipleNotifications: async (_, { notificationIds }, { userId }) => {
+      console.log(
+        `[GraphQL] deleteMultipleNotifications mutation called: notificationIds=${JSON.stringify(
+          notificationIds
+        )}, userId=${userId}`
+      );
+
+      if (!userId) {
+        console.error(
+          `[GraphQL] Unauthorized attempt to delete multiple notifications without userId`
+        );
+        throw new AuthenticationError("Not authenticated");
+      }
+
+      if (
+        !notificationIds ||
+        !Array.isArray(notificationIds) ||
+        notificationIds.length === 0
+      ) {
+        console.error(
+          `[GraphQL] Missing or invalid notificationIds in deleteMultipleNotifications`
+        );
+        throw new ApolloError(
+          "Missing or invalid notificationIds",
+          "BAD_USER_INPUT"
+        );
+      }
+
+      try {
+        console.log(
+          `[GraphQL] Calling NotificationService.deleteMultipleNotifications`
+        );
+
+        const result = await NotificationService.deleteMultipleNotifications(
+          notificationIds,
+          userId
+        );
+
+        console.log(
+          `[GraphQL] Multiple notifications deletion result:`,
+          result
+        );
+
+        return result;
+      } catch (error) {
+        console.error(
+          `[GraphQL] Error deleting multiple notifications:`,
+          error
+        );
+        console.error(`[GraphQL] Error details:`, {
+          message: error.message,
+          stack: error.stack,
+          notificationIds,
+          userId,
+        });
+
+        throw new ApolloError(
+          error.message || "Failed to delete multiple notifications",
+          "NOTIFICATIONS_DELETE_FAILED",
+          { originalError: error }
+        );
+      }
+    },
+
     createConversation: async (_, { userId: otherUserId }, { userId }) => {
       console.log(
         `[GraphQL] createConversation mutation called: otherUserId=${otherUserId}, userId=${userId}`

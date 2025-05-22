@@ -1,0 +1,1080 @@
+/* Styles futuristes pour le module de messages */
+
+/* Variables pour le thème futuriste */
+:root {
+  /* Variables communes */
+  --transition-fast: 0.2s ease;
+  --border-radius-md: 0.375rem;
+
+  /* Variables pour le mode clair */
+  --accent-color: #4f5fad;
+  --secondary-color: #3d4a85;
+  --bg: #ffffff;
+  --medium-bg: #f5f7fa;
+  --light-bg: #ffffff;
+  --text-light: #6d6870;
+  --text-dim: #9ca3af;
+  --glow-effect: 0 0 15px rgba(79, 95, 173, 0.4);
+  --glow-effect-strong: 0 0 25px rgba(79, 95, 173, 0.6);
+
+  /* Variables spécifiques au mode clair */
+  --light-accent-color: #4f5fad;
+  --light-secondary-color: #3d4a85;
+  --light-bg: #ffffff;
+  --light-medium-bg: #f5f7fa;
+  --light-text: #6d6870;
+  --light-text-dim: #9ca3af;
+  --light-glow-effect: 0 0 15px rgba(79, 95, 173, 0.4);
+  --light-glow-effect-strong: 0 0 25px rgba(79, 95, 173, 0.6);
+}
+
+/* Variables pour le mode sombre */
+.dark {
+  --accent-color: #00f7ff;
+  --secondary-color: #00c3ff;
+  --bg: #0a0e17;
+  --medium-bg: #111827;
+  --light-bg: #1f2937;
+  --text-light: #f9fafb;
+  --text-dim: #9ca3af;
+  --glow-effect: 0 0 15px rgba(0, 247, 255, 0.4);
+  --glow-effect-strong: 0 0 25px rgba(0, 247, 255, 0.6);
+
+  /* Variables spécifiques au mode sombre */
+  --dark-bg: #0a0e17;
+  --dark-medium-bg: #111827;
+  --dark-light-bg: #1f2937;
+  --dark-text: #f9fafb;
+  --dark-text-dim: #9ca3af;
+  --dark-glow-effect: 0 0 15px rgba(0, 247, 255, 0.4);
+  --dark-glow-effect-strong: 0 0 25px rgba(0, 247, 255, 0.6);
+}
+
+/* Layout principal */
+/* Styles pour le mode clair */
+.layout-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--light-bg);
+  color: var(--light-text);
+  position: relative;
+}
+
+.main-content {
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+  overflow: hidden;
+  background-color: var(--light-bg);
+  position: relative;
+}
+
+/* Styles pour le mode sombre */
+.dark .layout-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+  position: relative;
+}
+
+.dark .main-content {
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+  overflow: hidden;
+  background-color: var(--dark-bg);
+  position: relative;
+}
+
+/* Effet de grille en arrière-plan - Mode clair */
+.layout-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+      rgba(79, 95, 173, 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(79, 95, 173, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Effet de grille en arrière-plan - Mode sombre */
+.dark .layout-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+      rgba(0, 247, 255, 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(0, 247, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Conteneur de chat futuriste - Mode clair */
+.futuristic-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Conteneur de chat futuriste - Mode sombre */
+.dark .futuristic-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* En-tête de chat futuriste - Mode clair */
+.futuristic-chat-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--light-medium-bg);
+  border-bottom: 1px solid rgba(79, 95, 173, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* En-tête de chat futuriste - Mode sombre */
+.dark .futuristic-chat-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--dark-medium-bg);
+  border-bottom: 1px solid rgba(0, 247, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Informations utilisateur - Mode clair */
+.futuristic-user-info {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin-left: 1rem;
+}
+
+.futuristic-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--light-accent-color);
+  box-shadow: 0 0 10px rgba(79, 95, 173, 0.3);
+  position: relative;
+}
+
+.futuristic-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.futuristic-online-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: #10b981;
+  border-radius: 50%;
+  border: 2px solid var(--light-medium-bg);
+  box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+}
+
+.futuristic-user-details {
+  margin-left: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.futuristic-username {
+  font-weight: 600;
+  color: var(--light-text);
+}
+
+.futuristic-status {
+  font-size: 0.75rem;
+  color: var(--light-text-dim);
+  display: flex;
+  align-items: center;
+}
+
+.futuristic-status i {
+  color: #10b981;
+  margin-right: 0.25rem;
+}
+
+/* Informations utilisateur - Mode sombre */
+.dark .futuristic-user-info {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin-left: 1rem;
+}
+
+.dark .futuristic-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--accent-color);
+  box-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+  position: relative;
+}
+
+.dark .futuristic-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dark .futuristic-online-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: #10b981;
+  border-radius: 50%;
+  border: 2px solid var(--dark-medium-bg);
+  box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+}
+
+.dark .futuristic-user-details {
+  margin-left: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.dark .futuristic-username {
+  font-weight: 600;
+  color: var(--dark-text);
+}
+
+.dark .futuristic-status {
+  font-size: 0.75rem;
+  color: var(--dark-text-dim);
+  display: flex;
+  align-items: center;
+}
+
+.dark .futuristic-status i {
+  color: #10b981;
+  margin-right: 0.25rem;
+}
+
+/* Actions - Mode clair */
+.futuristic-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.futuristic-action-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(79, 95, 173, 0.1);
+  color: var(--light-accent-color);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.futuristic-action-button:hover {
+  background-color: rgba(79, 95, 173, 0.2);
+  transform: translateY(-2px);
+  box-shadow: var(--light-glow-effect);
+}
+
+/* Actions - Mode sombre */
+.dark .futuristic-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dark .futuristic-action-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 247, 255, 0.1);
+  color: var(--accent-color);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dark .futuristic-action-button:hover {
+  background-color: rgba(0, 247, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: var(--dark-glow-effect);
+}
+
+/* Zone de messages futuriste - Mode clair */
+.futuristic-messages-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--light-accent-color) transparent;
+  background-color: var(--light-bg);
+}
+
+.futuristic-messages-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.futuristic-messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.futuristic-messages-container::-webkit-scrollbar-thumb {
+  background-color: var(--light-accent-color);
+  border-radius: 10px;
+}
+
+/* Zone de messages futuriste - Mode sombre */
+.dark .futuristic-messages-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-color) transparent;
+  background-color: var(--dark-bg);
+}
+
+.dark .futuristic-messages-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dark .futuristic-messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark .futuristic-messages-container::-webkit-scrollbar-thumb {
+  background-color: var(--accent-color);
+  border-radius: 10px;
+}
+
+/* Séparateur de date futuriste - Mode clair */
+.futuristic-date-separator {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.futuristic-date-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(79, 95, 173, 0.2),
+    transparent
+  );
+}
+
+.futuristic-date-text {
+  margin: 0 0.75rem;
+  font-size: 0.75rem;
+  color: var(--light-accent-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Séparateur de date futuriste - Mode sombre */
+.dark .futuristic-date-separator {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.dark .futuristic-date-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 247, 255, 0.2),
+    transparent
+  );
+}
+
+.dark .futuristic-date-text {
+  margin: 0 0.75rem;
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Messages - Mode clair */
+.futuristic-message {
+  display: flex;
+  margin-bottom: 0.75rem;
+  max-width: 80%;
+}
+
+.futuristic-message-current-user {
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+.futuristic-message-other-user {
+  margin-right: auto;
+}
+
+.futuristic-message-content {
+  margin: 0 0.5rem;
+}
+
+.futuristic-message-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.futuristic-message-current-user .futuristic-message-bubble {
+  background: linear-gradient(
+    135deg,
+    rgba(79, 95, 173, 0.1),
+    rgba(61, 74, 133, 0.2)
+  );
+  border: 1px solid rgba(79, 95, 173, 0.3);
+  color: var(--light-text);
+  border-bottom-right-radius: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.futuristic-message-other-user .futuristic-message-bubble {
+  background-color: var(--light-medium-bg);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  color: var(--light-text);
+  border-bottom-left-radius: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.futuristic-message-text {
+  position: relative;
+  z-index: 1;
+}
+
+.futuristic-message-info {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--light-text-dim);
+}
+
+.futuristic-message-time {
+  margin-right: 0.25rem;
+}
+
+.futuristic-message-status i {
+  color: var(--light-accent-color);
+}
+
+/* Messages - Mode sombre */
+.dark .futuristic-message {
+  display: flex;
+  margin-bottom: 0.75rem;
+  max-width: 80%;
+}
+
+.dark .futuristic-message-current-user {
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+.dark .futuristic-message-other-user {
+  margin-right: auto;
+}
+
+.dark .futuristic-message-content {
+  margin: 0 0.5rem;
+}
+
+.dark .futuristic-message-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .futuristic-message-current-user .futuristic-message-bubble {
+  background: linear-gradient(135deg, #00f7ff20, #00c3ff30);
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  color: var(--dark-text);
+  border-bottom-right-radius: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dark .futuristic-message-other-user .futuristic-message-bubble {
+  background-color: var(--dark-medium-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--dark-text);
+  border-bottom-left-radius: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dark .futuristic-message-text {
+  position: relative;
+  z-index: 1;
+}
+
+.dark .futuristic-message-info {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--dark-text-dim);
+}
+
+.dark .futuristic-message-time {
+  margin-right: 0.25rem;
+}
+
+.dark .futuristic-message-status i {
+  color: var(--accent-color);
+}
+
+/* Images dans les messages - Mode clair */
+.futuristic-message-image-container {
+  max-width: 250px;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(79, 95, 173, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.futuristic-image-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.futuristic-message-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform var(--transition-fast);
+}
+
+.futuristic-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.futuristic-image-wrapper:hover .futuristic-image-overlay {
+  opacity: 1;
+}
+
+.futuristic-image-wrapper:hover .futuristic-message-image {
+  transform: scale(1.05);
+}
+
+.futuristic-image-overlay i {
+  color: white;
+  font-size: 1.5rem;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Images dans les messages - Mode sombre */
+.dark .futuristic-message-image-container {
+  max-width: 250px;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dark .futuristic-image-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .futuristic-message-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform var(--transition-fast);
+}
+
+.dark .futuristic-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.dark .futuristic-image-wrapper:hover .futuristic-image-overlay {
+  opacity: 1;
+}
+
+.dark .futuristic-image-wrapper:hover .futuristic-message-image {
+  transform: scale(1.05);
+}
+
+.dark .futuristic-image-overlay i {
+  color: white;
+  font-size: 1.5rem;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Zone de saisie futuriste - Mode clair */
+.futuristic-input-container {
+  padding: 1rem;
+  background-color: var(--light-medium-bg);
+  border-top: 1px solid rgba(79, 95, 173, 0.2);
+}
+
+/* Zone de saisie futuriste - Mode sombre */
+.dark .futuristic-input-container {
+  padding: 1rem;
+  background-color: var(--dark-medium-bg);
+  border-top: 1px solid rgba(0, 247, 255, 0.2);
+}
+
+.futuristic-input-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.futuristic-input-tools {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.dark .futuristic-input-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.dark .futuristic-input-tools {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.futuristic-tool-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(79, 95, 173, 0.1);
+  color: var(--light-accent-color);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.futuristic-tool-button:hover {
+  background-color: rgba(79, 95, 173, 0.2);
+  transform: translateY(-2px);
+  box-shadow: var(--light-glow-effect);
+}
+
+.futuristic-tool-button.active {
+  background-color: rgba(79, 95, 173, 0.3);
+  box-shadow: var(--light-glow-effect);
+}
+
+.dark .futuristic-tool-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 247, 255, 0.1);
+  color: var(--accent-color);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dark .futuristic-tool-button:hover {
+  background-color: rgba(0, 247, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: var(--dark-glow-effect);
+}
+
+.dark .futuristic-tool-button.active {
+  background-color: rgba(0, 247, 255, 0.3);
+  box-shadow: var(--dark-glow-effect);
+}
+
+.futuristic-input-field {
+  flex-grow: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 1.5rem;
+  background-color: white;
+  border: 1px solid rgba(79, 95, 173, 0.2);
+  color: var(--light-text);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.futuristic-input-field:focus {
+  border-color: var(--light-accent-color);
+  box-shadow: var(--light-glow-effect);
+}
+
+.dark .futuristic-input-field {
+  flex-grow: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 1.5rem;
+  background-color: var(--dark-light-bg);
+  border: 1px solid rgba(0, 247, 255, 0.2);
+  color: var(--dark-text);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.dark .futuristic-input-field:focus {
+  border-color: var(--accent-color);
+  box-shadow: var(--dark-glow-effect);
+}
+
+.futuristic-send-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--light-accent-color),
+    var(--light-secondary-color)
+  );
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.futuristic-send-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--light-glow-effect-strong);
+}
+
+.futuristic-send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dark .futuristic-send-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
+  color: var(--dark-bg);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dark .futuristic-send-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--dark-glow-effect-strong);
+}
+
+.dark .futuristic-send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Styles pour les messages vocaux - Mode clair */
+.futuristic-voice-message-container {
+  min-width: 180px;
+}
+
+.futuristic-voice-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.futuristic-voice-play-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--light-accent-color);
+  color: white;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.futuristic-voice-play-button:hover {
+  transform: scale(1.1);
+  box-shadow: var(--light-glow-effect);
+}
+
+.futuristic-voice-waveform {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 30px;
+}
+
+.futuristic-voice-bar {
+  width: 3px;
+  background-color: var(--light-accent-color);
+  border-radius: 1px;
+  opacity: 0.7;
+}
+
+/* Styles pour les messages vocaux - Mode sombre */
+.dark .futuristic-voice-message-container {
+  min-width: 180px;
+}
+
+.dark .futuristic-voice-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.dark .futuristic-voice-play-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-color);
+  color: var(--dark-bg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dark .futuristic-voice-play-button:hover {
+  transform: scale(1.1);
+  box-shadow: var(--dark-glow-effect);
+}
+
+.dark .futuristic-voice-waveform {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 30px;
+}
+
+.dark .futuristic-voice-bar {
+  width: 3px;
+  background-color: var(--accent-color);
+  border-radius: 1px;
+  opacity: 0.7;
+}
+
+/* Styles pour l'aperçu des fichiers */
+.dark .futuristic-file-preview {
+  position: relative;
+  margin-bottom: 0.75rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  max-width: 200px;
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  box-shadow: var(--glow-effect);
+}
+
+.dark .futuristic-preview-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.dark .futuristic-remove-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dark .futuristic-remove-button:hover {
+  background-color: rgba(255, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+/* Styles pour l'indicateur de frappe */
+.dark .futuristic-typing-indicator {
+  display: flex;
+  align-items: flex-end;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  max-width: 80%;
+}
+
+.dark .futuristic-typing-bubble {
+  background-color: var(--medium-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  margin-left: 0.5rem;
+  border-bottom-left-radius: 0;
+}
+
+.dark .futuristic-typing-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.dark .futuristic-typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  animation: typing 1s infinite;
+}
+
+/* Styles pour l'état "aucun message" */
+.dark .futuristic-no-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.dark .futuristic-no-messages-icon {
+  font-size: 3rem;
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.dark .futuristic-no-messages-text {
+  color: var(--text-dim);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.dark .futuristic-start-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
+  color: var(--dark-bg);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-weight: 500;
+}
+
+.dark .futuristic-start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-effect-strong);
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes typing {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}

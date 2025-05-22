@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
-import { ThemeService } from '@app/services/theme.service';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -17,11 +17,7 @@ export class DashboardComponent implements OnInit {
   searchTerm = '';
   filteredUsers: any[] = [];
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private themeService: ThemeService
-  ) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadUserData();
@@ -41,7 +37,7 @@ export class DashboardComponent implements OnInit {
 
     // Check if user is admin
     if (this.currentUser.role !== 'admin') {
-      this.router.navigate(['/admin/dashboard']);
+      this.router.navigate(['/']);
       return;
     }
 
@@ -200,12 +196,13 @@ export class DashboardComponent implements OnInit {
   getInactiveCount(): number {
     return this.users.filter((u) => u.isActive === false).length;
   }
-  toggleDarkMode(): void {
-    this.themeService.toggleDarkMode();
-  }
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['admin/login/']);
+    this.router.navigate(['/admin/login']);
+  }
+
+  showUserDetails(userId: string) {
+    this.router.navigate(['/admin/userdetails', userId]);
   }
 }

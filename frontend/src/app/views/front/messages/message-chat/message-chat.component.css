@@ -1,109 +1,176 @@
 /* Styles futuristes pour le chat */
 
-/* En-tête futuriste */
-.futuristic-chat-header {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background-color: var(--medium-bg);
-  border-bottom: 1px solid rgba(0, 247, 255, 0.2);
-  height: 70px;
+/* Styles pour les messages - Couleurs unifiées */
+.futuristic-message-current-user .futuristic-message-bubble {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 247, 255, 0.9),
+    rgba(131, 56, 236, 0.9)
+  );
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 247, 255, 0.4);
+  backdrop-filter: blur(10px);
+  transform: perspective(800px) rotateX(0deg);
+  transition: all 0.3s ease;
 }
 
-.futuristic-user-info {
+.futuristic-message-current-user .futuristic-message-bubble:hover {
+  transform: perspective(800px) rotateX(2deg) translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 247, 255, 0.5);
+}
+
+.futuristic-message-current-user .futuristic-message-bubble::before {
+  border-left: 8px solid rgba(131, 56, 236, 0.8);
+}
+
+.futuristic-message-other-user .futuristic-message-bubble {
+  background: rgba(30, 30, 40, 0.7);
+  border-color: rgba(0, 247, 255, 0.15);
+}
+
+.futuristic-message-other-user .futuristic-message-bubble:hover {
+  border-color: rgba(0, 247, 255, 0.25);
+  box-shadow: 0 2px 15px rgba(0, 247, 255, 0.2);
+}
+
+/* En-tête style WhatsApp */
+.whatsapp-chat-header {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  background-color: #f0f2f5;
+  border-bottom: 1px solid #e0e0e0;
+  height: 50px; /* Hauteur réduite */
+}
+
+:host-context(.dark) .whatsapp-chat-header {
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.whatsapp-user-info {
   display: flex;
   align-items: center;
   flex: 1;
   margin-left: 12px;
 }
 
-.futuristic-avatar {
+.whatsapp-avatar {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   overflow: hidden;
-  border: 1px solid rgba(0, 247, 255, 0.3);
-  box-shadow: var(--glow-effect);
   margin-right: 8px;
 }
 
-.futuristic-avatar img {
+.whatsapp-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.futuristic-online-indicator {
+.whatsapp-online-indicator {
   position: absolute;
   bottom: 2px;
   right: 2px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #00ff9d;
-  border: 2px solid var(--medium-bg);
-  box-shadow: 0 0 5px rgba(0, 255, 157, 0.8);
+  background: #25d366;
+  border: 2px solid #f0f2f5;
 }
 
-.futuristic-user-details {
-  margin-left: 12px;
+:host-context(.dark) .whatsapp-online-indicator {
+  border-color: #2a2a2a;
+}
+
+.whatsapp-user-details {
+  margin-left: 8px;
   display: flex;
   flex-direction: column;
 }
 
-.futuristic-username {
+.whatsapp-username {
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--text-light);
+  color: #333;
 }
 
-.futuristic-status {
+:host-context(.dark) .whatsapp-username {
+  color: #e0e0e0;
+}
+
+.whatsapp-status {
   font-size: 0.75rem;
-  color: var(--text-dim);
+  color: #666;
+}
+
+:host-context(.dark) .whatsapp-status {
+  color: #aaa;
+}
+
+.whatsapp-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.whatsapp-action-button {
+  background: transparent;
+  border: none;
+  color: #54656f;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.futuristic-status i {
-  color: #00ff9d;
-  margin-right: 4px;
+:host-context(.dark) .whatsapp-action-button {
+  color: #aaa;
 }
 
-.futuristic-actions {
-  display: flex;
-  gap: 8px;
+.whatsapp-action-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+:host-context(.dark) .whatsapp-action-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Conteneur de messages futuriste */
 .futuristic-messages-container {
   flex: 1;
-  padding: 1rem;
-  background-color: var(--dark-bg);
+  padding: 0.75rem;
+  background-color: #f0f4f8; /* Fond clair par défaut */
   overflow-y: auto;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--accent-color) transparent;
   position: relative;
+  max-height: calc(
+    100vh - 180px
+  ); /* Hauteur maximale pour éviter le défilement */
 }
 
-/* Effet de grille en arrière-plan */
-.futuristic-messages-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: linear-gradient(
-      rgba(0, 247, 255, 0.03) 1px,
-      transparent 1px
-    ),
-    linear-gradient(90deg, rgba(0, 247, 255, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-  pointer-events: none;
-  z-index: 0;
+/* Mode sombre pour le conteneur de messages */
+:host-context(.dark) .futuristic-messages-container {
+  background-color: var(--dark-bg);
+}
+
+/* Animation de scan pour le mode sombre */
+@keyframes scan {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: 100%;
+  }
 }
 
 /* Style pour les scrollbars futuristes */
@@ -123,7 +190,7 @@
 
 /* Wrapper de message futuriste */
 .futuristic-message-wrapper {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   position: relative;
   z-index: 1;
 }
@@ -132,7 +199,7 @@
 .futuristic-message {
   display: flex;
   align-items: flex-end;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
   position: relative;
   width: 100%;
 }
@@ -142,9 +209,9 @@
   margin-bottom: 0.25rem;
   max-width: 70%;
   min-width: 40px;
-  padding: 0.8rem 1rem;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
   word-wrap: break-word;
   word-break: normal;
   display: inline-block;
@@ -257,6 +324,7 @@
   width: 100%;
   display: flex;
   margin-left: auto;
+  animation: slideInRight 0.3s ease-out;
 }
 
 .futuristic-message-current-user .futuristic-message-content {
@@ -307,6 +375,7 @@
   width: 100%;
   display: flex;
   margin-right: auto;
+  animation: slideInLeft 0.3s ease-out;
 }
 
 .futuristic-message-other-user .futuristic-message-content {
@@ -317,19 +386,57 @@
   margin-right: auto;
 }
 
-.futuristic-message-other-user .futuristic-message-bubble {
-  background: rgba(30, 30, 40, 0.7);
+/* Style pour les messages des autres utilisateurs en mode clair */
+:host-context(:not(.dark))
+  .futuristic-message-other-user
+  .futuristic-message-bubble {
+  background: rgba(220, 225, 235, 0.8);
+  color: #333;
+  border-radius: 12px;
+  margin-right: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(79, 95, 173, 0.2);
+  position: relative;
+  backdrop-filter: blur(10px);
+  transform: perspective(800px) rotateX(0deg);
+  transition: all 0.3s ease;
+}
+
+/* Style pour les messages des autres utilisateurs en mode sombre */
+:host-context(.dark) .futuristic-message-other-user .futuristic-message-bubble {
+  background: rgba(30, 30, 40, 0.8);
   color: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   margin-right: auto;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(0, 247, 255, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 247, 255, 0.2);
   position: relative;
   backdrop-filter: blur(10px);
+  transform: perspective(800px) rotateX(0deg);
+  transition: all 0.3s ease;
 }
 
-/* Flèche style WhatsApp pour les messages des autres utilisateurs */
-.futuristic-message-other-user .futuristic-message-bubble::before {
+/* Flèche style WhatsApp pour les messages des autres utilisateurs - Mode clair */
+:host-context(:not(.dark))
+  .futuristic-message-other-user
+  .futuristic-message-bubble::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-right: 8px solid rgba(220, 225, 235, 0.8);
+  border-bottom: 8px solid transparent;
+  z-index: 1;
+  filter: drop-shadow(-2px 0px 2px rgba(0, 0, 0, 0.05));
+}
+
+/* Flèche style WhatsApp pour les messages des autres utilisateurs - Mode sombre */
+:host-context(.dark)
+  .futuristic-message-other-user
+  .futuristic-message-bubble::before {
   content: "";
   position: absolute;
   top: 0;
@@ -343,26 +450,106 @@
   filter: drop-shadow(-2px 0px 2px rgba(0, 0, 0, 0.1));
 }
 
-.futuristic-message-other-user .futuristic-message-bubble:hover {
-  background: rgba(40, 40, 50, 0.8);
-  box-shadow: 0 2px 15px rgba(0, 247, 255, 0.2);
-  border-color: rgba(0, 247, 255, 0.25);
+/* Hover pour les messages des autres utilisateurs - Mode clair */
+:host-context(:not(.dark))
+  .futuristic-message-other-user
+  .futuristic-message-bubble:hover {
+  background: rgba(230, 235, 245, 0.9);
+  box-shadow: 0 6px 20px rgba(79, 95, 173, 0.2);
+  border-color: rgba(79, 95, 173, 0.35);
+  transform: perspective(800px) rotateX(2deg) translateY(-2px);
+}
+
+/* Hover pour les messages des autres utilisateurs - Mode sombre */
+:host-context(.dark)
+  .futuristic-message-other-user
+  .futuristic-message-bubble:hover {
+  background: rgba(40, 40, 50, 0.9);
+  box-shadow: 0 6px 20px rgba(0, 247, 255, 0.3);
+  border-color: rgba(0, 247, 255, 0.35);
+  transform: perspective(800px) rotateX(2deg) translateY(-2px);
 }
 
 /* Zone de saisie futuriste */
+/* Conteneur d'entrée avec effet de portail magique */
 .futuristic-input-container {
-  padding: 12px 16px;
+  padding: 6px 10px;
   background-color: var(--medium-bg);
-  border-top: 1px solid rgba(0, 247, 255, 0.2);
-  min-height: 70px;
+  min-height: 50px; /* Hauteur réduite */
   position: relative;
   z-index: 10;
+  overflow: hidden;
+}
+
+/* Effet de bordure magique */
+.futuristic-input-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 247, 255, 0.2) 20%,
+    rgba(0, 247, 255, 0.8) 50%,
+    rgba(0, 247, 255, 0.2) 80%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: borderFlow 3s infinite linear;
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.7);
+  z-index: 1;
+}
+
+/* Effet de lueur ambiante */
+.futuristic-input-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 247, 255, 0.05) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  animation: ambientGlow 4s infinite alternate;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Animation de flux de bordure */
+@keyframes borderFlow {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 0%;
+  }
+}
+
+/* Animation de lueur ambiante */
+@keyframes ambientGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
 }
 
 .futuristic-input-form {
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
+  z-index: 2;
 }
 
 .futuristic-input-tools {
@@ -375,8 +562,8 @@
   color: var(--accent-color);
   border: none;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -396,6 +583,7 @@
   animation: pulse 1.5s infinite;
 }
 
+/* Champ de saisie simplifié */
 .futuristic-input-field {
   flex: 1;
   font-size: 0.9rem;
@@ -405,22 +593,14 @@
   border: 1px solid rgba(0, 247, 255, 0.2);
   background-color: rgba(0, 247, 255, 0.05);
   color: var(--text-light);
-  transition: all var(--transition-fast);
+  transition: all 0.3s ease;
 }
 
-.futuristic-input-field:focus {
-  border-color: var(--accent-color);
-  box-shadow: var(--glow-effect);
-  outline: none;
-}
-
+/* Bouton d'envoi avec effet de portail magique */
 .futuristic-send-button {
-  background: linear-gradient(
-    135deg,
-    var(--accent-color),
-    var(--secondary-color)
-  );
-  color: var(--text-light);
+  position: relative;
+  background: linear-gradient(135deg, #00f7ff, #0066ff);
+  color: white;
   border: none;
   border-radius: 50%;
   width: 44px;
@@ -429,13 +609,97 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 10px rgba(0, 247, 255, 0.5), 0 0 20px rgba(0, 247, 255, 0.2),
+    inset 0 0 5px rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* Effet de halo lumineux */
+.futuristic-send-button::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(0, 247, 255, 0.8) 25%,
+    rgba(131, 56, 236, 0.8) 50%,
+    rgba(0, 247, 255, 0.8) 75%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: rotateHalo 3s linear infinite;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Effet de particules internes */
+.futuristic-send-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(0, 247, 255, 0.5) 30%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+/* Animation de rotation du halo */
+@keyframes rotateHalo {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation de pulsation */
+@keyframes pulseButton {
+  0% {
+    box-shadow: 0 0 10px rgba(0, 247, 255, 0.5), 0 0 20px rgba(0, 247, 255, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 247, 255, 0.7), 0 0 30px rgba(0, 247, 255, 0.4);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(0, 247, 255, 0.5), 0 0 20px rgba(0, 247, 255, 0.2);
+    transform: scale(1);
+  }
 }
 
 .futuristic-send-button:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: var(--glow-effect);
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.7), 0 0 30px rgba(0, 247, 255, 0.4),
+    inset 0 0 10px rgba(255, 255, 255, 0.5);
+  animation: pulseButton 1.5s infinite;
+}
+
+.futuristic-send-button:hover::before {
+  opacity: 1;
+}
+
+.futuristic-send-button:hover::after {
+  opacity: 0.8;
+  transform: scale(1.2);
 }
 
 .futuristic-send-button:disabled {
@@ -443,6 +707,12 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  animation: none;
+}
+
+.futuristic-send-button:disabled::before,
+.futuristic-send-button:disabled::after {
+  opacity: 0;
 }
 
 .message-header {
@@ -480,14 +750,20 @@
 
 /* Images style Messenger dans les messages */
 .futuristic-message-image-container {
-  margin: 4px 0;
+  margin: 2px 0;
   overflow: hidden;
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
   padding: 0 !important;
   position: relative;
-  max-width: 240px;
+  max-width: 220px;
+  transform: perspective(800px) rotateX(0deg);
+  transition: all 0.3s ease;
+}
+
+.futuristic-message-image-container:hover {
+  transform: perspective(800px) rotateX(2deg) translateY(-3px);
 }
 
 .futuristic-image-wrapper {
@@ -571,9 +847,9 @@
 }
 
 .futuristic-image-wrapper:hover {
-  box-shadow: 0 8px 25px rgba(0, 247, 255, 0.3);
-  transform: perspective(800px) rotateX(2deg) translateY(-5px);
-  border-color: rgba(0, 247, 255, 0.3);
+  box-shadow: 0 12px 30px rgba(0, 247, 255, 0.4);
+  transform: perspective(800px) rotateX(3deg) translateY(-5px);
+  border-color: rgba(0, 247, 255, 0.4);
 }
 
 .futuristic-image-wrapper:hover .futuristic-image-overlay {
@@ -602,9 +878,11 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -616,6 +894,28 @@
   to {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -656,6 +956,278 @@
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 0 30px rgba(0, 247, 255, 0.3);
+}
+
+/* Zone de saisie style WhatsApp */
+.whatsapp-input-container {
+  padding: 8px 10px;
+  background-color: #f0f2f5;
+  min-height: 50px; /* Hauteur réduite */
+  position: relative;
+  z-index: 10;
+  border-top: 1px solid #e0e0e0;
+}
+
+:host-context(.dark) .whatsapp-input-container {
+  background-color: #2a2a2a;
+  border-top: 1px solid #3a3a3a;
+}
+
+/* Formulaire d'entrée style WhatsApp */
+.whatsapp-input-form {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Outils d'entrée style WhatsApp */
+.whatsapp-input-tools {
+  display: flex;
+  gap: 8px;
+  margin-right: 8px;
+}
+
+/* Bouton d'outil style WhatsApp */
+.whatsapp-tool-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: none;
+  color: #54656f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:host-context(.dark) .whatsapp-tool-button {
+  color: #aaa;
+}
+
+/* Effet de survol pour le bouton d'outil */
+.whatsapp-tool-button:hover,
+.whatsapp-tool-button.active {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #128c7e;
+}
+
+:host-context(.dark) .whatsapp-tool-button:hover,
+:host-context(.dark) .whatsapp-tool-button.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #25d366;
+}
+
+/* Champ de saisie style WhatsApp */
+.whatsapp-input-field {
+  flex: 1;
+  background-color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  color: #333;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
+  outline: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+:host-context(.dark) .whatsapp-input-field {
+  background-color: #3a3a3a;
+  color: #e0e0e0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Effet de focus pour le champ de saisie */
+.whatsapp-input-field:focus {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Bouton d'envoi style WhatsApp */
+.whatsapp-send-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #25d366;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: all 0.2s ease;
+}
+
+/* Effet de survol pour le bouton d'envoi */
+.whatsapp-send-button:hover:not(:disabled) {
+  background-color: #128c7e;
+}
+
+/* Style pour le bouton d'envoi désactivé */
+.whatsapp-send-button:disabled {
+  background-color: #b3b3b3;
+  cursor: not-allowed;
+}
+
+/* Bouton d'enregistrement vocal style WhatsApp */
+.whatsapp-voice-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #25d366;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: all 0.2s ease;
+}
+
+/* Effet de survol pour le bouton d'enregistrement vocal */
+.whatsapp-voice-button:hover {
+  background-color: #128c7e;
+}
+
+/* Aperçu de fichier style WhatsApp */
+.whatsapp-file-preview {
+  position: relative;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  max-width: 200px;
+  max-height: 200px;
+}
+
+.whatsapp-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.whatsapp-remove-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.whatsapp-remove-button:hover {
+  background-color: rgba(255, 0, 0, 0.7);
+}
+
+/* Sélecteur d'émojis style WhatsApp */
+.whatsapp-emoji-picker {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  height: 250px;
+  overflow: hidden;
+}
+
+:host-context(.dark) .whatsapp-emoji-picker {
+  background-color: #2a2a2a;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.whatsapp-emoji-categories {
+  display: flex;
+  padding: 8px;
+  border-bottom: 1px solid #e0e0e0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+:host-context(.dark) .whatsapp-emoji-categories {
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.whatsapp-emoji-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.whatsapp-emoji-category {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: none;
+  color: #54656f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+:host-context(.dark) .whatsapp-emoji-category {
+  color: #aaa;
+}
+
+.whatsapp-emoji-category:hover,
+.whatsapp-emoji-category.active {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #128c7e;
+}
+
+:host-context(.dark) .whatsapp-emoji-category:hover,
+:host-context(.dark) .whatsapp-emoji-category.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #25d366;
+}
+
+.whatsapp-emoji-list {
+  flex: 1;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.whatsapp-emoji-item {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.whatsapp-emoji-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+:host-context(.dark) .whatsapp-emoji-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .close-fullscreen-btn {
@@ -864,11 +1436,19 @@
 
 /* Messages vocaux futuristes */
 .futuristic-voice-message-container {
-  padding: 12px !important;
+  padding: 8px !important;
   min-width: 200px;
-  border-radius: 12px;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  transform: perspective(800px) rotateX(0deg);
+  transition: all 0.3s ease;
+}
+
+.futuristic-voice-message-container:hover {
+  transform: perspective(800px) rotateX(2deg) translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
 .futuristic-voice-message {
@@ -894,18 +1474,19 @@
 }
 
 .futuristic-voice-play-button {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
   z-index: 2;
+  animation: pulse-slow 4s infinite;
 }
 
 .futuristic-voice-play-button::before {
@@ -942,8 +1523,9 @@
 }
 
 .futuristic-voice-play-button:hover {
-  transform: scale(1.15) translateY(-2px);
-  box-shadow: 0 5px 20px rgba(0, 247, 255, 0.4);
+  transform: scale(1.2) translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 247, 255, 0.5);
+  animation: none;
 }
 
 .futuristic-voice-play-button i {

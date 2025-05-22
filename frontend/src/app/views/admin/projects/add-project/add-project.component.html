@@ -1,7 +1,151 @@
-<p>add-project works!</p>
-<span>
+<!-- Begin Page Content -->
+<div class="container-fluid p-4 md:p-6 bg-[#edf1f4] min-h-screen">
+  <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+    <!-- Header -->
+    <div class="border-t-4 border-[#4f5fad] p-6">
+      <h2 class="text-2xl font-bold text-center text-[#4f5fad]">
+        Ajouter un projet
+      </h2>
+    </div>
 
-    hello sameh 
-    from add project 
-    
-</span>
+    <!-- Form -->
+    <div class="p-6 md:p-8">
+      <form
+        [formGroup]="projetForm"
+        (ngSubmit)="onSubmit()"
+        enctype="multipart/form-data"
+        class="space-y-6"
+      >
+        <!-- Titre -->
+        <div>
+          <label
+            for="titre"
+            class="block text-sm font-medium text-[#6d6870] mb-1"
+            >Titre</label
+          >
+          <input
+            type="text"
+            id="titre"
+            formControlName="titre"
+            placeholder="Titre du projet"
+            class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] focus:border-[#7826b5] focus:ring-2 focus:ring-[#dac4ea] transition-all"
+          />
+          <div
+            *ngIf="
+              projetForm.get('titre')?.invalid &&
+              projetForm.get('titre')?.touched
+            "
+            class="text-[#ff6b69] text-sm mt-1"
+          >
+            Titre est requis
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label
+            for="description"
+            class="block text-sm font-medium text-[#6d6870] mb-1"
+            >Description</label
+          >
+          <textarea
+            id="description"
+            formControlName="description"
+            placeholder="Description du projet"
+            rows="4"
+            class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] focus:border-[#7826b5] focus:ring-2 focus:ring-[#dac4ea] transition-all"
+          ></textarea>
+          <div
+            *ngIf="
+              projetForm.get('description')?.invalid &&
+              projetForm.get('description')?.touched
+            "
+            class="text-[#ff6b69] text-sm mt-1"
+          >
+            Description est requise
+          </div>
+        </div>
+
+        <!-- Date limite -->
+        <div>
+          <label
+            for="dateLimite"
+            class="block text-sm font-medium text-[#6d6870] mb-1"
+            >Date limite</label
+          >
+          <input
+            type="date"
+            id="dateLimite"
+            formControlName="dateLimite"
+            class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] focus:border-[#7826b5] focus:ring-2 focus:ring-[#dac4ea] transition-all"
+          />
+          <div
+            *ngIf="
+              projetForm.get('dateLimite')?.invalid &&
+              projetForm.get('dateLimite')?.touched
+            "
+            class="text-[#ff6b69] text-sm mt-1"
+          >
+            Date limite est requise
+          </div>
+        </div>
+
+        <!-- Fichiers -->
+        <div>
+          <label
+            for="fichiers"
+            class="block text-sm font-medium text-[#6d6870] mb-1"
+            >Fichiers</label
+          >
+          <input
+            type="file"
+            id="fichiers"
+            (change)="onFileChange($event)"
+            multiple
+            class="w-full px-4 py-2 rounded-lg border border-[#bdc6cc] bg-white focus:outline-none"
+          />
+        </div>
+
+        <!-- Groupe -->
+        <div>
+          <label
+            for="groupe"
+            class="block text-sm font-medium text-[#6d6870] mb-1"
+            >Groupe</label
+          >
+          <select
+            id="groupe"
+            formControlName="groupe"
+            class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] focus:border-[#7826b5] focus:ring-2 focus:ring-[#dac4ea] bg-white transition-all"
+          >
+            <option value="">-- Choisir un groupe --</option>
+            <option value="2cinfo1">2cinfo1</option>
+            <option value="2cinfo2">2cinfo2</option>
+            <option value="2cinfo3">2cinfo3</option>
+          </select>
+          <div
+            *ngIf="
+              projetForm.get('groupe')?.invalid &&
+              projetForm.get('groupe')?.touched
+            "
+            class="text-[#ff6b69] text-sm mt-1"
+          >
+            Groupe est requis
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+          <button
+            type="submit"
+            class="w-full bg-[#7826b5] hover:bg-[#4f5fad] text-white font-bold py-3 px-4 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#dac4ea] focus:ring-offset-2"
+            [disabled]="projetForm.invalid"
+            [ngClass]="{ 'opacity-50 cursor-not-allowed': projetForm.invalid }"
+          >
+            Ajouter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

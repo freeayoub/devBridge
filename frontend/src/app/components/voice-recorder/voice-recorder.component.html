@@ -1,17 +1,217 @@
-<div class="voice-recorder">
-  <div class="recording-status" [ngClass]="{'active': isRecording}">
-    <div class="recording-indicator" *ngIf="isRecording">
-      <span class="recording-dot"></span>
-      <span class="recording-time">{{ formattedTime }}</span>
+<div class="whatsapp-voice-recorder">
+  <!-- État d'enregistrement -->
+  <div class="whatsapp-voice-container" *ngIf="isRecording">
+    <!-- Indicateur d'enregistrement avec temps -->
+    <div class="whatsapp-voice-info">
+      <!-- Indicateur d'enregistrement -->
+      <div class="whatsapp-recording-indicator">
+        <div class="whatsapp-recording-dot"></div>
+      </div>
+
+      <!-- Visualisation de l'onde sonore style WhatsApp -->
+      <div class="whatsapp-waveform">
+        <div
+          *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+          class="whatsapp-waveform-bar"
+          [style.height.px]="5 + Math.abs(Math.sin(i / 3) * 15)"
+          [style.animation-delay.ms]="i * 60"
+        ></div>
+      </div>
+
+      <!-- Temps d'enregistrement -->
+      <span class="whatsapp-recording-time">{{ formattedTime }}</span>
     </div>
-    <div class="recording-controls">
-      <button class="btn-record" (click)="isRecording ? stopRecording() : startRecording()" 
-              [ngClass]="{'recording': isRecording}">
-        <i class="fas" [ngClass]="isRecording ? 'fa-stop' : 'fa-microphone'"></i>
+
+    <!-- Contrôles d'enregistrement -->
+    <div class="whatsapp-voice-controls">
+      <!-- Bouton d'arrêt -->
+      <button (click)="stopRecording()" class="whatsapp-voice-stop-button">
+        <i class="fas fa-paper-plane"></i>
       </button>
-      <button class="btn-cancel" *ngIf="isRecording" (click)="cancelRecording()">
-        <i class="fas fa-times"></i>
+
+      <!-- Bouton d'annulation -->
+      <button (click)="cancelRecording()" class="whatsapp-voice-cancel-button">
+        <i class="fas fa-trash"></i>
       </button>
     </div>
   </div>
+
+  <!-- Bouton d'enregistrement (quand pas en cours d'enregistrement) -->
+  <button
+    *ngIf="!isRecording"
+    (click)="startRecording()"
+    class="whatsapp-voice-start-button"
+  >
+    <i class="fas fa-microphone"></i>
+  </button>
 </div>
+
+<style>
+  /* Styles WhatsApp pour l'enregistrement vocal */
+  .whatsapp-voice-recorder {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+  }
+
+  .whatsapp-voice-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background-color: #f0f2f5;
+    border-radius: 24px;
+    padding: 8px 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  :host-context(.dark) .whatsapp-voice-container {
+    background-color: #2a2a2a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .whatsapp-voice-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .whatsapp-recording-indicator {
+    position: relative;
+    margin-right: 12px;
+  }
+
+  .whatsapp-recording-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #ff3b30;
+    border-radius: 50%;
+    animation: whatsapp-pulse 1.5s infinite;
+  }
+
+  .whatsapp-waveform {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    margin-right: 12px;
+    gap: 2px;
+  }
+
+  .whatsapp-waveform-bar {
+    width: 3px;
+    background-color: #25d366;
+    border-radius: 1.5px;
+    animation: whatsapp-wave 1.5s ease-in-out infinite;
+  }
+
+  :host-context(.dark) .whatsapp-waveform-bar {
+    background-color: #00c853;
+  }
+
+  .whatsapp-recording-time {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  :host-context(.dark) .whatsapp-recording-time {
+    color: #e0e0e0;
+  }
+
+  .whatsapp-voice-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .whatsapp-voice-stop-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #25d366;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .whatsapp-voice-stop-button:hover {
+    background-color: #128c7e;
+  }
+
+  .whatsapp-voice-cancel-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #f0f2f5;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  :host-context(.dark) .whatsapp-voice-cancel-button {
+    background-color: #3a3a3a;
+    color: #ccc;
+  }
+
+  .whatsapp-voice-cancel-button:hover {
+    background-color: #e0e0e0;
+    color: #666;
+  }
+
+  :host-context(.dark) .whatsapp-voice-cancel-button:hover {
+    background-color: #444;
+    color: #fff;
+  }
+
+  .whatsapp-voice-start-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #25d366;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .whatsapp-voice-start-button:hover {
+    background-color: #128c7e;
+  }
+
+  @keyframes whatsapp-pulse {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(1.2);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes whatsapp-wave {
+    0%,
+    100% {
+      transform: scaleY(0.3);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
+</style>

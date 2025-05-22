@@ -1,0 +1,20 @@
+/* Styles pour le composant d'évaluation de projet */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-top: 0.25rem;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}

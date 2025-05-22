@@ -6,23 +6,59 @@
   border-radius: 18px;
   padding: 8px 12px;
   width: 100%;
-  max-width: 240px; /* Largeur plus compacte comme Messenger */
+  max-width: 240px;
   border: none;
   outline: none;
   box-shadow: none;
-  /* Bouton de lecture style Messenger */
-  /* Animation de pulsation pendant la lecture */
-  /* Animation de pulsation pour le bouton de lecture */
-  /* Animation pour les barres de l'onde sonore */
-  /* Animation de fondu pour l'affichage du temps */
-  /* Appliquer les animations */
+  position: relative;
+  overflow: hidden;
 }
+
+/* Styles pour les messages de l'utilisateur courant */
+.voice-message-player.is-current-user .play-button {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #4f5fad;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+}
+
+.voice-message-player.is-current-user .play-button:hover {
+  background-color: #ffffff;
+  box-shadow: 0 2px 12px rgba(255, 255, 255, 0.3);
+}
+
+/* Styles pour les messages des autres utilisateurs */
+.voice-message-player:not(.is-current-user) .play-button {
+  background-color: #ffffff;
+  color: #4f5fad;
+  box-shadow: 0 2px 8px rgba(79, 95, 173, 0.2);
+}
+
+.voice-message-player:not(.is-current-user) .play-button:hover {
+  background-color: #f8f9ff;
+  box-shadow: 0 2px 12px rgba(79, 95, 173, 0.3);
+}
+
+/* Styles pour le mode sombre */
+:host-context(.dark-mode)
+  .voice-message-player:not(.is-current-user)
+  .play-button {
+  background-color: #2a2a2a;
+  color: #6d78c9;
+  box-shadow: 0 2px 8px rgba(109, 120, 201, 0.2);
+}
+
+:host-context(.dark-mode)
+  .voice-message-player:not(.is-current-user)
+  .play-button:hover {
+  background-color: #333333;
+  box-shadow: 0 2px 12px rgba(109, 120, 201, 0.3);
+}
+
+/* Bouton de lecture futuriste */
 .voice-message-player .play-button {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #ffffff;
-  color: #0084ff;
   border: none;
   display: flex;
   align-items: center;
@@ -30,103 +66,230 @@
   cursor: pointer;
   margin-right: 12px;
   flex-shrink: 0;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
-.voice-message-player .play-button:hover {
-  background-color: #f0f2f5;
-}
+
 .voice-message-player .play-button i {
   font-size: 12px;
-  margin-left: 2px; /* Léger décalage pour centrer visuellement l'icône de lecture */
+  transition: transform 0.3s ease;
 }
+
+/* Conteneur de progression */
 .voice-message-player .progress-container {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  /* Conteneur de l'onde sonore */
 }
+
+/* Conteneur de l'onde sonore */
 .voice-message-player .progress-container .waveform-container {
   width: 100%;
   position: relative;
-  /* Style de l'onde sonore */
-  /* Affichage du temps */
 }
+
+/* Style de l'onde sonore futuriste */
 .voice-message-player .progress-container .waveform-container .waveform {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 24px;
   margin-bottom: 4px;
-  /* Barres individuelles de l'onde sonore */
 }
-.voice-message-player .progress-container .waveform-container .waveform .waveform-bar {
+
+/* Barres individuelles de l'onde sonore */
+.voice-message-player
+  .progress-container
+  .waveform-container
+  .waveform
+  .waveform-bar {
   width: 2px;
-  background-color: rgba(255, 255, 255, 0.5);
   border-radius: 1px;
-  transition: background-color 0.2s ease;
-  /* Barres actives (déjà lues) */
+  position: relative;
+  transition: all 0.3s ease;
 }
-.voice-message-player .progress-container .waveform-container .waveform .waveform-bar.active {
-  background-color: #ffffff;
+
+/* Styles pour les barres des messages de l'utilisateur courant */
+.voice-message-player.is-current-user .waveform-bar {
+  background-color: rgba(255, 255, 255, 0.4);
 }
+
+.voice-message-player.is-current-user .waveform-bar.active {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Styles pour les barres des messages des autres utilisateurs */
+.voice-message-player:not(.is-current-user) .waveform-bar {
+  background-color: rgba(79, 95, 173, 0.3);
+}
+
+.voice-message-player:not(.is-current-user) .waveform-bar.active {
+  background-color: rgba(79, 95, 173, 0.9);
+}
+
+/* Styles pour le mode sombre */
+:host-context(.dark-mode)
+  .voice-message-player:not(.is-current-user)
+  .waveform-bar {
+  background-color: rgba(109, 120, 201, 0.3);
+}
+
+:host-context(.dark-mode)
+  .voice-message-player:not(.is-current-user)
+  .waveform-bar.active {
+  background-color: rgba(109, 120, 201, 0.9);
+}
+
+/* Affichage du temps */
 .voice-message-player .progress-container .waveform-container .time-display {
   display: flex;
   justify-content: flex-end;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.8);
   margin-top: 2px;
+  transition: opacity 0.3s ease;
 }
-.voice-message-player .progress-container .waveform-container .time-display .duration {
+
+/* Styles pour le temps des messages de l'utilisateur courant */
+.voice-message-player.is-current-user .time-display .duration {
   font-weight: 500;
 }
+
+/* Styles pour le temps des messages des autres utilisateurs */
+.voice-message-player:not(.is-current-user) .time-display .duration {
+  font-weight: 500;
+  color: rgba(79, 95, 173, 0.9);
+}
+
+/* Styles pour le mode sombre */
+:host-context(.dark-mode)
+  .voice-message-player:not(.is-current-user)
+  .time-display
+  .duration {
+  color: rgba(109, 120, 201, 0.9);
+}
+/* Animations futuristes */
 @keyframes pulse {
   0% {
     opacity: 0.7;
+    filter: brightness(0.9);
   }
   50% {
     opacity: 1;
+    filter: brightness(1.2);
   }
   100% {
     opacity: 0.7;
+    filter: brightness(0.9);
   }
 }
+
 @keyframes pulse-button {
   0% {
     transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(79, 95, 173, 0.4);
   }
   50% {
     transform: scale(1.05);
+    box-shadow: 0 0 10px 3px rgba(79, 95, 173, 0.3);
   }
   100% {
     transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(79, 95, 173, 0.4);
   }
 }
+
+@keyframes pulse-button-current-user {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+}
+
 @keyframes bar-animation {
   0% {
     transform: scaleY(0.8);
   }
   50% {
-    transform: scaleY(1.1);
+    transform: scaleY(1.2);
   }
   100% {
     transform: scaleY(0.8);
   }
 }
+
+@keyframes glow {
+  0% {
+    filter: drop-shadow(0 0 2px rgba(79, 95, 173, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 5px rgba(79, 95, 173, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0 0 2px rgba(79, 95, 173, 0.5));
+  }
+}
+
+@keyframes glow-current-user {
+  0% {
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0.7;
+    transform: translateY(2px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
-.voice-message-player.is-playing .waveform-bar.active {
-  animation: pulse 1.5s infinite, bar-animation 1.2s ease-in-out infinite;
+
+/* Application des animations */
+.voice-message-player.is-playing:not(.is-current-user) .waveform-bar.active {
+  animation: pulse 1.5s infinite, bar-animation 1.2s ease-in-out infinite,
+    glow 2s infinite;
 }
-.voice-message-player .pulse-animation {
+
+.voice-message-player.is-playing.is-current-user .waveform-bar.active {
+  animation: pulse 1.5s infinite, bar-animation 1.2s ease-in-out infinite,
+    glow-current-user 2s infinite;
+}
+
+.voice-message-player:not(.is-current-user) .pulse-animation {
   animation: pulse-button 2s infinite;
 }
+
+.voice-message-player.is-current-user .pulse-animation {
+  animation: pulse-button-current-user 2s infinite;
+}
+
 .voice-message-player .fade-in {
   animation: fade-in 0.5s ease-in-out;
+}
+
+/* Effet de transition pour les barres */
+.voice-message-player .waveform-bar {
+  transition: background-color 0.3s ease, transform 0.3s ease, filter 0.3s ease;
+}
+
+/* Effet de survol sur les barres */
+.voice-message-player:hover .waveform-bar {
+  transform: scaleY(1.05);
 }

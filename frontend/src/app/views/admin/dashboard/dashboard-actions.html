@@ -1,0 +1,197 @@
+<!-- Tableau avec trois colonnes d'actions -->
+<table class="min-w-full divide-y divide-[#edf1f4]">
+  <thead class="bg-[#edf1f4]">
+    <tr>
+      <th
+        scope="col"
+        class="px-5 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider"
+      >
+        Username
+      </th>
+      <th
+        scope="col"
+        class="px-5 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider"
+      >
+        Email
+      </th>
+      <th
+        scope="col"
+        class="px-5 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider"
+      >
+        Status
+      </th>
+      <th
+        scope="col"
+        class="px-5 py-3 text-left text-xs font-medium text-[#6d6870] uppercase tracking-wider"
+      >
+        Role
+      </th>
+      <th
+        scope="col"
+        class="px-2 py-3 text-center text-xs font-medium text-[#6d6870] uppercase tracking-wider"
+      >
+        Activate/Deactivate
+      </th>
+      <th
+        scope="col"
+        class="px-2 py-3 text-center text-xs font-medium text-[#6d6870] uppercase tracking-wider"
+      >
+        Delete
+      </th>
+      <th
+        scope="col"
+        class="px-2 py-3 text-center text-xs font-medium text-[#6d6870] uppercase tracking-wider"
+      >
+        Details
+      </th>
+    </tr>
+  </thead>
+  <tbody class="bg-white divide-y divide-[#edf1f4]">
+    <tr *ngFor="let user of users">
+      <!-- Username -->
+      <td class="px-5 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 h-10 w-10">
+            <div
+              class="h-10 w-10 rounded-full bg-[#4f5fad] flex items-center justify-center text-white text-sm font-medium"
+            >
+              {{ user.username.charAt(0).toUpperCase() }}
+            </div>
+          </div>
+          <div class="ml-4">
+            <div class="text-sm font-medium text-[#4f5fad]">
+              {{ user.username }}
+            </div>
+            <div class="text-xs text-[#6d6870]">
+              {{ user.fullName }}
+            </div>
+          </div>
+        </div>
+      </td>
+      
+      <!-- Email -->
+      <td class="px-5 py-4 whitespace-nowrap">
+        <div class="text-sm text-[#6d6870]">{{ user.email }}</div>
+      </td>
+      
+      <!-- Status -->
+      <td class="px-5 py-4 whitespace-nowrap">
+        <span
+          class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+          [ngClass]="
+            user.isActive !== false
+              ? 'bg-[#afcf75]/20 text-[#2a5a03]'
+              : 'bg-[#ff6b69]/20 text-[#ff6b69]'
+          "
+        >
+          {{ user.isActive !== false ? "Active" : "Inactive" }}
+        </span>
+      </td>
+      
+      <!-- Role -->
+      <td class="px-5 py-4 whitespace-nowrap">
+        <select
+          class="text-sm py-1.5 px-3 rounded-lg border border-[#bdc6cc] bg-white text-[#6d6870] focus:outline-none focus:ring-2 focus:ring-[#4f5fad] focus:border-[#4f5fad]"
+          [value]="user.role"
+          (change)="onRoleChange(user._id, $any($event.target).value)"
+        >
+          <option *ngFor="let role of roles" [value]="role">
+            {{ role | titlecase }}
+          </option>
+        </select>
+      </td>
+      
+      <!-- Activate/Deactivate -->
+      <td class="px-2 py-4 whitespace-nowrap text-center">
+        <button
+          class="px-3 py-1.5 text-sm rounded-lg border font-medium flex items-center justify-center mx-auto transition-colors"
+          [ngClass]="
+            user.isActive !== false
+              ? 'border-[#ff6b69] text-[#ff6b69] hover:bg-[#ff6b69]/10'
+              : 'border-[#afcf75] text-[#2a5a03] hover:bg-[#afcf75]/10'
+          "
+          (click)="toggleUserActivation(user._id, user.isActive !== false)"
+          [title]="
+            user.isActive !== false
+              ? 'Désactiver le compte utilisateur'
+              : 'Activer le compte utilisateur'
+          "
+        >
+          <svg
+            *ngIf="user.isActive !== false"
+            class="h-4 w-4 mr-1.5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <svg
+            *ngIf="user.isActive === false"
+            class="h-4 w-4 mr-1.5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          {{ user.isActive !== false ? "Deactivate" : "Activate" }}
+        </button>
+      </td>
+      
+      <!-- Delete -->
+      <td class="px-2 py-4 whitespace-nowrap text-center">
+        <button
+          class="px-3 py-1.5 text-sm rounded-lg border border-[#ff6b69] text-[#ff6b69] hover:bg-[#ff6b69]/10 font-medium flex items-center justify-center mx-auto transition-colors"
+          (click)="onDeleteUser(user._id)"
+          title="Supprimer définitivement cet utilisateur"
+        >
+          <svg
+            class="h-4 w-4 mr-1.5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Delete
+        </button>
+      </td>
+      
+      <!-- Details -->
+      <td class="px-2 py-4 whitespace-nowrap text-center">
+        <button
+          class="px-3 py-1.5 text-sm rounded-lg border border-[#4f5fad] text-[#4f5fad] hover:bg-[#4f5fad]/10 font-medium flex items-center justify-center mx-auto transition-colors"
+          (click)="showUserDetails(user._id)"
+        >
+          <svg
+            class="h-4 w-4 mr-1.5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+            <path
+              fill-rule="evenodd"
+              d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Details
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

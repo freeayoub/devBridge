@@ -1,0 +1,124 @@
+<div class="min-h-screen bg-[#edf1f4] p-4 md:p-6">
+  <div class="max-w-4xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a
+        routerLink="/front/projects"
+        class="text-[#4f5fad] hover:text-[#3d4a85] flex items-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-1"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        Retour aux projets
+      </a>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="flex justify-center my-8">
+      <div
+        class="w-12 h-12 border-4 border-[#4f5fad]/20 border-t-[#4f5fad] rounded-full animate-spin"
+      ></div>
+    </div>
+
+    <div
+      *ngIf="!isLoading"
+      class="bg-white rounded-xl shadow-md overflow-hidden"
+    >
+      <!-- Header -->
+      <div class="border-t-4 border-[#4f5fad] p-6 bg-white">
+        <h1 class="text-2xl font-bold text-[#4f5fad]">{{ projet?.titre }}</h1>
+        <div class="flex items-center mt-2 text-sm text-[#6d6870]">
+          <span>Groupe: {{ projet?.groupe }}</span>
+          <span class="mx-2">•</span>
+          <span
+            >Date limite: {{ projet?.dateLimite | date : "dd/MM/yyyy" }}</span
+          >
+        </div>
+      </div>
+
+      <!-- Project Content -->
+      <div class="p-6">
+        <div class="mb-8">
+          <h2 class="text-lg font-semibold text-[#4f5fad] mb-2">
+            Description du projet
+          </h2>
+          <p class="text-[#6d6870]">
+            {{ projet?.description || "Aucune description fournie" }}
+          </p>
+        </div>
+
+        <!-- Files Section -->
+        <div
+          *ngIf="projet?.fichiers && projet?.fichiers.length > 0"
+          class="mb-8"
+        >
+          <h2 class="text-lg font-semibold text-[#4f5fad] mb-4">
+            Fichiers du projet
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div
+              *ngFor="let file of projet.fichiers"
+              class="border border-[#bdc6cc] rounded-lg p-4 hover:bg-[#edf1f4] transition-colors"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 text-[#4f5fad] mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  <span class="text-[#6d6870] truncate">Document</span>
+                </div>
+                <a
+                  [href]="getFileUrl(file)"
+                  download
+                  class="text-[#4f5fad] hover:text-[#3d4a85] text-sm font-medium transition-colors"
+                >
+                  Télécharger
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="flex justify-end mt-6">
+          <ng-container *ngIf="hasSubmitted">
+            <span
+              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg text-sm font-medium"
+            >
+              Projet déjà soumis
+            </span>
+          </ng-container>
+
+          <ng-container *ngIf="!hasSubmitted">
+            <a
+              [routerLink]="['/front/projects/submit', projetId]"
+              class="bg-[#4f5fad] hover:bg-[#3d4a85] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              Soumettre mon projet
+            </a>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

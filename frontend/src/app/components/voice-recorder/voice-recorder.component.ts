@@ -25,6 +25,9 @@ export class VoiceRecorderComponent implements OnInit, OnDestroy {
   audioChunks: Blob[] = [];
   audioStream: MediaStream | null = null;
 
+  // Exposer Math pour l'utiliser dans le template
+  Math = Math;
+
   constructor(private logger: LoggerService) {}
 
   ngOnInit(): void {}

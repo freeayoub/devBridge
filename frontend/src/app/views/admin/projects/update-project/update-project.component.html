@@ -1,1 +1,29 @@
-<p>update-project works!</p>
+<div class="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-xl">
+    <h2 class="text-2xl font-bold text-[#4f5fad] mb-4">Modifier le projet</h2>
+    <form [formGroup]="updateForm" (ngSubmit)="onSubmit()">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Titre</label>
+        <input formControlName="titre" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+      </div>
+  
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Groupe</label>
+        <input formControlName="groupe" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+      </div>
+  
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Date limite</label>
+        <input type="date" formControlName="dateLimite" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+      </div>
+  
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea formControlName="description" class="mt-1 block w-full border border-gray-300 rounded-md p-2"></textarea>
+      </div>
+  
+      <button type="submit" [disabled]="!updateForm.valid" class="bg-[#7826b5] text-white px-4 py-2 rounded hover:bg-[#5f1d8f]">
+        Mettre à jour
+      </button>
+    </form>
+  </div>
+  

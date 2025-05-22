@@ -1,87 +1,397 @@
 @charset "UTF-8";
-/* Styles futuristes pour les notifications */
+/* Styles futuristes pour les notifications - Harmonisés avec le layout principal */
 .futuristic-notifications-container {
-  padding: 1rem;
+  padding: 0;
   min-height: calc(100vh - 4rem);
-}
-
-.futuristic-notifications-card {
-  background-color: var(--dark-bg);
-  border-radius: var(--border-radius-lg);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  border: 1px solid rgba(0, 247, 255, 0.1);
   position: relative;
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem; /* Réduit l'espace en haut */
+  margin-bottom: 0;
+  height: 100vh; /* Hauteur fixe pour éviter le débordement */
 }
 
-.futuristic-notifications-card::before {
+/* Conteneur principal - Mode clair */
+:host-context(:not(.dark)) .futuristic-notifications-container {
+  background-color: #edf1f4; /* Même couleur que le layout principal */
+  color: #6d6870;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Conteneur principal - Mode sombre */
+:host-context(.dark) .futuristic-notifications-container {
+  background-color: #121212; /* Même couleur que le layout principal */
+  color: #a0a0a0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grille d'arrière-plan commune pour les deux modes */
+.futuristic-notifications-container .background-elements {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Grille d'arrière-plan - Mode clair */
+:host-context(:not(.dark)) .background-elements::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 247, 255, 0.5), transparent);
-  z-index: 1;
+  inset: 0;
+  opacity: 0.05;
+  background-image: linear-gradient(to right, #4f5fad 1px, transparent 1px),
+    linear-gradient(to bottom, #4f5fad 1px, transparent 1px);
+  background-size: calc(100% / 12) 100%, 100% calc(100% / 12);
+  z-index: 0;
 }
 
+/* Grille d'arrière-plan - Mode sombre */
+:host-context(.dark) .background-elements::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.05; /* Légèrement plus visible */
+  background-image: linear-gradient(
+      to right,
+      rgba(255, 140, 0, 0.3) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(255, 140, 0, 0.3) 1px, transparent 1px); /* Grille orange comme dans la page des messages/utilisateurs */
+  background-size: calc(100% / 20) 100%, 100% calc(100% / 20); /* Grille plus fine comme dans la page des messages/utilisateurs */
+  z-index: 0;
+  animation: grid-pulse 4s ease-in-out infinite; /* Animation de pulsation pour la grille */
+}
+
+/* Ligne de scan pour le mode sombre */
+:host-context(.dark) .background-elements::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 140, 0, 0.5) 50%,
+    transparent 100%
+  );
+  box-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+  z-index: 1;
+  animation: scan 8s linear infinite; /* Animation de scan pour la ligne */
+}
+
+/* Animation de pulsation pour la grille en mode sombre */
+@keyframes grid-pulse {
+  0% {
+    opacity: 0.03;
+  }
+  50% {
+    opacity: 0.07;
+  }
+  100% {
+    opacity: 0.03;
+  }
+}
+
+/* Animation de scan pour le mode sombre */
+@keyframes scan {
+  0% {
+    top: -10%;
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    top: 110%;
+    opacity: 0.5;
+  }
+}
+
+/* Styles communs pour la carte de notifications - Harmonisés avec le layout principal */
+.futuristic-notifications-card {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  margin: 0.5rem auto; /* Réduit la marge en haut et en bas */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px; /* Largeur maximale pour s'aligner avec le layout principal */
+  height: calc(100vh - 1rem); /* Hauteur adaptée pour éviter le débordement */
+}
+
+/* Styles pour le mode clair */
+:host-context(:not(.dark)) .futuristic-notifications-card {
+  background-color: #ffffff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(79, 95, 173, 0.1);
+}
+
+/* Styles pour le mode sombre */
+:host-context(.dark) .futuristic-notifications-card {
+  background-color: #1e1e1e; /* Même couleur que les cartes du layout principal */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(109, 120, 201, 0.1); /* Couleur harmonisée avec le layout principal */
+  backdrop-filter: blur(10px);
+}
+
+/* Styles communs pour l'en-tête */
 .futuristic-notifications-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: 1.5rem; /* Espace pour la case à cocher "Sélectionner tout" */
+}
+
+/* En-tête - Mode clair */
+:host-context(:not(.dark)) .futuristic-notifications-header {
+  border-bottom: 1px solid rgba(79, 95, 173, 0.1);
+  background-color: rgba(240, 244, 248, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* En-tête - Mode sombre */
+:host-context(.dark) .futuristic-notifications-header {
   border-bottom: 1px solid rgba(0, 247, 255, 0.1);
   background-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.futuristic-title {
-  font-size: 1.5rem;
+/* Titre - Mode clair */
+:host-context(:not(.dark)) .futuristic-title {
+  font-size: 1.25rem;
   font-weight: 600;
-  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+  color: #4f5fad;
 }
 
-.futuristic-action-button {
+/* Titre - Mode sombre */
+:host-context(.dark) .futuristic-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--accent-color);
+}
+
+/* Boutons d'action - Mode clair */
+:host-context(:not(.dark)) .futuristic-action-button {
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 247, 255, 0.1);
-  color: var(--accent-color);
+  background-color: rgba(79, 95, 173, 0.1);
+  color: #4f5fad;
   border: none;
   border-radius: 50%;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
-.futuristic-action-button:hover {
-  background-color: rgba(0, 247, 255, 0.2);
+:host-context(:not(.dark)) .futuristic-action-button:hover {
+  background-color: rgba(79, 95, 173, 0.2);
   transform: translateY(-2px);
-  box-shadow: var(--glow-effect);
+  box-shadow: 0 0 15px rgba(79, 95, 173, 0.4);
 }
 
-.futuristic-primary-button {
+:host-context(:not(.dark)) .futuristic-primary-button {
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
-  color: var(--text-light);
+  background: linear-gradient(135deg, #4f5fad, #7826b5);
+  color: white;
   font-size: 0.875rem;
   font-weight: 500;
   border: none;
   border-radius: var(--border-radius-md);
   cursor: pointer;
-  transition: all var(--transition-fast);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(79, 95, 173, 0.4);
+  position: relative;
+  overflow: hidden;
 }
 
-.futuristic-primary-button:hover {
+:host-context(:not(.dark)) .futuristic-primary-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: all 0.5s;
+}
+
+:host-context(:not(.dark)) .futuristic-primary-button:hover {
   transform: translateY(-2px);
-  box-shadow: var(--glow-effect);
+  box-shadow: 0 0 15px rgba(79, 95, 173, 0.6);
+}
+
+:host-context(:not(.dark)) .futuristic-primary-button:hover::before {
+  left: 100%;
+}
+
+/* Bouton danger - Mode clair */
+:host-context(:not(.dark)) .futuristic-danger-button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #ff5e62, #ff9d00);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 94, 98, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+:host-context(:not(.dark)) .futuristic-danger-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: all 0.5s;
+}
+
+:host-context(:not(.dark)) .futuristic-danger-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(255, 94, 98, 0.6);
+}
+
+:host-context(:not(.dark)) .futuristic-danger-button:hover::before {
+  left: 100%;
+}
+
+/* Boutons d'action - Mode sombre */
+:host-context(.dark) .futuristic-action-button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 247, 255, 0.1);
+  color: #00f7ff;
+  border: 1px solid rgba(0, 247, 255, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+:host-context(.dark) .futuristic-action-button:hover {
+  background-color: rgba(0, 247, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+}
+
+:host-context(.dark) .futuristic-primary-button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #00f7ff, #0066ff);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+:host-context(.dark) .futuristic-primary-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: all 0.5s;
+}
+
+:host-context(.dark) .futuristic-primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 247, 255, 0.6);
+}
+
+:host-context(.dark) .futuristic-primary-button:hover::before {
+  left: 100%;
+}
+
+/* Bouton danger - Mode sombre */
+:host-context(.dark) .futuristic-danger-button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #ff0076, #ff6b69);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(255, 0, 118, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+:host-context(.dark) .futuristic-danger-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: all 0.5s;
+}
+
+:host-context(.dark) .futuristic-danger-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(255, 0, 118, 0.6);
+}
+
+:host-context(.dark) .futuristic-danger-button:hover::before {
+  left: 100%;
 }
 
 /* État de chargement futuriste */
@@ -209,70 +519,1687 @@
   box-shadow: var(--glow-effect);
 }
 
-/* Liste des notifications futuriste */
+/* Liste des notifications futuriste - Styles communs */
 .futuristic-notifications-list {
-  padding: 1rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  scrollbar-width: thin;
+  z-index: 1;
+  width: 100%;
 }
 
+.futuristic-notifications-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.futuristic-notifications-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Liste des notifications - Mode clair */
+:host-context(:not(.dark)) .futuristic-notifications-list {
+  scrollbar-color: #4f5fad transparent;
+  background-color: white;
+}
+
+:host-context(:not(.dark))
+  .futuristic-notifications-list::-webkit-scrollbar-thumb {
+  background-color: #4f5fad;
+  border-radius: 10px;
+}
+
+/* Liste des notifications - Mode sombre */
+:host-context(.dark) .futuristic-notifications-list {
+  scrollbar-color: var(--accent-color) transparent;
+  background-color: transparent;
+}
+
+:host-context(.dark) .futuristic-notifications-list::-webkit-scrollbar-thumb {
+  background-color: var(--accent-color);
+  border-radius: 10px;
+}
+
+/* Carte de notification simplifiée - Styles communs */
 .futuristic-notification-card {
+  display: flex;
+  align-items: center;
+  padding: 30px 20px 16px 20px; /* Padding en haut augmenté pour la case à cocher */
+  position: relative;
+  transition: all 0.2s ease;
+  margin: 0.5rem 1rem; /* Augmentation des marges pour plus d'espace entre les cartes */
+  border-radius: 8px; /* Coins plus arrondis */
+  flex-wrap: nowrap; /* Empêche le retour à la ligne des éléments */
+  justify-content: space-between; /* Espace les éléments uniformément */
+}
+
+/* Carte de notification - Mode clair */
+:host-context(:not(.dark)) .futuristic-notification-card {
+  border-bottom: 1px solid rgba(79, 95, 173, 0.1);
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-radius: 15px; /* Coins arrondis comme dans les messages de chat */
+  transition: all 0.3s ease;
+}
+
+:host-context(:not(.dark)) .futuristic-notification-card:hover {
+  background-color: rgba(79, 95, 173, 0.05);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Style pour les notifications lues en mode clair */
+:host-context(:not(.dark))
+  .futuristic-notification-card.futuristic-notification-read {
+  background: linear-gradient(
+    135deg,
+    rgba(79, 95, 173, 0.1),
+    rgba(61, 74, 133, 0.2)
+  ); /* Dégradé bleu comme dans les messages de chat */
+  border: 1px solid rgba(79, 95, 173, 0.3); /* Bordure bleue comme dans les messages de chat */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Ombre comme dans les messages de chat */
+  border-bottom-right-radius: 0; /* Coin inférieur droit carré comme dans les bulles de message */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Effet de bordure brillante pour les notifications lues en mode clair */
+:host-context(:not(.dark))
+  .futuristic-notification-card.futuristic-notification-read::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2); /* Bordure intérieure brillante */
+}
+
+/* Effet de survol pour les notifications lues en mode clair */
+:host-context(:not(.dark))
+  .futuristic-notification-card.futuristic-notification-read:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(
+    135deg,
+    rgba(79, 95, 173, 0.15),
+    rgba(61, 74, 133, 0.25)
+  ); /* Dégradé plus intense au survol */
+  box-shadow: 0 4px 12px rgba(79, 95, 173, 0.2); /* Ombre bleue au survol */
+}
+
+/* ======================================
+   NOTIFICATIONS EN MODE SOMBRE - NON SÉLECTIONNÉES
+   ====================================== */
+:host-context(.dark) .futuristic-notification-card {
+  border-bottom: none;
+  background-color: var(
+    --dark-medium-bg,
+    #252740
+  ); /* Fond sombre comme dans la page de chat */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Bordure subtile comme dans les messages de chat */
+  border-radius: 15px; /* Coins arrondis comme dans les messages de chat */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Ombre comme dans les messages de chat */
+  margin-bottom: 15px; /* Plus d'espacement entre les cartes */
+  margin-left: 15px; /* Marge à gauche */
+  margin-right: 15px; /* Marge à droite */
+  transition: all 0.3s ease; /* Transition fluide pour tous les effets */
+  color: var(
+    --text-light,
+    #ffffff
+  ); /* Texte blanc comme dans les messages de chat */
+}
+
+:host-context(.dark) .futuristic-notification-card:hover {
+  transform: translateY(
+    -2px
+  ); /* Effet de flottement comme dans les messages de chat */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Ombre plus prononcée au survol */
+}
+
+/* Style pour les notifications lues (comme dans la page de chat) */
+:host-context(.dark)
+  .futuristic-notification-card.futuristic-notification-read {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    #00f7ff20,
+    #00c3ff30
+  ); /* Dégradé bleu/cyan comme dans les messages de chat */
+  border: 1px solid rgba(0, 247, 255, 0.3); /* Bordure cyan comme dans les messages de chat */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Ombre comme dans les messages de chat */
+  border-bottom-right-radius: 0; /* Coin inférieur droit carré comme dans les bulles de message */
+  transition: all 0.3s ease;
+}
+
+/* Effet de bordure brillante pour les notifications lues */
+:host-context(.dark)
+  .futuristic-notification-card.futuristic-notification-read::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  box-shadow: inset 0 0 0 1px rgba(0, 247, 255, 0.3); /* Bordure intérieure brillante */
+}
+
+/* Effet de survol pour les notifications lues */
+:host-context(.dark)
+  .futuristic-notification-card.futuristic-notification-read:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 247, 255, 0.2); /* Ombre cyan au survol */
+  background: linear-gradient(
+    135deg,
+    #00f7ff30,
+    #00c3ff40
+  ); /* Dégradé plus intense au survol */
+}
+
+/* Notification non lue - Styles communs */
+.futuristic-notification-unread {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Effet de flamme animée */
+.futuristic-notification-unread::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  z-index: 1;
+  animation: flameBorder 3s ease-in-out infinite alternate;
+}
+
+/* Effet de lueur supplémentaire */
+.futuristic-notification-unread::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at left,
+    rgba(255, 255, 255, 0.2) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  z-index: 0;
+  animation: candleGlow 2s ease-in-out infinite;
+}
+
+/* Notification non lue - Mode clair */
+:host-context(:not(.dark)) .futuristic-notification-unread {
+  background-color: rgba(79, 95, 173, 0.05);
+  border-left: 5px solid transparent;
+  position: relative;
+}
+
+:host-context(:not(.dark)) .futuristic-notification-unread::before {
+  background: linear-gradient(
+    to bottom,
+    #ff9d00,
+    #ff5e62,
+    #ff9d00,
+    #ff5e62,
+    #ff9d00
+  );
+  background-size: 200% 200%;
+  box-shadow: 0 0 15px rgba(255, 157, 0, 0.7), 0 0 30px rgba(255, 94, 98, 0.3);
+  animation: flameBorder 3s ease-in-out infinite alternate,
+    colorShift 8s linear infinite;
+}
+
+:host-context(:not(.dark)) .futuristic-notification-unread::after {
+  background: radial-gradient(
+    ellipse at left,
+    rgba(255, 157, 0, 0.2) 0%,
+    rgba(255, 94, 98, 0.1) 40%,
+    transparent 70%
+  );
+}
+
+:host-context(:not(.dark)) .futuristic-notification-unread:hover {
+  background-color: rgba(79, 95, 173, 0.1);
+}
+
+:host-context(:not(.dark)) .futuristic-notification-unread:hover::before {
+  animation: flameBorder 1.5s ease-in-out infinite alternate,
+    colorShift 4s linear infinite;
+  box-shadow: 0 0 20px rgba(255, 157, 0, 0.8), 0 0 40px rgba(255, 94, 98, 0.4);
+}
+
+/* Sparkles pour mode clair */
+:host-context(:not(.dark)) .futuristic-notification-unread::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 100%;
+  background-image: radial-gradient(
+      circle at 30% 20%,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0) 3%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0) 4%
+    ),
+    radial-gradient(
+      circle at 20% 60%,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0) 3%
+    ),
+    radial-gradient(
+      circle at 40% 80%,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0) 4%
+    ),
+    radial-gradient(
+      circle at 10% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0) 3%
+    );
+  opacity: 0;
+  z-index: 2;
+  animation: sparkle 4s ease-in-out infinite;
+}
+
+/* Notification non lue - Mode sombre */
+:host-context(.dark) .futuristic-notification-unread {
+  background-color: rgba(0, 247, 255, 0.05);
+  border-left: 5px solid transparent;
+  position: relative;
+}
+
+:host-context(.dark) .futuristic-notification-unread::before {
+  background: linear-gradient(
+    to bottom,
+    #00f7ff,
+    #0066ff,
+    #00f7ff,
+    #0066ff,
+    #00f7ff
+  );
+  background-size: 200% 200%;
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.8), 0 0 30px rgba(0, 102, 255, 0.4);
+  animation: flameBorder 3s ease-in-out infinite alternate,
+    neonPulse 4s linear infinite;
+}
+
+:host-context(.dark) .futuristic-notification-unread::after {
+  background: radial-gradient(
+    ellipse at left,
+    rgba(0, 247, 255, 0.3) 0%,
+    rgba(0, 102, 255, 0.1) 40%,
+    transparent 70%
+  );
+}
+
+:host-context(.dark) .futuristic-notification-unread:hover {
+  background-color: rgba(0, 247, 255, 0.1);
+}
+
+:host-context(.dark) .futuristic-notification-unread:hover::before {
+  animation: flameBorder 1.5s ease-in-out infinite alternate,
+    neonPulse 2s linear infinite;
+  box-shadow: 0 0 20px rgba(0, 247, 255, 0.9), 0 0 40px rgba(0, 102, 255, 0.5);
+}
+
+/* Sparkles pour mode sombre */
+:host-context(.dark) .futuristic-notification-unread::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 100%;
+  background-image: radial-gradient(
+      circle at 30% 20%,
+      rgba(0, 247, 255, 0.9) 0%,
+      rgba(0, 247, 255, 0) 3%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgba(0, 247, 255, 0.9) 0%,
+      rgba(0, 247, 255, 0) 4%
+    ),
+    radial-gradient(
+      circle at 20% 60%,
+      rgba(0, 247, 255, 0.9) 0%,
+      rgba(0, 247, 255, 0) 3%
+    ),
+    radial-gradient(
+      circle at 40% 80%,
+      rgba(0, 247, 255, 0.9) 0%,
+      rgba(0, 247, 255, 0) 4%
+    ),
+    radial-gradient(
+      circle at 10% 30%,
+      rgba(0, 247, 255, 0.9) 0%,
+      rgba(0, 247, 255, 0) 3%
+    );
+  opacity: 0;
+  z-index: 2;
+  animation: sparkle 4s ease-in-out infinite;
+}
+
+/* Animation de flamme */
+@keyframes flameBorder {
+  0% {
+    background-position: 0% 0%;
+    filter: brightness(1) blur(0px);
+    transform: scaleY(0.95);
+  }
+  25% {
+    filter: brightness(1.1) blur(0.5px);
+    transform: scaleY(1.05);
+  }
+  50% {
+    background-position: 100% 100%;
+    filter: brightness(1.2) blur(1px);
+    transform: scaleY(1);
+  }
+  75% {
+    filter: brightness(1.1) blur(0.5px);
+    transform: scaleY(0.98);
+  }
+  100% {
+    background-position: 0% 0%;
+    filter: brightness(1) blur(0px);
+    transform: scaleY(0.95);
+  }
+}
+
+/* Animation de lueur de bougie */
+@keyframes candleGlow {
+  0% {
+    opacity: 0.3;
+    transform: translateX(-5px) scaleX(0.9);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(-3px) scaleX(1.1);
+  }
+  100% {
+    opacity: 0.3;
+    transform: translateX(-5px) scaleX(0.9);
+  }
+}
+
+/* Animations pour le modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes borderFlow {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 0%;
+  }
+}
+
+/* Styles pour le modal des pièces jointes */
+.futuristic-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: none; /* Caché par défaut */
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  opacity: 0; /* Invisible par défaut */
+  transition: opacity 0.3s ease;
+}
+
+/* Quand le modal est affiché */
+.futuristic-modal-overlay[style*="display: flex"] {
+  opacity: 1;
+}
+
+:host-context(.dark) .futuristic-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  animation: modalBackdropFadeIn 0.3s ease-out;
+}
+
+@keyframes modalBackdropFadeIn {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* Conteneur modal - Mode clair */
+:host-context(:not(.dark)) .futuristic-modal-container {
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  animation: scaleIn 0.3s ease;
+  border: 1px solid rgba(79, 95, 173, 0.2);
+  position: relative;
+}
+
+:host-context(:not(.dark)) .futuristic-modal-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(79, 95, 173, 0.2) 20%,
+    rgba(79, 95, 173, 0.8) 50%,
+    rgba(79, 95, 173, 0.2) 80%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: borderFlow 3s infinite linear;
+  box-shadow: 0 0 10px rgba(79, 95, 173, 0.4);
+  z-index: 1;
+}
+
+/* Conteneur modal - Mode sombre */
+:host-context(.dark) .futuristic-modal-container {
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  background-color: rgba(18, 18, 18, 0.95);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0, 247, 255, 0.4),
+    inset 0 0 20px rgba(0, 247, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  animation: modalFadeIn 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  position: relative;
+}
+
+@keyframes modalFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+:host-context(.dark) .futuristic-modal-container::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 247, 255, 0.3),
+    rgba(157, 78, 221, 0.3),
+    rgba(0, 247, 255, 0.3)
+  );
+  background-size: 400% 400%;
+  border-radius: 18px;
+  z-index: -1;
+  opacity: 0.5;
+  animation: gradientBorderDark 6s linear infinite;
+  pointer-events: none;
+}
+
+:host-context(.dark) .futuristic-modal-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 247, 255, 0.2) 20%,
+    rgba(0, 247, 255, 0.8) 50%,
+    rgba(0, 247, 255, 0.2) 80%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: borderFlow 3s infinite linear;
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.7);
+  z-index: 1;
+}
+
+/* En-tête du modal - Mode clair */
+:host-context(:not(.dark)) .futuristic-modal-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(79, 95, 173, 0.1);
+  background-color: rgba(79, 95, 173, 0.05);
+}
+
+:host-context(:not(.dark)) .futuristic-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #4f5fad;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+:host-context(:not(.dark)) .futuristic-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(79, 95, 173, 0.1);
+  color: #4f5fad;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:host-context(:not(.dark)) .futuristic-modal-close:hover {
+  background-color: rgba(79, 95, 173, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(79, 95, 173, 0.3);
+}
+
+/* En-tête du modal - Mode sombre */
+:host-context(.dark) .futuristic-modal-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 247, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+:host-context(.dark) .futuristic-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #00f7ff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+:host-context(.dark) .futuristic-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(0, 247, 255, 0.1);
+  color: #00f7ff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:host-context(.dark) .futuristic-modal-close:hover {
+  background-color: rgba(0, 247, 255, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+}
+
+/* Corps du modal */
+.futuristic-modal-body {
+  padding: 16px;
+  overflow-y: auto;
+  max-height: calc(80vh - 70px);
+}
+
+/* Liste des pièces jointes */
+.futuristic-attachments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Élément de pièce jointe - Mode clair */
+:host-context(:not(.dark)) .futuristic-attachment-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: rgba(79, 95, 173, 0.05);
+  border: 1px solid rgba(79, 95, 173, 0.1);
+  transition: all 0.2s ease;
+}
+
+:host-context(:not(.dark)) .futuristic-attachment-item:hover {
+  background-color: rgba(79, 95, 173, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+:host-context(:not(.dark)) .futuristic-attachment-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 12px;
+  flex-shrink: 0;
+  border: 1px solid rgba(79, 95, 173, 0.2);
+}
+
+:host-context(:not(.dark)) .futuristic-attachment-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  background-color: rgba(79, 95, 173, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+:host-context(:not(.dark)) .futuristic-attachment-icon i {
+  font-size: 24px;
+  color: #4f5fad;
+}
+
+:host-context(:not(.dark)) .futuristic-attachment-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(79, 95, 173, 0.1);
+  color: #4f5fad;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:host-context(:not(.dark)) .futuristic-attachment-button:hover {
+  background-color: rgba(79, 95, 173, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(79, 95, 173, 0.3);
+}
+
+/* Élément de pièce jointe - Mode sombre */
+:host-context(.dark) .futuristic-attachment-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
   background-color: rgba(0, 247, 255, 0.05);
   border: 1px solid rgba(0, 247, 255, 0.1);
-  border-radius: var(--border-radius-md);
-  padding: 1rem;
-  position: relative;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
-.futuristic-notification-card:hover {
+:host-context(.dark) .futuristic-attachment-item:hover {
+  background-color: rgba(0, 247, 255, 0.1);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  background-color: rgba(0, 247, 255, 0.08);
-  border-color: rgba(0, 247, 255, 0.2);
 }
 
-.futuristic-notification-unread {
+:host-context(.dark) .futuristic-attachment-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 12px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 247, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 247, 255, 0.2);
+}
+
+:host-context(.dark) .futuristic-attachment-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
   background-color: rgba(0, 247, 255, 0.1);
-  border-left: 4px solid var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
 }
 
-.futuristic-notification-badge {
+:host-context(.dark) .futuristic-attachment-icon i {
+  font-size: 24px;
+  color: #00f7ff;
+}
+
+:host-context(.dark) .futuristic-attachment-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(0, 247, 255, 0.1);
+  color: #00f7ff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:host-context(.dark) .futuristic-attachment-button:hover {
+  background-color: rgba(0, 247, 255, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+}
+
+/* Styles communs pour les pièces jointes */
+.futuristic-attachment-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.futuristic-attachment-preview img:hover {
+  transform: scale(1.1);
+}
+
+.futuristic-attachment-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.futuristic-attachment-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.futuristic-attachment-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.futuristic-attachment-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 12px;
+}
+
+/* Styles pour l'état vide et le chargement */
+.futuristic-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.futuristic-loading-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  margin-bottom: 16px;
+  animation: spin 1.2s linear infinite;
+}
+
+:host-context(:not(.dark)) .futuristic-loading-circle {
+  border-top-color: #4f5fad;
+  box-shadow: 0 0 15px rgba(79, 95, 173, 0.3);
+}
+
+:host-context(.dark) .futuristic-loading-circle {
+  border-top-color: #00f7ff;
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+}
+
+.futuristic-loading-text {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.futuristic-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  text-align: center;
+}
+
+.futuristic-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+:host-context(:not(.dark)) .futuristic-empty-icon {
+  color: #4f5fad;
+}
+
+:host-context(.dark) .futuristic-empty-icon {
+  color: #00f7ff;
+}
+
+.futuristic-empty-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.futuristic-empty-text {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  max-width: 300px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation de changement de couleur pour mode clair */
+@keyframes colorShift {
+  0% {
+    background-position: 0% 0%;
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    filter: hue-rotate(5deg) saturate(1.2);
+  }
+  50% {
+    background-position: 100% 100%;
+    filter: hue-rotate(0deg) saturate(1);
+  }
+  75% {
+    filter: hue-rotate(-5deg) saturate(1.2);
+  }
+  100% {
+    background-position: 0% 0%;
+    filter: hue-rotate(0deg);
+  }
+}
+
+/* Animation de pulsation néon pour mode sombre */
+@keyframes neonPulse {
+  0% {
+    filter: brightness(1) saturate(1);
+  }
+  25% {
+    filter: brightness(1.2) saturate(1.2);
+  }
+  50% {
+    filter: brightness(1.4) saturate(1.4);
+  }
+  75% {
+    filter: brightness(1.2) saturate(1.2);
+  }
+  100% {
+    filter: brightness(1) saturate(1);
+  }
+}
+
+/* Animation d'étincelles */
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  20% {
+    opacity: 0.7;
+    transform: translateX(1px);
+  }
+  40% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  60% {
+    opacity: 0.5;
+    transform: translateX(2px);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translateX(1px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}
+
+@keyframes gradientBorderDark {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+/* Avatar simplifié */
+.notification-avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  margin-right: 12px;
+  margin-left: 10px; /* Ajout d'une marge à gauche pour s'aligner avec la case à cocher en haut */
+}
+
+.notification-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Contenu de la notification */
+.notification-content {
+  flex: 1;
+  min-width: 0;
+  padding-right: 16px;
+}
+
+.notification-header {
+  margin-bottom: 6px; /* Espace en bas de l'en-tête */
+}
+
+.notification-header-top {
+  display: flex;
+  justify-content: space-between; /* Place les éléments aux extrémités */
+  align-items: center; /* Centre verticalement */
+  width: 100%; /* Utilise toute la largeur disponible */
+}
+
+.notification-sender {
+  font-weight: 600;
+  font-size: 0.95rem; /* Taille légèrement plus grande pour le nom */
+  color: #4f5fad;
+  padding: 2px 0; /* Léger padding vertical pour aligner avec l'heure */
+  transition: all 0.3s ease; /* Transition fluide pour les effets de survol */
+}
+
+.notification-sender:hover {
+  color: #3d4a85; /* Couleur légèrement plus foncée au survol */
+  text-shadow: 0 0 1px rgba(79, 95, 173, 0.3); /* Léger effet de lueur au survol */
+}
+
+:host-context(.dark) .notification-sender {
+  color: #ff8c00; /* Orange pour le nom de l'expéditeur */
+  text-shadow: 0 0 5px rgba(255, 140, 0, 0.3); /* Léger effet de lueur */
+}
+
+:host-context(.dark) .notification-sender:hover {
+  color: #ffa040; /* Orange plus clair au survol */
+  text-shadow: 0 0 8px rgba(255, 140, 0, 0.5); /* Effet de lueur plus prononcé au survol */
+}
+
+.notification-text {
+  color: #333;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
+}
+
+:host-context(.dark) .notification-text {
+  color: #ffffff; /* Texte blanc pour les notifications non sélectionnées (fond noir) */
+}
+
+/* Style du texte pour les notifications lues en mode clair */
+:host-context(:not(.dark)) .futuristic-notification-read .notification-text {
+  color: var(
+    --light-text,
+    #333333
+  ); /* Couleur de texte comme dans les messages de chat */
+  font-weight: 400; /* Poids de police comme dans les messages de chat */
+}
+
+/* Style du texte pour les notifications lues en mode sombre */
+:host-context(.dark) .futuristic-notification-read .notification-text {
+  color: var(
+    --dark-text,
+    #ffffff
+  ); /* Couleur de texte comme dans les messages de chat */
+  font-weight: 400; /* Poids de police comme dans les messages de chat */
+}
+
+.notification-message-preview {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+:host-context(.dark) .notification-message-preview {
+  color: #cccccc; /* Texte gris clair pour les notifications non sélectionnées (fond noir) */
+}
+
+/* Heure de la notification */
+.notification-time {
+  font-size: 0.75rem;
+  color: #999;
+  white-space: nowrap;
+  margin-left: auto;
+  padding-left: 8px;
+}
+
+:host-context(.dark) .notification-time {
+  color: #aaaaaa; /* Texte gris pour les notifications non sélectionnées (fond noir) */
+}
+
+/* Indicateur de non-lu (petit point bleu) */
+.unread-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  animation: pulse 2s infinite;
+}
+
+:host-context(:not(.dark)) .unread-indicator {
+  background-color: #4f5fad;
+  box-shadow: 0 0 8px rgba(79, 95, 173, 0.7);
+}
+
+:host-context(.dark) .unread-indicator {
+  width: 12px;
+  height: 12px;
+  background-color: #00f7ff;
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.8);
+}
+
+@keyframes pulse {
+  0% {
+    transform: translateY(-50%) scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 247, 255, 0.7);
+  }
+  70% {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 0 0 10px rgba(0, 247, 255, 0);
+  }
+  100% {
+    transform: translateY(-50%) scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 247, 255, 0);
+  }
+}
+
+/* Conteneur principal du contenu de la notification */
+.notification-main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  padding-right: 200px; /* Espace augmenté pour les boutons d'action plus grands et plus espacés */
+}
+
+/* Conteneur des actions de notification */
+.notification-actions {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px; /* Augmentation de l'espacement entre les boutons */
+  z-index: 10;
+}
+
+/* Indicateur de pièces jointes */
+.notification-attachments-indicator {
+  font-size: 0.75rem;
+  color: #ff8c00;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+}
+
+:host-context(.dark) .notification-attachments-indicator {
+  color: rgba(0, 247, 255, 0.9);
+}
+
+.notification-attachments-indicator i {
+  margin-right: 0.25rem;
+}
+
+/* Style commun pour les boutons d'action */
+.notification-action-button,
+.mark-as-read-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+/* Bouton marquer comme lu */
+.mark-as-read-button {
+  position: relative;
+}
+
+/* Bouton d'action - Mode clair */
+:host-context(:not(.dark)) .notification-action-button {
+  background-color: #6d6870;
+  color: white;
+  border: none;
+  box-shadow: 0 0 8px rgba(109, 104, 112, 0.4);
+  transition: all 0.3s ease;
+}
+
+:host-context(:not(.dark)) .notification-action-button:hover {
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 0 12px rgba(109, 104, 112, 0.6);
+}
+
+/* Bouton des pièces jointes - Mode clair */
+:host-context(:not(.dark)) .notification-action-button:first-child {
+  background-color: #ff8c00;
+  color: white;
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.6);
+}
+
+:host-context(:not(.dark)) .notification-action-button:first-child:hover {
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.8);
+}
+
+/* Animations pour le bouton rejoindre */
+@keyframes pulse-light {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse-dark {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes rocket-shake {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateY(-1px) rotate(-2deg);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateY(1px) rotate(2deg);
+  }
+}
+
+/* Bouton rejoindre - Mode clair */
+:host-context(:not(.dark)) .notification-join-button {
+  background: linear-gradient(135deg, #4f5fad, #3d4a85);
+  color: white;
+  box-shadow: 0 0 8px rgba(79, 95, 173, 0.6);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+:host-context(:not(.dark)) .notification-join-button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+:host-context(:not(.dark)) .notification-join-button:hover {
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 0 15px rgba(79, 95, 173, 0.8);
+}
+
+:host-context(:not(.dark)) .notification-join-button:hover::before {
+  opacity: 1;
+  transform: scale(1);
+  animation: pulse-light 1.5s infinite;
+}
+
+:host-context(:not(.dark)) .notification-join-button i {
+  position: relative;
+  z-index: 2;
+}
+
+/* Bouton rejoindre - Mode sombre */
+:host-context(.dark) .notification-join-button {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 247, 255, 0.2),
+    rgba(0, 195, 255, 0.3)
+  );
+  color: #00f7ff;
+  border: 1px solid rgba(0, 247, 255, 0.4);
+  box-shadow: 0 0 8px rgba(0, 247, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+:host-context(.dark) .notification-join-button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 247, 255, 0.4) 0%,
+    rgba(0, 195, 255, 0.1) 60%
+  );
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+:host-context(.dark) .notification-join-button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 247, 255, 0.3),
+    rgba(0, 195, 255, 0.4)
+  );
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.6);
+}
+
+:host-context(.dark) .notification-join-button:hover::before {
+  opacity: 1;
+  transform: scale(1);
+  animation: pulse-dark 1.5s infinite;
+}
+
+:host-context(.dark) .notification-join-button i {
+  position: relative;
+  z-index: 2;
+}
+
+:host-context(:not(.dark)) .notification-action-button:hover {
+  background-color: #4f5fad;
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(79, 95, 173, 0.6);
+}
+
+:host-context(:not(.dark)) .notification-action-button::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 1px solid rgba(79, 95, 173, 0.2);
+  animation: ripple 2s infinite;
+  opacity: 0;
+}
+
+:host-context(:not(.dark)) .notification-action-button:hover::after {
+  opacity: 1;
+}
+
+/* Bouton marquer comme lu - Mode clair */
+:host-context(:not(.dark)) .mark-as-read-button {
+  background: linear-gradient(135deg, #4f5fad, #7826b5);
+  color: white;
+  border: none;
+  box-shadow: 0 0 10px rgba(79, 95, 173, 0.5);
+}
+
+:host-context(:not(.dark)) .mark-as-read-button:hover {
+  background: linear-gradient(135deg, #5a6ac8, #8f2dd6);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(79, 95, 173, 0.7);
+}
+
+:host-context(:not(.dark)) .mark-as-read-button::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 1px solid rgba(79, 95, 173, 0.3);
+  animation: ripple 2s infinite;
+}
+
+/* Bouton d'action - Mode sombre */
+:host-context(.dark) .notification-action-button {
+  background-color: rgba(0, 247, 255, 0.1);
+  color: #00f7ff;
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  box-shadow: 0 0 8px rgba(0, 247, 255, 0.2);
+}
+
+/* Bouton des pièces jointes - Mode sombre */
+:host-context(.dark) .notification-action-button:first-child {
+  background-color: rgba(255, 107, 0, 0.2);
+  color: #ff8c00;
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  box-shadow: 0 0 8px rgba(255, 107, 0, 0.4);
+}
+
+:host-context(.dark) .notification-action-button:hover {
+  background-color: rgba(0, 247, 255, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(0, 247, 255, 0.4);
+}
+
+/* Effet de survol pour le bouton des pièces jointes - Mode sombre */
+:host-context(.dark) .notification-action-button:first-child:hover {
+  background-color: rgba(255, 107, 0, 0.3);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 107, 0, 0.6);
+}
+
+:host-context(.dark) .notification-action-button::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 247, 255, 0.2);
+  animation: ripple 2s infinite;
+  opacity: 0;
+}
+
+:host-context(.dark) .notification-action-button:hover::after {
+  opacity: 1;
+}
+
+/* Bouton marquer comme lu - Mode sombre */
+:host-context(.dark) .mark-as-read-button {
+  background: rgba(0, 247, 255, 0.2);
+  color: #00f7ff;
+  border: 1px solid rgba(0, 247, 255, 0.4);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
+}
+
+:host-context(.dark) .mark-as-read-button:hover {
+  background: rgba(0, 247, 255, 0.3);
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(0, 247, 255, 0.6);
+}
+
+:host-context(.dark) .mark-as-read-button::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  animation: ripple 2s infinite;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes gradientBorder {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+:host-context(:not(.dark)) .futuristic-notification-badge {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
 }
 
-.futuristic-notification-indicator {
+:host-context(:not(.dark)) .futuristic-notification-indicator {
   display: block;
-  width: 8px;
-  height: 8px;
-  background-color: var(--accent-color);
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, #7f7fd5, #91eae4);
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--accent-color);
-  animation: pulse 2s infinite;
+  box-shadow: 0 0 10px rgba(127, 127, 213, 0.5),
+    0 0 20px rgba(127, 127, 213, 0.2);
+  animation: pulse-gentle 3s infinite, colorChangeGentle 8s infinite alternate;
+  position: relative;
 }
 
-@keyframes pulse {
+:host-context(:not(.dark)) .futuristic-notification-indicator::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid rgba(127, 127, 213, 0.3);
+  animation: rippleGentle 3s infinite;
+}
+
+@keyframes pulse-gentle {
   0% {
-    box-shadow: 0 0 0 0 rgba(0, 247, 255, 0.7);
+    box-shadow: 0 0 0 0 rgba(127, 127, 213, 0.5),
+      0 0 0 0 rgba(145, 234, 228, 0.5);
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1.05);
   }
   70% {
-    box-shadow: 0 0 0 6px rgba(0, 247, 255, 0);
+    box-shadow: 0 0 0 8px rgba(127, 127, 213, 0),
+      0 0 0 4px rgba(145, 234, 228, 0);
+    transform: scale(1);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(0, 247, 255, 0);
+    box-shadow: 0 0 0 0 rgba(127, 127, 213, 0), 0 0 0 0 rgba(145, 234, 228, 0);
+    transform: scale(0.95);
   }
 }
-.futuristic-avatar {
+
+@keyframes colorChangeGentle {
+  0% {
+    background: linear-gradient(135deg, #7f7fd5, #91eae4);
+  }
+  33% {
+    background: linear-gradient(135deg, #91eae4, #86a8e7);
+  }
+  66% {
+    background: linear-gradient(135deg, #86a8e7, #d8b5ff);
+  }
+  100% {
+    background: linear-gradient(135deg, #7f7fd5, #91eae4);
+  }
+}
+
+@keyframes rippleGentle {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* Styles pour les effets de brillance des notifications */
+
+/* Avatar - Mode clair */
+:host-context(:not(.dark)) .futuristic-avatar {
   position: relative;
   width: 48px;
   height: 48px;
   flex-shrink: 0;
 }
 
-.futuristic-avatar img {
+:host-context(:not(.dark)) .futuristic-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid rgba(79, 95, 173, 0.3);
+  transition: all var(--transition-fast);
+}
+
+:host-context(:not(.dark))
+  .futuristic-notification-card:hover
+  .futuristic-avatar
+  img {
+  border-color: #4f5fad;
+  box-shadow: 0 0 15px rgba(79, 95, 173, 0.5);
+}
+
+:host-context(:not(.dark)) .futuristic-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(79, 95, 173, 0.1);
+  color: #4f5fad;
+  border-radius: 50%;
+  border: 2px solid rgba(79, 95, 173, 0.3);
+}
+
+:host-context(:not(.dark)) .futuristic-notification-type-icon {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, #4f5fad, #7826b5);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  box-shadow: 0 0 8px rgba(79, 95, 173, 0.5);
+}
+
+/* Avatar - Mode sombre */
+:host-context(.dark) .futuristic-avatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+:host-context(.dark) .futuristic-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -281,12 +2208,15 @@
   transition: all var(--transition-fast);
 }
 
-.futuristic-notification-card:hover .futuristic-avatar img {
+:host-context(.dark)
+  .futuristic-notification-card:hover
+  .futuristic-avatar
+  img {
   border-color: var(--accent-color);
   box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
 }
 
-.futuristic-avatar-placeholder {
+:host-context(.dark) .futuristic-avatar-placeholder {
   width: 100%;
   height: 100%;
   display: flex;
@@ -298,13 +2228,17 @@
   border: 2px solid rgba(0, 247, 255, 0.3);
 }
 
-.futuristic-notification-type-icon {
+:host-context(.dark) .futuristic-notification-type-icon {
   position: absolute;
   bottom: -2px;
   right: -2px;
   width: 18px;
   height: 18px;
-  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
   color: var(--text-light);
   border-radius: 50%;
   display: flex;
@@ -314,72 +2248,1158 @@
   box-shadow: 0 0 8px rgba(0, 247, 255, 0.5);
 }
 
-.futuristic-notification-content {
+/* Contenu des notifications - Mode clair */
+:host-context(:not(.dark)) .futuristic-notification-content {
   flex: 1;
   min-width: 0;
 }
 
-.futuristic-notification-text {
-  color: var(--text-light);
+:host-context(:not(.dark)) .futuristic-notification-text {
+  color: #6d6870;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
 }
 
-.futuristic-notification-sender {
+:host-context(:not(.dark)) .futuristic-notification-sender {
   font-weight: 600;
-  color: var(--accent-color);
+  color: #4f5fad;
   margin-right: 0.25rem;
 }
 
-.futuristic-notification-time {
-  color: var(--text-dim);
+:host-context(:not(.dark)) .futuristic-notification-time {
+  color: #6d6870;
   font-size: 0.75rem;
 }
 
-.futuristic-message-preview {
-  background-color: rgba(0, 0, 0, 0.2);
+:host-context(:not(.dark)) .futuristic-message-preview {
+  background-color: rgba(79, 95, 173, 0.05);
   border-radius: var(--border-radius-sm);
   padding: 0.75rem;
   margin-top: 0.5rem;
-  color: var(--text-dim);
+  color: #6d6870;
   font-size: 0.875rem;
-  border-left: 2px solid rgba(0, 247, 255, 0.3);
+  border-left: 2px solid rgba(79, 95, 173, 0.3);
 }
 
-.futuristic-notification-actions {
+:host-context(:not(.dark)) .futuristic-notification-actions {
   display: flex;
   gap: 0.5rem;
   margin-top: 0.75rem;
 }
 
-.futuristic-read-button {
+:host-context(:not(.dark)) .futuristic-read-button {
+  padding: 0.35rem 0.85rem;
+  background: linear-gradient(
+    135deg,
+    rgba(127, 127, 213, 0.2),
+    rgba(145, 234, 228, 0.2)
+  );
+  color: #4f5fad;
+  border: 1px solid rgba(127, 127, 213, 0.4);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+:host-context(:not(.dark)) .futuristic-read-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(127, 127, 213, 0.2),
+    transparent
+  );
+  transition: all 0.5s;
+}
+
+:host-context(:not(.dark)) .futuristic-read-button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(127, 127, 213, 0.3),
+    rgba(145, 234, 228, 0.3)
+  );
+  box-shadow: 0 0 15px rgba(127, 127, 213, 0.5);
+  transform: translateY(-2px);
+}
+
+:host-context(:not(.dark)) .futuristic-read-button:hover::before {
+  left: 100%;
+}
+
+:host-context(:not(.dark)) .futuristic-accept-button {
   padding: 0.25rem 0.75rem;
-  background-color: rgba(0, 247, 255, 0.1);
-  color: var(--accent-color);
-  border: 1px solid rgba(0, 247, 255, 0.3);
+  background-color: rgba(0, 128, 0, 0.1);
+  color: #2a5a03;
+  border: 1px solid rgba(0, 128, 0, 0.3);
   border-radius: var(--border-radius-sm);
   font-size: 0.75rem;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
-.futuristic-read-button:hover {
-  background-color: rgba(0, 247, 255, 0.2);
-  box-shadow: var(--glow-effect);
+:host-context(:not(.dark)) .futuristic-accept-button:hover {
+  background-color: rgba(0, 128, 0, 0.2);
+  box-shadow: 0 0 10px rgba(0, 128, 0, 0.3);
 }
 
-.futuristic-accept-button {
-  padding: 0.25rem 0.75rem;
-  background-color: rgba(0, 255, 128, 0.1);
-  color: var(--success-color);
-  border: 1px solid rgba(0, 255, 128, 0.3);
-  border-radius: var(--border-radius-sm);
+/* Contenu des notifications - Mode sombre */
+:host-context(.dark) .futuristic-notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Contenu principal de la notification */
+.notification-main-content {
+  flex: 1;
+  margin: 0 15px 0 15px; /* Espacement horizontal */
+  overflow: hidden; /* Évite le débordement du contenu */
+  padding-right: 20px; /* Espace supplémentaire à droite pour éloigner des boutons */
+}
+
+/* Style pour l'en-tête de notification */
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+/* Style pour le conteneur de texte de notification */
+.notification-text-container {
+  margin-bottom: 0.75rem;
+  padding-right: 20px; /* Espace à droite pour éloigner des boutons */
+}
+
+:host-context(.dark) .futuristic-notification-text {
+  color: rgba(
+    0,
+    0,
+    0,
+    0.8
+  ); /* Texte noir légèrement plus clair comme dans la page des messages/utilisateurs */
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  font-weight: 400; /* Police normale comme dans la page des messages/utilisateurs */
+}
+
+:host-context(.dark) .futuristic-notification-sender {
+  font-weight: 600;
+  color: #ff8c00; /* Orange vif comme dans la page des messages/utilisateurs */
+  margin-right: 0.25rem;
+}
+
+:host-context(.dark) .futuristic-notification-time {
+  color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* Gris plus clair comme dans la page des messages/utilisateurs */
   font-size: 0.75rem;
+  font-weight: 300; /* Police plus légère comme dans la page des messages/utilisateurs */
+}
+
+:host-context(.dark) .futuristic-message-preview {
+  background-color: rgba(
+    240,
+    240,
+    240,
+    0.5
+  ); /* Fond gris clair pour les notifications non sélectionnées (fond blanc) */
+  border-radius: var(--border-radius-sm);
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  color: rgba(
+    0,
+    0,
+    0,
+    0.7
+  ); /* Texte noir pour les notifications non sélectionnées (fond blanc) */
+  font-size: 0.875rem;
+  border-left: 2px solid rgba(255, 140, 0, 0.5); /* Bordure orange comme dans la page des messages/utilisateurs */
+}
+
+:host-context(.dark) .futuristic-notification-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+:host-context(.dark) .futuristic-read-button {
+  padding: 0.35rem 0.85rem;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 140, 0, 0.2),
+    rgba(255, 94, 98, 0.2)
+  );
+  color: #ff8c00; /* Orange vif comme dans la page des messages/utilisateurs */
+  border: 1px solid rgba(255, 140, 0, 0.4);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-.futuristic-accept-button:hover {
+:host-context(.dark) .futuristic-read-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 140, 0, 0.2),
+    transparent
+  );
+  transition: all 0.5s;
+}
+
+:host-context(.dark) .futuristic-read-button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 140, 0, 0.3),
+    rgba(255, 94, 98, 0.3)
+  );
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+:host-context(.dark) .futuristic-read-button:hover::before {
+  left: 100%;
+}
+
+:host-context(.dark) .futuristic-accept-button {
+  padding: 0.25rem 0.75rem;
   background-color: rgba(0, 255, 128, 0.2);
-  box-shadow: 0 0 10px rgba(0, 255, 128, 0.3);
+  color: rgba(0, 255, 128, 0.9);
+  border: 1px solid rgba(0, 255, 128, 0.4);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+:host-context(.dark) .futuristic-accept-button:hover {
+  background-color: rgba(0, 255, 128, 0.3);
+  box-shadow: 0 0 10px rgba(0, 255, 128, 0.5);
+}
+
+/* Styles pour le chargement des anciennes notifications */
+.futuristic-loading-more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.futuristic-loading-circle-small {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #4f5fad;
+  border-bottom-color: #4f5fad;
+  animation: futuristic-spin 1.2s linear infinite;
+}
+
+:host-context(.dark) .futuristic-loading-circle-small {
+  border-top-color: #00f7ff;
+  border-bottom-color: #00f7ff;
+}
+
+.futuristic-loading-text-small {
+  margin-top: 0.5rem;
+  color: #6d6870;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+:host-context(.dark) .futuristic-loading-text-small {
+  color: #aaa;
+}
+
+/* Conteneur des actions de notification */
+.notification-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+}
+
+/* Style pour l'heure de la notification */
+.notification-time {
+  font-size: 0.75rem;
+  color: rgba(0, 247, 255, 0.8); /* Couleur cyan comme la case à cocher */
+  font-weight: 500;
+  padding: 2px 8px; /* Padding pour créer un effet de badge */
+  border-radius: 12px; /* Coins arrondis pour un effet de badge */
+  background-color: rgba(0, 247, 255, 0.1); /* Fond légèrement coloré */
+  border: 1px solid rgba(0, 247, 255, 0.2); /* Bordure subtile */
+  display: inline-block; /* Pour que le padding fonctionne correctement */
+  margin-left: 8px; /* Espace à gauche pour séparer du nom d'utilisateur */
+}
+
+/* Style pour l'heure de la notification en mode sombre */
+:host-context(.dark) .notification-time {
+  color: rgba(0, 247, 255, 0.9); /* Couleur cyan plus vive en mode sombre */
+  background-color: rgba(0, 247, 255, 0.15); /* Fond légèrement plus visible */
+  border: 1px solid rgba(0, 247, 255, 0.3); /* Bordure plus visible */
+  text-shadow: 0 0 5px rgba(0, 247, 255, 0.4); /* Effet de lueur cyan */
+  box-shadow: 0 0 8px rgba(0, 247, 255, 0.2); /* Légère lueur autour du badge */
+  transition: all 0.3s ease; /* Transition fluide pour les effets de survol */
+}
+
+/* Effet de survol pour l'heure en mode clair */
+.notification-time:hover {
+  background-color: rgba(0, 247, 255, 0.2); /* Fond plus visible au survol */
+  box-shadow: 0 0 10px rgba(0, 247, 255, 0.3); /* Lueur plus prononcée au survol */
+  transform: translateY(-1px); /* Léger effet de flottement */
+}
+
+/* Effet de survol pour l'heure en mode sombre */
+:host-context(.dark) .notification-time:hover {
+  background-color: rgba(0, 247, 255, 0.25); /* Fond plus visible au survol */
+  box-shadow: 0 0 12px rgba(0, 247, 255, 0.4); /* Lueur plus prononcée au survol */
+  transform: translateY(-1px); /* Léger effet de flottement */
+}
+
+/* Style pour le texte de la notification */
+.notification-text {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  line-height: 1.4;
+  display: block;
+  width: 100%;
+}
+
+/* Styles communs pour les boutons d'action */
+.notification-action-button {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  padding: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  width: 36px; /* Taille augmentée */
+  height: 36px; /* Taille augmentée */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Bouton pour rejoindre la conversation */
+.notification-join-button {
+  background-color: rgba(0, 200, 83, 0.1); /* Vert */
+  color: #00c853;
+  border: 1px solid rgba(0, 200, 83, 0.3);
+}
+
+.notification-join-button:hover {
+  background-color: rgba(0, 200, 83, 0.2);
+  color: #00c853;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(0, 200, 83, 0.4);
+}
+
+/* Bouton pour marquer comme lu */
+.notification-read-button {
+  background-color: rgba(
+    255,
+    193,
+    7,
+    0.1
+  ); /* Jaune comme dans messages/users */
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.notification-read-button:hover {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+}
+
+/* Bouton pour supprimer */
+.notification-delete-button {
+  background-color: rgba(255, 0, 0, 0.1); /* Rouge */
+  color: #ff5252;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.notification-delete-button:hover {
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #ff5252;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+}
+
+/* Bouton pour voir les détails */
+.notification-details-button {
+  background-color: rgba(255, 193, 7, 0.1); /* Jaune */
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.notification-details-button:hover {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+}
+
+/* Bouton pour voir les pièces jointes */
+.notification-attachment-button {
+  background-color: rgba(156, 39, 176, 0.1); /* Violet */
+  color: #9c27b0;
+  border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+.notification-attachment-button:hover {
+  background-color: rgba(156, 39, 176, 0.2);
+  color: #9c27b0;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(156, 39, 176, 0.4);
+}
+
+/* Styles pour le mode sombre */
+:host-context(.dark) .notification-join-button {
+  background-color: rgba(0, 200, 83, 0.2); /* Vert plus foncé */
+  color: #00e676;
+  border: 1px solid rgba(0, 200, 83, 0.4);
+  box-shadow: 0 0 8px rgba(0, 200, 83, 0.3);
+}
+
+:host-context(.dark) .notification-join-button:hover {
+  background-color: rgba(0, 200, 83, 0.3);
+  box-shadow: 0 0 12px rgba(0, 200, 83, 0.5);
+}
+
+:host-context(.dark) .notification-read-button {
+  background-color: rgba(
+    255,
+    193,
+    7,
+    0.2
+  ); /* Jaune comme dans messages/users */
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+}
+
+:host-context(.dark) .notification-read-button:hover {
+  background-color: rgba(255, 193, 7, 0.3);
+  box-shadow: 0 0 12px rgba(255, 193, 7, 0.5);
+}
+
+:host-context(.dark) .notification-delete-button {
+  background-color: rgba(255, 0, 0, 0.2); /* Rouge plus foncé */
+  color: #ff7070;
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.3);
+}
+
+:host-context(.dark) .notification-delete-button:hover {
+  background-color: rgba(255, 0, 0, 0.3);
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
+}
+
+:host-context(.dark) .notification-details-button {
+  background-color: rgba(255, 193, 7, 0.2); /* Jaune plus foncé */
+  color: #ffca28;
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+}
+
+:host-context(.dark) .notification-details-button:hover {
+  background-color: rgba(255, 193, 7, 0.3);
+  box-shadow: 0 0 12px rgba(255, 193, 7, 0.5);
+}
+
+:host-context(.dark) .notification-attachment-button {
+  background-color: rgba(156, 39, 176, 0.2); /* Violet plus foncé */
+  color: #ce93d8;
+  border: 1px solid rgba(156, 39, 176, 0.4);
+  box-shadow: 0 0 8px rgba(156, 39, 176, 0.3);
+}
+
+:host-context(.dark) .notification-attachment-button:hover {
+  background-color: rgba(156, 39, 176, 0.3);
+  box-shadow: 0 0 12px rgba(156, 39, 176, 0.5);
+}
+
+.notification-details-button .gradient-icon {
+  background: linear-gradient(135deg, #4f5fad, #7826b5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+:host-context(:not(.dark)) .notification-details-button:hover {
+  background-color: rgba(0, 247, 255, 0.1);
+  box-shadow: 0 0 8px rgba(0, 247, 255, 0.3);
+}
+
+:host-context(:not(.dark)) .notification-details-button:hover .gradient-icon {
+  background: #00f7ff;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+:host-context(.dark) .notification-details-button:hover {
+  background-color: rgba(0, 247, 255, 0.1);
+  box-shadow: 0 0 8px rgba(0, 247, 255, 0.4);
+}
+
+:host-context(.dark) .notification-details-button:hover .gradient-icon {
+  background: #00f7ff;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.notification-delete-button {
+  color: #ff5e62; /* Rouge initial */
+}
+
+:host-context(:not(.dark)) .notification-delete-button:hover {
+  background-color: rgba(255, 140, 0, 0.1);
+  color: #ff8c00; /* Orange au survol */
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.3);
+}
+
+:host-context(.dark) .notification-delete-button:hover {
+  background-color: rgba(255, 140, 0, 0.1);
+  color: #ff8c00; /* Orange au survol */
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.4);
+}
+
+/* Animation de brillance pour les boutons */
+@keyframes shine {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Styles pour les cases à cocher futuristes */
+.futuristic-checkbox {
+  position: relative;
+  display: inline-block;
+  width: 22px; /* Taille réduite */
+  height: 22px; /* Taille réduite */
+  cursor: pointer;
+  transition: all 0.2s ease; /* Même transition que les autres boutons */
+}
+
+.futuristic-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 22px; /* Taille réduite */
+  width: 22px; /* Taille réduite */
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 200, 0.1),
+    rgba(0, 200, 255, 0.1)
+  ); /* Dégradé fluo */
+  border: 2px solid transparent; /* Bordure transparente pour l'effet de dégradé */
+  border-radius: 50%; /* Forme ronde comme le bouton rafraîchir */
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 200, 0.4); /* Lueur fluo plus prononcée (réduite) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: glow-pulse 2s infinite alternate; /* Animation de pulsation pour la lueur */
+  /* Utilisation d'un pseudo-élément pour créer le contour dégradé */
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* Animation de pulsation pour la lueur fluo */
+@keyframes glow-pulse {
+  0% {
+    box-shadow: 0 0 8px rgba(0, 255, 200, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.6);
+  }
+}
+
+:host-context(.dark) .checkmark {
+  background: rgba(
+    0,
+    247,
+    255,
+    0.1
+  ); /* Même couleur que le bouton rafraîchir en mode sombre */
+  border: 1px solid rgba(0, 247, 255, 0.3); /* Même bordure que le bouton rafraîchir en mode sombre */
+  box-shadow: 0 0 12px rgba(0, 247, 255, 0.4); /* Lueur similaire au bouton rafraîchir */
+  animation: glow-pulse 2s infinite alternate; /* Animation de pulsation pour la lueur */
+}
+
+.futuristic-checkbox:hover input ~ .checkmark {
+  background: rgba(
+    0,
+    247,
+    255,
+    0.2
+  ); /* Même effet hover que le bouton rafraîchir */
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  box-shadow: var(
+    --glow-effect
+  ); /* Même effet de lueur que le bouton rafraîchir */
+  transform: scale(
+    1.05
+  ); /* Même effet d'agrandissement que le bouton rafraîchir */
+}
+
+:host-context(.dark) .futuristic-checkbox:hover input ~ .checkmark {
+  background: rgba(
+    0,
+    247,
+    255,
+    0.2
+  ); /* Même effet hover que le bouton rafraîchir en mode sombre */
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  box-shadow: var(
+    --glow-effect
+  ); /* Même effet de lueur que le bouton rafraîchir */
+  transform: scale(
+    1.05
+  ); /* Même effet d'agrandissement que le bouton rafraîchir */
+}
+
+.futuristic-checkbox input:checked ~ .checkmark {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 200, 0.8),
+    rgba(0, 200, 255, 0.8)
+  ); /* Dégradé fluo vif quand coché */
+  border: 2px solid transparent; /* Bordure transparente pour l'effet de dégradé */
+  box-shadow: 0 0 20px rgba(0, 255, 200, 0.8); /* Lueur fluo plus prononcée quand coché */
+  animation: checkbox-glow 1.5s infinite alternate; /* Animation de pulsation plus intense quand coché */
+}
+
+/* Animation de pulsation plus intense pour la case cochée */
+@keyframes checkbox-glow {
+  0% {
+    box-shadow: 0 0 15px rgba(0, 255, 200, 0.6);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(0, 200, 255, 0.9);
+    transform: scale(1.15);
+  }
+}
+
+/* Animation de pulsation pour la case à cocher cochée */
+@keyframes checkbox-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
+  }
+  100% {
+    transform: scale(1.15);
+    box-shadow: 0 0 20px rgba(0, 247, 255, 0.8);
+  }
+}
+
+:host-context(.dark) .futuristic-checkbox input:checked ~ .checkmark {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 200, 0.8),
+    rgba(0, 200, 255, 0.8)
+  ); /* Dégradé fluo vif quand coché en mode sombre */
+  border: 2px solid transparent; /* Bordure transparente pour l'effet de dégradé */
+  box-shadow: 0 0 20px rgba(0, 255, 200, 0.8); /* Lueur fluo plus prononcée quand coché en mode sombre */
+  animation: checkbox-glow 1.5s infinite alternate; /* Animation de pulsation plus intense quand coché en mode sombre */
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.futuristic-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.futuristic-checkbox .checkmark:after {
+  left: 7px; /* Ajusté pour la forme ronde */
+  top: 3px; /* Ajusté pour la forme ronde */
+  width: 6px; /* Taille réduite */
+  height: 12px; /* Taille réduite */
+  border: solid white;
+  border-width: 0 2px 2px 0; /* Bordure plus fine mais visible */
+  transform: rotate(45deg);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8); /* Lueur blanche pour la coche */
+  animation: pulse-check 1.5s infinite alternate; /* Animation de pulsation pour la coche */
+}
+
+/* Animation de pulsation pour la coche */
+@keyframes pulse-check {
+  0% {
+    opacity: 0.8;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 1);
+  }
+}
+
+/* Styles pour la case à cocher "Tout sélectionner" */
+.select-all-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 5px;
+}
+
+/* Style spécifique pour la case à cocher dans la barre d'actions */
+.flex.space-x-2 .select-all-checkbox .futuristic-checkbox {
+  width: 36px;
+  height: 36px;
+}
+
+.flex.space-x-2 .select-all-checkbox .checkmark {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* Forme ronde comme le bouton rafraîchir */
+  background: rgba(
+    0,
+    247,
+    255,
+    0.1
+  ); /* Même couleur que le bouton rafraîchir */
+  border: 1px solid rgba(0, 247, 255, 0.3); /* Même bordure que le bouton rafraîchir */
+  box-shadow: 0 0 10px rgba(0, 247, 255, 0.4); /* Lueur similaire au bouton rafraîchir */
+}
+
+/* Effet hover similaire au bouton rafraîchir */
+.flex.space-x-2
+  .select-all-checkbox
+  .futuristic-checkbox:hover
+  input
+  ~ .checkmark {
+  background: rgba(0, 247, 255, 0.2);
+  box-shadow: var(--glow-effect);
+  transform: scale(1.05);
+}
+
+/* Ajustement de la position de la coche pour la case à cocher dans la barre d'actions */
+.flex.space-x-2 .select-all-checkbox .checkmark:after {
+  left: 13px; /* Ajusté pour la forme ronde */
+  top: 7px; /* Ajusté pour la forme ronde */
+  width: 8px; /* Taille ajustée */
+  height: 16px; /* Taille ajustée */
+}
+
+/* Styles pour la barre de sélection */
+.selection-actions {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 140, 0, 0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.2);
+  animation: fadeIn 0.3s ease;
+}
+
+:host-context(.dark) .selection-actions {
+  background-color: rgba(255, 140, 0, 0.1);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.2);
+}
+
+.selection-count {
+  font-weight: 500;
+  margin-right: 15px;
+  color: #ff8c00;
+}
+
+:host-context(.dark) .selection-count {
+  color: rgba(255, 140, 0, 0.9);
+}
+
+/* ======================================
+   NOTIFICATIONS SÉLECTIONNÉES - MODE CLAIR
+   ====================================== */
+.futuristic-notification-selected {
+  border: 1px solid rgba(255, 140, 0, 0.5) !important;
+  background-color: rgba(255, 140, 0, 0.05) !important;
+  box-shadow: 0 5px 15px rgba(255, 140, 0, 0.1) !important;
+  transform: translateY(-2px);
+}
+
+/* ======================================
+   NOTIFICATIONS SÉLECTIONNÉES - MODE SOMBRE
+   ====================================== */
+:host-context(.dark) .futuristic-notification-selected {
+  border: 1px solid rgba(255, 140, 0, 0.3) !important; /* Bordure orange */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 140, 0, 0.15),
+    rgba(255, 0, 128, 0.15),
+    rgba(128, 0, 255, 0.15)
+  ) !important; /* Dégradé innovant extraordinaire */
+  box-shadow: 0 5px 15px rgba(255, 140, 0, 0.2),
+    inset 0 0 20px rgba(255, 0, 128, 0.1) !important; /* Ombre complexe */
+  transform: translateY(-2px);
+  padding: 18px 22px !important; /* Padding légèrement plus grand pour les notifications sélectionnées */
+  margin-bottom: 18px !important; /* Plus d'espacement pour les notifications sélectionnées */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Effet de brillance pour les notifications sélectionnées */
+:host-context(.dark) .futuristic-notification-selected::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 140, 0, 0.1) 0%,
+    transparent 70%
+  );
+  animation: rotate-gradient 8s linear infinite;
+  pointer-events: none;
+}
+
+/* Effet de particules scintillantes pour les notifications sélectionnées */
+:host-context(.dark) .futuristic-notification-selected::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+      circle at 10% 10%,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0) 2%
+    ),
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(255, 140, 0, 0.8) 0%,
+      rgba(255, 140, 0, 0) 2%
+    ),
+    radial-gradient(
+      circle at 30% 70%,
+      rgba(255, 0, 128, 0.8) 0%,
+      rgba(255, 0, 128, 0) 2%
+    ),
+    radial-gradient(
+      circle at 70% 40%,
+      rgba(128, 0, 255, 0.8) 0%,
+      rgba(128, 0, 255, 0) 2%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0) 2%
+    ),
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(255, 140, 0, 0.8) 0%,
+      rgba(255, 140, 0, 0) 2%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 0, 128, 0.8) 0%,
+      rgba(255, 0, 128, 0) 2%
+    );
+  opacity: 0;
+  animation: sparkle-effect 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkle-effect {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes rotate-gradient {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ======================================
+   TEXTE DES NOTIFICATIONS SÉLECTIONNÉES - MODE SOMBRE
+   ====================================== */
+/* Texte principal et horodatage */
+:host-context(.dark)
+  .futuristic-notification-selected
+  .futuristic-notification-text,
+:host-context(.dark)
+  .futuristic-notification-selected
+  .futuristic-notification-time {
+  color: rgba(
+    255,
+    255,
+    255,
+    0.9
+  ) !important; /* Texte blanc pour les notifications sélectionnées (fond orange clair) */
+}
+
+/* Aperçu des messages */
+:host-context(.dark)
+  .futuristic-notification-selected
+  .futuristic-message-preview {
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ) !important; /* Fond noir semi-transparent */
+  color: rgba(255, 255, 255, 0.9) !important; /* Texte blanc */
+  border-left: 2px solid rgba(255, 140, 0, 0.5) !important; /* Bordure orange */
+}
+
+/* Nom de l'expéditeur */
+:host-context(.dark)
+  .futuristic-notification-selected
+  .futuristic-notification-sender {
+  color: #ff8c00 !important; /* Orange vif pour le nom de l'expéditeur */
+  font-weight: 600;
+}
+
+/* ======================================
+   BOUTONS D'ACTION - NOTIFICATIONS SÉLECTIONNÉES - MODE SOMBRE
+   ====================================== */
+/* Bouton "Marquer comme lu" */
+:host-context(.dark) .futuristic-notification-selected .futuristic-read-button {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 140, 0, 0.2),
+    rgba(255, 94, 98, 0.2)
+  );
+  color: #ff8c00; /* Orange vif comme dans la page des messages/utilisateurs */
+  border: 1px solid rgba(255, 140, 0, 0.4);
+}
+
+:host-context(.dark)
+  .futuristic-notification-selected
+  .futuristic-read-button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 140, 0, 0.3),
+    rgba(255, 94, 98, 0.3)
+  );
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.5); /* Lueur orange au survol */
+}
+
+/* Boutons d'action génériques */
+:host-context(.dark)
+  .futuristic-notification-selected
+  .notification-action-button {
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(
+    255,
+    140,
+    0,
+    0.1
+  ); /* Fond orange comme dans la page des messages/utilisateurs */
+  border: 1px solid rgba(255, 140, 0, 0.3);
+}
+
+:host-context(.dark)
+  .futuristic-notification-selected
+  .notification-action-button:hover {
+  background-color: rgba(
+    255,
+    140,
+    0,
+    0.2
+  ); /* Fond orange plus foncé au survol */
+  color: #ff8c00; /* Texte orange comme dans la page des messages/utilisateurs */
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4); /* Lueur orange au survol */
+}
+
+/* Bouton de suppression */
+:host-context(.dark)
+  .futuristic-notification-selected
+  .notification-delete-button {
+  background-color: rgba(
+    255,
+    140,
+    0,
+    0.1
+  ); /* Fond orange comme dans la page des messages/utilisateurs */
+  color: #ff8c00; /* Texte orange comme dans la page des messages/utilisateurs */
+  border: 1px solid rgba(255, 140, 0, 0.3);
+}
+
+:host-context(.dark)
+  .futuristic-notification-selected
+  .notification-delete-button:hover {
+  background-color: rgba(
+    255,
+    140,
+    0,
+    0.2
+  ); /* Fond orange plus foncé au survol */
+  color: #ff8c00; /* Texte orange comme dans la page des messages/utilisateurs */
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.4); /* Lueur orange au survol */
+}
+
+/* Petit point séparateur entre le bouton de suppression et la case à cocher */
+.notification-separator-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: rgba(
+    0,
+    247,
+    255,
+    0.6
+  ); /* Couleur cyan comme la case à cocher */
+  margin: 0 8px;
+  box-shadow: 0 0 5px rgba(0, 247, 255, 0.4); /* Lueur cyan */
+  animation: dot-pulse 2s infinite alternate; /* Animation de pulsation */
+  transition: all 0.5s ease; /* Transition pour l'animation de disparition */
+}
+
+/* Animation de disparition du point séparateur */
+.notification-separator-dot.fade-out {
+  opacity: 0;
+  transform: scale(0);
+  width: 0;
+  margin: 0;
+}
+
+/* Point séparateur pour les notifications sélectionnées en mode sombre */
+:host-context(.dark)
+  .futuristic-notification-selected
+  .notification-separator-dot {
+  background-color: rgba(
+    0,
+    247,
+    255,
+    0.8
+  ); /* Couleur cyan plus vive pour les notifications sélectionnées */
+  box-shadow: 0 0 8px rgba(0, 247, 255, 0.6); /* Lueur cyan plus prononcée */
+  animation: dot-pulse-selected 1.5s infinite alternate; /* Animation plus rapide */
+}
+
+/* Animation de pulsation pour le point séparateur des notifications sélectionnées */
+@keyframes dot-pulse-selected {
+  0% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+
+/* Animation de pulsation pour le point séparateur */
+@keyframes dot-pulse {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Styles pour la case à cocher dans les notifications */
+.notification-checkbox {
+  position: absolute;
+  top: 10px; /* Position en haut au lieu d'être centrée verticalement */
+  left: 10px; /* Position à gauche */
+  z-index: 10; /* S'assurer qu'elle est au-dessus des autres éléments */
+}
+
+/* Animation de pulsation pour la case à cocher */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Bouton d'annulation */
+.futuristic-cancel-button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: rgba(150, 150, 150, 0.2);
+  color: #6d6870;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(150, 150, 150, 0.2);
+}
+
+.futuristic-cancel-button:hover {
+  background-color: rgba(150, 150, 150, 0.3);
+  box-shadow: 0 0 12px rgba(150, 150, 150, 0.3);
+  transform: translateY(-2px);
+}
+
+:host-context(.dark) .futuristic-cancel-button {
+  background-color: rgba(100, 100, 100, 0.2);
+  color: #e0e0e0;
+  box-shadow: 0 0 8px rgba(100, 100, 100, 0.2);
 }

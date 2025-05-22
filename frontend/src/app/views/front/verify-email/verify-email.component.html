@@ -1,1 +1,191 @@
-<p>verify-email works!</p>
+<div
+  class="min-h-screen bg-[#edf1f4] dark:bg-[#121212] flex items-center justify-center p-4 relative futuristic-layout"
+>
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+    ></div>
+
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 opacity-5 dark:opacity-[0.03]">
+      <div class="h-full grid grid-cols-12">
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full max-w-md relative z-10">
+    <div
+      class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative"
+    >
+      <!-- Decorative top border with gradient and glow -->
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"
+      ></div>
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] blur-md"
+      ></div>
+
+      <!-- Header -->
+      <div class="p-6 text-center">
+        <h1
+          class="text-2xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+        >
+          Email Verification
+        </h1>
+        <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0] mt-2">
+          A verification code has been sent to {{ email }}
+        </p>
+      </div>
+
+      <!-- Form Section -->
+      <div class="p-6">
+        <!-- Verification Form -->
+        <form
+          [formGroup]="verifyForm"
+          (ngSubmit)="onVerifySubmit()"
+          class="space-y-5"
+        >
+          <!-- Code -->
+          <div class="group">
+            <label
+              class="flex items-center text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2"
+            >
+              <i class="fas fa-key mr-1.5 text-xs"></i>
+              Verification Code
+            </label>
+            <div class="relative">
+              <input
+                formControlName="code"
+                placeholder="123456"
+                class="w-full px-4 py-2.5 text-sm rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+              />
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity"
+              >
+                <div
+                  class="w-0.5 h-4 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <div
+            *ngIf="error"
+            class="bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 border border-[#ff6b69] dark:border-[#ff6b69]/30 rounded-lg p-3 backdrop-blur-sm"
+          >
+            <div class="flex items-start">
+              <div
+                class="text-[#ff6b69] dark:text-[#ff8785] mr-2 text-base relative"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#ff6b69]/20 dark:bg-[#ff8785]/20 blur-xl rounded-full transform scale-150 -z-10"
+                ></div>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-[#ff6b69] dark:text-[#ff8785]">
+                  {{ error }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Success Message -->
+          <div
+            *ngIf="message"
+            class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/5 border border-[#4f5fad] dark:border-[#6d78c9]/30 rounded-lg p-3 backdrop-blur-sm"
+          >
+            <div class="flex items-start">
+              <div
+                class="text-[#4f5fad] dark:text-[#6d78c9] mr-2 text-base relative"
+              >
+                <i class="fas fa-check-circle"></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 blur-xl rounded-full transform scale-150 -z-10"
+                ></div>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-[#4f5fad] dark:text-[#6d78c9]">
+                  {{ message }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            [disabled]="loading || verifyForm.invalid"
+            class="w-full relative overflow-hidden group mt-6"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-lg transition-transform duration-300 group-hover:scale-105"
+              [class.opacity-70]="loading || verifyForm.invalid"
+            ></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-lg opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+              [class.opacity-0]="loading || verifyForm.invalid"
+            ></div>
+            <span
+              class="relative flex items-center justify-center text-white font-medium py-2.5 px-4 rounded-lg transition-all z-10"
+            >
+              <i *ngIf="loading" class="fas fa-spinner fa-spin mr-2"></i>
+              <i *ngIf="!loading" class="fas fa-check mr-2"></i>
+              {{ loading ? "Verifying..." : "Verify" }}
+            </span>
+          </button>
+
+          <!-- Resend -->
+          <div
+            class="text-center text-sm text-[#6d6870] dark:text-[#a0a0a0] space-y-2 pt-4"
+          >
+            <div class="flex items-center justify-center">
+              <span>Didn't receive a code?</span>
+              <button
+                type="button"
+                [disabled]="!canResend || loading"
+                (click)="resendCode()"
+                class="ml-1.5 text-[#4f5fad] dark:text-[#6d78c9] hover:text-[#3d4a85] dark:hover:text-[#4f5fad] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              >
+                <i
+                  class="fas fa-sync-alt mr-1 text-xs"
+                  [class.animate-spin]="!canResend"
+                ></i>
+                Resend
+                <span *ngIf="!canResend" class="ml-1">({{ timer }}s)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Back to Login -->
+          <div class="text-center mt-4">
+            <a
+              routerLink="/login"
+              class="text-[#4f5fad] dark:text-[#6d78c9] hover:text-[#3d4a85] dark:hover:text-[#4f5fad] transition-colors text-sm"
+            >
+              Back to Login
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

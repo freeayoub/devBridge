@@ -45,10 +45,11 @@ router.post(
 
 router.put("/logout", userController.logout);
 // ==================== Routes Admin ==================== 
+// Opérations sur un utilisateur spécifique
 router.use(verifyTokenAdmin);
+router.get("/getone/:id", userController.getUserById);
 // Gestion des utilisateurs
 router.get("/getall", userController.getAllUsers);
-// Opérations sur un utilisateur spécifique
-router.get("/getone/:id", userController.getUserById);
+
 // Gestion du statut
 module.exports = router;

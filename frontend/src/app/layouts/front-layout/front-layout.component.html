@@ -1,18 +1,262 @@
-<div class="min-h-screen futuristic-layout">
-  <!-- Header futuriste -->
-  <header class="fixed top-0 left-0 right-0 futuristic-header z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
+<div
+  class="flex h-screen main-grid-container text-[#6d6870] dark:text-[#a0a0a0] futuristic-layout"
+  [class.dark]="isDarkMode$ | async"
+>
+  <!-- Background Grid -->
+  <div class="background-grid"></div>
+
+  <!-- Sidebar -->
+  <div class="hidden md:flex md:flex-shrink-0">
+    <div
+      class="flex flex-col w-64 bg-white dark:bg-[#1e1e1e] border-r border-[#edf1f4] dark:border-[#2a2a2a] backdrop-blur-sm"
+    >
+      <div
+        class="flex items-center justify-center h-16 px-4 relative overflow-hidden"
+      >
+        <!-- Decorative elements -->
+        <div
+          class="absolute -top-6 -left-6 w-12 h-12 bg-gradient-to-br from-[#4f5fad]/20 to-transparent rounded-full"
+        ></div>
+        <div
+          class="absolute -bottom-6 -right-6 w-12 h-12 bg-gradient-to-tl from-[#4f5fad]/20 to-transparent rounded-full"
+        ></div>
+
+        <div class="flex items-center relative z-10">
+          <div class="relative">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-8 w-8 text-[#4f5fad] dark:text-[#6d78c9] transform rotate-12"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            <!-- Glow effect -->
+            <div
+              class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 blur-xl rounded-full transform scale-150 -z-10"
+            ></div>
+          </div>
+          <span
+            class="ml-2 text-xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+            >DevBridge</span
+          >
+        </div>
+      </div>
+      <div class="flex flex-col flex-grow px-4 py-4">
+        <nav class="flex-1 space-y-2">
+          <!-- Navigation Items - Réorganisés avec Accueil en premier -->
+
+          <!-- Accueil button -->
+          <a
+            *ngIf="authService.userLoggedIn()"
+            routerLink="/"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-home h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span class="relative">Accueil</span>
+            </div>
+          </a>
+
+          <!-- Projects -->
+          <a
+            *ngIf="authService.userLoggedIn()"
+            routerLink="/projects"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-rocket h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span class="relative">Projects</span>
+            </div>
+          </a>
+
+          <!-- Plannings -->
+          <a
+            *ngIf="authService.userLoggedIn()"
+            routerLink="/plannings"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="far fa-calendar-check h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span class="relative">Plannings</span>
+            </div>
+          </a>
+
+          <!-- Réunions -->
+          <a
+            *ngIf="authService.userLoggedIn()"
+            routerLink="/reunions"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-users-cog h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span class="relative">Réunions</span>
+            </div>
+          </a>
+
+          <!-- Messages -->
+          <a
+            *ngIf="authService.userLoggedIn()"
+            routerLink="/messages"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="far fa-comment-dots h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span class="relative">Messages</span>
+            </div>
+          </a>
+
+          <!-- Séparateur -->
+          <div
+            class="border-t border-[#edf1f4] dark:border-[#2a2a2a] my-2"
+          ></div>
+
+          <!-- Go to Dashboard button - uniquement pour admin et teacher -->
+          <a
+            *ngIf="
+              authService.userLoggedIn() &&
+              (currentUser?.role === 'admin' || currentUser?.role === 'teacher')
+            "
+            routerLink="/admin/dashboard"
+            routerLinkActive="active bg-gradient-to-r from-[#7826b5]/10 to-[#9d4edd]/10 dark:from-[#7826b5]/20 dark:to-[#9d4edd]/20 text-[#7826b5] dark:text-[#9d4edd] font-medium"
+            class="sidebar-nav-link dashboard-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#7826b5] dark:hover:text-[#9d4edd] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#7826b5] to-[#9d4edd] dark:from-[#7826b5] dark:to-[#9d4edd] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-tachometer-alt h-5 w-5 mr-3 text-[#7826b5] dark:text-[#9d4edd] group-hover:text-[#7826b5] dark:group-hover:text-[#9d4edd] transition-all group-hover:scale-110"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#7826b5]/20 dark:bg-[#9d4edd]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span class="relative">Go to Dashboard</span>
+            </div>
+          </a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- La grille est maintenant gérée par la classe background-grid -->
+  <!-- Header -->
+  <header
+    class="fixed top-0 left-0 right-0 bg-white dark:bg-[#1e1e1e] shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] z-50 backdrop-blur-sm border-b border-[#edf1f4]/50 dark:border-[#2a2a2a]"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <!-- Decorative elements -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-[#4f5fad]/10 dark:via-[#6d78c9]/5 to-transparent"
+        ></div>
+        <div
+          class="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-[#4f5fad]/5 dark:via-[#6d78c9]/3 to-transparent"
+        ></div>
+      </div>
+
+      <div class="flex items-center justify-between h-16 relative z-10">
         <!-- Logo and main nav (left side) -->
         <div class="flex items-center">
           <!-- Mobile menu button -->
           <button
             (click)="toggleSidebar()"
-            class="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none"
+            class="md:hidden flex items-center justify-center h-8 px-3 rounded-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] focus:outline-none transition-colors relative group overflow-hidden"
             aria-label="Toggle menu"
           >
+            <div
+              class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-md blur-md"
+            ></div>
             <svg
-              class="h-6 w-6"
+              class="h-5 w-5 relative z-10"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -24,137 +268,187 @@
                 d="M4 6h16M4 12h16M4 18h16"
               />
             </svg>
+            <span
+              class="text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] ml-2 relative z-10"
+              >Menu</span
+            >
           </button>
 
-          <!-- Logo futuriste -->
-          <a routerLink="/" class="flex-shrink-0 flex items-center">
-            <h1 class="text-xl font-bold futuristic-logo">DevBridge</h1>
-            <span class="ml-2 text-sm futuristic-subtitle hidden md:block"
+          <!-- Logo -->
+          <a routerLink="/" class="flex-shrink-0 flex items-center group">
+            <div class="relative">
+              <h1
+                class="text-xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent group-hover:scale-105 transition-transform"
+              >
+                DevBridge
+              </h1>
+              <!-- Glow effect -->
+              <div
+                class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 blur-xl rounded-full transform scale-150 -z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+              ></div>
+            </div>
+            <span
+              class="ml-2 text-sm text-[#6d6870] dark:text-[#a0a0a0] hidden md:block"
               >Project Management Suite</span
             >
           </a>
 
-          <!-- Navigation futuriste -->
-          <nav class="hidden md:ml-6 md:flex md:space-x-8">
-            <a *ngIf="authService.userLoggedIn()"
-              routerLink="/"
-              class="futuristic-nav-link"
-              routerLinkActive="futuristic-nav-link-active"
-              >Accueil</a
-            >
-
-            <a *ngIf="authService.userLoggedIn()" class="futuristic-nav-link"
-              routerLink="/plannings"
-              class="futuristic-nav-link"
-              routerLinkActive="futuristic-nav-link-active"
-              >Plannings</a
-            >
-
-            <a *ngIf="authService.userLoggedIn()" class="futuristic-nav-link"
-              routerLink="/reunions"
-              class="futuristic-nav-link"
-              routerLinkActive="futuristic-nav-link-active"
-              >Réunions</a
-            >
-
-            <a *ngIf="authService.userLoggedIn()" class="futuristic-nav-link"
-              routerLink="/messages"
-              class="futuristic-nav-link"
-              routerLinkActive="futuristic-nav-link-active"
-              >Messages</a
-            >
-
-            <a *ngIf="authService.userLoggedIn()" class="futuristic-nav-link"
-              routerLink="/notifications"
-              class="futuristic-nav-link relative"
-              routerLinkActive="futuristic-nav-link-active"
-            >
-              Notifications
-              <span
-                *ngIf="unreadNotificationsCount > 0"
-                class="futuristic-badge absolute right-4 inline-flex items-center justify-center"
-              >
-                {{
-                  unreadNotificationsCount > 9 ? "9+" : unreadNotificationsCount
-                }}
-              </span>
-            </a>
-          </nav>
+          <!-- Navigation - Removed and moved to sidebar -->
         </div>
 
         <!-- Right side -->
         <div class="flex items-center">
           <ng-container *ngIf="authService.userLoggedIn(); else authButtons">
             <div class="ml-4 flex items-center md:ml-6">
-              <!-- Profile dropdown -->
-              <div class="relative">
-                <button
-                  (click)="toggleProfileMenu()"
-                  class="futuristic-profile-button"
-                  [attr.aria-expanded]="profileMenuOpen"
-                  aria-haspopup="true"
-                >
-                  <span class="sr-only">Open user menu</span>
-                  <span
-                    class="hidden md:inline-block mr-2 text-sm font-medium futuristic-username"
+              <!-- Bouton de notification simplifié -->
+              <a
+                *ngIf="authService.userLoggedIn()"
+                routerLink="/notifications"
+                class="flex items-center justify-center h-10 px-4 rounded-xl bg-white dark:bg-[#1e1e1e] border border-[#4f5fad]/20 dark:border-[#6d78c9]/20 text-[#4f5fad] dark:text-[#6d78c9] mr-2 transition-all duration-300 hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a]"
+                aria-label="Notifications"
+              >
+                <!-- Contenu du bouton avec icône et compteur -->
+                <div class="flex items-center">
+                  <i class="far fa-bell text-lg transition-transform mr-2"></i>
+
+                  <!-- Compteur de notifications avec couleur orange fluo -->
+                  <div
+                    class="flex items-center justify-center h-6 min-w-6 px-1.5 rounded-md bg-gradient-to-r from-[#ff8c00] to-[#ff6b00] text-white font-bold text-xs shadow-md animate-pulse"
                   >
                     {{
-                      currentUser?.username ||
-                        authService.getCurrentUser()?.username
+                      unreadNotificationsCount > 0
+                        ? unreadNotificationsCount > 99
+                          ? "99+"
+                          : unreadNotificationsCount
+                        : "0"
                     }}
-                  </span>
-                  <div class="futuristic-avatar">
-                    <img
-                      [src]="
-                        currentUser?.image ||
-                        authService.getCurrentUser()?.image ||
-                        'assets/images/default-profile.png'
-                      "
-                      alt="Profile"
-                    />
                   </div>
-                </button>
-
-                <!-- Menu déroulant du profil futuriste -->
-                <div
-                  *ngIf="profileMenuOpen"
-                  class="futuristic-dropdown-menu"
-                  role="menu"
-                  aria-orientation="vertical"
-                  aria-labelledby="user-menu"
-                >
-                  <a
-                    routerLink="/profile"
-                    (click)="profileMenuOpen = false"
-                    class="futuristic-dropdown-item"
-                    role="menuitem"
-                  >
-                    <i class="fas fa-user mr-2"></i>
-                    Mon profil
-                  </a>
-
-                  <a
-                    (click)="logout()"
-                    class="futuristic-dropdown-item"
-                    role="menuitem"
-                  >
-                    <i class="fas fa-sign-out-alt mr-2"></i>
-                    Déconnexion
-                  </a>
                 </div>
-              </div>
+              </a>
+
+              <!-- Dark Mode Toggle Button -->
+              <button
+                (click)="toggleDarkMode()"
+                class="flex items-center justify-center h-9 w-9 rounded-xl bg-[#edf1f4] dark:bg-[#2a2a2a] hover:bg-[#dce4ec] dark:hover:bg-[#3a3a3a] text-[#4f5fad] dark:text-[#6d78c9] mr-3 transition-all duration-300 relative overflow-hidden group"
+                aria-label="Toggle dark mode"
+              >
+                <!-- Modern animated border with glow -->
+                <div class="absolute inset-0 rounded-xl overflow-hidden">
+                  <div
+                    class="absolute inset-0 rounded-xl border-2 border-[#4f5fad]/30 dark:border-[#6d78c9]/30 opacity-100"
+                  ></div>
+                  <div
+                    class="absolute -inset-1 bg-gradient-to-r from-[#4f5fad]/0 via-[#4f5fad]/30 to-[#4f5fad]/0 dark:from-[#6d78c9]/0 dark:via-[#6d78c9]/30 dark:to-[#6d78c9]/0 opacity-0 group-hover:opacity-100 blur-sm animate-shine"
+                  ></div>
+                </div>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 opacity-0 group-hover:opacity-100 transition-opacity blur-md"
+                ></div>
+                <div
+                  class="relative z-10 transition-all duration-500 ease-in-out"
+                  [ngClass]="{ 'rotate-180': isDarkMode$ | async }"
+                >
+                  <i
+                    *ngIf="!(isDarkMode$ | async)"
+                    class="far fa-moon text-lg group-hover:scale-110 transition-transform"
+                  ></i>
+                  <i
+                    *ngIf="isDarkMode$ | async"
+                    class="far fa-sun text-lg group-hover:scale-110 transition-transform"
+                  ></i>
+                </div>
+              </button>
+
+              <!-- Logout Button -->
+              <button
+                (click)="logout()"
+                class="flex items-center justify-center h-8 w-8 rounded-full bg-[#edf1f4] dark:bg-[#2a2a2a] hover:bg-[#dce4ec] dark:hover:bg-[#3a3a3a] text-[#ff6b69] dark:text-[#ff8785] mr-3 transition-all duration-300 relative overflow-hidden group"
+                aria-label="Logout"
+              >
+                <!-- Animated border -->
+                <div class="absolute inset-0 rounded-full overflow-hidden">
+                  <div
+                    class="absolute inset-0 rounded-full border border-[#ff6b69]/20 dark:border-[#ff8785]/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                  ></div>
+                  <div
+                    class="absolute -inset-1 bg-gradient-to-r from-[#ff6b69]/0 via-[#ff6b69]/30 to-[#ff6b69]/0 dark:from-[#ff8785]/0 dark:via-[#ff8785]/30 dark:to-[#ff8785]/0 opacity-0 group-hover:opacity-100 blur-sm animate-shine"
+                  ></div>
+                </div>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#ff6b69]/10 dark:bg-[#ff8785]/10 opacity-0 group-hover:opacity-100 transition-opacity blur-md"
+                ></div>
+                <i
+                  class="fas fa-sign-out-alt relative z-10 group-hover:scale-110 transition-transform"
+                ></i>
+              </button>
+
+              <!-- Profile Button -->
+              <a
+                routerLink="/profile"
+                class="flex items-center bg-[#edf1f4] dark:bg-[#2a2a2a] hover:bg-[#dce4ec] dark:hover:bg-[#3a3a3a] text-[#4f5fad] dark:text-[#6d78c9] px-3 py-2 rounded-lg transition-all group"
+              >
+                <span class="sr-only">Profile</span>
+                <span
+                  class="hidden md:inline-block mr-2 text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] group-hover:scale-105 transition-transform"
+                >
+                  {{ username }}
+                </span>
+                <div
+                  class="h-8 w-8 rounded-full overflow-hidden border-2 border-[#4f5fad] dark:border-[#6d78c9] flex items-center justify-center relative group-hover:border-[#3d4a85] dark:group-hover:border-[#4f5fad] transition-colors"
+                >
+                  <!-- Glow effect -->
+                  <div
+                    class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 opacity-0 group-hover:opacity-100 transition-opacity blur-md"
+                  ></div>
+                  <img
+                    [src]="imageProfile"
+                    alt="Profile"
+                    class="h-full w-full object-cover"
+                  />
+                </div>
+              </a>
             </div>
           </ng-container>
 
+          <!-- Auth Buttons for non-logged in users -->
           <ng-template #authButtons>
             <div class="flex space-x-4">
-              <a routerLink="/login" class="futuristic-login-button">
-                <i class="fas fa-sign-in-alt mr-2"></i>
-                Connexion
+              <a
+                routerLink="/login"
+                class="inline-flex items-center relative overflow-hidden group"
+              >
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-lg transition-transform duration-300 group-hover:scale-105"
+                ></div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-lg opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+                ></div>
+                <span
+                  class="relative flex items-center text-white font-medium py-2 px-4 rounded-lg transition-all"
+                >
+                  <i class="fas fa-sign-in-alt mr-2"></i>
+                  Connexion
+                </span>
               </a>
-              <a routerLink="/signup" class="futuristic-register-button">
-                <i class="fas fa-user-plus mr-2"></i>
-                Inscription
+
+              <a
+                routerLink="/signup"
+                class="inline-flex items-center relative overflow-hidden group"
+              >
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-[#7826b5] to-[#9d4edd] dark:from-[#7826b5] dark:to-[#9d4edd] rounded-lg transition-transform duration-300 group-hover:scale-105"
+                ></div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-[#7826b5] to-[#9d4edd] dark:from-[#7826b5] dark:to-[#9d4edd] rounded-lg opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+                ></div>
+                <span
+                  class="relative flex items-center text-white font-medium py-2 px-4 rounded-lg transition-all"
+                >
+                  <i class="fas fa-user-plus mr-2"></i>
+                  Inscription
+                </span>
               </a>
             </div>
           </ng-template>
@@ -163,67 +457,103 @@
     </div>
   </header>
 
-  <!-- Barre latérale mobile futuriste -->
+  <!-- Barre latérale mobile -->
   <div
     class="fixed inset-0 z-40 md:hidden"
     [class.hidden]="!sidebarOpen"
     (click)="sidebarOpen && toggleSidebar()"
   >
+    <!-- Overlay backdrop with blur effect -->
+    <div
+      class="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm"
+    ></div>
+
     <!-- Contenu de la barre latérale -->
     <div
-      class="fixed inset-y-0 left-0 max-w-xs w-full futuristic-sidebar transform transition-transform duration-300 ease-in-out"
+      class="fixed inset-y-0 left-0 max-w-xs w-full bg-white dark:bg-[#1e1e1e] shadow-lg dark:shadow-[0_0_30px_rgba(0,0,0,0.3)] transform transition-transform duration-300 ease-in-out border-r border-[#edf1f4]/50 dark:border-[#2a2a2a]"
       [class.translate-x-0]="sidebarOpen"
       [class.-translate-x-full]="!sidebarOpen"
       (click)="$event.stopPropagation()"
     >
-      <div class="flex flex-col h-full">
-        <!-- En-tête de la barre latérale futuriste -->
+      <div class="flex flex-col h-full relative">
+        <!-- Decorative elements -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+          <div
+            class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-[#4f5fad]/10 dark:via-[#6d78c9]/5 to-transparent"
+          ></div>
+          <div
+            class="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-[#4f5fad]/5 dark:via-[#6d78c9]/3 to-transparent"
+          ></div>
+          <div
+            class="absolute top-[10%] left-[5%] w-32 h-32 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-2xl"
+          ></div>
+          <div
+            class="absolute bottom-[10%] right-[5%] w-40 h-40 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-2xl"
+          ></div>
+        </div>
+
+        <!-- En-tête de la barre latérale -->
         <div
-          class="flex items-center justify-between px-4 py-3 futuristic-sidebar-header"
+          class="flex items-center justify-between px-4 py-3 border-b border-[#edf1f4] dark:border-[#2a2a2a] relative z-10"
         >
           <div>
-            <h3 class="text-xl font-bold futuristic-logo">DevBridge</h3>
-            <p class="text-sm futuristic-subtitle">Project Management Suite</p>
+            <h3
+              class="text-xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+            >
+              DevBridge
+            </h3>
+            <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0]">
+              Project Management Suite
+            </p>
           </div>
           <button
             (click)="toggleSidebar()"
-            class="futuristic-close-button"
+            class="text-[#6d6870] dark:text-[#a0a0a0] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] p-2 rounded-full hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] transition-colors relative group"
             aria-label="Close menu"
           >
-            <i class="fas fa-times"></i>
+            <div
+              class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full blur-md"
+            ></div>
+            <i class="fas fa-times relative z-10"></i>
           </button>
         </div>
 
-        <!-- Navigation de la barre latérale futuriste -->
+        <!-- Navigation de la barre latérale -->
         <nav
-          class="flex-1 px-2 py-4 space-y-1 overflow-y-auto futuristic-sidebar-nav"
+          class="flex-1 px-2 py-4 space-y-1 overflow-y-auto bg-white dark:bg-[#1e1e1e] relative z-10"
         >
+          <!-- Navigation Items - Réorganisés avec Accueil en premier -->
           <a
             *ngFor="
               let item of [
                 {
                   route: '/',
-                  icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+                  icon: 'fas fa-home',
                   text: 'Accueil'
                 },
                 {
+                  route: '/projects',
+                  icon: 'fas fa-rocket',
+                  text: 'Projects'
+                },
+                {
                   route: '/plannings',
-                  icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
+                  icon: 'far fa-calendar-check',
                   text: 'Plannings'
                 },
                 {
                   route: '/reunions',
-                  icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+                  icon: 'fas fa-users-cog',
                   text: 'Réunions'
                 },
                 {
                   route: '/messages',
-                  icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
+                  icon: 'far fa-comment-dots',
                   text: 'Messages'
                 },
                 {
                   route: '/notifications',
-                  icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+                  icon: 'far fa-bell',
                   text: 'Notifications',
                   badge: unreadNotificationsCount
                 }
@@ -231,50 +561,119 @@
             "
             routerLink="{{ item.route }}"
             (click)="toggleSidebar()"
-            class="futuristic-sidebar-link"
-            routerLinkActive="futuristic-sidebar-link-active"
+            class="flex items-center px-3 py-2 text-[#6d6870] dark:text-[#a0a0a0] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] rounded-lg transition-all relative group overflow-hidden"
+            routerLinkActive="bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium border-r-2 border-[#4f5fad] dark:border-[#6d78c9]"
+            [routerLinkActiveOptions]="{
+              exact: item.route === '/' ? true : false
+            }"
           >
-            <svg
-              class="futuristic-sidebar-icon"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                attr.d="{{ item.icon }}"
-              />
-            </svg>
-            {{ item.text }}
+            <!-- Hover effect -->
             <span
-              *ngIf="item.badge && item.badge > 0"
-              class="futuristic-badge absolute right-4"
-            >
-              {{ item.badge > 9 ? "9+" : item.badge }}
-            </span>
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center w-full">
+              <div class="relative">
+                <i
+                  class="{{
+                    item.icon
+                  }} h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-colors"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span>{{ item.text }}</span>
+              <div
+                *ngIf="item.badge && item.badge > 0"
+                class="ml-auto bg-gradient-to-r from-[#ff8c00] to-[#ff6b00] text-white text-xs rounded-full h-5 min-w-5 px-1 flex items-center justify-center shadow-md animate-pulse"
+              >
+                {{ item.badge > 99 ? "99+" : item.badge }}
+              </div>
+            </div>
           </a>
 
-          <div class="futuristic-separator my-2"></div>
+          <!-- Go to Dashboard button - uniquement pour admin et teacher -->
+          <a
+            *ngIf="
+              authService.userLoggedIn() &&
+              (currentUser?.role === 'admin' || currentUser?.role === 'teacher')
+            "
+            routerLink="/admin/dashboard"
+            (click)="toggleSidebar()"
+            class="flex items-center px-3 py-2 text-[#6d6870] dark:text-[#a0a0a0] hover:text-[#7826b5] dark:hover:text-[#9d4edd] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] rounded-lg transition-all relative group overflow-hidden mt-2"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#7826b5] to-[#9d4edd] dark:from-[#7826b5] dark:to-[#9d4edd] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center w-full">
+              <div class="relative">
+                <i
+                  class="fas fa-tachometer-alt h-5 w-5 mr-3 text-[#7826b5] dark:text-[#9d4edd] group-hover:text-[#7826b5] dark:group-hover:text-[#9d4edd] transition-colors"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#7826b5]/20 dark:bg-[#9d4edd]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span>Go to Dashboard</span>
+            </div>
+          </a>
+
+          <div
+            class="border-t border-[#edf1f4] dark:border-[#2a2a2a] my-2"
+          ></div>
 
           <ng-container *ngIf="!authService.userLoggedIn()">
             <a
               routerLink="/login"
               (click)="toggleSidebar()"
-              class="futuristic-sidebar-link"
+              class="flex items-center px-3 py-2 text-[#6d6870] dark:text-[#a0a0a0] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] rounded-lg transition-all relative group overflow-hidden"
             >
-              <i class="fas fa-sign-in-alt futuristic-sidebar-icon-fa"></i>
-              Connexion
+              <!-- Hover effect -->
+              <span
+                class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+              ></span>
+
+              <div class="relative z-10 flex items-center">
+                <div class="relative">
+                  <i
+                    class="fas fa-sign-in-alt mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:scale-110 transition-transform"
+                  ></i>
+                  <!-- Glow effect -->
+                  <div
+                    class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                  ></div>
+                </div>
+                <span>Connexion</span>
+              </div>
             </a>
 
             <a
               routerLink="/signup"
               (click)="toggleSidebar()"
-              class="futuristic-sidebar-link"
+              class="flex items-center px-3 py-2 text-[#6d6870] dark:text-[#a0a0a0] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] rounded-lg transition-all relative group overflow-hidden"
             >
-              <i class="fas fa-user-plus futuristic-sidebar-icon-fa"></i>
-              Inscription
+              <!-- Hover effect -->
+              <span
+                class="absolute inset-0 w-1 bg-gradient-to-b from-[#7826b5] to-[#9d4edd] dark:from-[#7826b5] dark:to-[#9d4edd] opacity-0 group-hover:opacity-100 transition-opacity"
+              ></span>
+
+              <div class="relative z-10 flex items-center">
+                <div class="relative">
+                  <i
+                    class="fas fa-user-plus mr-3 text-[#7826b5] dark:text-[#9d4edd] group-hover:scale-110 transition-transform"
+                  ></i>
+                  <!-- Glow effect -->
+                  <div
+                    class="absolute inset-0 bg-[#7826b5]/20 dark:bg-[#9d4edd]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                  ></div>
+                </div>
+                <span>Inscription</span>
+              </div>
             </a>
           </ng-container>
 
@@ -282,18 +681,48 @@
             <a
               routerLink="/profile"
               (click)="toggleSidebar()"
-              class="futuristic-sidebar-link"
+              class="flex items-center px-3 py-2 text-[#6d6870] dark:text-[#a0a0a0] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] rounded-lg transition-all relative group overflow-hidden"
             >
-              <i class="fas fa-user futuristic-sidebar-icon-fa"></i>
-              Mon Profil
+              <!-- Hover effect -->
+              <span
+                class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+              ></span>
+
+              <div class="relative z-10 flex items-center">
+                <div class="relative">
+                  <i
+                    class="fas fa-user mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:scale-110 transition-transform"
+                  ></i>
+                  <!-- Glow effect -->
+                  <div
+                    class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                  ></div>
+                </div>
+                <span>Mon Profil</span>
+              </div>
             </a>
 
             <a
               (click)="logout(); toggleSidebar()"
-              class="futuristic-sidebar-link cursor-pointer"
+              class="flex items-center px-3 py-2 text-[#6d6870] dark:text-[#a0a0a0] hover:text-[#ff6b69] dark:hover:text-[#ff8785] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] rounded-lg transition-all relative group overflow-hidden cursor-pointer"
             >
-              <i class="fas fa-sign-out-alt futuristic-sidebar-icon-fa"></i>
-              Déconnexion
+              <!-- Hover effect -->
+              <span
+                class="absolute inset-0 w-1 bg-gradient-to-b from-[#ff6b69] to-[#ff8785] dark:from-[#ff6b69] dark:to-[#ff8785] opacity-0 group-hover:opacity-100 transition-opacity"
+              ></span>
+
+              <div class="relative z-10 flex items-center">
+                <div class="relative">
+                  <i
+                    class="fas fa-sign-out-alt mr-3 text-[#ff6b69] dark:text-[#ff8785] group-hover:scale-110 transition-transform"
+                  ></i>
+                  <!-- Glow effect -->
+                  <div
+                    class="absolute inset-0 bg-[#ff6b69]/20 dark:bg-[#ff8785]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                  ></div>
+                </div>
+                <span>Déconnexion</span>
+              </div>
             </a>
           </ng-container>
         </nav>
@@ -301,28 +730,53 @@
     </div>
   </div>
 
-  <!-- Contenu principal futuriste -->
-  <main class="pt-16 pb-12 futuristic-main-content">
-    <!-- Message de statut futuriste -->
-    <div
-      *ngIf="messageFromRedirect"
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Contenu principal -->
+    <main
+      class="flex-1 overflow-y-auto bg-[#edf1f4] dark:bg-[#121212] pt-16 pb-6 relative"
     >
-      <div class="futuristic-status-message mb-6">
-        <div class="flex items-center">
-          <i class="fas fa-info-circle futuristic-status-icon"></i>
-          <p class="ml-3 text-sm font-medium futuristic-status-text">
-            {{ messageFromRedirect }}
-          </p>
+      <!-- Background decorative elements -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+        ></div>
+        <div
+          class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+        ></div>
+      </div>
+
+      <!-- Message de statut -->
+      <div
+        *ngIf="messageFromRedirect"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-4"
+      >
+        <div
+          class="bg-white dark:bg-[#1e1e1e] border-l-4 border-[#ff8c00] dark:border-[#ff6b00] rounded-lg p-4 mb-6 shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] backdrop-blur-sm"
+        >
+          <div class="flex items-center">
+            <div class="relative">
+              <i
+                class="fas fa-info-circle text-[#ff8c00] dark:text-[#ff6b00] text-lg mr-3"
+              ></i>
+              <!-- Glow effect -->
+              <div
+                class="absolute inset-0 bg-[#ff8c00]/30 dark:bg-[#ff6b00]/30 blur-xl rounded-full transform scale-150 -z-10 animate-pulse"
+              ></div>
+            </div>
+            <p
+              class="ml-3 text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0]"
+            >
+              {{ messageFromRedirect }}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Router outlet -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Router outlet -->
-      <router-outlet></router-outlet>
-
-    </div>
-  </main>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
 </div>

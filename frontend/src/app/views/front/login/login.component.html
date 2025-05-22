@@ -1,93 +1,257 @@
-<div class="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center p-4">
-  <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+<div
+  class="min-h-screen bg-[#edf1f4] dark:bg-[#121212] flex items-center justify-center p-4 relative futuristic-layout"
+>
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+    ></div>
 
-    <!-- Header -->
-    <div class="border-b border-gray-200 dark:border-gray-700 p-5 text-center">
-      <h1 class="text-xl font-medium text-gray-800 dark:text-white">Welcome Back</h1>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Sign in to access your workspace</p>
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 opacity-5 dark:opacity-[0.03]">
+      <div class="h-full grid grid-cols-12">
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+      </div>
     </div>
+  </div>
 
-    <!-- Form -->
-    <div class="p-5">
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4" [ngClass]="{'shake-animation': error}">
+  <div class="w-full max-w-md relative z-10">
+    <div
+      class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative"
+    >
+      <!-- Decorative top border with gradient and glow -->
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"
+      ></div>
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] blur-md"
+      ></div>
 
-        <!-- Email -->
-        <div>
-          <label for="email" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            required
-            class="w-full px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-primary-light dark:focus:border-primary-dark focus:ring-1 focus:ring-primary-light dark:focus:ring-primary-dark transition-all"
-            placeholder="your@email.com">
-          <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-red-500 dark:text-red-400 text-xs mt-1">
-            Email is required
+      <!-- Header -->
+      <div class="p-6 text-center">
+        <h1
+          class="text-2xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+        >
+          Welcome Back
+        </h1>
+        <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0] mt-2">
+          Sign in to access your workspace
+        </p>
+      </div>
+
+      <!-- Form -->
+      <div class="p-6">
+        <form
+          [formGroup]="loginForm"
+          (ngSubmit)="onSubmit()"
+          class="space-y-5"
+          [ngClass]="{ 'shake-animation': error }"
+        >
+          <!-- Email -->
+          <div class="group">
+            <label
+              for="email"
+              class="flex items-center text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2"
+            >
+              <i class="fas fa-envelope mr-1.5 text-xs"></i>
+              Email
+            </label>
+            <div class="relative">
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                required
+                class="w-full px-4 py-2.5 text-sm rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+                placeholder="your@email.com"
+              />
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity"
+              >
+                <div
+                  class="w-0.5 h-4 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full"
+                ></div>
+              </div>
+            </div>
+            <div
+              *ngIf="
+                loginForm.get('email')?.invalid &&
+                loginForm.get('email')?.touched
+              "
+              class="text-[#ff6b69] dark:text-[#ff8785] text-xs mt-1.5 flex items-center"
+            >
+              <i class="fas fa-exclamation-circle mr-1"></i>
+              Email is required
+            </div>
           </div>
-        </div>
 
-        <!-- Password -->
-        <div>
-          <label for="password" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            required
-            class="w-full px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-primary-light dark:focus:border-primary-dark focus:ring-1 focus:ring-primary-light dark:focus:ring-primary-dark transition-all"
-            placeholder="••••••••">
-          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-red-500 dark:text-red-400 text-xs mt-1">
-            Password is required
+          <!-- Password -->
+          <div class="group">
+            <label
+              for="password"
+              class="flex items-center text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2"
+            >
+              <i class="fas fa-lock mr-1.5 text-xs"></i>
+              Password
+            </label>
+            <div class="relative">
+              <input
+                id="password"
+                type="password"
+                formControlName="password"
+                required
+                class="w-full px-4 py-2.5 text-sm rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+                placeholder="••••••••"
+              />
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity"
+              >
+                <div
+                  class="w-0.5 h-4 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full"
+                ></div>
+              </div>
+            </div>
+            <div
+              *ngIf="
+                loginForm.get('password')?.invalid &&
+                loginForm.get('password')?.touched
+              "
+              class="text-[#ff6b69] dark:text-[#ff8785] text-xs mt-1.5 flex items-center"
+            >
+              <i class="fas fa-exclamation-circle mr-1"></i>
+              Password is required
+            </div>
           </div>
-        </div>
 
-        <!-- Error Message -->
-        <div *ngIf="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 p-2 rounded text-xs">
-          <div class="flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
-            <span>{{ error }}</span>
+          <!-- Error Message -->
+          <div
+            *ngIf="error"
+            class="bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 border border-[#ff6b69] dark:border-[#ff6b69]/30 rounded-lg p-3 backdrop-blur-sm"
+          >
+            <div class="flex items-start">
+              <div
+                class="text-[#ff6b69] dark:text-[#ff8785] mr-2 text-base relative"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#ff6b69]/20 dark:bg-[#ff8785]/20 blur-xl rounded-full transform scale-150 -z-10"
+                ></div>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-[#ff6b69] dark:text-[#ff8785]">
+                  {{ error }}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <!-- Success Message -->
-        <div *ngIf="message" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 p-2 rounded text-xs">
-          {{ message }}
-        </div>
-
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          class="w-full bg-primary-light dark:bg-primary-dark text-white font-medium py-2 px-3 text-sm rounded transition-all focus:outline-none focus:ring-1 focus:ring-primary-light dark:focus:ring-primary-dark focus:ring-offset-1 hover:bg-opacity-90"
-          [disabled]="loginForm.invalid || isLoading">
-          <span *ngIf="!isLoading">Sign In</span>
-          <span *ngIf="isLoading" class="flex items-center justify-center">
-            <svg class="animate-spin mr-1.5 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Signing in...
-          </span>
-        </button>
-
-        <!-- Footer Links -->
-        <div class="text-center text-xs text-gray-500 dark:text-gray-400 space-y-1 pt-2">
-          <div>
-            Forgot your password?
-            <a routerLink="/forgot-password" class="text-primary-light dark:text-primary-dark hover:underline">
-              Reset it
-            </a>
+          <!-- Success Message -->
+          <div
+            *ngIf="message"
+            class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/5 border border-[#4f5fad] dark:border-[#6d78c9]/30 rounded-lg p-3 backdrop-blur-sm"
+          >
+            <div class="flex items-start">
+              <div
+                class="text-[#4f5fad] dark:text-[#6d78c9] mr-2 text-base relative"
+              >
+                <i class="fas fa-check-circle"></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 blur-xl rounded-full transform scale-150 -z-10"
+                ></div>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-[#4f5fad] dark:text-[#6d78c9]">
+                  {{ message }}
+                </p>
+              </div>
+            </div>
           </div>
-          <div>
-            Don't have an account?
-            <a routerLink="/signup" class="text-primary-light dark:text-primary-dark hover:underline">
-              Sign up
-            </a>
-          </div>
-        </div>
 
-      </form>
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="w-full relative overflow-hidden group mt-6"
+            [disabled]="loginForm.invalid || isLoading"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-lg transition-transform duration-300 group-hover:scale-105 disabled:opacity-50"
+            ></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-lg opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300 disabled:opacity-0"
+            ></div>
+            <span
+              class="relative flex items-center justify-center text-white font-medium py-2.5 px-4 rounded-lg transition-all z-10"
+            >
+              <span *ngIf="!isLoading" class="flex items-center">
+                <i class="fas fa-sign-in-alt mr-2"></i>
+                Sign In
+              </span>
+              <span *ngIf="isLoading" class="flex items-center justify-center">
+                <svg
+                  class="animate-spin mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Signing in...
+              </span>
+            </span>
+          </button>
+
+          <!-- Footer Links -->
+          <div
+            class="text-center text-sm text-[#6d6870] dark:text-[#a0a0a0] space-y-2 pt-4"
+          >
+            <div>
+              Forgot your password?
+              <a
+                routerLink="/forgot-password"
+                class="text-[#4f5fad] dark:text-[#6d78c9] hover:text-[#3d4a85] dark:hover:text-[#4f5fad] transition-colors font-medium"
+              >
+                Reset it
+              </a>
+            </div>
+            <div>
+              Don't have an account?
+              <a
+                routerLink="/signup"
+                class="text-[#4f5fad] dark:text-[#6d78c9] hover:text-[#3d4a85] dark:hover:text-[#4f5fad] transition-colors font-medium"
+              >
+                Sign up
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>

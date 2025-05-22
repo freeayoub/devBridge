@@ -1,0 +1,219 @@
+/* Styles magiques pour le chat */
+
+/* Animations */
+@keyframes borderFlow {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+@keyframes ambientGlow {
+  0% { opacity: 0.3; transform: scale(0.95); }
+  100% { opacity: 0.7; transform: scale(1.05); }
+}
+
+@keyframes rotateHalo {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes flameBorder {
+  0% {
+    filter: brightness(1) blur(0px);
+    transform: scaleY(0.95);
+  }
+  50% {
+    filter: brightness(1.2) blur(1px);
+    transform: scaleY(1.05);
+  }
+  100% {
+    filter: brightness(1) blur(0px);
+    transform: scaleY(0.95);
+  }
+}
+
+@keyframes sparkle {
+  0% { opacity: 0; transform: translateX(0); }
+  25% { opacity: 0.7; transform: translateX(1px); }
+  50% { opacity: 0; transform: translateX(0); }
+  75% { opacity: 0.5; transform: translateX(2px); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+/* Conteneur d'entrée avec effet de portail magique */
+.magic-input-container {
+  padding: 8px 12px;
+  background-color: rgba(18, 18, 18, 0.7);
+  min-height: 60px;
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+  border-top: 1px solid rgba(0, 247, 255, 0.1);
+}
+
+/* Effet de bordure magique */
+.magic-input-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 247, 255, 0.2) 20%, 
+    rgba(0, 247, 255, 0.8) 50%, 
+    rgba(0, 247, 255, 0.2) 80%, 
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: borderFlow 3s infinite linear;
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.7);
+  z-index: 1;
+}
+
+/* Effet de lueur ambiante */
+.magic-input-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center, 
+    rgba(0, 247, 255, 0.05) 0%, 
+    transparent 70%
+  );
+  opacity: 0;
+  animation: ambientGlow 4s infinite alternate;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Champ de saisie avec effet magique */
+.magic-input-field {
+  flex: 1;
+  font-size: 0.9rem;
+  padding: 10px 16px;
+  height: 44px;
+  border-radius: 22px;
+  border: 1px solid rgba(0, 247, 255, 0.2);
+  background-color: rgba(0, 247, 255, 0.05);
+  color: white;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  box-shadow: inset 0 0 10px rgba(0, 247, 255, 0.1);
+}
+
+.magic-input-field:focus {
+  border-color: transparent;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(0, 247, 255, 0.5), 
+              0 0 15px rgba(0, 247, 255, 0.5),
+              inset 0 0 10px rgba(0, 247, 255, 0.2);
+  background-color: rgba(0, 247, 255, 0.08);
+}
+
+/* Bouton d'envoi avec effet de portail magique */
+.magic-send-button {
+  position: relative;
+  background: linear-gradient(135deg, #00f7ff, #0066ff);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 10px rgba(0, 247, 255, 0.5),
+              0 0 20px rgba(0, 247, 255, 0.2),
+              inset 0 0 5px rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* Effet de halo lumineux */
+.magic-send-button::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(0, 247, 255, 0.8) 25%,
+    rgba(131, 56, 236, 0.8) 50%,
+    rgba(0, 247, 255, 0.8) 75%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: rotateHalo 3s linear infinite;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.magic-send-button:hover {
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.7),
+              0 0 30px rgba(0, 247, 255, 0.4),
+              inset 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.magic-send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Notification non lue avec effet de flamme */
+.magic-notification-unread {
+  position: relative;
+  overflow: hidden;
+  border-left: 5px solid transparent;
+  background-color: rgba(0, 247, 255, 0.05);
+}
+
+/* Effet de flamme animée */
+.magic-notification-unread::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(to bottom, #00f7ff, #0066ff, #00f7ff);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.8), 0 0 30px rgba(0, 102, 255, 0.4);
+  animation: flameBorder 3s ease-in-out infinite;
+  z-index: 1;
+}
+
+/* Effet d'étincelles */
+.magic-notification-unread::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 30% 20%, rgba(0, 247, 255, 0.9) 0%, rgba(0, 247, 255, 0) 3%),
+    radial-gradient(circle at 40% 40%, rgba(0, 247, 255, 0.9) 0%, rgba(0, 247, 255, 0) 4%),
+    radial-gradient(circle at 20% 60%, rgba(0, 247, 255, 0.9) 0%, rgba(0, 247, 255, 0) 3%),
+    radial-gradient(circle at 40% 80%, rgba(0, 247, 255, 0.9) 0%, rgba(0, 247, 255, 0) 4%),
+    radial-gradient(circle at 10% 30%, rgba(0, 247, 255, 0.9) 0%, rgba(0, 247, 255, 0) 3%);
+  opacity: 0;
+  z-index: 2;
+  animation: sparkle 4s ease-in-out infinite;
+}
+
+.magic-notification-unread:hover::before {
+  animation-duration: 1.5s;
+  box-shadow: 0 0 20px rgba(0, 247, 255, 0.9), 0 0 40px rgba(0, 102, 255, 0.5);
+}

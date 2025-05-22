@@ -1,31 +1,72 @@
 /* Styles futuristes pour la liste des messages */
 
-/* Page des messages */
-.futuristic-messages-page {
+/* Page des messages - Mode clair */
+:host-context(:not(.dark)) .futuristic-messages-page {
+  background-color: #f0f4f8;
+  color: #6d6870;
+}
+
+/* Page des messages - Mode sombre */
+:host-context(.dark) .futuristic-messages-page {
   background-color: var(--dark-bg);
   color: var(--text-light);
 }
 
-/* Barre latérale */
-.futuristic-sidebar {
+/* Barre latérale - Mode clair */
+:host-context(:not(.dark)) .futuristic-sidebar {
+  background-color: #ffffff;
+  border-color: rgba(79, 95, 173, 0.2);
+}
+
+/* Barre latérale - Mode sombre */
+:host-context(.dark) .futuristic-sidebar {
   background-color: var(--medium-bg);
   border-color: rgba(0, 247, 255, 0.2);
 }
 
-/* En-tête */
-.futuristic-header {
+/* En-tête - Mode clair */
+:host-context(:not(.dark)) .futuristic-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid rgba(79, 95, 173, 0.2);
+  padding: 15px;
+}
+
+/* En-tête - Mode sombre */
+:host-context(.dark) .futuristic-header {
   background-color: var(--medium-bg);
   border-bottom: 1px solid rgba(0, 247, 255, 0.2);
   padding: 15px;
 }
 
-.futuristic-title {
+/* Titre - Mode clair */
+:host-context(:not(.dark)) .futuristic-title {
+  color: #4f5fad;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Titre - Mode sombre */
+:host-context(.dark) .futuristic-title {
   color: var(--text-light);
   font-weight: 600;
   letter-spacing: 0.5px;
 }
 
-.futuristic-badge {
+/* Badge - Mode clair */
+:host-context(:not(.dark)) .futuristic-badge {
+  background: linear-gradient(135deg, #4f5fad, #7826b5);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  min-width: 1.5rem;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(79, 95, 173, 0.4);
+}
+
+/* Badge - Mode sombre */
+:host-context(.dark) .futuristic-badge {
   background: var(--primary-gradient);
   color: white;
   font-size: 0.75rem;
@@ -37,49 +78,137 @@
   box-shadow: var(--glow-effect);
 }
 
-/* Liste des conversations */
-.futuristic-conversations-list {
+/* Liste des conversations - Mode clair */
+:host-context(:not(.dark)) .futuristic-conversations-list {
+  scrollbar-width: thin;
+  scrollbar-color: #4f5fad #f0f4f8;
+}
+
+:host-context(:not(.dark)) .futuristic-conversations-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+:host-context(:not(.dark))
+  .futuristic-conversations-list::-webkit-scrollbar-track {
+  background: #f0f4f8;
+}
+
+:host-context(:not(.dark))
+  .futuristic-conversations-list::-webkit-scrollbar-thumb {
+  background-color: #4f5fad;
+  border-radius: 10px;
+}
+
+/* Liste des conversations - Mode sombre */
+:host-context(.dark) .futuristic-conversations-list {
   scrollbar-width: thin;
   scrollbar-color: var(--accent-color) var(--medium-bg);
 }
 
-.futuristic-conversations-list::-webkit-scrollbar {
+:host-context(.dark) .futuristic-conversations-list::-webkit-scrollbar {
   width: 5px;
 }
 
-.futuristic-conversations-list::-webkit-scrollbar-track {
+:host-context(.dark) .futuristic-conversations-list::-webkit-scrollbar-track {
   background: var(--medium-bg);
 }
 
-.futuristic-conversations-list::-webkit-scrollbar-thumb {
+:host-context(.dark) .futuristic-conversations-list::-webkit-scrollbar-thumb {
   background-color: var(--accent-color);
   border-radius: 10px;
 }
 
-/* État de chargement */
-.futuristic-loading-circle {
+/* État de chargement - Mode clair */
+:host-context(:not(.dark)) .futuristic-loading-circle {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 3px solid rgba(0, 247, 255, 0.1);
-  border-top-color: var(--accent-color);
-  animation: spin 1.5s linear infinite;
+  border: 3px solid rgba(79, 95, 173, 0.1);
+  border-top-color: #4f5fad;
+  animation: spin-light 1.5s linear infinite;
 }
 
-@keyframes spin {
+@keyframes spin-light {
   to {
     transform: rotate(360deg);
   }
 }
 
-.futuristic-loading-text {
+:host-context(:not(.dark)) .futuristic-loading-text {
+  color: #4f5fad;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+}
+
+/* État de chargement - Mode sombre */
+:host-context(.dark) .futuristic-loading-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid rgba(0, 247, 255, 0.1);
+  border-top-color: var(--accent-color);
+  animation: spin-dark 1.5s linear infinite;
+}
+
+@keyframes spin-dark {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+:host-context(.dark) .futuristic-loading-text {
   color: var(--accent-color);
   font-size: 0.875rem;
   letter-spacing: 0.5px;
 }
 
-/* État d'erreur */
-.futuristic-error-container {
+/* État d'erreur - Mode clair */
+:host-context(:not(.dark)) .futuristic-error-container {
+  margin: 15px;
+  padding: 15px;
+  background: rgba(255, 107, 105, 0.1);
+  border-left: 3px solid #ff6b69;
+  border-radius: 5px;
+  display: flex;
+  align-items: flex-start;
+}
+
+:host-context(:not(.dark)) .futuristic-error-icon {
+  color: #ff6b69;
+  font-size: 1.25rem;
+  margin-right: 15px;
+}
+
+:host-context(:not(.dark)) .futuristic-error-title {
+  color: #ff6b69;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+:host-context(:not(.dark)) .futuristic-error-message {
+  color: #6d6870;
+  font-size: 0.8125rem;
+  margin-bottom: 10px;
+}
+
+:host-context(:not(.dark)) .futuristic-retry-button {
+  background: rgba(255, 107, 105, 0.2);
+  color: #ff6b69;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+:host-context(:not(.dark)) .futuristic-retry-button:hover {
+  background: rgba(255, 107, 105, 0.3);
+}
+
+/* État d'erreur - Mode sombre */
+:host-context(.dark) .futuristic-error-container {
   margin: 15px;
   padding: 15px;
   background: rgba(255, 0, 0, 0.1);
@@ -89,26 +218,26 @@
   align-items: flex-start;
 }
 
-.futuristic-error-icon {
+:host-context(.dark) .futuristic-error-icon {
   color: #ff3b30;
   font-size: 1.25rem;
   margin-right: 15px;
 }
 
-.futuristic-error-title {
+:host-context(.dark) .futuristic-error-title {
   color: #ff3b30;
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 5px;
 }
 
-.futuristic-error-message {
+:host-context(.dark) .futuristic-error-message {
   color: var(--text-dim);
   font-size: 0.8125rem;
   margin-bottom: 10px;
 }
 
-.futuristic-retry-button {
+:host-context(.dark) .futuristic-retry-button {
   background: rgba(255, 0, 0, 0.2);
   color: #ff3b30;
   border: none;
@@ -119,37 +248,82 @@
   transition: all var(--transition-fast);
 }
 
-.futuristic-retry-button:hover {
+:host-context(.dark) .futuristic-retry-button:hover {
   background: rgba(255, 0, 0, 0.3);
 }
 
-/* État vide */
-.futuristic-empty-state,
-.futuristic-no-results {
+/* État vide - Mode clair */
+:host-context(:not(.dark)) .futuristic-empty-state,
+:host-context(:not(.dark)) .futuristic-no-results {
+  color: #6d6870;
+}
+
+:host-context(:not(.dark)) .futuristic-empty-icon {
+  font-size: 2.5rem;
+  color: #4f5fad;
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+
+:host-context(:not(.dark)) .futuristic-empty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #4f5fad;
+  margin-bottom: 5px;
+}
+
+:host-context(:not(.dark)) .futuristic-empty-text {
+  color: #6d6870;
+  font-size: 0.875rem;
+  margin-bottom: 20px;
+}
+
+:host-context(:not(.dark)) .futuristic-start-button {
+  background: linear-gradient(135deg, #4f5fad, #7826b5);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+:host-context(:not(.dark)) .futuristic-start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(79, 95, 173, 0.4);
+}
+
+/* État vide - Mode sombre */
+:host-context(.dark) .futuristic-empty-state,
+:host-context(.dark) .futuristic-no-results {
   color: var(--text-dim);
 }
 
-.futuristic-empty-icon {
+:host-context(.dark) .futuristic-empty-icon {
   font-size: 2.5rem;
   color: var(--accent-color);
   margin-bottom: 20px;
   opacity: 0.7;
 }
 
-.futuristic-empty-title {
+:host-context(.dark) .futuristic-empty-title {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--text-light);
   margin-bottom: 5px;
 }
 
-.futuristic-empty-text {
+:host-context(.dark) .futuristic-empty-text {
   color: var(--text-dim);
   font-size: 0.875rem;
   margin-bottom: 20px;
 }
 
-.futuristic-start-button {
+:host-context(.dark) .futuristic-start-button {
   background: var(--primary-gradient);
   color: white;
   border: none;
@@ -163,19 +337,74 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-.futuristic-start-button:hover {
+:host-context(.dark) .futuristic-start-button:hover {
   transform: translateY(-2px);
   box-shadow: var(--glow-effect);
 }
 
-/* Liste des conversations */
-.futuristic-conversations {
+/* Liste des conversations - Mode clair */
+:host-context(:not(.dark)) .futuristic-conversations {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.futuristic-conversation-item {
+:host-context(:not(.dark)) .futuristic-conversation-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  border-bottom: 1px solid rgba(79, 95, 173, 0.05);
+}
+
+:host-context(:not(.dark)) .futuristic-conversation-item:hover {
+  background-color: rgba(79, 95, 173, 0.05);
+}
+
+:host-context(:not(.dark)) .futuristic-conversation-selected {
+  background-color: rgba(79, 95, 173, 0.1) !important;
+  border-left: 3px solid #4f5fad;
+}
+
+:host-context(:not(.dark)) .futuristic-avatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 12px;
+  flex-shrink: 0;
+  border: 2px solid rgba(79, 95, 173, 0.3);
+  box-shadow: 0 0 15px rgba(79, 95, 173, 0.2);
+}
+
+:host-context(:not(.dark)) .futuristic-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+:host-context(:not(.dark)) .futuristic-online-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4caf50;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.8);
+}
+
+/* Liste des conversations - Mode sombre */
+:host-context(.dark) .futuristic-conversations {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+:host-context(.dark) .futuristic-conversation-item {
   display: flex;
   align-items: center;
   padding: 12px 15px;
@@ -184,16 +413,16 @@
   border-bottom: 1px solid rgba(0, 247, 255, 0.05);
 }
 
-.futuristic-conversation-item:hover {
+:host-context(.dark) .futuristic-conversation-item:hover {
   background-color: rgba(0, 247, 255, 0.05);
 }
 
-.futuristic-conversation-selected {
+:host-context(.dark) .futuristic-conversation-selected {
   background-color: rgba(0, 247, 255, 0.1) !important;
   border-left: 3px solid var(--accent-color);
 }
 
-.futuristic-avatar {
+:host-context(.dark) .futuristic-avatar {
   position: relative;
   width: 48px;
   height: 48px;
@@ -205,13 +434,13 @@
   box-shadow: var(--glow-effect);
 }
 
-.futuristic-avatar img {
+:host-context(.dark) .futuristic-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.futuristic-online-indicator {
+:host-context(.dark) .futuristic-online-indicator {
   position: absolute;
   bottom: 2px;
   right: 2px;
@@ -223,19 +452,85 @@
   box-shadow: 0 0 5px rgba(0, 255, 157, 0.8);
 }
 
-.futuristic-conversation-details {
+/* Détails des conversations - Mode clair */
+:host-context(:not(.dark)) .futuristic-conversation-details {
   flex: 1;
   min-width: 0;
 }
 
-.futuristic-conversation-header {
+:host-context(:not(.dark)) .futuristic-conversation-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 4px;
 }
 
-.futuristic-conversation-name {
+:host-context(:not(.dark)) .futuristic-conversation-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #4f5fad;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:host-context(:not(.dark)) .futuristic-conversation-time {
+  font-size: 0.75rem;
+  color: #6d6870;
+  white-space: nowrap;
+  margin-left: 8px;
+}
+
+:host-context(:not(.dark)) .futuristic-conversation-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+:host-context(:not(.dark)) .futuristic-conversation-message {
+  font-size: 0.8125rem;
+  color: #6d6870;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:host-context(:not(.dark)) .futuristic-you-prefix {
+  color: #4f5fad;
+  font-weight: 500;
+}
+
+:host-context(:not(.dark)) .futuristic-unread-badge {
+  background: linear-gradient(135deg, #4f5fad, #7826b5);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  box-shadow: 0 0 15px rgba(79, 95, 173, 0.4);
+}
+
+/* Détails des conversations - Mode sombre */
+:host-context(.dark) .futuristic-conversation-details {
+  flex: 1;
+  min-width: 0;
+}
+
+:host-context(.dark) .futuristic-conversation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+:host-context(.dark) .futuristic-conversation-name {
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-light);
@@ -245,20 +540,20 @@
   text-overflow: ellipsis;
 }
 
-.futuristic-conversation-time {
+:host-context(.dark) .futuristic-conversation-time {
   font-size: 0.75rem;
   color: var(--text-dim);
   white-space: nowrap;
   margin-left: 8px;
 }
 
-.futuristic-conversation-preview {
+:host-context(.dark) .futuristic-conversation-preview {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.futuristic-conversation-message {
+:host-context(.dark) .futuristic-conversation-message {
   font-size: 0.8125rem;
   color: var(--text-dim);
   margin: 0;
@@ -267,12 +562,12 @@
   text-overflow: ellipsis;
 }
 
-.futuristic-you-prefix {
+:host-context(.dark) .futuristic-you-prefix {
   color: rgba(0, 247, 255, 0.7);
   font-weight: 500;
 }
 
-.futuristic-unread-badge {
+:host-context(.dark) .futuristic-unread-badge {
   background: var(--accent-color);
   color: var(--dark-bg);
   font-size: 0.75rem;
@@ -287,13 +582,36 @@
   box-shadow: var(--glow-effect);
 }
 
-/* Zone de contenu principal */
-.futuristic-main-area {
+/* Zone de contenu principal - Mode clair */
+:host-context(:not(.dark)) .futuristic-main-area {
+  background-color: #f0f4f8;
+  position: relative;
+}
+
+:host-context(:not(.dark)) .futuristic-main-area::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+      rgba(79, 95, 173, 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(79, 95, 173, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Zone de contenu principal - Mode sombre */
+:host-context(.dark) .futuristic-main-area {
   background-color: var(--dark-bg);
   position: relative;
 }
 
-.futuristic-main-area::before {
+:host-context(.dark) .futuristic-main-area::before {
   content: "";
   position: absolute;
   top: 0;

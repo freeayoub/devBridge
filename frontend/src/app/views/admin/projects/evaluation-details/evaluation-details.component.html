@@ -1,0 +1,149 @@
+<div class="min-h-screen bg-[#edf1f4] p-4 md:p-6">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header avec bouton retour -->
+    <div class="flex items-center mb-6">
+      <button (click)="retourListe()" class="mr-4 p-2 rounded-full hover:bg-gray-200 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+      </button>
+      <h1 class="text-2xl md:text-3xl font-bold text-[#4f5fad]">Détails de l'évaluation</h1>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="flex justify-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#4f5fad]"></div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      {{ error }}
+    </div>
+
+    <!-- Contenu principal -->
+    <div *ngIf="!isLoading && !error && rendu" class="bg-white rounded-xl shadow-md overflow-hidden">
+      <!-- Informations sur le projet et l'étudiant -->
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">{{ rendu.projet?.titre }}</h2>
+            <p class="text-sm text-gray-500">Soumis le {{ rendu.dateSoumission | date:'dd/MM/yyyy à HH:mm' }}</p>
+          </div>
+          <div class="mt-2 md:mt-0">
+            <span [ngClass]="getScoreClass()" class="text-2xl font-bold">
+              {{ getScoreTotal() }}/{{ getScoreMaximum() }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="flex items-center mb-4">
+          <div class="h-10 w-10 rounded-full bg-[#6C63FF] flex items-center justify-center text-white font-bold">
+            {{ rendu.etudiant?.nom?.charAt(0) }}{{ rendu.etudiant?.prenom?.charAt(0) }}
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-900">{{ rendu.etudiant?.nom }} {{ rendu.etudiant?.prenom }}</p>
+            <p class="text-xs text-gray-500">{{ rendu.etudiant?.email }}</p>
+          </div>
+          <div class="ml-auto">
+            <span class="bg-[#f0f4f8] px-3 py-1 rounded-full text-xs font-medium text-[#4f5fad]">
+              {{ rendu.etudiant?.groupe || 'Groupe non spécifié' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Détails de l'évaluation -->
+      <div class="p-6">
+        <h3 class="text-lg font-semibold mb-4">Détails des scores</h3>
+        
+        <!-- Graphique des scores -->
+        <div class="mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngIf="rendu.evaluation?.scores" class="bg-gray-50 p-4 rounded-lg">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-700">Structure du code</span>
+                <span class="text-sm font-bold">{{ rendu.evaluation.scores.structure }}/5</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-blue-600 h-2.5 rounded-full" [style.width.%]="(rendu.evaluation.scores.structure / 5) * 100"></div>
+              </div>
+            </div>
+            
+            <div *ngIf="rendu.evaluation?.scores" class="bg-gray-50 p-4 rounded-lg">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-700">Bonnes pratiques</span>
+                <span class="text-sm font-bold">{{ rendu.evaluation.scores.pratiques }}/5</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-green-600 h-2.5 rounded-full" [style.width.%]="(rendu.evaluation.scores.pratiques / 5) * 100"></div>
+              </div>
+            </div>
+            
+            <div *ngIf="rendu.evaluation?.scores" class="bg-gray-50 p-4 rounded-lg">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-700">Fonctionnalités</span>
+                <span class="text-sm font-bold">{{ rendu.evaluation.scores.fonctionnalite }}/5</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-purple-600 h-2.5 rounded-full" [style.width.%]="(rendu.evaluation.scores.fonctionnalite / 5) * 100"></div>
+              </div>
+            </div>
+            
+            <div *ngIf="rendu.evaluation?.scores" class="bg-gray-50 p-4 rounded-lg">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-700">Originalité</span>
+                <span class="text-sm font-bold">{{ rendu.evaluation.scores.originalite }}/5</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-yellow-600 h-2.5 rounded-full" [style.width.%]="(rendu.evaluation.scores.originalite / 5) * 100"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Score total -->
+          <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-base font-medium text-gray-700">Score total</span>
+              <span class="text-base font-bold" [ngClass]="getScoreClass()">{{ getScoreTotal() }}/{{ getScoreMaximum() }}</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+              <div [ngClass]="{'bg-green-600': getScorePercentage() >= 80, 'bg-blue-600': getScorePercentage() >= 60 && getScorePercentage() < 80, 'bg-yellow-600': getScorePercentage() >= 40 && getScorePercentage() < 60, 'bg-red-600': getScorePercentage() < 40}" 
+                   class="h-3 rounded-full" 
+                   [style.width.%]="getScorePercentage()"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Commentaires -->
+        <div *ngIf="rendu.evaluation?.commentaires" class="mb-6">
+          <h3 class="text-lg font-semibold mb-2">Commentaires</h3>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <p class="text-gray-700 whitespace-pre-line">{{ rendu.evaluation.commentaires }}</p>
+          </div>
+        </div>
+        
+        <!-- Fichiers soumis - MODIFICATION IMPORTANTE -->
+        <div *ngIf="rendu.fichiers && rendu.fichiers.length > 0" class="mb-6">
+          <h3 class="text-lg font-semibold mb-2">Fichiers soumis</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <a *ngFor="let fichier of rendu.fichiers" 
+               [href]="getFileUrl(fichier)" 
+               [download]="getFileName(fichier)"
+               target="_blank"
+               class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span class="text-sm text-gray-700 truncate">{{ getFileName(fichier) }}</span>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Date d'évaluation -->
+        <div *ngIf="rendu.evaluation?.dateEvaluation" class="text-sm text-gray-500 text-right">
+          Évalué le {{ rendu.evaluation.dateEvaluation | date:'dd/MM/yyyy à HH:mm' }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

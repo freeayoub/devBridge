@@ -3,8 +3,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthadminService } from 'src/app/services/authadmin.service';
 import { AuthuserService } from 'src/app/services/authuser.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
+import { ThemeService } from '@app/services/theme.service';
 @Component({
   selector: 'app-auth-admin-layout',
   templateUrl: './auth-admin-layout.component.html',
@@ -15,15 +16,18 @@ export class AuthAdminLayoutComponent implements OnInit, OnDestroy {
   messageFromRedirect: string = '';
   private destroy$ = new Subject<void>();
   private returnUrl: string | undefined;
+  isDarkMode$: Observable<boolean>;
 
   constructor(
     private authAdminService: AuthadminService,
     public authUserService: AuthuserService,
     public authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private themeService: ThemeService
   ) {
     this.checkExistingAuth();
+    this.isDarkMode$ = this.themeService.darkMode$;
   }
 
   ngOnInit(): void {
@@ -88,6 +92,4 @@ export class AuthAdminLayoutComponent implements OnInit, OnDestroy {
     // Effacer le message d'erreur après 5 secondes
     setTimeout(() => (this.messageAuthError = ''), 5000);
   }
-  
 }
-

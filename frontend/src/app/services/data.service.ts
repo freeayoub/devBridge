@@ -5,7 +5,14 @@ import {
   HttpParams,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, of, tap, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  catchError,
+  of,
+  tap,
+  throwError,
+} from 'rxjs';
 import { User } from '../models/user.model';
 import { environment } from 'src/environments/environment';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -17,18 +24,23 @@ import { AuthuserService } from './authuser.service';
 export class DataService {
   private usersCache$ = new BehaviorSubject<User[]>([]);
   private lastFetchTime: number = 0;
-  private readonly CACHE_DURATION = 300000; 
+  private readonly CACHE_DURATION = 300000;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private userAddedSubject = new BehaviorSubject<void | null>(null);
   public userAdded$ = this.userAddedSubject.asObservable();
-  constructor(private http: HttpClient, private jwtHelper: JwtHelperService, private authService: AuthuserService) {
+  public currentUser$ = this.currentUserSubject.asObservable();
+  constructor(
+    private http: HttpClient,
+    private jwtHelper: JwtHelperService,
+    private authService: AuthuserService
+  ) {
     this.initializeCurrentUser();
   }
-   fetchCurrentUser(): Observable<User> {
-  return this.getProfile().pipe(
-    tap(user => this.currentUserSubject.next(user))
-  );
-}
+  fetchCurrentUser(): Observable<User> {
+    return this.getProfile().pipe(
+      tap((user) => this.currentUserSubject.next(user))
+    );
+  }
   private getAdminHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     if (!token || this.jwtHelper.isTokenExpired(token)) {
@@ -40,6 +52,7 @@ export class DataService {
       'Content-Type': 'application/json',
     });
   }
+
   private getUserHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     if (!token || this.jwtHelper.isTokenExpired(token)) {
@@ -57,11 +70,11 @@ export class DataService {
   }
   syncCurrentUser(): Observable<User> {
     return this.getProfile().pipe(
-      tap(user => {
+      tap((user) => {
         this.currentUserSubject.next(user);
         this.authService.setCurrentUser(user);
       }),
-      catchError(error => {
+      catchError((error) => {
         // If fetch fails, try to get from auth service
         const authUser = this.authService.getCurrentUser();
         if (authUser) {
@@ -78,9 +91,7 @@ export class DataService {
         headers: this.getUserHeaders(),
         params: this.getCommonParams(),
       })
-      .pipe(
-        catchError(this.handleError)
-      );
+      .pipe(catchError(this.handleError));
   }
   private initializeCurrentUser(): void {
     const token = localStorage.getItem('token');
@@ -88,17 +99,44 @@ export class DataService {
       this.syncCurrentUser().subscribe({
         error: () => {
           const decodedToken = this.jwtHelper.decodeToken(token);
+
+          // Déterminer l'image de profil à utiliser
+          let profileImage = 'assets/images/default-profile.png';
+
+          // Vérifier d'abord profileImage
+          if (
+            decodedToken.profileImage &&
+            decodedToken.profileImage !== 'null' &&
+            decodedToken.profileImage !== 'undefined' &&
+            decodedToken.profileImage.trim() !== ''
+          ) {
+            profileImage = decodedToken.profileImage;
+          }
+          // Ensuite vérifier image si profileImage n'est pas valide
+          else if (
+            decodedToken.image &&
+            decodedToken.image !== 'null' &&
+            decodedToken.image !== 'undefined' &&
+            decodedToken.image.trim() !== ''
+          ) {
+            profileImage = decodedToken.image;
+          }
+
+          console.log('DataService - Using profile image:', profileImage);
+
           const fallbackUser = {
             _id: decodedToken.id,
             username: decodedToken.username,
             email: decodedToken.email,
             role: decodedToken.role,
-            image: decodedToken.image || 'assets/images/default-profile.png',
+            image: profileImage,
+            profileImage: profileImage,
             isActive: true,
           };
+
           this.currentUserSubject.next(fallbackUser);
           this.authService.setCurrentUser(fallbackUser);
-        }
+        },
       });
     }
   }
@@ -127,41 +165,48 @@ export class DataService {
         catchError(this.handleError)
       );
   }
-changePassword(currentPassword: string, newPassword: string): Observable<any> {
-  const userId = this.currentUserValue?._id;
-  if (!userId) {
-    return throwError(() => new Error('User not logged in'));
-  }
-  const passwordData = {
-    currentPassword,
-    newPassword
-  };
-  return this.http.put<any>(
-    `${environment.urlBackend}users/updateself/${userId}`,
-    passwordData,
-    {
-      headers: this.getUserHeaders(),
-      params: this.getCommonParams()
+  changePassword(
+    currentPassword: string,
+    newPassword: string
+  ): Observable<any> {
+    const userId = this.currentUserValue?._id;
+    if (!userId) {
+      return throwError(() => new Error('User not logged in'));
     }
-  ).pipe(
-    tap((response) => {
-      if (response.token) {
-        localStorage.setItem('token', response.token);
-        const decodedToken = this.jwtHelper.decodeToken(response.token);
-        this.updateCurrentUser(decodedToken);
-      }
-    }),
-    catchError((error: HttpErrorResponse) => {
-      if (error.status === 400) {
-        if (error.error?.errors?.general) {
-          return throwError(() => new Error(error.error.errors.general));
+    const passwordData = {
+      currentPassword,
+      newPassword,
+    };
+    return this.http
+      .put<any>(
+        `${environment.urlBackend}users/updateself/${userId}`,
+        passwordData,
+        {
+          headers: this.getUserHeaders(),
+          params: this.getCommonParams(),
         }
-        return throwError(() => new Error(error.error?.message || 'Validation failed'));
-      }
-      return throwError(() => new Error('Failed to change password'));
-    })
-  );
-}
+      )
+      .pipe(
+        tap((response) => {
+          if (response.token) {
+            localStorage.setItem('token', response.token);
+            const decodedToken = this.jwtHelper.decodeToken(response.token);
+            this.updateCurrentUser(decodedToken);
+          }
+        }),
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 400) {
+            if (error.error?.errors?.general) {
+              return throwError(() => new Error(error.error.errors.general));
+            }
+            return throwError(
+              () => new Error(error.error?.message || 'Validation failed')
+            );
+          }
+          return throwError(() => new Error('Failed to change password'));
+        })
+      );
+  }
   uploadProfileImage(
     file: File
   ): Observable<{ imageUrl: string; token?: string }> {
@@ -230,28 +275,31 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
     );
     this.usersCache$.next(updatedUsers);
   }
-   refreshUserCache(): void {
+  refreshUserCache(): void {
     this.lastFetchTime = 0;
     this.getAllUsers(true).subscribe();
   }
   getAllUsers(forceRefresh = false): Observable<User[]> {
     const now = Date.now();
-    const cacheValid = !forceRefresh && 
-                     this.usersCache$.value.length > 0 && 
-                     now - this.lastFetchTime <= this.CACHE_DURATION;
+    const cacheValid =
+      !forceRefresh &&
+      this.usersCache$.value.length > 0 &&
+      now - this.lastFetchTime <= this.CACHE_DURATION;
 
     if (cacheValid) {
       return this.usersCache$.asObservable();
     }
 
     this.lastFetchTime = now;
-    return this.http.get<User[]>(`${environment.urlBackend}users/getall`, {
-      headers: this.getAdminHeaders(),
-      params: this.getCommonParams()
-    }).pipe(
-      tap(users => this.usersCache$.next([...users])),
-      catchError(this.handleError)
-    );
+    return this.http
+      .get<User[]>(`${environment.urlBackend}users/getall`, {
+        headers: this.getAdminHeaders(),
+        params: this.getCommonParams(),
+      })
+      .pipe(
+        tap((users) => this.usersCache$.next([...users])),
+        catchError(this.handleError)
+      );
   }
   getOneUser(id: string): Observable<User> {
     return this.http
@@ -262,17 +310,19 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
       .pipe(catchError(this.handleError));
   }
   addUser(userData: User): Observable<User> {
-    return this.http.post<User>(`${environment.urlBackend}users/add`, userData, {
-      headers: this.getAdminHeaders(),
-      params: this.getCommonParams()
-    }).pipe(
-      tap(newUser => {
-        const currentUsers = this.usersCache$.value;
-        this.usersCache$.next([...currentUsers, newUser]);
-        this.userAddedSubject.next(); 
-      }),
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<User>(`${environment.urlBackend}users/add`, userData, {
+        headers: this.getAdminHeaders(),
+        params: this.getCommonParams(),
+      })
+      .pipe(
+        tap((newUser) => {
+          const currentUsers = this.usersCache$.value;
+          this.usersCache$.next([...currentUsers, newUser]);
+          this.userAddedSubject.next();
+        }),
+        catchError(this.handleError)
+      );
   }
 
   deleteUser(id: string): Observable<void> {
@@ -326,6 +376,32 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
         catchError(this.handleError)
       );
   }
+
+  updateUserRole(id: string, role: string): Observable<any> {
+    return this.http
+      .put<any>(
+        `${environment.urlBackend}admin/users/${id}/role`,
+        { role },
+        { headers: this.getAdminHeaders(), params: this.getCommonParams() }
+      )
+      .pipe(
+        tap((updatedUser) => this.updateUserInCache(updatedUser)),
+        catchError(this.handleError)
+      );
+  }
+
+  toggleUserActivation(id: string, isActive: boolean): Observable<any> {
+    return this.http
+      .put<any>(
+        `${environment.urlBackend}admin/users/${id}/activation`,
+        { isActive },
+        { headers: this.getAdminHeaders(), params: this.getCommonParams() }
+      )
+      .pipe(
+        tap((updatedUser) => this.updateUserInCache(updatedUser)),
+        catchError(this.handleError)
+      );
+  }
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Une erreur est survenue';
 
@@ -341,4 +417,3 @@ changePassword(currentPassword: string, newPassword: string): Observable<any> {
     return throwError(() => new Error(errorMessage));
   }
 }
-

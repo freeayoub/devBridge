@@ -265,38 +265,9 @@ const deleteReunion = async (req, res) => {
     });
   }
 };
-const getReunionsByPlanning = async (req, res) => {
-  try {
-    const { planningId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(planningId)) {
-      return res.status(400).json({
-        success: false,
-        message: 'ID de planning invalide'
-      });
-    }
-
-    const reunions = await Reunion.find({ planning: planningId })
-      .populate('participants', 'username email image')
-      .populate('planning', 'titre dateDebut dateFin')
-      .populate('createur', 'username email image')
-      .sort({ date: -1, heureDebut: 1 });
-
-    return res.status(200).json({
-      success: true,
-      count: reunions.length,
-      reunions
-    });
-
-  } catch (error) {
-    console.error("Erreur récupération réunions par planning:", error);
-    return res.status(500).json({
-      success: false,
-      message: 'Erreur serveur'
-    });
-  }
-};
-const getProchainesReunions = async (req, res) => {
+// Récupérer les réunions par ID utilisateur (créateur ou participant)
+const getReunionsByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -307,22 +278,16 @@ const getProchainesReunions = async (req, res) => {
       });
     }
 
-    const now = new Date();
-    const today = new Date(now.setHours(0, 0, 0, 0));
-
-    // Get meetings where user is creator or participant
     const reunions = await Reunion.find({
       $or: [
         { createur: userId },
         { participants: userId }
-      ],
-      date: { $gte: today }
+      ]
     })
     .populate('participants', 'username email image')
     .populate('planning', 'titre dateDebut dateFin')
     .populate('createur', 'username email image')
-    .sort({ date: 1, heureDebut: 1 }) // Sort by nearest first
-    .limit(10); // Limit to 10 upcoming meetings
+    .sort({ date: -1, heureDebut: 1 });
 
     return res.status(200).json({
       success: true,
@@ -331,19 +296,20 @@ const getProchainesReunions = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Erreur récupération prochaines réunions:", error);
+    console.error("Erreur récupération réunions par utilisateur:", error);
     return res.status(500).json({
       success: false,
       message: 'Erreur serveur'
     });
   }
 };
+
+
 module.exports = {
   createReunion,
   getAllReunions,
   getReunionById,
   updateReunion,
   deleteReunion,
-  getReunionsByPlanning,
-  getProchainesReunions 
+  getReunionsByUserId
 };

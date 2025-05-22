@@ -1,5 +1,48 @@
-<div class="flex flex-col h-full futuristic-users-container">
-  <!-- En-tête futuriste -->
+<div
+  class="flex flex-col h-full futuristic-users-container"
+  [class.dark]="isDarkMode$ | async"
+>
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <!-- Gradient orbs -->
+    <div
+      class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#00f7ff]/10 dark:to-transparent blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#00f7ff]/10 dark:to-transparent blur-3xl"
+    ></div>
+
+    <!-- Additional glow effects for dark mode -->
+    <div
+      class="absolute top-[40%] right-[30%] w-40 h-40 rounded-full bg-gradient-to-br from-transparent to-transparent dark:from-[#00f7ff]/5 dark:to-transparent blur-3xl opacity-0 dark:opacity-100"
+    ></div>
+    <div
+      class="absolute bottom-[60%] left-[25%] w-32 h-32 rounded-full bg-gradient-to-tl from-transparent to-transparent dark:from-[#00f7ff]/5 dark:to-transparent blur-3xl opacity-0 dark:opacity-100"
+    ></div>
+
+    <!-- Grid pattern for light mode -->
+    <div class="absolute inset-0 opacity-5 dark:opacity-0">
+      <div class="h-full grid grid-cols-12">
+        <div class="border-r border-[#4f5fad]"></div>
+        <div class="border-r border-[#4f5fad]"></div>
+        <div class="border-r border-[#4f5fad]"></div>
+        <div class="border-r border-[#4f5fad]"></div>
+        <div class="border-r border-[#4f5fad]"></div>
+        <div class="border-r border-[#4f5fad]"></div>
+        <div class="border-r border-[#4f5fad]"></div>
+        <div class="border-r border-[#4f5fad]"></div>
+        <div class="border-r border-[#4f5fad]"></div>
+        <div class="border-r border-[#4f5fad]"></div>
+        <div class="border-r border-[#4f5fad]"></div>
+      </div>
+    </div>
+
+    <!-- Horizontal scan line effect for dark mode -->
+    <div class="absolute inset-0 opacity-0 dark:opacity-100 overflow-hidden">
+      <div class="h-px w-full bg-[#00f7ff]/20 absolute animate-scan"></div>
+    </div>
+  </div>
+  <!-- En-tête -->
   <div class="futuristic-users-header">
     <div class="flex justify-between items-center mb-4">
       <h1 class="futuristic-title">Nouvelle Conversation</h1>
@@ -20,39 +63,41 @@
       </div>
     </div>
 
-    <!-- Recherche et filtres futuristes -->
+    <!-- Recherche et filtres -->
     <div class="space-y-3">
-      <!-- Recherche futuriste -->
+      <!-- Recherche -->
       <div class="relative">
         <input
           [ngModel]="searchQuery"
           (ngModelChange)="searchQuery = $event"
           type="text"
           placeholder="Rechercher des utilisateurs..."
-          class="futuristic-input-field w-full pl-10 pr-4 py-2"
+          class="w-full pl-10 pr-4 py-2 rounded-lg futuristic-input-field"
         />
-        <i class="fas fa-search absolute left-3 top-3 text-accent"></i>
+        <i
+          class="fas fa-search absolute left-3 top-3 text-[#6d6870] dark:text-[#a0a0a0]"
+        ></i>
       </div>
 
-      <!-- Filtres futuristes -->
+      <!-- Filtres -->
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <!-- Filtre en ligne -->
           <div class="flex items-center space-x-2">
-            <div class="futuristic-checkbox-container">
+            <label class="futuristic-checkbox-container">
               <input
                 type="checkbox"
                 id="onlineFilter"
+                class="futuristic-checkbox"
                 [checked]="filterForm.get('isOnline')?.value === true"
                 (change)="
                   filterForm
                     .get('isOnline')
                     ?.setValue($any($event.target).checked ? true : null)
                 "
-                class="futuristic-checkbox"
               />
               <span class="futuristic-checkbox-checkmark"></span>
-            </div>
+            </label>
             <label for="onlineFilter" class="futuristic-label"
               >En ligne uniquement</label
             >
@@ -114,7 +159,7 @@
     </div>
   </div>
 
-  <!-- Liste des utilisateurs futuriste -->
+  <!-- Liste des utilisateurs -->
   <div
     class="futuristic-users-list"
     (scroll)="
@@ -122,13 +167,13 @@
         $any($event.target).scrollHeight - 200 && loadNextPage()
     "
   >
-    <!-- État de chargement futuriste -->
+    <!-- État de chargement -->
     <div *ngIf="loading && !users.length" class="futuristic-loading-container">
       <div class="futuristic-loading-circle"></div>
       <div class="futuristic-loading-text">Chargement des utilisateurs...</div>
     </div>
 
-    <!-- État vide futuriste -->
+    <!-- État vide -->
     <div *ngIf="!loading && users.length === 0" class="futuristic-empty-state">
       <div class="futuristic-empty-icon">
         <i class="fas fa-users"></i>
@@ -139,7 +184,7 @@
       </p>
     </div>
 
-    <!-- Liste des utilisateurs futuriste -->
+    <!-- Liste des utilisateurs -->
     <ul *ngIf="users.length > 0" class="futuristic-users-grid">
       <li *ngFor="let user of users" class="futuristic-user-card">
         <div
@@ -164,7 +209,7 @@
           </div>
         </div>
 
-        <!-- Boutons d'appel futuristes -->
+        <!-- Boutons d'appel -->
         <div class="futuristic-call-buttons">
           <button
             *ngIf="user.isOnline"
@@ -186,10 +231,10 @@
       </li>
     </ul>
 
-    <!-- Indicateur de chargement supplémentaire futuriste -->
+    <!-- Indicateur de chargement supplémentaire -->
     <div *ngIf="loading && users.length > 0" class="futuristic-loading-more">
       <div class="futuristic-loading-dots">
-        <div class="futuristic-loading-dot"></div>
+        <div class="futuristic-loading-dot" style="animation-delay: 0s"></div>
         <div class="futuristic-loading-dot" style="animation-delay: 0.2s"></div>
         <div class="futuristic-loading-dot" style="animation-delay: 0.4s"></div>
       </div>
@@ -198,7 +243,7 @@
       </div>
     </div>
 
-    <!-- Bouton de chargement supplémentaire futuriste -->
+    <!-- Bouton de chargement supplémentaire -->
     <div *ngIf="hasNextPage && !loading" class="futuristic-load-more-container">
       <button (click)="loadNextPage()" class="futuristic-load-more-button">
         <i class="fas fa-chevron-down mr-2"></i>

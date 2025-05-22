@@ -1,0 +1,11 @@
+/* Styles pour le composant de liste des rendus */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-top: 0.25rem;
+}

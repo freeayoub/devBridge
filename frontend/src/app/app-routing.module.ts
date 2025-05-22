@@ -98,6 +98,12 @@ const routes: Routes = [
             (m) => m.ForgotPasswordModule
           ),
       },
+      {
+        path: 'projects',
+        loadChildren: () =>
+          import('./views/front/projects/projects.module').then((m) => m.ProjectsModule),
+        canActivateChild: [guarduserGuard] // Protection pour utilisateurs authentifiés
+      },
     ],
   },
   //  Espace Admin
@@ -120,6 +126,13 @@ const routes: Routes = [
             (m) => m.DashboardModule
           ),
       },
+        {
+        path: 'userdetails/:id',
+        loadChildren: () =>
+          import('./views/admin/userdetails/userdetails.module').then(
+            (m) => m.UserdetailsModule
+          ),
+      },
       {
         path: 'plannings',
         loadChildren: () =>
@@ -139,7 +152,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/admin/projects/projects.module').then(
             (m) => m.ProjectsModule
-          ),
+          ),canActivateChild: [guarduserGuard] 
       },
       {
         path: 'profile',

@@ -1,0 +1,47 @@
+<div class="container mx-auto px-4 py-6">
+  <h1 class="text-2xl font-bold mb-6">Modifier l'évaluation</h1>
+
+  <!-- Loader -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-10">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    {{ error }}
+  </div>
+
+  <div *ngIf="rendu && !isLoading">
+    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+      <h2 class="text-xl font-semibold mb-2">Informations sur le rendu</h2>
+      <p><span class="font-medium">Projet:</span> {{ rendu.projet?.titre }}</p>
+      <p><span class="font-medium">Étudiant:</span> {{ rendu.etudiant?.nom }} {{ rendu.etudiant?.prenom }}</p>
+      <p><span class="font-medium">Date de soumission:</span> {{ rendu.dateSoumission | date:'dd/MM/yyyy HH:mm' }}</p>
+      <p><span class="font-medium">Description:</span> {{ rendu.description }}</p>
+    </div>
+
+    <form [formGroup]="evaluationForm" (ngSubmit)="onSubmit()" class="bg-white rounded-lg shadow-md p-6">
+      <div formGroupName="scores" class="mb-6">
+        <h3 class="text-lg font-semibold mb-4">Critères d'évaluation (sur 5 points chacun)</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Structure et organisation -->
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="structure">
+              Structure et organisation du code
+            </label>
+            <input
+              id="structure"
+              type="number"
+              formControlName="structure"
+              min="0"
+              max="5"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+

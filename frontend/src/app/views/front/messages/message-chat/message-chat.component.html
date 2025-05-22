@@ -1,51 +1,201 @@
-<div class="flex flex-col h-full futuristic-chat-container">
-  <!-- Aucun conteneur spécial n'est nécessaire ici, car nous créons le modal dynamiquement -->
-  <!-- En-tête futuriste -->
-  <div class="futuristic-chat-header">
-    <button (click)="goBackToConversations()" class="futuristic-action-button">
+<div
+  class="flex flex-col h-full bg-[#edf1f4] dark:bg-[#121212] relative overflow-hidden futuristic-chat-container dark"
+  [ngClass]="selectedTheme"
+>
+  <!-- Animations CSS -->
+  <style>
+    @keyframes borderFlow {
+      0% {
+        background-position: 0% 0%;
+      }
+      100% {
+        background-position: 200% 0%;
+      }
+    }
+
+    @keyframes ambientGlow {
+      0% {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      100% {
+        opacity: 0.5;
+        transform: scale(1.05);
+      }
+    }
+
+    @keyframes rotateHalo {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulseButton {
+      0% {
+        box-shadow: 0 0 10px rgba(0, 247, 255, 0.5),
+          0 0 20px rgba(0, 247, 255, 0.2);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 15px rgba(0, 247, 255, 0.7),
+          0 0 30px rgba(0, 247, 255, 0.4);
+        transform: scale(1.05);
+      }
+      100% {
+        box-shadow: 0 0 10px rgba(0, 247, 255, 0.5),
+          0 0 20px rgba(0, 247, 255, 0.2);
+        transform: scale(1);
+      }
+    }
+  </style>
+  <!-- Background decorative elements - Grid pattern only -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <!-- Animated grid pattern -->
+    <div class="absolute inset-0 opacity-5 dark:opacity-[0.03]">
+      <div class="h-full grid grid-cols-12">
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+      </div>
+      <div class="w-full grid grid-rows-12">
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-b border-[#4f5fad] dark:border-[#6d78c9]"></div>
+      </div>
+    </div>
+
+    <!-- Horizontal scan line effect for dark mode -->
+    <div class="absolute inset-0 opacity-0 dark:opacity-100 overflow-hidden">
+      <div class="h-px w-full bg-[#00f7ff]/20 absolute animate-scan"></div>
+    </div>
+  </div>
+
+  <!-- En-tête style WhatsApp -->
+  <div class="whatsapp-chat-header">
+    <button (click)="goBackToConversations()" class="whatsapp-action-button">
       <i class="fas fa-arrow-left"></i>
     </button>
 
-    <div class="futuristic-user-info">
-      <div class="futuristic-avatar">
+    <div class="whatsapp-user-info">
+      <div class="whatsapp-avatar">
         <img
           [src]="otherParticipant?.image || 'assets/images/default-avatar.png'"
           alt="User avatar"
         />
         <span
           *ngIf="otherParticipant?.isOnline"
-          class="futuristic-online-indicator"
+          class="whatsapp-online-indicator"
         ></span>
       </div>
 
-      <!-- Nom et statut futuriste -->
-      <div *ngIf="otherParticipant" class="futuristic-user-details">
-        <span class="futuristic-username">
+      <!-- Nom et statut style WhatsApp -->
+      <div *ngIf="otherParticipant" class="whatsapp-user-details">
+        <span class="whatsapp-username">
           {{ otherParticipant.username }}
         </span>
-        <span class="futuristic-status">
-          <i
-            *ngIf="otherParticipant?.isOnline"
-            class="fas fa-circle text-xs"
-          ></i>
+        <span class="whatsapp-status">
           {{
             otherParticipant.isOnline
-              ? "Active now"
+              ? "En ligne"
               : formatLastActive(otherParticipant.lastActive)
           }}
         </span>
       </div>
     </div>
 
-    <div class="futuristic-actions">
-      <button class="futuristic-action-button">
-        <i class="fas fa-phone"></i>
+    <div class="whatsapp-actions">
+      <!-- Bouton d'appel audio -->
+      <button class="whatsapp-action-button" (click)="initiateCall('AUDIO')">
+        <i class="fas fa-phone-alt"></i>
       </button>
-      <button class="futuristic-action-button">
+
+      <!-- Bouton d'appel vidéo -->
+      <button class="whatsapp-action-button" (click)="initiateCall('VIDEO')">
         <i class="fas fa-video"></i>
       </button>
-      <button class="futuristic-action-button">
-        <i class="fas fa-info-circle"></i>
+
+      <!-- Sélecteur de thème -->
+      <div class="relative">
+        <button (click)="toggleThemeSelector()" class="whatsapp-action-button">
+          <i class="fas fa-palette"></i>
+        </button>
+
+        <!-- Menu déroulant des thèmes -->
+        <div
+          *ngIf="showThemeSelector"
+          class="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1e1e1e] rounded-lg shadow-lg z-50 border border-[#edf1f4]/50 dark:border-[#2a2a2a] overflow-hidden"
+        >
+          <div
+            class="p-2 text-xs text-[#6d6870] dark:text-[#a0a0a0] border-b border-[#edf1f4]/50 dark:border-[#2a2a2a]"
+          >
+            Choisir un thème
+          </div>
+          <div class="p-1">
+            <a
+              href="javascript:void(0)"
+              (click)="changeTheme('theme-default')"
+              class="block w-full text-left px-3 py-2 text-sm rounded-md hover:bg-[#4f5fad]/10 dark:hover:bg-[#6d78c9]/10 transition-colors"
+            >
+              <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full bg-[#4f5fad] mr-2"></div>
+                <div>Par défaut</div>
+              </div>
+            </a>
+            <a
+              href="javascript:void(0)"
+              (click)="changeTheme('theme-feminine')"
+              class="block w-full text-left px-3 py-2 text-sm rounded-md hover:bg-[#ff6b9d]/10 dark:hover:bg-[#ff6b9d]/10 transition-colors"
+            >
+              <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full bg-[#ff6b9d] mr-2"></div>
+                <div>Rose</div>
+              </div>
+            </a>
+            <a
+              href="javascript:void(0)"
+              (click)="changeTheme('theme-masculine')"
+              class="block w-full text-left px-3 py-2 text-sm rounded-md hover:bg-[#3d85c6]/10 dark:hover:bg-[#3d85c6]/10 transition-colors"
+            >
+              <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full bg-[#3d85c6] mr-2"></div>
+                <div>Bleu</div>
+              </div>
+            </a>
+            <a
+              href="javascript:void(0)"
+              (click)="changeTheme('theme-neutral')"
+              class="block w-full text-left px-3 py-2 text-sm rounded-md hover:bg-[#6aa84f]/10 dark:hover:bg-[#6aa84f]/10 transition-colors"
+            >
+              <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full bg-[#6aa84f] mr-2"></div>
+                <div>Vert</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <button class="whatsapp-action-button">
+        <i class="fas fa-ellipsis-v"></i>
       </button>
     </div>
   </div>
@@ -58,9 +208,21 @@
   >
     <!-- État de chargement (initial) -->
     <div *ngIf="loading" class="flex justify-center items-center h-full">
-      <div class="futuristic-loading">
-        <div class="futuristic-loading-circle"></div>
-        <div class="futuristic-loading-text">Initializing communication...</div>
+      <div class="flex flex-col items-center">
+        <div class="relative">
+          <div
+            class="w-12 h-12 border-4 border-[#4f5fad]/20 dark:border-[#6d78c9]/20 border-t-[#4f5fad] dark:border-t-[#6d78c9] rounded-full animate-spin mb-3"
+          ></div>
+          <!-- Glow effect -->
+          <div
+            class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 blur-xl rounded-full transform scale-150 -z-10"
+          ></div>
+        </div>
+        <div
+          class="text-[#6d6870] dark:text-[#a0a0a0] mt-3 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent font-medium"
+        >
+          Initializing communication...
+        </div>
       </div>
     </div>
 
@@ -69,19 +231,25 @@
       *ngIf="isLoadingMore"
       class="flex justify-center py-2 sticky top-0 z-10"
     >
-      <div class="futuristic-loading-more">
-        <div class="futuristic-loading-dots">
-          <div class="futuristic-loading-dot"></div>
+      <div
+        class="flex flex-col items-center backdrop-blur-sm bg-white/50 dark:bg-[#1e1e1e]/50 px-4 py-2 rounded-full shadow-sm"
+      >
+        <div class="flex space-x-2 mb-1">
           <div
-            class="futuristic-loading-dot"
+            class="w-2 h-2 bg-[#4f5fad] dark:bg-[#6d78c9] rounded-full animate-pulse shadow-[0_0_5px_rgba(79,95,173,0.5)] dark:shadow-[0_0_5px_rgba(109,120,201,0.5)]"
+          ></div>
+          <div
+            class="w-2 h-2 bg-[#4f5fad] dark:bg-[#6d78c9] rounded-full animate-pulse shadow-[0_0_5px_rgba(79,95,173,0.5)] dark:shadow-[0_0_5px_rgba(109,120,201,0.5)]"
             style="animation-delay: 0.2s"
           ></div>
           <div
-            class="futuristic-loading-dot"
+            class="w-2 h-2 bg-[#4f5fad] dark:bg-[#6d78c9] rounded-full animate-pulse shadow-[0_0_5px_rgba(79,95,173,0.5)] dark:shadow-[0_0_5px_rgba(109,120,201,0.5)]"
             style="animation-delay: 0.4s"
           ></div>
         </div>
-        <div class="futuristic-loading-text">Retrieving data...</div>
+        <div class="text-xs text-[#6d6870] dark:text-[#a0a0a0]">
+          Retrieving data...
+        </div>
       </div>
     </div>
 
@@ -90,25 +258,40 @@
       *ngIf="!hasMoreMessages && messages.length > 0"
       class="flex justify-center py-2 mb-2"
     >
-      <div class="futuristic-conversation-start">
-        <div class="futuristic-conversation-start-line"></div>
-        <div class="futuristic-conversation-start-text">
+      <div class="flex items-center w-full max-w-xs">
+        <div
+          class="flex-1 h-px bg-gradient-to-r from-transparent via-[#4f5fad]/20 dark:via-[#6d78c9]/20 to-transparent"
+        ></div>
+        <div
+          class="px-3 text-xs bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent font-medium"
+        >
           Communication Initialized
         </div>
-        <div class="futuristic-conversation-start-line"></div>
+        <div
+          class="flex-1 h-px bg-gradient-to-r from-transparent via-[#4f5fad]/20 dark:via-[#6d78c9]/20 to-transparent"
+        ></div>
       </div>
     </div>
 
     <!-- État d'erreur -->
-    <div *ngIf="error" class="futuristic-error-container">
-      <div class="futuristic-error-icon">
-        <i class="fas fa-exclamation-triangle"></i>
-      </div>
-      <div class="futuristic-error-content">
-        <h3 class="futuristic-error-title">
-          System Error: Communication Failure
-        </h3>
-        <p class="futuristic-error-message">{{ error }}</p>
+    <div
+      *ngIf="error"
+      class="bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 border border-[#ff6b69] dark:border-[#ff6b69]/30 rounded-lg p-4 mx-auto max-w-md my-4 backdrop-blur-sm"
+    >
+      <div class="flex items-start">
+        <div class="text-[#ff6b69] dark:text-[#ff8785] mr-3 text-xl relative">
+          <i class="fas fa-exclamation-triangle"></i>
+          <!-- Glow effect -->
+          <div
+            class="absolute inset-0 bg-[#ff6b69]/20 dark:bg-[#ff8785]/20 blur-xl rounded-full transform scale-150 -z-10"
+          ></div>
+        </div>
+        <div>
+          <h3 class="font-medium text-[#ff6b69] dark:text-[#ff8785] mb-1">
+            System Error: Communication Failure
+          </h3>
+          <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0]">{{ error }}</p>
+        </div>
       </div>
     </div>
 
@@ -354,32 +537,70 @@
     </div>
   </div>
 
-  <!-- Zone de saisie futuriste -->
-  <div class="futuristic-input-container">
+  <!-- Zone de saisie style WhatsApp -->
+  <div class="whatsapp-input-container">
     <!-- Aperçu du fichier -->
-    <div *ngIf="previewUrl" class="futuristic-file-preview">
-      <img [src]="previewUrl" class="futuristic-preview-image" />
-      <button (click)="removeAttachment()" class="futuristic-remove-button">
+    <div *ngIf="previewUrl" class="whatsapp-file-preview">
+      <img [src]="previewUrl" class="whatsapp-preview-image" />
+      <button (click)="removeAttachment()" class="whatsapp-remove-button">
         <i class="fas fa-times"></i>
       </button>
+    </div>
+
+    <!-- Sélecteur d'émojis -->
+    <div *ngIf="showEmojiPicker" class="whatsapp-emoji-picker">
+      <div class="whatsapp-emoji-categories">
+        <button class="whatsapp-emoji-category active">
+          <i class="far fa-smile"></i>
+        </button>
+        <button class="whatsapp-emoji-category">
+          <i class="fas fa-cat"></i>
+        </button>
+        <button class="whatsapp-emoji-category">
+          <i class="fas fa-hamburger"></i>
+        </button>
+        <button class="whatsapp-emoji-category">
+          <i class="fas fa-futbol"></i>
+        </button>
+        <button class="whatsapp-emoji-category">
+          <i class="fas fa-car"></i>
+        </button>
+        <button class="whatsapp-emoji-category">
+          <i class="fas fa-lightbulb"></i>
+        </button>
+      </div>
+      <div class="whatsapp-emoji-list">
+        <button
+          *ngFor="let emoji of commonEmojis"
+          class="whatsapp-emoji-item"
+          (click)="insertEmoji(emoji)"
+        >
+          {{ emoji }}
+        </button>
+      </div>
     </div>
 
     <form
       [formGroup]="messageForm"
       (ngSubmit)="sendMessage()"
-      class="futuristic-input-form"
+      class="whatsapp-input-form"
     >
-      <!-- Boutons d'outils futuristes -->
-      <div class="futuristic-input-tools">
-        <button type="button" class="futuristic-tool-button">
-          <i class="fas fa-plus"></i>
+      <!-- Boutons d'outils style WhatsApp -->
+      <div class="whatsapp-input-tools">
+        <button
+          type="button"
+          (click)="toggleEmojiPicker()"
+          class="whatsapp-tool-button"
+          [ngClass]="{ active: showEmojiPicker }"
+        >
+          <i class="far fa-smile"></i>
         </button>
         <button
           type="button"
           (click)="fileInput.click()"
-          class="futuristic-tool-button"
+          class="whatsapp-tool-button"
         >
-          <i class="fas fa-image"></i>
+          <i class="fas fa-paperclip"></i>
           <input
             #fileInput
             type="file"
@@ -387,20 +608,6 @@
             class="hidden"
             accept="image/*"
           />
-        </button>
-        <button
-          type="button"
-          (click)="toggleVoiceRecording()"
-          class="futuristic-tool-button"
-          [ngClass]="{ active: isRecordingVoice }"
-        >
-          <i
-            class="fas"
-            [ngClass]="isRecordingVoice ? 'fa-stop' : 'fa-microphone'"
-          ></i>
-        </button>
-        <button type="button" class="futuristic-tool-button">
-          <i class="fas fa-sticky-note"></i>
         </button>
       </div>
 
@@ -413,21 +620,66 @@
       ></app-voice-recorder>
 
       <input
+        *ngIf="!isRecordingVoice"
         formControlName="content"
         type="text"
-        placeholder="Saisissez votre message..."
+        placeholder="Message"
         (input)="onTyping()"
-        class="futuristic-input-field"
+        class="whatsapp-input-field"
       />
 
       <button
+        type="button"
+        *ngIf="!isRecordingVoice && messageForm.get('content')?.value === ''"
+        (click)="toggleVoiceRecording()"
+        class="whatsapp-voice-button"
+      >
+        <i class="fas fa-microphone"></i>
+      </button>
+
+      <button
         type="submit"
+        *ngIf="!isRecordingVoice && messageForm.get('content')?.value !== ''"
         [disabled]="isUploading || (messageForm.invalid && !selectedFile)"
-        class="futuristic-send-button"
+        class="whatsapp-send-button"
       >
         <i *ngIf="!isUploading" class="fas fa-paper-plane"></i>
         <i *ngIf="isUploading" class="fas fa-spinner fa-spin"></i>
       </button>
     </form>
+  </div>
+
+  <!-- Modal d'appel entrant -->
+  <div *ngIf="showCallModal && incomingCall" class="whatsapp-call-modal">
+    <div class="whatsapp-call-modal-content">
+      <div class="whatsapp-call-header">
+        <div class="whatsapp-call-avatar">
+          <img
+            [src]="
+              incomingCall.caller?.image || 'assets/images/default-avatar.png'
+            "
+            alt="Caller avatar"
+          />
+        </div>
+        <h3 class="whatsapp-call-name">{{ incomingCall.caller?.username }}</h3>
+        <p class="whatsapp-call-status">
+          {{
+            incomingCall.type === "AUDIO"
+              ? "Appel audio entrant"
+              : "Appel vidéo entrant"
+          }}
+        </p>
+      </div>
+      <div class="whatsapp-call-actions">
+        <button (click)="rejectCall()" class="whatsapp-call-reject">
+          <i class="fas fa-phone-slash"></i>
+          <span>Rejeter</span>
+        </button>
+        <button (click)="acceptCall()" class="whatsapp-call-accept">
+          <i class="fas fa-phone"></i>
+          <span>Accepter</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>

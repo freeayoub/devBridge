@@ -1,0 +1,207 @@
+/* Styles pour les listes de conversations et d'utilisateurs */
+
+/* Effet jaune pour les listes de conversations et utilisateurs */
+.conversation-item, .user-item {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Effet de bordure jaune pour les éléments actifs ou survolés */
+.conversation-item.active, .conversation-item:hover,
+.user-item.active, .user-item:hover {
+  border-color: rgba(255, 193, 7, 0.5) !important;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.2);
+}
+
+/* Effet de lueur jaune sur le bord droit pour les éléments actifs */
+.conversation-item.active::after, .user-item.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 0.25rem;
+  background: linear-gradient(to bottom, #ffc107, #ffeb3b, #ffc107);
+  border-radius: 0 0.375rem 0.375rem 0;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+}
+
+/* Effet de lueur qui déborde pour les éléments actifs */
+.conversation-item.active::before, .user-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 0.25rem;
+  background: linear-gradient(to bottom, #ffc107, #ffeb3b, #ffc107);
+  border-radius: 0 0.375rem 0.375rem 0;
+  filter: blur(8px);
+  transform: scale(1.5);
+  opacity: 0.5;
+  animation: pulse 2s infinite;
+}
+
+/* Effet de halo pour les éléments non lus */
+.conversation-item.unread::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #ffc107;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.7);
+}
+
+/* Animation de pulsation */
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* Style pour le nom de l'utilisateur dans les conversations */
+.conversation-item .user-name, .user-item .user-name {
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.conversation-item:hover .user-name, .user-item:hover .user-name,
+.conversation-item.active .user-name, .user-item.active .user-name {
+  color: #ffc107;
+}
+
+/* Style pour le dernier message dans les conversations */
+.conversation-item .last-message {
+  font-size: 0.875rem;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.conversation-item:hover .last-message,
+.conversation-item.active .last-message {
+  opacity: 1;
+}
+
+/* Style pour l'avatar dans les conversations et listes d'utilisateurs */
+.conversation-item .avatar, .user-item .avatar {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.conversation-item:hover .avatar, .user-item:hover .avatar,
+.conversation-item.active .avatar, .user-item.active .avatar {
+  transform: scale(1.05);
+}
+
+/* Effet de lueur autour de l'avatar pour les conversations non lues */
+.conversation-item.unread .avatar::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid #ffc107;
+  animation: pulse 2s infinite;
+}
+
+/* Style pour le temps dans les conversations */
+.conversation-item .time {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.conversation-item:hover .time,
+.conversation-item.active .time {
+  opacity: 1;
+}
+
+/* Style pour le compteur de messages non lus */
+.conversation-item .unread-count {
+  background: linear-gradient(to right, #ffc107, #ffeb3b);
+  color: #000;
+  font-size: 0.75rem;
+  font-weight: bold;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+
+/* Style pour le statut en ligne dans les listes d'utilisateurs */
+.user-item .online-status {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  border: 2px solid white;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/* Style pour le statut hors ligne */
+.user-item .offline-status {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background-color: #9e9e9e;
+  border: 2px solid white;
+  box-shadow: 0 0 5px rgba(158, 158, 158, 0.5);
+}
+
+/* Mode sombre */
+.dark .conversation-item, .dark .user-item {
+  background-color: rgba(30, 30, 30, 0.8);
+}
+
+.dark .conversation-item:hover, .dark .user-item:hover,
+.dark .conversation-item.active, .dark .user-item.active {
+  background-color: rgba(42, 42, 42, 0.8);
+}
+
+.dark .conversation-item .user-name, .dark .user-item .user-name {
+  color: #a0a0a0;
+}
+
+.dark .conversation-item:hover .user-name, .dark .user-item:hover .user-name,
+.dark .conversation-item.active .user-name, .dark .user-item.active .user-name {
+  color: #ffeb3b;
+}
+
+.dark .conversation-item .last-message {
+  color: #888888;
+}
+
+.dark .conversation-item .time {
+  color: #777777;
+}
+
+.dark .user-item .online-status {
+  border-color: #1e1e1e;
+}
+
+.dark .user-item .offline-status {
+  border-color: #1e1e1e;
+}

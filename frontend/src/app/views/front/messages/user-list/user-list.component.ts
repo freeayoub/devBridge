@@ -1,6 +1,6 @@
 // user-list.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription, interval } from 'rxjs';
+import { Subscription, interval, Observable } from 'rxjs';
 import { User } from 'src/app/models/user.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthuserService } from 'src/app/services/authuser.service';
@@ -9,6 +9,7 @@ import { MessageService } from 'src/app/services/message.service';
 import { CallType } from 'src/app/models/message.model';
 import { LoggerService } from 'src/app/services/logger.service';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ThemeService } from '@app/services/theme.service';
 
 @Component({
   selector: 'app-user-list',
@@ -19,6 +20,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   users: User[] = [];
   loading = true;
   currentUserId: string | null = null;
+  isDarkMode$: Observable<boolean>;
 
   // Pagination
   currentPage = 1;
@@ -50,8 +52,11 @@ export class UserListComponent implements OnInit, OnDestroy {
     public route: ActivatedRoute,
     private authService: AuthuserService,
     private toastService: ToastService,
-    private logger: LoggerService
-  ) {}
+    private logger: LoggerService,
+    private themeService: ThemeService
+  ) {
+    this.isDarkMode$ = this.themeService.darkMode$;
+  }
 
   ngOnInit(): void {
     this.currentUserId = this.authService.getCurrentUserId();

@@ -8,18 +8,20 @@
   position: relative;
 }
 
-/* Effet de grille en arrière-plan */
-.futuristic-layout::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: linear-gradient(rgba(0, 247, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 247, 255, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-  pointer-events: none;
-  z-index: 0;
+/* Styles spécifiques pour le mode clair */
+.futuristic-layout:not(.dark) {
+  background-color: #f0f4f8;
+  color: #6d6870;
+}
+
+/* Fond net pour le mode sombre */
+.dark .futuristic-layout {
+  background-color: #121212;
+}
+
+/* Fond net pour le mode clair */
+.futuristic-layout:not(.dark) {
+  background-color: #f0f4f8;
 }
 
 /* En-tête futuriste */
@@ -31,7 +33,11 @@
 
 /* Logo futuriste */
 .futuristic-logo {
-  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -61,7 +67,11 @@
   transform: translateX(-50%);
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+  background: linear-gradient(
+    90deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
   transition: width var(--transition-fast);
 }
 
@@ -155,7 +165,11 @@
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
   color: var(--text-light);
   font-size: 0.875rem;
   font-weight: 500;
@@ -266,12 +280,21 @@
 
 .futuristic-separator {
   height: 1px;
-  background: linear-gradient(to right, transparent, rgba(0, 247, 255, 0.2), transparent);
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 247, 255, 0.2),
+    transparent
+  );
 }
 
 /* Badge futuriste */
 .futuristic-badge {
-  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
   color: var(--text-light);
   font-size: 0.75rem;
   font-weight: 500;
@@ -316,4 +339,104 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Styles pour la grille de la zone principale */
+.main-content-grid {
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Styles pour la grille adaptés à la nouvelle mise en page avec barre latérale */
+.main-content-grid {
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Styles simplifiés - code non nécessaire supprimé */
+
+/* Effet fluo pour les boutons de la barre latérale */
+.sidebar-nav-link {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Bordure standard pour tous les liens */
+.sidebar-nav-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0.375rem 0 0 0.375rem;
+  border: 2px solid rgba(79, 95, 173, 0.1);
+  pointer-events: none;
+}
+
+.dark .sidebar-nav-link::before {
+  border-color: rgba(109, 120, 201, 0.1);
+}
+
+/* Effet fluo sur le bord droit pour les liens actifs */
+.sidebar-nav-link.active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 0.5rem;
+  background: linear-gradient(to bottom, #4f5fad, #00f7ff, #4f5fad);
+  border-radius: 0 0.375rem 0.375rem 0;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.7);
+}
+
+.dark .sidebar-nav-link.active::after {
+  background: linear-gradient(to bottom, #6d78c9, #00f7ff, #6d78c9);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.7);
+}
+
+/* Animation de pulsation */
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* Effet de lueur qui déborde */
+.sidebar-nav-link.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 0.5rem;
+  background: linear-gradient(to bottom, #4f5fad, #00f7ff, #4f5fad);
+  border-radius: 0 0.375rem 0.375rem 0;
+  filter: blur(8px);
+  transform: scale(1.5);
+  opacity: 0.5;
+  animation: pulse 2s infinite;
+}
+
+.dark .sidebar-nav-link.active::before {
+  background: linear-gradient(to bottom, #6d78c9, #00f7ff, #6d78c9);
+}
+
+/* Style spécial pour le bouton Dashboard */
+.dashboard-link.active::after {
+  background: linear-gradient(to bottom, #7826b5, #9d4edd, #7826b5);
+  box-shadow: 0 0 15px rgba(157, 78, 221, 0.7);
+}
+
+.dark .dashboard-link.active::after {
+  background: linear-gradient(to bottom, #7826b5, #9d4edd, #7826b5);
+}
+
+.dashboard-link.active::before {
+  background: linear-gradient(to bottom, #7826b5, #9d4edd, #7826b5);
 }

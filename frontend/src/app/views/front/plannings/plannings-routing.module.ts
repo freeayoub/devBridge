@@ -4,23 +4,28 @@ import { PlanningListComponent } from './planning-list/planning-list.component';
 import { PlanningDetailComponent } from './planning-detail/planning-detail.component';
 import { PlanningFormComponent } from './planning-form/planning-form.component';
 import { PlanningCalendarComponent } from './planning-calendar/planning-calendar.component';
+import {PlanningEditComponent} from "@app/views/front/plannings/planning-edit/planning-edit.component";
 
 const routes: Routes = [
-
   {
-    path:'',component:PlanningListComponent
+    path: '', component: PlanningListComponent
   },
   {
-     path: 'detailsPlanning', component: PlanningDetailComponent
-     },
-  {
-    path:'planningForm',component:PlanningFormComponent
+    path: 'nouveau', component: PlanningFormComponent
   },
   {
-    path: 'calandarPlanning',
-    component:PlanningCalendarComponent
+    path: 'calandarPlanning', component: PlanningCalendarComponent
+  },
+  {
+    path: 'edit/:id', component: PlanningEditComponent
+  },
+  {
+    path: ':id', component: PlanningDetailComponent  // <-- put this last
   }
 ];
+
+
+
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

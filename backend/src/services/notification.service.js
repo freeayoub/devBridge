@@ -260,6 +260,148 @@ class NotificationService {
 
     return this.sendPushNotification(receiverId, notification);
   }
+
+  /**
+   * Supprime une notification spécifique
+   * @param {string} notificationId - ID de la notification à supprimer
+   * @param {string} userId - ID de l'utilisateur
+   * @returns {Promise<Object>} - Résultat de l'opération
+   */
+  async deleteNotification(notificationId, userId) {
+    console.log(
+      `[NotificationService] Deleting notification ${notificationId} for user ${userId}`
+    );
+
+    try {
+      // Vérifier si la notification existe
+      const notification = await this.Notification.findById(notificationId);
+
+      if (!notification) {
+        console.error(
+          `[NotificationService] Notification ${notificationId} not found`
+        );
+        return {
+          success: false,
+          message: "Notification not found",
+        };
+      }
+
+      // Supprimer la notification
+      await this.Notification.findByIdAndDelete(notificationId);
+
+      console.log(
+        `[NotificationService] Notification ${notificationId} deleted successfully`
+      );
+
+      return {
+        success: true,
+        message: "Notification deleted successfully",
+      };
+    } catch (error) {
+      console.error(
+        `[NotificationService] Error deleting notification:`,
+        error
+      );
+      console.error(`[NotificationService] Error stack:`, error.stack);
+
+      return {
+        success: false,
+        message: `Failed to delete notification: ${error.message}`,
+      };
+    }
+  }
+
+  /**
+   * Supprime toutes les notifications d'un utilisateur
+   * @param {string} userId - ID de l'utilisateur
+   * @returns {Promise<Object>} - Résultat de l'opération
+   */
+  async deleteAllNotifications(userId) {
+    console.log(
+      `[NotificationService] Deleting all notifications for user ${userId}`
+    );
+
+    try {
+      // Compter les notifications avant de les supprimer
+      const count = await this.Notification.countDocuments({});
+
+      // Supprimer toutes les notifications
+      const result = await this.Notification.deleteMany({});
+
+      console.log(
+        `[NotificationService] Deleted ${result.deletedCount} notifications`
+      );
+
+      return {
+        success: true,
+        count: result.deletedCount,
+        message: `${result.deletedCount} notifications deleted successfully`,
+      };
+    } catch (error) {
+      console.error(
+        `[NotificationService] Error deleting all notifications:`,
+        error
+      );
+      console.error(`[NotificationService] Error stack:`, error.stack);
+
+      return {
+        success: false,
+        count: 0,
+        message: `Failed to delete notifications: ${error.message}`,
+      };
+    }
+  }
+
+  /**
+   * Supprime plusieurs notifications
+   * @param {string[]} notificationIds - IDs des notifications à supprimer
+   * @param {string} userId - ID de l'utilisateur
+   * @returns {Promise<Object>} - Résultat de l'opération
+   */
+  async deleteMultipleNotifications(notificationIds, userId) {
+    console.log(
+      `[NotificationService] Deleting multiple notifications for user ${userId}: ${notificationIds.join(
+        ", "
+      )}`
+    );
+
+    try {
+      if (!Array.isArray(notificationIds) || notificationIds.length === 0) {
+        return {
+          success: false,
+          count: 0,
+          message: "No notification IDs provided",
+        };
+      }
+
+      // Supprimer les notifications
+      const result = await this.Notification.deleteMany({
+        _id: { $in: notificationIds },
+      });
+
+      console.log(
+        `[NotificationService] Deleted ${result.deletedCount} notifications`
+      );
+
+      return {
+        success: true,
+        count: result.deletedCount,
+        message: `${result.deletedCount} notifications deleted successfully`,
+      };
+    } catch (error) {
+      console.error(
+        `[NotificationService] Error deleting multiple notifications:`,
+        error
+      );
+      console.error(`[NotificationService] Error stack:`, error.stack);
+
+      return {
+        success: false,
+        count: 0,
+        message: `Failed to delete notifications: ${error.message}`,
+      };
+    }
+  }
 }
 
 module.exports = new NotificationService();

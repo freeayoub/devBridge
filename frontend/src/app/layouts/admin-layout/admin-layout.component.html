@@ -1,148 +1,235 @@
-<div class="flex h-screen bg-[#edf1f4]">
+<div
+  class="flex h-screen main-grid-container futuristic-layout"
+  [class.dark]="isDarkMode$ | async"
+>
+  <!-- Background Grid -->
+  <div class="background-grid"></div>
+
   <!-- Sidebar -->
   <div class="hidden md:flex md:flex-shrink-0">
     <div
-      class="flex flex-col w-64 bg-gradient-to-b from-[#4f5fad] to-[#7826b5]"
+      class="flex flex-col w-64 bg-white dark:bg-[#1e1e1e] border-r border-[#edf1f4] dark:border-[#2a2a2a] backdrop-blur-sm"
     >
-      <div class="flex items-center justify-center h-16 px-4">
-        <div class="flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-8 w-8 text-[#dac4ea] transform rotate-12"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+      <div
+        class="flex items-center justify-center h-16 px-4 relative overflow-hidden"
+      >
+        <!-- Decorative elements -->
+        <div
+          class="absolute -top-6 -left-6 w-12 h-12 bg-gradient-to-br from-[#4f5fad]/20 to-transparent rounded-full"
+        ></div>
+        <div
+          class="absolute -bottom-6 -right-6 w-12 h-12 bg-gradient-to-tl from-[#4f5fad]/20 to-transparent rounded-full"
+        ></div>
+
+        <div class="flex items-center relative z-10">
+          <div class="relative">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-8 w-8 text-[#4f5fad] dark:text-[#6d78c9] transform rotate-12"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            <!-- Glow effect -->
+            <div
+              class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 blur-xl rounded-full transform scale-150 -z-10"
+            ></div>
+          </div>
+          <span
+            class="ml-2 text-xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+            >DevBridge</span
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          <span class="ml-2 text-xl font-bold text-white">DevBridge</span>
         </div>
       </div>
       <div class="flex flex-col flex-grow px-4 py-4">
         <nav class="flex-1 space-y-2">
-          <!-- start of bo back -->
+          <!-- Navigation Items -->
+
           <!-- dashboard -->
           <a
             routerLink="/admin/dashboard"
-            routerLinkActive="bg-[#dac4ea]/20 text-white"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-              />
-            </svg>
-            Dashboard
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-th-large h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+              </div>
+              <span class="relative">Dashboard</span>
+            </div>
           </a>
+
           <!-- admin profile -->
           <a
             routerLink="/admin/profile"
-            routerLinkActive="bg-[#dac4ea]/20 text-white"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
-            Profile
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-user-shield h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+              </div>
+              <span class="relative">Profile</span>
+            </div>
           </a>
+
           <!-- Reunions -->
           <a
             routerLink="/admin/reunions"
-            routerLinkActive="bg-[#dac4ea]/20 text-white"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-              />
-            </svg>
-            Reunions
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-users-cog h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+              </div>
+              <span class="relative">Reunions</span>
+            </div>
           </a>
+
           <!-- Planning  -->
           <a
             routerLink="/admin/plannings"
-            routerLinkActive="bg-[#dac4ea]/20 text-white"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-              />
-            </svg>
-            Plannings
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="far fa-calendar-check h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+              </div>
+              <span class="relative">Plannings</span>
+            </div>
           </a>
-          <!-- Projects -->
+
+          <!-- projects -->
           <a
             routerLink="/admin/projects"
-            routerLinkActive="bg-[#dac4ea]/20 text-white"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-              />
-            </svg>
-            Projects
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-rocket h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+              </div>
+              <span class="relative">Projects</span>
+            </div>
           </a>
-          <!-- ****************** -->
+
+          <!-- rendus -->
+          <a
+            routerLink="/admin/projects/rendus"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-file-upload h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+              </div>
+              <span class="relative">Student Rendus</span>
+            </div>
+          </a>
+
+          <!--  évaluations -->
+          <a
+            routerLink="/admin/projects/evaluations"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-clipboard-check h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+              </div>
+              <span class="relative">Évaluations</span>
+            </div>
+          </a>
+
+          <!-- Back Home button -->
+          <a
+            routerLink="/"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-home h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-colors"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span class="relative">Back Home</span>
+            </div>
+          </a>
           <!-- Equipes-->
           <!-- <a
             routerLink="/admin/equipes"
@@ -165,28 +252,6 @@
             </svg>
             Equipes
           </a> -->
-          <!-- Upload Projects -->
-          <!-- <a
-            routerLink="/admin/uploadProjects"
-            routerLinkActive="bg-[#dac4ea]/20 text-white"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-              />
-            </svg>
-            Upload Projects
-          </a> -->
           <!-- end of bo back -->
         </nav>
       </div>
@@ -199,14 +264,12 @@
       class="fixed inset-0 bg-gray-600 bg-opacity-75"
       (click)="toggleMobileMenu()"
     ></div>
-    <div
-      class="relative flex flex-col w-72 bg-gradient-to-b from-[#4f5fad] to-[#7826b5] h-full"
-    >
+    <div class="relative flex flex-col w-72 bg-white h-full">
       <div class="flex items-center justify-between h-16 px-4">
         <div class="flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-8 w-8 text-[#dac4ea]"
+            class="h-8 w-8 text-[#4f5fad]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -224,9 +287,9 @@
               d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
             />
           </svg>
-          <span class="ml-2 text-xl font-bold text-white">DevBridge</span>
+          <span class="ml-2 text-xl font-bold text-[#4f5fad]">DevBridge</span>
         </div>
-        <button (click)="toggleMobileMenu()" class="text-white">
+        <button (click)="toggleMobileMenu()" class="text-[#6d6870]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
@@ -246,11 +309,12 @@
       <div class="flex flex-col flex-grow px-4 py-4">
         <nav class="flex-1 space-y-2">
           <!-- start of bo back -->
+
           <!-- dashboard -->
           <a
             routerLink="/admin/dashboard"
             (click)="toggleMobileMenu()"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#6d6870] hover:bg-[#edf1f4] hover:text-[#4f5fad] transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -272,7 +336,7 @@
           <a
             routerLink="/admin/profile"
             (click)="toggleMobileMenu()"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#6d6870] hover:bg-[#edf1f4] hover:text-[#4f5fad] transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -294,7 +358,7 @@
           <a
             routerLink="/admin/reunions"
             (click)="toggleMobileMenu()"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#6d6870] hover:bg-[#edf1f4] hover:text-[#4f5fad] transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -307,7 +371,7 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
               />
             </svg>
             Reunions
@@ -316,7 +380,7 @@
           <a
             routerLink="/admin/plannings"
             (click)="toggleMobileMenu()"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#6d6870] hover:bg-[#edf1f4] hover:text-[#4f5fad] transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -329,7 +393,7 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
             Planning
@@ -337,8 +401,8 @@
           <!-- projects -->
           <a
             routerLink="/admin/projects"
-            (click)="toggleMobileMenu()"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
+            routerLinkActive="bg-[#edf1f4] text-[#4f5fad] font-medium"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#6d6870] hover:bg-[#edf1f4] hover:text-[#4f5fad] transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -351,12 +415,65 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
               />
             </svg>
-            Project
+            Projects
           </a>
-          <!-- ****************** -->
+          <!-- rendus -->
+          <a
+            routerLink="/admin/projects/rendus"
+            routerLinkActive="bg-[#edf1f4] text-[#4f5fad] font-medium"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#6d6870] hover:bg-[#edf1f4] hover:text-[#4f5fad] transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
+            </svg>
+            Student Rendus
+          </a>
+          <!--  évaluations -->
+          <a
+            routerLink="/admin/projects/evaluations"
+            routerLinkActive="bg-[#edf1f4] text-[#4f5fad] font-medium"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#6d6870] hover:bg-[#edf1f4] hover:text-[#4f5fad] transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            Évaluations
+          </a>
+
+          <!-- Back Home button -->
+          <a
+            routerLink="/"
+            (click)="toggleMobileMenu()"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#6d6870] hover:bg-[#edf1f4] hover:text-[#4f5fad] transition-colors"
+          >
+            <i class="fas fa-home h-5 w-5 mr-3 text-[#4f5fad]"></i>
+            Back Home
+          </a>
           <!-- Equipes-->
           <!-- <a
             routerLink="/admin/equipes"
@@ -379,28 +496,6 @@
             </svg>
             Equipes
           </a> -->
-        <!-- Upload Projects -->
-          <!-- <a
-            routerLink="/admin/uploadProjects"
-            (click)="toggleMobileMenu()"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-              />
-            </svg>
-           Upload Prjects
-          </a> -->
           <!-- end of bo back -->
         </nav>
       </div>
@@ -410,13 +505,31 @@
   <!-- Main Content -->
   <div class="flex-1 flex flex-col overflow-hidden">
     <!-- Topbar -->
-    <header class="bg-white shadow-sm z-10">
-      <div class="flex items-center justify-between h-16 px-4">
+    <header
+      class="bg-white dark:bg-[#1e1e1e] shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] z-10 border-b border-[#edf1f4]/50 dark:border-[#2a2a2a] backdrop-blur-sm"
+    >
+      <div class="flex items-center justify-between h-16 px-4 relative">
+        <!-- Decorative elements -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+          <div
+            class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-[#4f5fad]/10 dark:via-[#6d78c9]/5 to-transparent"
+          ></div>
+          <div
+            class="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-[#4f5fad]/5 dark:via-[#6d78c9]/3 to-transparent"
+          ></div>
+        </div>
+
         <!-- Mobile menu button -->
-        <button (click)="toggleMobileMenu()" class="md:hidden text-[#6d6870]">
+        <button
+          (click)="toggleMobileMenu()"
+          class="md:hidden flex items-center justify-center h-8 w-8 rounded-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] focus:outline-none transition-colors relative group"
+        >
+          <div
+            class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-md blur-md"
+          ></div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
+            class="h-5 w-5 relative z-10"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -428,36 +541,48 @@
               d="M4 6h16M4 12h16M4 18h16"
             />
           </svg>
+          <span
+            class="text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] ml-2 relative z-10"
+            >Menu</span
+          >
         </button>
+
         <!-- Bouton Back -->
         <button
           (click)="goBack()"
-          class="hidden md:flex items-center px-3 py-1 rounded-md text-sm font-medium text-[#4f5fad] hover:bg-[#dac4ea]/20 transition-colors duration-200"
+          class="hidden md:flex items-center px-3 py-1 rounded-md text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] transition-all duration-200 relative group overflow-hidden"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 mr-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back
+          <div
+            class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-md blur-md"
+          ></div>
+          <div class="relative z-10 flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1 group-hover:scale-110 transition-transform"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span>Back</span>
+          </div>
         </button>
+
+        <!-- Search Bar -->
         <div class="flex-1 max-w-md ml-4 md:ml-6">
-          <div class="relative">
+          <div class="relative group">
             <div
               class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 text-[#6d6870]"
+                class="h-5 w-5 text-[#6d6870] dark:text-[#a0a0a0] group-focus-within:text-[#4f5fad] dark:group-focus-within:text-[#6d78c9] transition-colors"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -472,42 +597,106 @@
             </div>
             <input
               type="text"
-              class="block w-full pl-10 pr-3 py-2 border border-[#bdc6cc] rounded-md leading-5 bg-white placeholder-[#bdc6cc] focus:outline-none focus:ring-2 focus:ring-[#dac4ea] focus:border-[#7826b5]"
+              class="block w-full pl-10 pr-3 py-2 border border-[#bdc6cc] dark:border-[#2a2a2a] rounded-md leading-5 bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] placeholder-[#bdc6cc] dark:placeholder-[#6d6870] focus:outline-none focus:ring-2 focus:ring-[#4f5fad] dark:focus:ring-[#6d78c9] focus:border-[#4f5fad] dark:focus:border-[#6d78c9] transition-all"
               placeholder="Search..."
             />
+            <div
+              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity"
+            >
+              <div
+                class="w-0.5 h-4 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full"
+              ></div>
+            </div>
           </div>
         </div>
 
         <!-- User menu -->
         <div class="ml-4 flex items-center md:ml-6">
+          <!-- Bouton Dark Mode -->
+          <button
+            (click)="toggleDarkMode()"
+            class="flex items-center justify-center h-8 w-8 rounded-full bg-[#edf1f4] dark:bg-[#2a2a2a] hover:bg-[#dce4ec] dark:hover:bg-[#3a3a3a] text-[#4f5fad] dark:text-[#6d78c9] mr-3 transition-all duration-300 relative overflow-hidden group"
+            aria-label="Toggle dark mode"
+          >
+            <!-- Animated border -->
+            <div class="absolute inset-0 rounded-full overflow-hidden">
+              <div
+                class="absolute inset-0 rounded-full border border-[#4f5fad]/20 dark:border-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity"
+              ></div>
+              <div
+                class="absolute -inset-1 bg-gradient-to-r from-[#4f5fad]/0 via-[#4f5fad]/30 to-[#4f5fad]/0 dark:from-[#6d78c9]/0 dark:via-[#6d78c9]/30 dark:to-[#6d78c9]/0 opacity-0 group-hover:opacity-100 blur-sm animate-shine"
+              ></div>
+            </div>
+            <!-- Glow effect -->
+            <div
+              class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 opacity-0 group-hover:opacity-100 transition-opacity blur-md"
+            ></div>
+            <div
+              class="relative z-10 transition-all duration-500 ease-in-out"
+              [ngClass]="{ 'rotate-180': isDarkMode$ | async }"
+            >
+              <i
+                *ngIf="!(isDarkMode$ | async)"
+                class="far fa-moon group-hover:scale-110 transition-transform"
+              ></i>
+              <i
+                *ngIf="isDarkMode$ | async"
+                class="far fa-sun group-hover:scale-110 transition-transform"
+              ></i>
+            </div>
+          </button>
+        </div>
+
+        <!-- User Profile Menu -->
+        <div class="ml-4 flex items-center md:ml-6">
           <div class="relative">
             <button
               (click)="toggleUserMenu()"
-              class="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-[#dac4ea]"
+              class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-[#4f5fad] dark:focus:ring-[#6d78c9] transition-all group"
             >
               <span class="sr-only">Open user menu</span>
               <span
-                class="hidden md:inline-block mr-2 text-sm font-medium text-[#6d6870]"
+                class="hidden md:inline-block mr-2 text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] group-hover:text-[#4f5fad] dark:group-hover:text-[#6d78c9] transition-colors"
                 >{{ username }}</span
               >
-              <img
-                class="h-8 w-8 rounded-full"
-                [src]="imageProfile || 'assets/admin/img/undraw_profile.svg'"
-                alt=""
-              />
+              <div
+                class="h-8 w-8 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#4f5fad] dark:border-[#6d78c9] group-hover:border-[#3d4a85] dark:group-hover:border-[#4f5fad] transition-colors relative"
+              >
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 opacity-0 group-hover:opacity-100 transition-opacity blur-md"
+                ></div>
+                <img
+                  class="h-full w-full object-cover"
+                  [src]="imageProfile"
+                  alt="Profile"
+                />
+              </div>
             </button>
 
             <!-- User dropdown menu -->
             <div
               *ngIf="userMenuOpen"
               [@fadeIn]
-              class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 z-50"
+              class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg dark:shadow-[0_10px_25px_rgba(0,0,0,0.3)] bg-white dark:bg-[#1e1e1e] border border-[#edf1f4]/50 dark:border-[#2a2a2a] py-1 z-50 backdrop-blur-sm"
             >
               <a
                 (click)="openLogoutModal()"
-                class="block px-4 py-2 text-sm text-[#6d6870] hover:bg-[#edf1f4] cursor-pointer"
-                >Logout</a
+                class="block px-4 py-2 text-sm text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-colors group cursor-pointer"
               >
+                <div class="flex items-center">
+                  <div class="relative">
+                    <i
+                      class="fas fa-sign-out-alt mr-2 text-[#ff6b69] dark:text-[#ff8785] group-hover:scale-110 transition-transform"
+                    ></i>
+                    <!-- Glow effect -->
+                    <div
+                      class="absolute inset-0 bg-[#ff6b69]/20 dark:bg-[#ff8785]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                    ></div>
+                  </div>
+                  <span>Logout</span>
+                </div>
+              </a>
             </div>
           </div>
         </div>
@@ -515,16 +704,71 @@
     </header>
 
     <!-- Main content area -->
-    <main class="flex-1 overflow-y-auto bg-[#edf1f4] p-4 md:p-6">
-      <!-- Router outlet -->
+    <main
+      class="flex-1 overflow-y-auto bg-[#edf1f4] dark:bg-[#121212] p-4 md:p-6 relative"
+    >
+      <!-- Background decorative elements -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+        ></div>
+        <div
+          class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+        ></div>
+      </div>
 
-      <router-outlet></router-outlet>
+      <!-- Router outlet -->
+      <div class="relative z-10">
+        <router-outlet></router-outlet>
+      </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-[#bdc6cc] py-4">
-      <div class="container mx-auto px-4 text-center text-sm text-[#6d6870]">
-        &copy; {{ currentYear }} DevBridge. All rights reserved.
+    <footer
+      class="bg-white dark:bg-[#1e1e1e] border-t border-[#edf1f4]/50 dark:border-[#2a2a2a] py-4 relative overflow-hidden"
+    >
+      <!-- Decorative elements -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-[#4f5fad]/10 dark:via-[#6d78c9]/5 to-transparent"
+        ></div>
+        <div
+          class="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-[#4f5fad]/5 dark:via-[#6d78c9]/3 to-transparent"
+        ></div>
+      </div>
+
+      <div
+        class="container mx-auto px-4 text-center text-sm text-[#6d6870] dark:text-[#a0a0a0] relative z-10"
+      >
+        <div class="flex items-center justify-center">
+          <div class="relative mr-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 text-[#4f5fad] dark:text-[#6d78c9]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            <!-- Glow effect -->
+            <div
+              class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 blur-xl rounded-full transform scale-150 -z-10"
+            ></div>
+          </div>
+          <span>&copy; {{ currentYear }} DevBridge. All rights reserved.</span>
+        </div>
       </div>
     </footer>
   </div>
@@ -534,23 +778,37 @@
     <div
       class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
     >
-      <!-- Background overlay -->
+      <!-- Background overlay with blur -->
       <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        <div
+          class="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
+        ></div>
       </div>
 
       <!-- Modal -->
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+        class="inline-block align-bottom bg-white dark:bg-[#1e1e1e] rounded-lg text-left overflow-hidden shadow-xl dark:shadow-[0_10px_25px_rgba(0,0,0,0.3)] transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative"
       >
-        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <!-- Decorative elements -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+          <div
+            class="absolute top-[10%] left-[5%] w-32 h-32 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-2xl"
+          ></div>
+          <div
+            class="absolute bottom-[10%] right-[5%] w-40 h-40 rounded-full bg-gradient-to-tl from-[#ff6b69]/5 to-transparent dark:from-[#ff8785]/3 dark:to-transparent blur-2xl"
+          ></div>
+        </div>
+
+        <div
+          class="bg-white dark:bg-[#1e1e1e] px-4 pt-5 pb-4 sm:p-6 sm:pb-4 relative z-10"
+        >
           <div class="sm:flex sm:items-start">
             <div
-              class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-[#ff6b69]/10 sm:mx-0 sm:h-10 sm:w-10"
+              class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 sm:mx-0 sm:h-10 sm:w-10 relative"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6 text-[#ff6b69]"
+                class="h-6 w-6 text-[#ff6b69] dark:text-[#ff8785]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -562,33 +820,55 @@
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
+              <!-- Glow effect -->
+              <div
+                class="absolute inset-0 bg-[#ff6b69]/20 dark:bg-[#ff8785]/20 blur-xl rounded-full transform scale-150 -z-10"
+              ></div>
             </div>
             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-              <h3 class="text-lg leading-6 font-medium text-[#4f5fad]">
+              <h3
+                class="text-lg leading-6 font-medium bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+              >
                 Ready to Leave?
               </h3>
               <div class="mt-2">
-                <p class="text-sm text-[#6d6870]">
+                <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0]">
                   Are you sure you want to logout?
                 </p>
               </div>
             </div>
           </div>
         </div>
-        <div class="bg-[#edf1f4] px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <div
+          class="bg-[#edf1f4] dark:bg-[#161616] px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-[#edf1f4]/50 dark:border-[#2a2a2a] relative z-10"
+        >
           <button
             type="button"
             (click)="logout()"
-            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#ff6b69] text-base font-medium text-white hover:bg-[#e04f4d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff6b69] sm:ml-3 sm:w-auto sm:text-sm"
+            class="w-full inline-flex justify-center rounded-md px-4 py-2 text-base font-medium text-white sm:ml-3 sm:w-auto sm:text-sm relative overflow-hidden group"
           >
-            Logout
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#ff6b69] to-[#ff8785] dark:from-[#ff6b69] dark:to-[#ff8785] rounded-md transition-transform duration-300 group-hover:scale-105"
+            ></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#ff6b69] to-[#ff8785] dark:from-[#ff6b69] dark:to-[#ff8785] rounded-md opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+            ></div>
+            <span class="relative flex items-center">
+              <i class="fas fa-sign-out-alt mr-1.5"></i>
+              Logout
+            </span>
           </button>
           <button
             type="button"
             (click)="closeLogoutModal()"
-            class="mt-3 w-full inline-flex justify-center rounded-md border border-[#bdc6cc] shadow-sm px-4 py-2 bg-white text-base font-medium text-[#6d6870] hover:bg-[#edf1f4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4f5fad] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            class="mt-3 w-full inline-flex justify-center rounded-md border border-[#bdc6cc] dark:border-[#2a2a2a] px-4 py-2 bg-white dark:bg-[#1e1e1e] text-base font-medium text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] focus:outline-none focus:ring-2 focus:ring-[#4f5fad] dark:focus:ring-[#6d78c9] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all group"
           >
-            Cancel
+            <span
+              class="relative flex items-center group-hover:text-[#4f5fad] dark:group-hover:text-[#6d78c9] transition-colors"
+            >
+              <i class="fas fa-times mr-1.5"></i>
+              Cancel
+            </span>
           </button>
         </div>
       </div>
@@ -599,11 +879,17 @@
   <button
     *ngIf="showScrollButton"
     (click)="scrollToTop()"
-    class="fixed bottom-6 right-6 bg-[#7826b5] text-white p-3 rounded-full shadow-lg hover:bg-[#4f5fad] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#dac4ea]"
+    class="fixed bottom-6 right-6 p-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4f5fad] dark:focus:ring-[#6d78c9] overflow-hidden group"
   >
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-full transition-transform duration-300 group-hover:scale-110"
+    ></div>
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-full opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+    ></div>
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      class="h-5 w-5"
+      class="h-5 w-5 text-white relative z-10"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"

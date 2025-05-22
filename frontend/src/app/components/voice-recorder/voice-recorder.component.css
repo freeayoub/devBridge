@@ -3,83 +3,236 @@
   align-items: center;
   justify-content: center;
   padding: 10px;
+  width: 100%;
 }
+
 .voice-recorder .recording-status {
   display: flex;
   align-items: center;
-  border-radius: 20px;
-  padding: 5px 10px;
-  transition: all 0.3s ease;
+  border-radius: var(--border-radius-full);
+  padding: 8px 15px;
+  transition: all var(--transition-medium);
+  background-color: rgba(0, 247, 255, 0.05);
+  border: 1px solid rgba(0, 247, 255, 0.1);
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
+
+.voice-recorder .recording-status::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-color),
+    transparent
+  );
+  opacity: 0.3;
+}
+
 .voice-recorder .recording-status.active {
-  background-color: rgba(255, 0, 0, 0.1);
-  border: 1px solid rgba(255, 0, 0, 0.3);
+  background-color: rgba(255, 53, 71, 0.1);
+  border: 1px solid rgba(255, 53, 71, 0.3);
+  box-shadow: 0 0 15px rgba(255, 53, 71, 0.1);
+  animation: glow-pulse 2s infinite;
 }
+
+.voice-recorder .recording-status.active::before {
+  background: linear-gradient(90deg, transparent, #ff3547, transparent);
+}
+
+@keyframes glow-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 53, 71, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(255, 53, 71, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(255, 53, 71, 0.1);
+  }
+}
+
 .voice-recorder .recording-indicator {
   display: flex;
   align-items: center;
-  margin-right: 10px;
+  margin-right: 15px;
+  background-color: rgba(255, 53, 71, 0.1);
+  padding: 5px 10px;
+  border-radius: var(--border-radius-full);
+  backdrop-filter: blur(5px);
 }
+
 .voice-recorder .recording-indicator .recording-dot {
-  width: 10px;
-  height: 10px;
-  background-color: red;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, #ff3547, #ff5252);
   border-radius: 50%;
-  margin-right: 5px;
+  margin-right: 8px;
+  position: relative;
   animation: pulse 1.5s infinite;
 }
+
+.voice-recorder .recording-indicator .recording-dot::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 53, 71, 0.5) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: pulse-glow 1.5s infinite;
+}
+
+@keyframes pulse-glow {
+  0% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+  100% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 .voice-recorder .recording-indicator .recording-time {
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 600;
+  color: #ff3547;
+  letter-spacing: 0.5px;
 }
+
 .voice-recorder .recording-controls {
   display: flex;
   align-items: center;
+  margin-left: auto;
 }
+
 .voice-recorder .recording-controls .btn-record {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  background-color: #007bff;
-  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--secondary-color)
+  );
+  color: var(--text-light);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-medium);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.3);
 }
+
+.voice-recorder .recording-controls .btn-record::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.2) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.voice-recorder .recording-controls .btn-record:hover::before {
+  opacity: 1;
+}
+
 .voice-recorder .recording-controls .btn-record:hover {
-  background-color: #0062cc;
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px rgba(0, 247, 255, 0.5);
 }
+
 .voice-recorder .recording-controls .btn-record.recording {
-  background-color: red;
+  background: linear-gradient(135deg, #ff3547, #ff5252);
+  box-shadow: 0 0 15px rgba(255, 53, 71, 0.3);
 }
+
 .voice-recorder .recording-controls .btn-record.recording:hover {
-  background-color: #cc0000;
+  box-shadow: 0 0 20px rgba(255, 53, 71, 0.5);
 }
+
 .voice-recorder .recording-controls .btn-record i {
   font-size: 18px;
+  position: relative;
+  z-index: 2;
 }
+
 .voice-recorder .recording-controls .btn-cancel {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
-  background-color: #6c757d;
-  color: white;
-  border: none;
+  background-color: rgba(255, 53, 71, 0.1);
+  color: #ff3547;
+  border: 1px solid rgba(255, 53, 71, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin-left: 10px;
-  transition: all 0.3s ease;
+  margin-left: 12px;
+  transition: all var(--transition-medium);
+  position: relative;
+  overflow: hidden;
 }
+
+.voice-recorder .recording-controls .btn-cancel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.voice-recorder .recording-controls .btn-cancel:hover::before {
+  opacity: 1;
+}
+
 .voice-recorder .recording-controls .btn-cancel:hover {
-  background-color: #545b62;
+  background-color: #ff3547;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 0 15px rgba(255, 53, 71, 0.3);
+  border-color: transparent;
 }
+
 .voice-recorder .recording-controls .btn-cancel i {
   font-size: 14px;
+  position: relative;
+  z-index: 2;
 }
 
 @keyframes pulse {
@@ -88,7 +241,7 @@
     transform: scale(1);
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.7;
     transform: scale(1.2);
   }
   100% {

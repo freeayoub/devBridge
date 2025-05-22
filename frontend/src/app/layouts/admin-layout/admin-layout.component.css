@@ -3,7 +3,7 @@
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   padding: 15px 25px;
   border-radius: 4px;
@@ -30,6 +30,7 @@
     top: 0;
   }
 }
+
 .back-button {
   transition: all 0.2s ease;
 }
@@ -40,4 +41,138 @@
 
 .back-button:active {
   transform: translateX(-4px);
+}
+
+/* Effet fluo pour les boutons de la barre latérale */
+.sidebar-nav-link {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Bordure standard pour tous les liens */
+.sidebar-nav-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0.375rem 0 0 0.375rem;
+  border: 2px solid rgba(79, 95, 173, 0.1);
+  pointer-events: none;
+}
+
+.dark .sidebar-nav-link::before {
+  border-color: rgba(109, 120, 201, 0.1);
+}
+
+/* Effet fluo sur le bord droit pour les liens actifs */
+.sidebar-nav-link.active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 0.5rem;
+  background: linear-gradient(to bottom, #4f5fad, #00f7ff, #4f5fad);
+  border-radius: 0 0.375rem 0.375rem 0;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.7);
+}
+
+.dark .sidebar-nav-link.active::after {
+  background: linear-gradient(to bottom, #6d78c9, #00f7ff, #6d78c9);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.7);
+}
+
+/* Animation de pulsation */
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* Effet de lueur qui déborde */
+.sidebar-nav-link.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 0.5rem;
+  background: linear-gradient(to bottom, #4f5fad, #00f7ff, #4f5fad);
+  border-radius: 0 0.375rem 0.375rem 0;
+  filter: blur(8px);
+  transform: scale(1.5);
+  opacity: 0.5;
+  animation: pulse 2s infinite;
+}
+
+.dark .sidebar-nav-link.active::before {
+  background: linear-gradient(to bottom, #6d78c9, #00f7ff, #6d78c9);
+}
+
+/* Effet jaune pour les listes de conversations et utilisateurs */
+.conversation-item,
+.user-item {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Effet de bordure jaune pour les éléments actifs ou survolés */
+.conversation-item.active,
+.conversation-item:hover,
+.user-item.active,
+.user-item:hover {
+  border-color: rgba(255, 193, 7, 0.5) !important;
+}
+
+/* Effet de lueur jaune sur le bord droit pour les éléments actifs */
+.conversation-item.active::after,
+.user-item.active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 0.25rem;
+  background: linear-gradient(to bottom, #ffc107, #ffeb3b, #ffc107);
+  border-radius: 0 0.375rem 0.375rem 0;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+}
+
+/* Effet de lueur qui déborde pour les éléments actifs */
+.conversation-item.active::before,
+.user-item.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 0.25rem;
+  background: linear-gradient(to bottom, #ffc107, #ffeb3b, #ffc107);
+  border-radius: 0 0.375rem 0.375rem 0;
+  filter: blur(8px);
+  transform: scale(1.5);
+  opacity: 0.5;
+  animation: pulse 2s infinite;
+}
+
+/* Effet de halo pour les éléments non lus */
+.conversation-item.unread::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #ffc107;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.7);
 }

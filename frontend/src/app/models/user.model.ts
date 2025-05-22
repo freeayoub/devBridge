@@ -3,15 +3,20 @@ export interface User {
   id?: string;
   username: string;
   email: string;
-  image?: string | null;  
+  fullName?: string;
+  profileImage?: string;
+  image?: string | null;
   role: string;
   bio?: string;
   isActive: boolean;
-  isOnline?: boolean;   
-  lastActive?: Date;   
-  createdAt?: Date;     
-  updatedAt?: Date;  
+  isOnline?: boolean;
+  lastActive?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   followingCount?: number;
   followersCount?: number;
   postCount?: number;
+  group?: any;
+  verified?: boolean;
+  __v?: number;
 }

@@ -8,6 +8,7 @@ import { ReunionFormComponent } from './reunion-form/reunion-form.component';
 import { ReunionSchedulerComponent } from './reunion-scheduler/reunion-scheduler.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReunionEditComponent } from './reunion-edit/reunion-edit.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ReunionDetailComponent,
     ReunionFormComponent,
     ReunionSchedulerComponent,
+    ReunionEditComponent,
   ],
   imports: [
     CommonModule,

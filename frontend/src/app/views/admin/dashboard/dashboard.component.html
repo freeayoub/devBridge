@@ -1,181 +1,622 @@
 <!-- Begin Page Content -->
-<div class="container-fluid p-4 md:p-6 bg-[#edf1f4] min-h-screen">
-<div class="min-h-screen bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
-  <div class="container mx-auto px-4 py-6">
-    <!-- Admin Dashboard Header -->
-    <div class="flex flex-col md:flex-row justify-between items-center mb-4">
-      <h1 class="text-xl font-medium text-gray-900 dark:text-white">Admin Dashboard</h1>
+<div
+  class="container-fluid p-4 md:p-6 bg-[#edf1f4] dark:bg-[#121212] min-h-screen relative"
+>
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"
+    ></div>
+
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 opacity-5 dark:opacity-[0.03]">
+      <div class="h-full grid grid-cols-12">
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#6d78c9]"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="relative z-10">
+    <!-- Page Heading -->
+    <div
+      class="flex flex-col md:flex-row md:items-center md:justify-between mb-8"
+    >
+      <div>
+        <h1
+          class="text-2xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent mb-2"
+        >
+          Admin Dashboard
+        </h1>
+        <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0]">
+          Manage users and system settings
+        </p>
+      </div>
 
       <!-- Search Box -->
-      <div class="relative mt-3 md:mt-0 w-full md:w-64">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-          </svg>
+      <div class="relative w-full md:w-72 mt-4 md:mt-0 group">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <i
+            class="fas fa-search text-[#bdc6cc] dark:text-[#6d6870] group-focus-within:text-[#4f5fad] dark:group-focus-within:text-[#6d78c9] transition-colors"
+          ></i>
         </div>
         <input
           type="text"
           [value]="searchTerm"
           (input)="searchTerm = $any($event.target).value; searchUsers()"
           placeholder="Search users..."
-          class="w-full pl-9 pr-8 py-1.5 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary-light dark:focus:ring-primary-dark"
+          class="w-full pl-10 pr-10 py-2.5 text-sm rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+        />
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity"
         >
+          <div
+            class="w-0.5 h-4 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] rounded-full"
+          ></div>
+        </div>
         <button
           *ngIf="searchTerm"
           (click)="clearSearch()"
-          class="absolute inset-y-0 right-0 pr-2 flex items-center"
+          class="absolute inset-y-0 right-0 pr-3 flex items-center text-[#bdc6cc] dark:text-[#6d6870] hover:text-[#ff6b69] dark:hover:text-[#ff8785] transition-colors"
         >
-          <svg class="h-4 w-4 text-gray-400 hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
+          <i class="fas fa-times-circle"></i>
         </button>
       </div>
     </div>
 
     <!-- Alerts -->
-    <div *ngIf="message" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 px-3 py-2 rounded text-sm mb-4 animate-pulse">
-      {{ message }}
+    <div
+      *ngIf="message"
+      class="bg-[#afcf75]/10 dark:bg-[#afcf75]/5 border border-[#afcf75] dark:border-[#afcf75]/30 rounded-lg p-4 mx-auto max-w-3xl mb-6 backdrop-blur-sm"
+    >
+      <div class="flex items-start">
+        <div class="text-[#2a5a03] dark:text-[#afcf75] mr-3 text-xl relative">
+          <i class="fas fa-check-circle"></i>
+          <!-- Glow effect -->
+          <div
+            class="absolute inset-0 bg-[#afcf75]/20 dark:bg-[#afcf75]/20 blur-xl rounded-full transform scale-150 -z-10"
+          ></div>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-medium text-[#2a5a03] dark:text-[#afcf75] mb-1">
+            Success
+          </h3>
+          <p class="text-sm text-[#2a5a03]/80 dark:text-[#afcf75]/80">
+            {{ message }}
+          </p>
+        </div>
+      </div>
     </div>
-    <div *ngIf="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-3 py-2 rounded text-sm mb-4 animate-pulse">
-      {{ error }}
+
+    <div
+      *ngIf="error"
+      class="bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 border border-[#ff6b69] dark:border-[#ff6b69]/30 rounded-lg p-4 mx-auto max-w-3xl mb-6 backdrop-blur-sm"
+    >
+      <div class="flex items-start">
+        <div class="text-[#ff6b69] dark:text-[#ff8785] mr-3 text-xl relative">
+          <i class="fas fa-exclamation-triangle"></i>
+          <!-- Glow effect -->
+          <div
+            class="absolute inset-0 bg-[#ff6b69]/20 dark:bg-[#ff8785]/20 blur-xl rounded-full transform scale-150 -z-10"
+          ></div>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-medium text-[#ff6b69] dark:text-[#ff8785] mb-1">
+            Error
+          </h3>
+          <p class="text-sm text-[#ff6b69]/80 dark:text-[#ff8785]/80">
+            {{ error }}
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Loading State -->
     <div *ngIf="loading" class="flex justify-center items-center py-20">
-      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-light dark:border-primary-dark"></div>
+      <div class="relative">
+        <div
+          class="w-14 h-14 border-4 border-[#4f5fad]/20 dark:border-[#6d78c9]/20 border-t-[#4f5fad] dark:border-t-[#6d78c9] rounded-full animate-spin"
+        ></div>
+        <!-- Glow effect -->
+        <div
+          class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 blur-xl rounded-full transform scale-150 -z-10"
+        ></div>
+      </div>
     </div>
 
     <!-- Stats Cards -->
-    <div *ngIf="!loading && filteredUsers.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <!-- Total Users with Progress Bar -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
-        <div class="flex justify-between items-center mb-2">
-          <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Users</div>
-          <div class="text-lg font-medium text-gray-900 dark:text-white">{{ users.length }}</div>
-        </div>
-        <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-          <div class="bg-primary-light dark:bg-primary-dark h-full rounded-full" style="width: 100%"></div>
+    <div
+      *ngIf="!loading && filteredUsers.length > 0"
+      class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+    >
+      <!-- Total Users Card -->
+      <div
+        class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative group hover:shadow-lg dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1"
+      >
+        <!-- Decorative gradient top border -->
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"
+        ></div>
+
+        <!-- Glow effect on hover -->
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+        ></div>
+
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="flex-1">
+              <div
+                class="text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] uppercase tracking-wider"
+              >
+                Total Users
+              </div>
+              <div
+                class="mt-1 text-2xl font-semibold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+              >
+                {{ users.length }}
+              </div>
+            </div>
+            <div class="ml-4 relative">
+              <div
+                class="absolute inset-0 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-150"
+              ></div>
+              <div
+                class="relative z-10 bg-[#edf1f4]/80 dark:bg-[#2a2a2a]/80 rounded-full p-2.5 backdrop-blur-sm group-hover:scale-110 transition-transform duration-300"
+              >
+                <i
+                  class="fas fa-users text-[#4f5fad] dark:text-[#6d78c9] text-xl"
+                ></i>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mt-4 w-full bg-[#edf1f4] dark:bg-[#2a2a2a] rounded-full h-2.5 overflow-hidden relative"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#6d78c9]/10 dark:to-[#4f5fad]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"
+            ></div>
+            <div
+              class="bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] h-2.5 rounded-full relative z-10"
+              style="width: 100%"
+            >
+              <div
+                class="absolute inset-0 bg-[#00f7ff]/20 rounded-full animate-pulse"
+              ></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Active/Inactive Users -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
-        <div class="flex justify-between items-center mb-2">
-          <div class="text-sm font-medium text-gray-700 dark:text-gray-300">User Status</div>
-          <div class="flex space-x-2 text-xs">
-            <span class="text-green-600 dark:text-green-400 font-medium">{{ getActiveCount() }} Active</span>
-            <span class="text-gray-400">|</span>
-            <span class="text-red-600 dark:text-red-400 font-medium">{{ getInactiveCount() }} Inactive</span>
+      <!-- User Status Card -->
+      <div
+        class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative group hover:shadow-lg dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1"
+      >
+        <!-- Decorative gradient top border -->
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#2a5a03] to-[#afcf75] dark:from-[#2a5a03] dark:to-[#afcf75]"
+        ></div>
+
+        <!-- Glow effect on hover -->
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#2a5a03] to-[#afcf75] dark:from-[#2a5a03] dark:to-[#afcf75] opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+        ></div>
+
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="flex-1">
+              <div
+                class="text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] uppercase tracking-wider"
+              >
+                User Status
+              </div>
+              <div class="mt-1 flex space-x-4 text-sm">
+                <div class="flex items-center">
+                  <div
+                    class="w-2 h-2 rounded-full bg-[#afcf75] dark:bg-[#afcf75] mr-1.5 relative"
+                  >
+                    <div
+                      class="absolute inset-0 bg-[#afcf75] rounded-full animate-ping opacity-75"
+                    ></div>
+                  </div>
+                  <span class="text-[#2a5a03] dark:text-[#afcf75] font-medium"
+                    >{{ getActiveCount() }} Active</span
+                  >
+                </div>
+                <div class="flex items-center">
+                  <div
+                    class="w-2 h-2 rounded-full bg-[#ff6b69] dark:bg-[#ff8785] mr-1.5"
+                  ></div>
+                  <span class="text-[#ff6b69] dark:text-[#ff8785] font-medium"
+                    >{{ getInactiveCount() }} Inactive</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="ml-4 relative">
+              <div
+                class="absolute inset-0 bg-[#afcf75]/10 dark:bg-[#afcf75]/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-150"
+              ></div>
+              <div
+                class="relative z-10 bg-[#edf1f4]/80 dark:bg-[#2a2a2a]/80 rounded-full p-2.5 backdrop-blur-sm group-hover:scale-110 transition-transform duration-300"
+              >
+                <i
+                  class="fas fa-check-circle text-[#afcf75] dark:text-[#afcf75] text-xl"
+                ></i>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
-          <div class="bg-green-500 dark:bg-green-600 h-full" [style.width.%]="users.length ? (getActiveCount() / users.length) * 100 : 0"></div>
-          <div class="bg-red-500 dark:bg-red-600 h-full" [style.width.%]="users.length ? (getInactiveCount() / users.length) * 100 : 0"></div>
+          <div
+            class="mt-4 w-full bg-[#edf1f4] dark:bg-[#2a2a2a] rounded-full h-2.5 overflow-hidden relative"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#2a5a03]/10 to-[#afcf75]/10 dark:from-[#2a5a03]/10 dark:to-[#afcf75]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"
+            ></div>
+            <div class="flex h-full relative z-10">
+              <div
+                class="bg-gradient-to-r from-[#2a5a03] to-[#afcf75] dark:from-[#2a5a03] dark:to-[#afcf75] h-2.5 relative"
+                [style.width.%]="
+                  users.length ? (getActiveCount() / users.length) * 100 : 0
+                "
+              >
+                <div
+                  class="absolute inset-0 bg-[#afcf75]/20 rounded-full animate-pulse"
+                ></div>
+              </div>
+              <div
+                class="bg-gradient-to-r from-[#ff6b69] to-[#ff8785] dark:from-[#ff6b69] dark:to-[#ff8785] h-2.5 relative"
+                [style.width.%]="
+                  users.length ? (getInactiveCount() / users.length) * 100 : 0
+                "
+              >
+                <div
+                  class="absolute inset-0 bg-[#ff6b69]/20 rounded-full animate-pulse"
+                ></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Role Distribution -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
-        <div class="flex justify-between items-center mb-2">
-          <div class="text-sm font-medium text-gray-700 dark:text-gray-300">User Roles</div>
-          <div class="flex space-x-2 text-xs">
-            <span class="text-blue-600 dark:text-blue-400 font-medium">{{ getStudentCount() }}</span>
-            <span class="text-gray-400">|</span>
-            <span class="text-purple-600 dark:text-purple-400 font-medium">{{ getTeacherCount() }}</span>
-            <span class="text-gray-400">|</span>
-            <span class="text-yellow-600 dark:text-yellow-400 font-medium">{{ getAdminCount() }}</span>
+      <!-- User Roles Card -->
+      <div
+        class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative group hover:shadow-lg dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1"
+      >
+        <!-- Decorative gradient top border -->
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4a89ce] to-[#7826b5] dark:from-[#4a89ce] dark:to-[#7826b5]"
+        ></div>
+
+        <!-- Glow effect on hover -->
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4a89ce] to-[#7826b5] dark:from-[#4a89ce] dark:to-[#7826b5] opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+        ></div>
+
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="flex-1">
+              <div
+                class="text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] uppercase tracking-wider"
+              >
+                User Roles
+              </div>
+              <div class="mt-1 flex flex-wrap gap-4 text-sm">
+                <div class="flex items-center">
+                  <div
+                    class="w-2 h-2 rounded-full bg-[#4a89ce] dark:bg-[#4a89ce] mr-1.5"
+                  ></div>
+                  <span class="text-[#4a89ce] dark:text-[#4a89ce] font-medium"
+                    >{{ getStudentCount() }} Students</span
+                  >
+                </div>
+                <div class="flex items-center">
+                  <div
+                    class="w-2 h-2 rounded-full bg-[#7826b5] dark:bg-[#7826b5] mr-1.5"
+                  ></div>
+                  <span class="text-[#7826b5] dark:text-[#7826b5] font-medium"
+                    >{{ getTeacherCount() }} Teachers</span
+                  >
+                </div>
+                <div class="flex items-center">
+                  <div
+                    class="w-2 h-2 rounded-full bg-[#4f5fad] dark:bg-[#6d78c9] mr-1.5"
+                  ></div>
+                  <span class="text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+                    >{{ getAdminCount() }} Admins</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="ml-4 relative">
+              <div
+                class="absolute inset-0 bg-[#4a89ce]/10 dark:bg-[#4a89ce]/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-150"
+              ></div>
+              <div
+                class="relative z-10 bg-[#edf1f4]/80 dark:bg-[#2a2a2a]/80 rounded-full p-2.5 backdrop-blur-sm group-hover:scale-110 transition-transform duration-300"
+              >
+                <i
+                  class="fas fa-user-tag text-[#4a89ce] dark:text-[#4a89ce] text-xl"
+                ></i>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
-          <div class="bg-blue-500 dark:bg-blue-600 h-full" [style.width.%]="users.length ? (getStudentCount() / users.length) * 100 : 0"></div>
-          <div class="bg-purple-500 dark:bg-purple-600 h-full" [style.width.%]="users.length ? (getTeacherCount() / users.length) * 100 : 0"></div>
-          <div class="bg-yellow-500 dark:bg-yellow-600 h-full" [style.width.%]="users.length ? (getAdminCount() / users.length) * 100 : 0"></div>
-        </div>
-        <div class="flex justify-between mt-1 text-xs text-gray-500 dark:text-gray-400">
-          <span>Students</span>
-          <span>Teachers</span>
-          <span>Admins</span>
+          <div
+            class="mt-4 w-full bg-[#edf1f4] dark:bg-[#2a2a2a] rounded-full h-2.5 overflow-hidden relative"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#4a89ce]/10 to-[#7826b5]/10 dark:from-[#4a89ce]/10 dark:to-[#7826b5]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"
+            ></div>
+            <div class="flex h-full relative z-10">
+              <div
+                class="bg-gradient-to-r from-[#4a89ce] to-[#4a89ce] dark:from-[#4a89ce] dark:to-[#4a89ce] h-2.5 relative"
+                [style.width.%]="
+                  users.length ? (getStudentCount() / users.length) * 100 : 0
+                "
+              >
+                <div
+                  class="absolute inset-0 bg-[#4a89ce]/20 rounded-full animate-pulse"
+                ></div>
+              </div>
+              <div
+                class="bg-gradient-to-r from-[#7826b5] to-[#7826b5] dark:from-[#7826b5] dark:to-[#7826b5] h-2.5 relative"
+                [style.width.%]="
+                  users.length ? (getTeacherCount() / users.length) * 100 : 0
+                "
+              >
+                <div
+                  class="absolute inset-0 bg-[#7826b5]/20 rounded-full animate-pulse"
+                ></div>
+              </div>
+              <div
+                class="bg-gradient-to-r from-[#4f5fad] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#6d78c9] h-2.5 relative"
+                [style.width.%]="
+                  users.length ? (getAdminCount() / users.length) * 100 : 0
+                "
+              >
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 rounded-full animate-pulse"
+                ></div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex justify-between mt-2 text-xs text-[#6d6870] dark:text-[#a0a0a0]"
+          >
+            <span>Students</span>
+            <span>Teachers</span>
+            <span>Admins</span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Users Table -->
-    <div *ngIf="!loading && filteredUsers.length > 0" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div
+      *ngIf="!loading && filteredUsers.length > 0"
+      class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden mb-8 backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative"
+    >
+      <!-- Decorative gradient top border -->
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"
+      ></div>
+
+      <div
+        class="p-5 border-b border-[#edf1f4]/50 dark:border-[#2a2a2a] flex items-center justify-between"
+      >
+        <h6
+          class="font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent flex items-center"
+        >
+          <i class="fas fa-users-cog mr-2"></i>
+          User Management
+        </h6>
+      </div>
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-700">
+        <table
+          class="w-full divide-y divide-[#edf1f4] dark:divide-[#2a2a2a] table-fixed"
+        >
+          <thead class="bg-[#f8fafc] dark:bg-[#1a1a1a]">
             <tr>
-              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Verified</th>
-              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
-              <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              <th
+                scope="col"
+                class="px-3 py-3 text-left text-xs font-medium text-[#4f5fad] dark:text-[#6d78c9] uppercase tracking-wider w-[15%]"
+              >
+                Name
+              </th>
+              <th
+                scope="col"
+                class="px-3 py-3 text-left text-xs font-medium text-[#4f5fad] dark:text-[#6d78c9] uppercase tracking-wider w-[20%]"
+              >
+                Email
+              </th>
+              <th
+                scope="col"
+                class="px-2 py-3 text-center text-xs font-medium text-[#4f5fad] dark:text-[#6d78c9] uppercase tracking-wider w-[8%]"
+              >
+                Verified
+              </th>
+              <th
+                scope="col"
+                class="px-2 py-3 text-center text-xs font-medium text-[#4f5fad] dark:text-[#6d78c9] uppercase tracking-wider w-[8%]"
+              >
+                Status
+              </th>
+              <th
+                scope="col"
+                class="px-2 py-3 text-center text-xs font-medium text-[#4f5fad] dark:text-[#6d78c9] uppercase tracking-wider w-[10%]"
+              >
+                Role
+              </th>
+              <th
+                scope="col"
+                class="px-2 py-3 text-center text-xs font-medium text-[#4f5fad] dark:text-[#6d78c9] uppercase tracking-wider w-[13%]"
+              >
+                Activate
+              </th>
+              <th
+                scope="col"
+                class="px-2 py-3 text-center text-xs font-medium text-[#4f5fad] dark:text-[#6d78c9] uppercase tracking-wider w-[13%]"
+              >
+                Delete
+              </th>
+              <th
+                scope="col"
+                class="px-2 py-3 text-center text-xs font-medium text-[#4f5fad] dark:text-[#6d78c9] uppercase tracking-wider w-[13%]"
+              >
+                Details
+              </th>
             </tr>
           </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr *ngFor="let user of filteredUsers" class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              <td class="px-4 py-3 whitespace-nowrap">
+          <tbody
+            class="bg-white dark:bg-[#1e1e1e] divide-y divide-[#edf1f4] dark:divide-[#2a2a2a]"
+          >
+            <tr
+              *ngFor="let user of filteredUsers"
+              class="hover:bg-[#f8fafc] dark:hover:bg-[#1a1a1a] transition-colors"
+            >
+              <td class="px-3 py-3 whitespace-nowrap truncate">
                 <div class="flex items-center">
-                  <div class="flex-shrink-0 h-7 w-7 rounded-full bg-primary-light dark:bg-primary-dark text-white flex items-center justify-center text-xs">
-                    {{ user.fullName.charAt(0) }}
+                  <div
+                    class="flex-shrink-0 h-8 w-8 rounded-full bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] text-white flex items-center justify-center text-xs shadow-md relative group"
+                  >
+                    <div
+                      class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"
+                    ></div>
+                    <span class="relative z-10">{{
+                      user.fullName.charAt(0)
+                    }}</span>
                   </div>
                   <div class="ml-3">
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user.fullName }}</div>
+                    <div
+                      class="text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] truncate max-w-[120px]"
+                    >
+                      {{ user.fullName }}
+                    </div>
                   </div>
                 </div>
               </td>
-              <td class="px-4 py-3 whitespace-nowrap">
-                <div class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</div>
-              </td>
-              <td class="px-4 py-3 whitespace-nowrap">
-                <span [ngClass]="user.emailVerified ? 'badge verified' : 'badge not-verified'">
-                  {{ user.emailVerified ? 'Verified' : 'Not Verified' }}
-                </span>
-              </td>
-              <td class="px-4 py-3 whitespace-nowrap">
-                <span [ngClass]="user.isActive !== false ? 'badge active' : 'badge inactive'">
-                  {{ user.isActive !== false ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td class="px-4 py-3 whitespace-nowrap">
-                <select
-                  class="text-xs py-1 px-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary-light dark:focus:ring-primary-dark"
-                  [value]="user.role"
-                  (change)="onRoleChange(user._id, $any($event.target).value)"
+              <td class="px-3 py-3 whitespace-nowrap">
+                <div
+                  class="text-sm text-[#6d6870] dark:text-[#a0a0a0] truncate max-w-[150px]"
                 >
-                  <option *ngFor="let role of roles" [value]="role">
-                    {{ role | titlecase }}
-                  </option>
-                </select>
-              </td>
-              <td class="px-4 py-3 whitespace-nowrap">
-                <div class="flex space-x-1">
-                  <button
-                    class="px-2 py-1 text-xs rounded border font-medium flex items-center"
-                    [ngClass]="user.isActive !== false ?
-                      'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' :
-                      'border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20'"
-                    (click)="toggleUserActivation(user._id, user.isActive !== false)"
-                  >
-                    <svg *ngIf="user.isActive !== false" class="h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
-                    </svg>
-                    <svg *ngIf="user.isActive === false" class="h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    {{ user.isActive !== false ? 'Deactivate' : 'Activate' }}
-                  </button>
-                  <button
-                    class="px-2 py-1 text-xs rounded border border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium flex items-center"
-                    (click)="onDeleteUser(user._id)"
-                  >
-                    <svg class="h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                    Delete
-                  </button>
+                  {{ user.email }}
                 </div>
+              </td>
+              <td class="px-2 py-3 whitespace-nowrap text-center">
+                <span
+                  class="px-2 py-1 text-xs rounded-lg inline-flex items-center justify-center"
+                  [ngClass]="
+                    user.verified
+                      ? 'bg-[#afcf75]/10 dark:bg-[#afcf75]/5 text-[#2a5a03] dark:text-[#afcf75]'
+                      : 'bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 text-[#ff6b69] dark:text-[#ff8785]'
+                  "
+                >
+                  <i
+                    [class]="
+                      user.verified
+                        ? 'fas fa-check-circle mr-1'
+                        : 'fas fa-times-circle mr-1'
+                    "
+                  ></i>
+                  {{ user.verified ? "Yes" : "No" }}
+                </span>
+              </td>
+              <td class="px-2 py-3 whitespace-nowrap text-center">
+                <span
+                  class="px-2 py-1 text-xs rounded-lg inline-flex items-center justify-center"
+                  [ngClass]="
+                    user.isActive !== false
+                      ? 'bg-[#afcf75]/10 dark:bg-[#afcf75]/5 text-[#2a5a03] dark:text-[#afcf75]'
+                      : 'bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 text-[#ff6b69] dark:text-[#ff8785]'
+                  "
+                >
+                  <i
+                    [class]="
+                      user.isActive !== false
+                        ? 'fas fa-circle mr-1.5 text-[8px]'
+                        : 'fas fa-circle mr-1.5 text-[8px]'
+                    "
+                  ></i>
+                  {{ user.isActive !== false ? "Active" : "Inactive" }}
+                </span>
+              </td>
+              <td class="px-2 py-3 whitespace-nowrap text-center">
+                <div class="relative group">
+                  <select
+                    class="w-full px-2 py-1.5 text-xs rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-1 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all appearance-none pr-7"
+                    [value]="user.role"
+                    (change)="onRoleChange(user._id, $any($event.target).value)"
+                  >
+                    <option *ngFor="let role of roles" [value]="role">
+                      {{ role | titlecase }}
+                    </option>
+                  </select>
+                  <div
+                    class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-[#6d6870] dark:text-[#a0a0a0]"
+                  >
+                    <i class="fas fa-chevron-down text-xs"></i>
+                  </div>
+                </div>
+              </td>
+              <td class="px-2 py-3 whitespace-nowrap text-center">
+                <button
+                  class="px-2 py-1.5 text-xs rounded-lg font-medium flex items-center justify-center mx-auto transition-all w-full relative overflow-hidden group"
+                  [ngClass]="
+                    user.isActive !== false
+                      ? 'bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 text-[#ff6b69] dark:text-[#ff8785] hover:bg-[#ff6b69]/20 dark:hover:bg-[#ff6b69]/10'
+                      : 'bg-[#afcf75]/10 dark:bg-[#afcf75]/5 text-[#2a5a03] dark:text-[#afcf75] hover:bg-[#afcf75]/20 dark:hover:bg-[#afcf75]/10'
+                  "
+                  (click)="
+                    toggleUserActivation(user._id, user.isActive !== false)
+                  "
+                  [title]="
+                    user.isActive !== false
+                      ? 'Désactiver le compte utilisateur'
+                      : 'Activer le compte utilisateur'
+                  "
+                >
+                  <i
+                    [class]="
+                      user.isActive !== false
+                        ? 'fas fa-ban mr-1.5'
+                        : 'fas fa-check-circle mr-1.5'
+                    "
+                  ></i>
+                  {{ user.isActive !== false ? "Deactivate" : "Activate" }}
+                </button>
+              </td>
+              <td class="px-2 py-3 whitespace-nowrap text-center">
+                <button
+                  class="px-2 py-1.5 text-xs rounded-lg bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 text-[#ff6b69] dark:text-[#ff8785] hover:bg-[#ff6b69]/20 dark:hover:bg-[#ff6b69]/10 font-medium flex items-center justify-center mx-auto transition-all w-full"
+                  (click)="onDeleteUser(user._id)"
+                  title="Supprimer définitivement cet utilisateur"
+                >
+                  <i class="fas fa-trash-alt mr-1.5"></i>
+                  Delete
+                </button>
+              </td>
+              <td class="px-2 py-3 whitespace-nowrap text-center">
+                <button
+                  class="px-2 py-1.5 text-xs rounded-lg bg-[#4f5fad]/10 dark:bg-[#6d78c9]/5 text-[#4f5fad] dark:text-[#6d78c9] hover:bg-[#4f5fad]/20 dark:hover:bg-[#6d78c9]/10 font-medium flex items-center justify-center mx-auto transition-all w-full"
+                  (click)="showUserDetails(user._id)"
+                >
+                  <i class="fas fa-eye mr-1.5"></i>
+                  Details
+                </button>
               </td>
             </tr>
           </tbody>
@@ -184,28 +625,72 @@
     </div>
 
     <!-- No Users State -->
-    <div *ngIf="!loading && filteredUsers.length === 0" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 text-center">
-      <svg class="mx-auto h-8 w-8 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">No users found</h3>
-      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-        {{ searchTerm ? 'No users match your search criteria.' : 'There are no users in the system yet.' }}
-      </p>
-      <div class="mt-4">
-        <button
-          *ngIf="searchTerm"
-          (click)="clearSearch()"
-          class="inline-flex items-center px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+    <div
+      *ngIf="!loading && filteredUsers.length === 0"
+      class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden mb-8 backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative"
+    >
+      <!-- Decorative gradient top border -->
+      <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"
+      ></div>
+
+      <div class="p-10 text-center">
+        <div class="relative mx-auto w-20 h-20 mb-6">
+          <!-- Glow effect -->
+          <div
+            class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 rounded-full blur-xl"
+          ></div>
+
+          <!-- Icon container with gradient background -->
+          <div
+            class="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-[#edf1f4] to-white dark:from-[#1a1a1a] dark:to-[#2a2a2a] flex items-center justify-center shadow-lg"
+          >
+            <i
+              class="fas fa-users text-3xl bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+            ></i>
+          </div>
+
+          <!-- Animated rings -->
+          <div
+            class="absolute inset-0 border-2 border-[#4f5fad]/20 dark:border-[#6d78c9]/20 rounded-full animate-ping opacity-75"
+          ></div>
+          <div
+            class="absolute inset-0 border border-[#4f5fad]/40 dark:border-[#6d78c9]/40 rounded-full animate-pulse"
+          ></div>
+        </div>
+
+        <h3
+          class="text-xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent mb-3"
         >
-          <svg class="h-3.5 w-3.5 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-          Clear search
-        </button>
+          No users found
+        </h3>
+
+        <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0] max-w-md mx-auto">
+          {{
+            searchTerm
+              ? "No users match your search criteria."
+              : "There are no users in the system yet."
+          }}
+        </p>
+
+        <div class="mt-8" *ngIf="searchTerm">
+          <button
+            (click)="clearSearch()"
+            class="inline-flex items-center px-4 py-2.5 text-sm relative overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-lg opacity-10 dark:opacity-20 group-hover:opacity-20 dark:group-hover:opacity-30 transition-opacity"
+            ></div>
+            <div
+              class="relative z-10 flex items-center text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            >
+              <i class="fas fa-times-circle mr-2"></i>
+              Clear search
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
+  <!-- /.container-fluid -->
 </div>
