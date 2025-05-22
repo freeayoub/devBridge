@@ -1595,9 +1595,7 @@ export class MessageChatComponent
           ) {
             // Marquer automatiquement comme lue
             if (notification.id) {
-              this.MessageService.markNotificationAsRead(
-                notification.id
-              ).subscribe();
+              this.MessageService.markAsRead([notification.id]).subscribe();
             }
           }
         },
@@ -1742,25 +1740,35 @@ export class MessageChatComponent
    * Termine un appel en cours
    */
   endCall(): void {
-    const activeCall = this.MessageService.activeCall$.getValue();
-    if (!activeCall) {
-      this.logger.error('MessageChat', 'Aucun appel actif à terminer');
-      return;
-    }
+    // Utiliser une variable pour stocker la dernière valeur de l'observable
+    let activeCall: any = null;
 
-    this.logger.info('MessageChat', `Fin de l'appel`);
+    // S'abonner à l'observable pour obtenir la valeur actuelle
+    const sub = this.MessageService.activeCall$.subscribe((call) => {
+      activeCall = call;
 
-    this.MessageService.endCall(activeCall.id).subscribe({
-      next: (call) => {
-        this.logger.info('MessageChat', 'Appel terminé avec succès:', call);
-      },
-      error: (error) => {
-        this.logger.error(
-          'MessageChat',
-          "Erreur lors de la fin de l'appel:",
-          error
-        );
-      },
+      if (!activeCall) {
+        this.logger.error('MessageChat', 'Aucun appel actif à terminer');
+        return;
+      }
+
+      this.logger.info('MessageChat', `Fin de l'appel`);
+
+      this.MessageService.endCall(activeCall.id).subscribe({
+        next: (call) => {
+          this.logger.info('MessageChat', 'Appel terminé avec succès:', call);
+        },
+        error: (error) => {
+          this.logger.error(
+            'MessageChat',
+            "Erreur lors de la fin de l'appel:",
+            error
+          );
+        },
+      });
     });
+
+    // Se désabonner immédiatement après avoir obtenu la valeur
+    sub.unsubscribe();
   }
 }
