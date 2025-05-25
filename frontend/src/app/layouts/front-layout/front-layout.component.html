@@ -188,7 +188,31 @@
               <span class="relative">Messages</span>
             </div>
           </a>
+          <!-- Equipes -->
+          <a
+            *ngIf="authService.userLoggedIn()"
+            routerLink="/equipes"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
 
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-users h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span class="relative">Equipes</span>
+            </div>
+          </a>
           <!-- Séparateur -->
           <div
             class="border-t border-[#edf1f4] dark:border-[#2a2a2a] my-2"
@@ -550,6 +574,11 @@
                   route: '/messages',
                   icon: 'far fa-comment-dots',
                   text: 'Messages'
+                },
+                {
+                  route: '/equipes',
+                  icon: 'fas fa-users',
+                  text: 'Equipes'
                 },
                 {
                   route: '/notifications',

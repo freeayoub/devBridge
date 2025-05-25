@@ -1,0 +1,256 @@
+<div class="container mt-4">
+  <!-- Message d'erreur -->
+  <div
+    *ngIf="error"
+    class="alert alert-danger alert-dismissible fade show"
+    role="alert"
+  >
+    {{ error }}
+    <button
+      type="button"
+      class="btn-close"
+      (click)="error = ''"
+      aria-label="Close"
+    ></button>
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="d-flex justify-content-center mb-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <!-- Liste des équipes -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Liste des équipes</h2>
+        <button class="btn btn-sm btn-outline-primary" (click)="loadEquipes()">
+          <i class="bi bi-arrow-clockwise"></i> Rafraîchir
+        </button>
+      </div>
+
+      <div *ngIf="equipes.length === 0 && !loading" class="alert alert-info">
+        Aucune équipe trouvée. Créez votre première équipe ci-dessous.
+      </div>
+
+      <div *ngIf="equipes.length > 0" class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Description</th>
+              <th>Admin</th>
+              <th>Membres</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let equipe of equipes">
+              <td>{{ equipe.name }}</td>
+              <td>{{ equipe.description }}</td>
+              <td>{{ equipe.admin }}</td>
+              <td>{{ equipe.members?.length || 0 }} membres</td>
+              <td>
+                <button
+                  class="btn btn-sm btn-info me-2"
+                  (click)="editEquipe(equipe)"
+                >
+                  Modifier
+                </button>
+                <button
+                  class="btn btn-sm btn-danger me-2"
+                  (click)="equipe._id && deleteEquipe(equipe._id)"
+                >
+                  Supprimer
+                </button>
+                <button
+                  class="btn btn-sm btn-primary"
+                  (click)="showMembreModal(equipe)"
+                >
+                  Gérer membres
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulaire de création d'équipe -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            {{ isEditing ? "Modifier une équipe" : "Créer une équipe" }}
+          </h3>
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="mb-3">
+              <label for="name" class="form-label"
+                >Nom de l'équipe <span class="text-danger">*</span></label
+              >
+              <input
+                #nameInput
+                type="text"
+                class="form-control"
+                id="name"
+                [value]="newEquipe.name"
+                (input)="newEquipe.name = nameInput.value"
+                required
+                [class.is-invalid]="
+                  !newEquipe.name && (isEditing || newEquipe.name === '')
+                "
+                placeholder="Entrez le nom de l'équipe"
+              />
+              <div class="invalid-feedback">Le nom de l'équipe est requis</div>
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea
+                #descInput
+                class="form-control"
+                id="description"
+                [value]="newEquipe.description || ''"
+                (input)="newEquipe.description = descInput.value"
+                rows="3"
+                placeholder="Entrez une description pour cette équipe"
+              ></textarea>
+              <small class="text-muted"
+                >Une brève description de l'équipe et de son objectif</small
+              >
+            </div>
+            <div class="d-flex">
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="!newEquipe.name || loading"
+                (click)="isEditing ? updateSelectedEquipe() : addEquipe()"
+              >
+                <span
+                  *ngIf="loading"
+                  class="spinner-border spinner-border-sm me-1"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                {{ isEditing ? "Mettre à jour" : "Créer" }}
+              </button>
+              <button
+                *ngIf="isEditing"
+                type="button"
+                class="btn btn-secondary ms-2"
+                (click)="cancelEdit()"
+              >
+                Annuler
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal pour gérer les membres -->
+  <div class="modal fade" id="membreModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Gérer les membres de l'équipe</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="selectedEquipe">
+            <h6>Équipe: {{ selectedEquipe.name }}</h6>
+
+            <!-- Liste des membres actuels -->
+            <div class="mb-3">
+              <h6>Membres actuels:</h6>
+              <div
+                *ngIf="
+                  selectedEquipe.members && selectedEquipe.members.length > 0;
+                  else noMembers
+                "
+              >
+                <ul class="list-group">
+                  <li
+                    class="list-group-item d-flex justify-content-between align-items-center"
+                    *ngFor="let membreId of selectedEquipe.members"
+                  >
+                    <span>{{ membreId }}</span>
+                    <button
+                      class="btn btn-sm btn-danger"
+                      (click)="
+                        removeMembreFromEquipe(selectedEquipe._id, membreId)
+                      "
+                    >
+                      Retirer
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <ng-template #noMembers>
+                <p class="text-muted">Aucun membre dans cette équipe</p>
+              </ng-template>
+            </div>
+
+            <!-- Formulaire pour ajouter un membre -->
+            <div class="mb-3">
+              <h6>Ajouter un membre:</h6>
+              <div class="input-group mb-2">
+                <input
+                  #membreIdInput
+                  type="text"
+                  class="form-control"
+                  placeholder="ID du membre"
+                />
+                <button
+                  class="btn btn-primary"
+                  [disabled]="
+                    !selectedEquipe ||
+                    !selectedEquipe._id ||
+                    !membreIdInput.value
+                  "
+                  (click)="
+                    addMembreToEquipe(selectedEquipe._id, membreIdInput.value);
+                    membreIdInput.value = ''
+                  "
+                >
+                  Ajouter
+                </button>
+              </div>
+              <small class="text-muted"
+                >Entrez l'ID du membre à ajouter à l'équipe</small
+              >
+            </div>
+
+            <!-- Informations supplémentaires -->
+            <div class="alert alert-info mt-3">
+              <p class="mb-0">
+                <strong>Note:</strong> Pour ajouter un membre, vous devez
+                d'abord créer le membre dans la section des membres.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

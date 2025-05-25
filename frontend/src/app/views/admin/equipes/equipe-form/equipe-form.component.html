@@ -1,0 +1,641 @@
+<div
+  class="min-h-screen bg-[#f0f4f8] dark:bg-[#0a0a0a] relative overflow-hidden"
+>
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#00f7ff]/3 dark:to-transparent blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#00f7ff]/3 dark:to-transparent blur-3xl"
+    ></div>
+
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 opacity-5 dark:opacity-[0.03]">
+      <div class="h-full grid grid-cols-12">
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto p-6 relative z-10">
+    <!-- Header -->
+    <div class="mb-8 relative">
+      <!-- Decorative top border -->
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4f5fad] to-[#7826b5] dark:from-[#00f7ff] dark:to-[#4f5fad]"
+      ></div>
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4f5fad] to-[#7826b5] dark:from-[#00f7ff] dark:to-[#4f5fad] blur-md"
+      ></div>
+
+      <div
+        class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] p-6 backdrop-blur-sm border border-[#4f5fad]/20 dark:border-[#00f7ff]/20"
+      >
+        <div
+          class="flex flex-col lg:flex-row lg:items-center lg:justify-between"
+        >
+          <div class="mb-4 lg:mb-0">
+            <h1
+              class="text-3xl font-bold text-[#4f5fad] dark:text-[#00f7ff] mb-2 tracking-wide"
+            >
+              {{ isEditMode ? "Modifier l'équipe" : "Nouvelle équipe" }}
+            </h1>
+            <p class="text-[#6d6870] dark:text-[#a0a0a0] text-sm">
+              {{
+                isEditMode
+                  ? "Modifiez les informations et les membres de votre équipe"
+                  : "Créez une nouvelle équipe pour organiser vos projets et membres"
+              }}
+            </p>
+          </div>
+
+          <button
+            (click)="cancel()"
+            class="bg-[#4f5fad]/20 dark:bg-[#00f7ff]/20 text-[#4f5fad] dark:text-[#00f7ff] px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:bg-[#4f5fad]/30 dark:hover:bg-[#00f7ff]/30"
+          >
+            <i class="fas fa-arrow-left mr-2"></i>
+            Retour à la liste
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div
+      *ngIf="loading"
+      class="flex flex-col items-center justify-center py-16"
+    >
+      <div class="relative">
+        <div
+          class="w-12 h-12 border-3 border-[#4f5fad]/20 dark:border-[#00f7ff]/20 border-t-[#4f5fad] dark:border-t-[#00f7ff] rounded-full animate-spin"
+        ></div>
+        <div
+          class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#00f7ff]/20 blur-xl rounded-full transform scale-150 -z-10"
+        ></div>
+      </div>
+      <p
+        class="mt-4 text-[#4f5fad] dark:text-[#00f7ff] text-sm font-medium tracking-wide"
+      >
+        Chargement des données...
+      </p>
+    </div>
+
+    <!-- Error Alert -->
+    <div *ngIf="error" class="mb-6">
+      <div
+        class="bg-[#ff6b69]/10 dark:bg-[#ff3b30]/10 border-l-4 border-[#ff6b69] dark:border-[#ff3b30] rounded-lg p-4 backdrop-blur-sm"
+      >
+        <div class="flex items-start">
+          <div class="text-[#ff6b69] dark:text-[#ff3b30] mr-3 text-xl">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-semibold text-[#ff6b69] dark:text-[#ff3b30] mb-1">
+              Erreur
+            </h3>
+            <p class="text-sm text-[#6d6870] dark:text-[#e0e0e0]">
+              {{ error }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulaire avec design moderne -->
+    <div class="row justify-content-center" *ngIf="!loading">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+          <div class="card-header bg-gradient-primary text-white border-0 py-4">
+            <h3 class="mb-0">
+              <i
+                class="bi"
+                [ngClass]="{
+                  'bi-pencil-square': isEditMode,
+                  'bi-plus-circle': !isEditMode
+                }"
+              ></i>
+              {{
+                isEditMode
+                  ? "Informations de l'équipe"
+                  : "Détails de la nouvelle équipe"
+              }}
+            </h3>
+          </div>
+
+          <div class="card-body p-4">
+            <form (ngSubmit)="onSubmit()" class="row g-3">
+              <!-- Nom de l'équipe -->
+              <div class="col-12 mb-3">
+                <label
+                  for="name"
+                  class="form-label fw-medium text-[#4f5fad] dark:text-[#00f7ff]"
+                  >Nom de l'équipe
+                  <span class="text-[#ff6b69] dark:text-[#ff3b30]"
+                    >*</span
+                  ></label
+                >
+                <div class="input-group">
+                  <span
+                    class="input-group-text bg-[#f0f4f8] dark:bg-[#0a0a0a] border-0"
+                  >
+                    <i
+                      class="bi bi-people-fill text-[#4f5fad] dark:text-[#00f7ff]"
+                    ></i>
+                  </span>
+                  <input
+                    #nameInput
+                    type="text"
+                    class="form-control bg-[#f0f4f8] dark:bg-[#0a0a0a] border-0 text-[#6d6870] dark:text-[#e0e0e0] placeholder-[#6d6870]/50 dark:placeholder-[#a0a0a0]"
+                    [class.is-invalid]="
+                      nameExists || (nameError && nameInput.value.length > 0)
+                    "
+                    id="name"
+                    [value]="equipe.name || ''"
+                    (input)="updateName(nameInput.value)"
+                    required
+                    minlength="3"
+                    placeholder="Entrez le nom de l'équipe"
+                  />
+                </div>
+                <div
+                  *ngIf="nameExists"
+                  class="invalid-feedback d-block small mt-1"
+                >
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                  Ce nom d'équipe existe déjà. Veuillez en choisir un autre.
+                </div>
+                <div
+                  *ngIf="nameError && nameInput.value.length > 0"
+                  class="invalid-feedback d-block small mt-1"
+                >
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                  Le nom de l'équipe doit contenir au moins 3 caractères.
+                </div>
+                <div
+                  *ngIf="error && !equipe.name"
+                  class="text-danger small mt-1"
+                >
+                  <i class="bi bi-exclamation-circle-fill me-1"></i>
+                  Le nom de l'équipe est requis.
+                </div>
+              </div>
+
+              <!-- Description de l'équipe -->
+              <div class="col-12 mb-3">
+                <label
+                  for="description"
+                  class="form-label fw-medium text-[#4f5fad] dark:text-[#00f7ff]"
+                  >Description
+                  <span class="text-[#ff6b69] dark:text-[#ff3b30]"
+                    >*</span
+                  ></label
+                >
+                <div class="input-group">
+                  <span
+                    class="input-group-text bg-[#f0f4f8] dark:bg-[#0a0a0a] border-0 align-self-start"
+                  >
+                    <i
+                      class="bi bi-card-text text-[#4f5fad] dark:text-[#00f7ff]"
+                    ></i>
+                  </span>
+                  <textarea
+                    #descInput
+                    class="form-control bg-[#f0f4f8] dark:bg-[#0a0a0a] border-0 text-[#6d6870] dark:text-[#e0e0e0] placeholder-[#6d6870]/50 dark:placeholder-[#a0a0a0]"
+                    id="description"
+                    rows="4"
+                    [class.is-invalid]="
+                      descriptionError && descInput.value.length > 0
+                    "
+                    [value]="equipe.description || ''"
+                    (input)="updateDescription(descInput.value)"
+                    required
+                    minlength="10"
+                    placeholder="Décrivez l'objectif et les activités de cette équipe"
+                  ></textarea>
+                </div>
+                <div
+                  *ngIf="descriptionError && descInput.value.length > 0"
+                  class="invalid-feedback d-block small mt-1"
+                >
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                  La description doit contenir au moins 10 caractères.
+                </div>
+                <div
+                  *ngIf="error && !equipe.description"
+                  class="text-danger small mt-1"
+                >
+                  <i class="bi bi-exclamation-circle-fill me-1"></i>
+                  La description de l'équipe est requise.
+                </div>
+              </div>
+
+              <!-- Admin field - hidden for now, using default value -->
+              <input type="hidden" [value]="equipe.admin" />
+              <div class="col-12 mb-3">
+                <div
+                  class="alert alert-info border-0 rounded-3 shadow-sm d-flex align-items-center"
+                >
+                  <i class="bi bi-info-circle-fill fs-4 me-3 text-primary"></i>
+                  <div>
+                    Un administrateur par défaut sera assigné à cette équipe.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Utilisateurs membres de l'équipe (visible uniquement en mode édition) -->
+              <div *ngIf="isEditMode && equipe._id" class="col-12 mt-4">
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                  <div class="card-header bg-light border-0 py-3">
+                    <h4 class="mb-0 d-flex align-items-center">
+                      <i class="bi bi-people-fill text-primary me-2"></i>
+                      Membres de l'équipe
+                    </h4>
+                  </div>
+
+                  <div class="card-body p-4">
+                    <!-- Liste des membres actuels -->
+                    <div
+                      *ngIf="
+                        equipe.members && equipe.members.length > 0;
+                        else noMembers
+                      "
+                    >
+                      <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                          <thead class="table-light">
+                            <tr>
+                              <th>
+                                <div class="d-flex align-items-center">
+                                  <i class="bi bi-person text-primary me-2"></i>
+                                  Nom et Prénom
+                                </div>
+                              </th>
+                              <th>
+                                <div class="d-flex align-items-center">
+                                  <i
+                                    class="bi bi-envelope text-primary me-2"
+                                  ></i>
+                                  Email
+                                </div>
+                              </th>
+                              <th>
+                                <div class="d-flex align-items-center">
+                                  <i
+                                    class="bi bi-briefcase text-primary me-2"
+                                  ></i>
+                                  Statut
+                                </div>
+                              </th>
+                              <th class="text-center">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr
+                              *ngFor="let membreId of equipe.members"
+                              class="transition hover-row"
+                            >
+                              <td>
+                                <span class="fw-medium">{{
+                                  getMembreName(membreId)
+                                }}</span>
+                                <small
+                                  class="text-muted d-block"
+                                  *ngIf="getMembreName(membreId) !== membreId"
+                                  >ID: {{ membreId }}</small
+                                >
+                              </td>
+                              <td>
+                                <a
+                                  *ngIf="
+                                    getMembreEmail(membreId) !== 'Non renseigné'
+                                  "
+                                  href="mailto:{{ getMembreEmail(membreId) }}"
+                                  class="text-decoration-none"
+                                >
+                                  {{ getMembreEmail(membreId) }}
+                                </a>
+                                <span
+                                  *ngIf="
+                                    getMembreEmail(membreId) === 'Non renseigné'
+                                  "
+                                  class="text-muted fst-italic"
+                                  >Non renseigné</span
+                                >
+                              </td>
+                              <td>
+                                <span
+                                  class="badge rounded-pill px-3 py-2 shadow-sm"
+                                  [ngClass]="{
+                                    'bg-primary':
+                                      getMembreProfession(membreId) ===
+                                      'Étudiant',
+                                    'bg-success':
+                                      getMembreProfession(membreId) ===
+                                      'Professeur',
+                                    'bg-secondary':
+                                      getMembreProfession(membreId) ===
+                                      'Non spécifié'
+                                  }"
+                                >
+                                  <i
+                                    class="bi"
+                                    [ngClass]="{
+                                      'bi-mortarboard-fill':
+                                        getMembreProfession(membreId) ===
+                                        'Étudiant',
+                                      'bi-briefcase-fill':
+                                        getMembreProfession(membreId) ===
+                                        'Professeur',
+                                      'bi-question-circle-fill':
+                                        getMembreProfession(membreId) ===
+                                        'Non spécifié'
+                                    }"
+                                  ></i>
+                                  {{ getMembreProfession(membreId) }}
+                                </span>
+                              </td>
+                              <td class="text-center">
+                                <button
+                                  type="button"
+                                  class="btn btn-sm btn-outline-danger rounded-circle"
+                                  title="Retirer de l'équipe"
+                                  (click)="removeMembreFromEquipe(membreId)"
+                                >
+                                  <i class="bi bi-trash"></i>
+                                </button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <ng-template #noMembers>
+                      <div class="text-center py-4">
+                        <i
+                          class="bi bi-people fs-1 text-muted mb-3 d-block"
+                        ></i>
+                        <h5 class="text-muted">
+                          Aucun membre dans cette équipe
+                        </h5>
+                        <p class="text-[#6d6870] dark:text-[#e0e0e0]">
+                          Ajoutez des membres à l'équipe en utilisant le
+                          formulaire ci-dessous.
+                        </p>
+                      </div>
+                    </ng-template>
+
+                    <!-- Formulaire pour ajouter un utilisateur comme membre -->
+                    <div class="mt-4">
+                      <h5 class="d-flex align-items-center mb-3">
+                        <i class="bi bi-person-plus-fill text-primary me-2"></i>
+                        Ajouter un membre
+                      </h5>
+
+                      <!-- Afficher un message si aucun utilisateur n'est disponible -->
+                      <div
+                        *ngIf="availableUsers.length === 0"
+                        class="alert alert-info border-0 rounded-3 shadow-sm d-flex align-items-center"
+                      >
+                        <i
+                          class="bi bi-info-circle-fill fs-4 me-3 text-primary"
+                        ></i>
+                        <div>
+                          Aucun utilisateur disponible. Veuillez d'abord créer
+                          des utilisateurs.
+                        </div>
+                      </div>
+
+                      <!-- Formulaire d'ajout d'utilisateur avec rôle -->
+                      <div
+                        *ngIf="availableUsers.length > 0"
+                        class="card border-0 bg-light rounded-3 mb-3"
+                      >
+                        <div class="card-body p-4">
+                          <div class="row g-3">
+                            <!-- Sélection de l'utilisateur -->
+                            <div class="col-md-6">
+                              <label
+                                for="userSelect"
+                                class="form-label fw-medium text-[#4f5fad] dark:text-[#00f7ff]"
+                                >Utilisateur</label
+                              >
+                              <select
+                                #userSelect
+                                id="userSelect"
+                                class="form-select border-0 shadow-sm bg-[#f0f4f8] dark:bg-[#0a0a0a] text-[#6d6870] dark:text-[#e0e0e0]"
+                              >
+                                <option value="" selected disabled>
+                                  Sélectionnez un utilisateur
+                                </option>
+                                <option
+                                  *ngFor="let user of availableUsers"
+                                  [value]="user._id || user.id"
+                                >
+                                  {{ user.firstName || "" }}
+                                  {{ user.lastName || user.name || user.id }}
+                                  {{ user.email ? "- " + user.email : "" }}
+                                  {{
+                                    user.profession
+                                      ? "(" +
+                                        (user.profession === "etudiant"
+                                          ? "Étudiant"
+                                          : "Professeur") +
+                                        ")"
+                                      : user.role
+                                      ? "(" +
+                                        (user.role === "etudiant"
+                                          ? "Étudiant"
+                                          : "Professeur") +
+                                        ")"
+                                      : ""
+                                  }}
+                                </option>
+                              </select>
+                            </div>
+
+                            <!-- Sélection du rôle dans l'équipe -->
+                            <div class="col-md-4">
+                              <label
+                                for="roleSelect"
+                                class="form-label fw-medium text-[#4f5fad] dark:text-[#00f7ff]"
+                                >Rôle dans l'équipe</label
+                              >
+                              <select
+                                #roleSelect
+                                id="roleSelect"
+                                class="form-select border-0 shadow-sm bg-[#f0f4f8] dark:bg-[#0a0a0a] text-[#6d6870] dark:text-[#e0e0e0]"
+                              >
+                                <option value="membre" selected>Membre</option>
+                                <option value="admin">Administrateur</option>
+                              </select>
+                            </div>
+
+                            <!-- Bouton d'ajout -->
+                            <div class="col-md-2 d-flex align-items-end">
+                              <button
+                                type="button"
+                                class="btn btn-primary rounded-pill w-100 shadow-sm"
+                                [disabled]="!userSelect.value"
+                                (click)="
+                                  addMembreToEquipe(
+                                    userSelect.value,
+                                    roleSelect.value
+                                  );
+                                  userSelect.value = ''
+                                "
+                                id="addMembreButton"
+                              >
+                                <i class="bi bi-plus-circle me-1"></i> Ajouter
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Boutons d'action -->
+              <div class="col-12 mt-4">
+                <div class="d-flex gap-3 justify-content-between">
+                  <div>
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary rounded-pill px-4 py-2"
+                      (click)="cancel()"
+                    >
+                      <i class="bi bi-arrow-left me-2"></i>
+                      Retour
+                    </button>
+
+                    <!-- Bouton de suppression (visible uniquement en mode édition) -->
+                    <button
+                      *ngIf="isEditMode && equipeId"
+                      type="button"
+                      class="btn btn-outline-danger rounded-pill px-4 py-2 ms-2"
+                      (click)="deleteEquipe()"
+                    >
+                      <i class="bi bi-trash me-2"></i>
+                      Supprimer
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    class="btn btn-primary rounded-pill px-4 py-2 shadow-sm"
+                    [disabled]="
+                      submitting ||
+                      !equipe.name ||
+                      !equipe.description ||
+                      nameExists ||
+                      nameError ||
+                      descriptionError
+                    "
+                  >
+                    <span
+                      *ngIf="submitting"
+                      class="spinner-border spinner-border-sm me-2"
+                    ></span>
+                    <i
+                      *ngIf="!submitting"
+                      class="bi"
+                      [ngClass]="{
+                        'bi-save': isEditMode,
+                        'bi-plus-circle': !isEditMode
+                      }"
+                    ></i>
+                    {{ isEditMode ? "Mettre à jour" : "Créer l'équipe" }}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Styles spécifiques pour cette page -->
+<style>
+  /* Fond dégradé moderne pour l'en-tête du formulaire */
+  .bg-gradient-primary {
+    background: linear-gradient(45deg, #4f5fad, #7826b5) !important;
+  }
+
+  /* Animation au survol des lignes du tableau */
+  .transition {
+    transition: all 0.3s ease;
+  }
+
+  .hover-row:hover {
+    background-color: rgba(79, 95, 173, 0.05) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Style moderne pour les inputs */
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #4f5fad !important;
+    box-shadow: 0 0 0 0.25rem rgba(79, 95, 173, 0.25) !important;
+  }
+
+  /* Dark mode pour les inputs */
+  .dark .form-control:focus,
+  .dark .form-select:focus {
+    border-color: #00f7ff !important;
+    box-shadow: 0 0 0 0.25rem rgba(0, 247, 255, 0.25) !important;
+  }
+
+  /* Animation pour les boutons */
+  .btn {
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Styles pour les placeholders en mode sombre */
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: rgba(160, 160, 160, 0.8) !important;
+  }
+
+  /* Amélioration de la visibilité du texte en mode sombre */
+  .dark .text-muted {
+    color: #e0e0e0 !important;
+  }
+
+  .dark .form-label {
+    color: #00f7ff !important;
+  }
+
+  /* Styles pour les cartes en mode sombre */
+  .dark .card {
+    background-color: #1a1a1a !important;
+    border-color: rgba(0, 247, 255, 0.2) !important;
+  }
+
+  .dark .card-header {
+    background: linear-gradient(45deg, #00f7ff, #4f5fad) !important;
+  }
+
+  .dark .bg-light {
+    background-color: #0a0a0a !important;
+  }
+</style>

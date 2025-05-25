@@ -1,0 +1,626 @@
+<div class="container-fluid py-5 bg-light">
+  <div class="container">
+    <!-- En-tête avec titre et actions -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <div
+          class="d-flex justify-content-between align-items-center flex-wrap"
+        >
+          <div>
+            <h1 class="display-4 fw-bold text-primary" *ngIf="team">
+              Tâches: {{ team.name }}
+            </h1>
+            <p class="text-muted lead">Gérez les tâches de votre équipe</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button
+              class="btn btn-outline-secondary rounded-pill px-4 py-2"
+              (click)="navigateBack()"
+            >
+              <i class="bi bi-arrow-left me-2"></i> Retour
+            </button>
+            <button
+              class="btn btn-primary rounded-pill px-4 py-2"
+              (click)="toggleTaskForm()"
+            >
+              <i class="bi bi-plus-circle me-2"></i> Nouvelle tâche
+            </button>
+          </div>
+        </div>
+        <hr class="my-4" />
+      </div>
+    </div>
+
+    <!-- Message de chargement -->
+    <div *ngIf="loading" class="row justify-content-center my-5">
+      <div class="col-md-6 text-center">
+        <div class="spinner-grow text-primary mx-1" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <div class="spinner-grow text-secondary mx-1" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <div class="spinner-grow text-primary mx-1" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="mt-3 text-muted">Chargement des tâches...</p>
+      </div>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="row justify-content-center my-5">
+      <div class="col-md-8">
+        <div
+          class="alert alert-danger shadow-sm border-0 rounded-3 d-flex align-items-center"
+        >
+          <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+          <div class="flex-grow-1">
+            {{ error }}
+          </div>
+          <button
+            class="btn btn-danger rounded-pill ms-3"
+            (click)="teamId && loadTasks(teamId)"
+          >
+            <i class="bi bi-arrow-clockwise me-1"></i> Réessayer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulaire de création/édition de tâche -->
+    <div *ngIf="showTaskForm || editingTask" class="row mb-5">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-3">
+          <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0">
+              {{ editingTask ? "Modifier la tâche" : "Nouvelle tâche" }}
+            </h4>
+          </div>
+          <div class="card-body p-4">
+            <form (ngSubmit)="editingTask ? updateTask() : createTask()">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="taskTitle" class="form-label">Titre*</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="taskTitle"
+                    required
+                    [ngModel]="editingTask ? editingTask.title : newTask.title"
+                    (ngModelChange)="
+                      editingTask
+                        ? (editingTask.title = $event)
+                        : (newTask.title = $event)
+                    "
+                    name="title"
+                    placeholder="Titre de la tâche"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <label for="taskPriority" class="form-label">Priorité*</label>
+                  <select
+                    class="form-select"
+                    id="taskPriority"
+                    required
+                    [ngModel]="
+                      editingTask ? editingTask.priority : newTask.priority
+                    "
+                    (ngModelChange)="
+                      editingTask
+                        ? (editingTask.priority = $event)
+                        : (newTask.priority = $event)
+                    "
+                    name="priority"
+                  >
+                    <option value="low">Basse</option>
+                    <option value="medium">Moyenne</option>
+                    <option value="high">Haute</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label for="taskStatus" class="form-label">Statut*</label>
+                  <select
+                    class="form-select"
+                    id="taskStatus"
+                    required
+                    [ngModel]="
+                      editingTask ? editingTask.status : newTask.status
+                    "
+                    (ngModelChange)="
+                      editingTask
+                        ? (editingTask.status = $event)
+                        : (newTask.status = $event)
+                    "
+                    name="status"
+                  >
+                    <option value="todo">À faire</option>
+                    <option value="in-progress">En cours</option>
+                    <option value="done">Terminée</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="taskAssignedTo" class="form-label"
+                    >Assignée à</label
+                  >
+                  <select
+                    class="form-select"
+                    id="taskAssignedTo"
+                    [ngModel]="
+                      editingTask ? editingTask.assignedTo : newTask.assignedTo
+                    "
+                    (ngModelChange)="
+                      editingTask
+                        ? (editingTask.assignedTo = $event)
+                        : (newTask.assignedTo = $event)
+                    "
+                    name="assignedTo"
+                  >
+                    <option [value]="null">Non assignée</option>
+                    <option
+                      *ngFor="let user of users"
+                      [value]="user._id || user.id"
+                    >
+                      {{ getUserName(user._id || user.id || "") }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="taskDueDate" class="form-label"
+                    >Date d'échéance</label
+                  >
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="taskDueDate"
+                    [ngModel]="
+                      editingTask ? editingTask.dueDate : newTask.dueDate
+                    "
+                    (ngModelChange)="
+                      editingTask
+                        ? (editingTask.dueDate = $event)
+                        : (newTask.dueDate = $event)
+                    "
+                    name="dueDate"
+                  />
+                </div>
+                <div class="col-12">
+                  <label for="taskDescription" class="form-label"
+                    >Description</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="taskDescription"
+                    rows="3"
+                    [ngModel]="
+                      editingTask
+                        ? editingTask.description
+                        : newTask.description
+                    "
+                    (ngModelChange)="
+                      editingTask
+                        ? (editingTask.description = $event)
+                        : (newTask.description = $event)
+                    "
+                    name="description"
+                    placeholder="Description détaillée de la tâche"
+                  ></textarea>
+                </div>
+                <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary rounded-pill px-4"
+                    (click)="editingTask ? cancelEdit() : toggleTaskForm()"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    class="btn btn-primary rounded-pill px-4"
+                  >
+                    {{ editingTask ? "Mettre à jour" : "Créer" }}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="row mb-4" *ngIf="tasks.length > 0">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-3">
+          <div class="card-body p-3">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search"></i>
+                  </span>
+                  <input
+                    type="text"
+                    class="form-control border-start-0"
+                    placeholder="Rechercher une tâche..."
+                    [(ngModel)]="searchTerm"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <select class="form-select" [(ngModel)]="statusFilter">
+                  <option value="all">Tous les statuts</option>
+                  <option value="todo">À faire</option>
+                  <option value="in-progress">En cours</option>
+                  <option value="done">Terminées</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <select class="form-select" [(ngModel)]="priorityFilter">
+                  <option value="all">Toutes les priorités</option>
+                  <option value="high">Haute</option>
+                  <option value="medium">Moyenne</option>
+                  <option value="low">Basse</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message quand aucune tâche n'est trouvée -->
+    <div
+      *ngIf="!loading && !error && tasks.length === 0"
+      class="row justify-content-center my-5"
+    >
+      <div class="col-md-8 text-center">
+        <div class="p-5 bg-white rounded-3 shadow-sm">
+          <i class="bi bi-list-check fs-1 text-muted mb-3"></i>
+          <h3 class="mb-3">Aucune tâche trouvée</h3>
+          <p class="text-muted mb-4">
+            Commencez par créer une nouvelle tâche pour votre équipe.
+          </p>
+          <button
+            class="btn btn-primary rounded-pill px-4 py-2"
+            (click)="toggleTaskForm()"
+          >
+            <i class="bi bi-plus-circle me-2"></i> Créer une tâche
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste des tâches -->
+    <div class="row g-4" *ngIf="tasks.length > 0">
+      <!-- Colonne "À faire" -->
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+          <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0 d-flex align-items-center">
+              <i class="bi bi-list-task me-2"></i>
+              À faire
+              <span class="badge bg-white text-primary rounded-pill ms-2">
+                {{ getTodoTasksCount() }}
+              </span>
+            </h5>
+          </div>
+          <div class="card-body p-3">
+            <div
+              class="task-list"
+              cdkDropList
+              #todoList="cdkDropList"
+              [cdkDropListData]="getTodoTasks()"
+              [cdkDropListConnectedTo]="[inProgressList, doneList]"
+              id="todo-list"
+              (cdkDropListDropped)="drop($event)"
+            >
+              <div
+                *ngFor="let task of getTodoTasks()"
+                class="task-card mb-3 p-3 rounded-3 shadow-sm"
+                [ngClass]="'priority-' + task.priority"
+                cdkDrag
+              >
+                <div
+                  class="d-flex justify-content-between align-items-start mb-2"
+                >
+                  <h6 class="mb-0 text-truncate">{{ task.title }}</h6>
+                  <div class="dropdown">
+                    <button
+                      class="btn btn-sm btn-link text-dark p-0"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                    >
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button class="dropdown-item" (click)="editTask(task)">
+                          <i class="bi bi-pencil me-2"></i> Modifier
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          (click)="updateTaskStatus(task, 'in-progress')"
+                        >
+                          <i class="bi bi-arrow-right me-2"></i> Déplacer vers
+                          "En cours"
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          (click)="updateTaskStatus(task, 'done')"
+                        >
+                          <i class="bi bi-check2-all me-2"></i> Marquer comme
+                          terminée
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider" /></li>
+                      <li>
+                        <button
+                          class="dropdown-item text-danger"
+                          (click)="task._id && deleteTask(task._id)"
+                        >
+                          <i class="bi bi-trash me-2"></i> Supprimer
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <p class="small text-muted mb-2 task-description">
+                  {{ task.description || "Aucune description" }}
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'bg-danger': task.priority === 'high',
+                      'bg-warning text-dark': task.priority === 'medium',
+                      'bg-info text-dark': task.priority === 'low'
+                    }"
+                  >
+                    {{
+                      task.priority === "high"
+                        ? "Haute"
+                        : task.priority === "medium"
+                        ? "Moyenne"
+                        : "Basse"
+                    }}
+                  </span>
+                  <small class="text-muted" *ngIf="task.assignedTo">
+                    {{ getUserName(task.assignedTo) }}
+                  </small>
+                </div>
+                <!-- Poignée de glisser-déposer -->
+                <div class="task-drag-handle" cdkDragHandle>
+                  <i class="bi bi-grip-horizontal"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colonne "En cours" -->
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+          <div class="card-header bg-warning py-3">
+            <h5 class="mb-0 d-flex align-items-center">
+              <i class="bi bi-hourglass-split me-2"></i>
+              En cours
+              <span class="badge bg-white text-warning rounded-pill ms-2">
+                {{ getInProgressTasksCount() }}
+              </span>
+            </h5>
+          </div>
+          <div class="card-body p-3">
+            <div
+              class="task-list"
+              cdkDropList
+              #inProgressList="cdkDropList"
+              [cdkDropListData]="getInProgressTasks()"
+              [cdkDropListConnectedTo]="[todoList, doneList]"
+              id="in-progress-list"
+              (cdkDropListDropped)="drop($event)"
+            >
+              <div
+                *ngFor="let task of getInProgressTasks()"
+                class="task-card mb-3 p-3 rounded-3 shadow-sm"
+                [ngClass]="'priority-' + task.priority"
+                cdkDrag
+              >
+                <div
+                  class="d-flex justify-content-between align-items-start mb-2"
+                >
+                  <h6 class="mb-0 text-truncate">{{ task.title }}</h6>
+                  <div class="dropdown">
+                    <button
+                      class="btn btn-sm btn-link text-dark p-0"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                    >
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button class="dropdown-item" (click)="editTask(task)">
+                          <i class="bi bi-pencil me-2"></i> Modifier
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          (click)="updateTaskStatus(task, 'todo')"
+                        >
+                          <i class="bi bi-arrow-left me-2"></i> Déplacer vers "À
+                          faire"
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          (click)="updateTaskStatus(task, 'done')"
+                        >
+                          <i class="bi bi-check2-all me-2"></i> Marquer comme
+                          terminée
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider" /></li>
+                      <li>
+                        <button
+                          class="dropdown-item text-danger"
+                          (click)="task._id && deleteTask(task._id)"
+                        >
+                          <i class="bi bi-trash me-2"></i> Supprimer
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <p class="small text-muted mb-2 task-description">
+                  {{ task.description || "Aucune description" }}
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'bg-danger': task.priority === 'high',
+                      'bg-warning text-dark': task.priority === 'medium',
+                      'bg-info text-dark': task.priority === 'low'
+                    }"
+                  >
+                    {{
+                      task.priority === "high"
+                        ? "Haute"
+                        : task.priority === "medium"
+                        ? "Moyenne"
+                        : "Basse"
+                    }}
+                  </span>
+                  <small class="text-muted" *ngIf="task.assignedTo">
+                    {{ getUserName(task.assignedTo) }}
+                  </small>
+                </div>
+                <!-- Poignée de glisser-déposer -->
+                <div class="task-drag-handle" cdkDragHandle>
+                  <i class="bi bi-grip-horizontal"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colonne "Terminées" -->
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+          <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0 d-flex align-items-center">
+              <i class="bi bi-check2-all me-2"></i>
+              Terminées
+              <span class="badge bg-white text-success rounded-pill ms-2">
+                {{ getDoneTasksCount() }}
+              </span>
+            </h5>
+          </div>
+          <div class="card-body p-3">
+            <div
+              class="task-list"
+              cdkDropList
+              #doneList="cdkDropList"
+              [cdkDropListData]="getDoneTasks()"
+              [cdkDropListConnectedTo]="[todoList, inProgressList]"
+              id="done-list"
+              (cdkDropListDropped)="drop($event)"
+            >
+              <div
+                *ngFor="let task of getDoneTasks()"
+                class="task-card mb-3 p-3 rounded-3 shadow-sm completed-task"
+                [ngClass]="'priority-' + task.priority"
+                cdkDrag
+              >
+                <div
+                  class="d-flex justify-content-between align-items-start mb-2"
+                >
+                  <h6 class="mb-0 text-truncate">{{ task.title }}</h6>
+                  <div class="dropdown">
+                    <button
+                      class="btn btn-sm btn-link text-dark p-0"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                    >
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button class="dropdown-item" (click)="editTask(task)">
+                          <i class="bi bi-pencil me-2"></i> Modifier
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          (click)="updateTaskStatus(task, 'todo')"
+                        >
+                          <i class="bi bi-arrow-left me-2"></i> Déplacer vers "À
+                          faire"
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          (click)="updateTaskStatus(task, 'in-progress')"
+                        >
+                          <i class="bi bi-arrow-left me-2"></i> Déplacer vers
+                          "En cours"
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider" /></li>
+                      <li>
+                        <button
+                          class="dropdown-item text-danger"
+                          (click)="task._id && deleteTask(task._id)"
+                        >
+                          <i class="bi bi-trash me-2"></i> Supprimer
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <p class="small text-muted mb-2 task-description">
+                  {{ task.description || "Aucune description" }}
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'bg-danger': task.priority === 'high',
+                      'bg-warning text-dark': task.priority === 'medium',
+                      'bg-info text-dark': task.priority === 'low'
+                    }"
+                  >
+                    {{
+                      task.priority === "high"
+                        ? "Haute"
+                        : task.priority === "medium"
+                        ? "Moyenne"
+                        : "Basse"
+                    }}
+                  </span>
+                  <small class="text-muted" *ngIf="task.assignedTo">
+                    {{ getUserName(task.assignedTo) }}
+                  </small>
+                </div>
+                <!-- Poignée de glisser-déposer -->
+                <div class="task-drag-handle" cdkDragHandle>
+                  <i class="bi bi-grip-horizontal"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

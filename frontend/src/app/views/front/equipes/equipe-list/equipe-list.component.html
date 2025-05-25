@@ -1,0 +1,249 @@
+<div
+  class="min-h-screen bg-[#f0f4f8] dark:bg-[#0a0a0a] relative overflow-hidden"
+>
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#00f7ff]/3 dark:to-transparent blur-3xl"
+    ></div>
+    <div
+      class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#00f7ff]/3 dark:to-transparent blur-3xl"
+    ></div>
+
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 opacity-5 dark:opacity-[0.03]">
+      <div class="h-full grid grid-cols-12">
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+        <div class="border-r border-[#4f5fad] dark:border-[#00f7ff]"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto p-6 relative z-10">
+    <!-- Header futuriste -->
+    <div class="mb-8 relative">
+      <!-- Decorative top border -->
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4f5fad] to-[#7826b5] dark:from-[#00f7ff] dark:to-[#4f5fad]"
+      ></div>
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4f5fad] to-[#7826b5] dark:from-[#00f7ff] dark:to-[#4f5fad] blur-md"
+      ></div>
+
+      <div
+        class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] p-6 backdrop-blur-sm border border-[#4f5fad]/20 dark:border-[#00f7ff]/20"
+      >
+        <div
+          class="flex flex-col lg:flex-row lg:items-center lg:justify-between"
+        >
+          <div class="mb-4 lg:mb-0">
+            <h1
+              class="text-3xl font-bold text-[#4f5fad] dark:text-[#00f7ff] mb-2 tracking-wide"
+            >
+              Équipes
+            </h1>
+            <p class="text-[#6d6870] dark:text-[#e0e0e0] text-sm">
+              Gérez vos équipes et leurs membres avec style futuriste
+            </p>
+          </div>
+
+          <button
+            (click)="navigateToAddEquipe()"
+            class="relative overflow-hidden group bg-gradient-to-r from-[#4f5fad] to-[#7826b5] dark:from-[#00f7ff] dark:to-[#4f5fad] text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-[0_0_25px_rgba(79,95,173,0.4)] dark:hover:shadow-[0_0_25px_rgba(0,247,255,0.4)]"
+          >
+            <i
+              class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"
+            ></i>
+            Nouvelle Équipe
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div
+      *ngIf="loading"
+      class="flex flex-col items-center justify-center py-16"
+    >
+      <div class="relative">
+        <div
+          class="w-12 h-12 border-3 border-[#4f5fad]/20 dark:border-[#00f7ff]/20 border-t-[#4f5fad] dark:border-t-[#00f7ff] rounded-full animate-spin"
+        ></div>
+        <div
+          class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#00f7ff]/20 blur-xl rounded-full transform scale-150 -z-10"
+        ></div>
+      </div>
+      <p
+        class="mt-4 text-[#4f5fad] dark:text-[#00f7ff] text-sm font-medium tracking-wide"
+      >
+        Chargement des équipes...
+      </p>
+    </div>
+
+    <!-- Error Alert -->
+    <div *ngIf="error" class="mb-6">
+      <div
+        class="bg-[#ff6b69]/10 dark:bg-[#ff3b30]/10 border-l-4 border-[#ff6b69] dark:border-[#ff3b30] rounded-lg p-4 backdrop-blur-sm"
+      >
+        <div class="flex items-start">
+          <div class="text-[#ff6b69] dark:text-[#ff3b30] mr-3 text-xl">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-semibold text-[#ff6b69] dark:text-[#ff3b30] mb-1">
+              Erreur de chargement des équipes
+            </h3>
+            <p class="text-sm text-[#6d6870] dark:text-[#e0e0e0]">
+              {{ error }}
+            </p>
+            <button
+              (click)="loadEquipes()"
+              class="mt-3 bg-[#ff6b69]/20 dark:bg-[#ff3b30]/20 text-[#ff6b69] dark:text-[#ff3b30] px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-[#ff6b69]/30 dark:hover:bg-[#ff3b30]/30 transition-colors"
+            >
+              <i class="fas fa-sync-alt mr-1.5"></i> Réessayer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Teams -->
+    <div
+      *ngIf="!loading && !error && equipes.length === 0"
+      class="text-center py-16"
+    >
+      <div
+        class="w-20 h-20 mx-auto mb-6 text-[#4f5fad] dark:text-[#00f7ff] opacity-70"
+      >
+        <i class="fas fa-users text-5xl"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-[#4f5fad] dark:text-[#00f7ff] mb-2">
+        Aucune équipe trouvée
+      </h3>
+      <p class="text-[#6d6870] dark:text-[#e0e0e0] text-sm mb-6">
+        Commencez par créer une nouvelle équipe pour organiser vos projets et
+        membres
+      </p>
+      <button
+        (click)="navigateToAddEquipe()"
+        class="bg-gradient-to-r from-[#4f5fad] to-[#7826b5] dark:from-[#00f7ff] dark:to-[#4f5fad] text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-[0_0_25px_rgba(79,95,173,0.4)] dark:hover:shadow-[0_0_25px_rgba(0,247,255,0.4)]"
+      >
+        <i class="fas fa-plus-circle mr-2"></i>
+        Créer une équipe
+      </button>
+    </div>
+
+    <!-- Teams Grid -->
+    <div
+      *ngIf="!loading && equipes.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+    >
+      <div
+        *ngFor="let equipe of equipes"
+        class="group bg-white dark:bg-[#1a1a1a] rounded-xl shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] overflow-hidden hover:shadow-xl dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] transition-all duration-300 hover:-translate-y-2 border border-[#4f5fad]/20 dark:border-[#00f7ff]/20 backdrop-blur-sm"
+      >
+        <!-- Header avec gradient -->
+        <div class="relative">
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4f5fad] to-[#7826b5] dark:from-[#00f7ff] dark:to-[#4f5fad]"
+          ></div>
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4f5fad] to-[#7826b5] dark:from-[#00f7ff] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+          ></div>
+
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3
+                  class="text-lg font-bold text-[#4f5fad] dark:text-[#00f7ff] mb-2 group-hover:scale-[1.02] transition-transform duration-300 origin-left"
+                >
+                  {{ equipe.name }}
+                </h3>
+                <div class="flex items-center text-xs">
+                  <span
+                    class="bg-[#4f5fad]/10 dark:bg-[#00f7ff]/10 text-[#4f5fad] dark:text-[#00f7ff] px-2 py-1 rounded-full font-medium"
+                  >
+                    <i class="fas fa-users mr-1"></i>
+                    {{ equipe.members?.length || 0 }} membre(s)
+                  </span>
+                </div>
+              </div>
+
+              <!-- Avatar de l'équipe -->
+              <div
+                class="w-12 h-12 bg-gradient-to-br from-[#4f5fad] to-[#7826b5] dark:from-[#00f7ff] dark:to-[#4f5fad] rounded-full flex items-center justify-center shadow-lg"
+              >
+                <i class="fas fa-users text-white text-lg"></i>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <p
+              class="text-sm text-[#6d6870] dark:text-[#e0e0e0] line-clamp-2 mb-4"
+            >
+              {{
+                equipe.description && equipe.description.length > 80
+                  ? (equipe.description | slice : 0 : 80) + "..."
+                  : equipe.description || "Aucune description disponible"
+              }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="px-6 pb-6">
+          <div
+            class="flex items-center justify-between pt-4 border-t border-[#4f5fad]/10 dark:border-[#00f7ff]/10"
+          >
+            <!-- Bouton Détails -->
+            <button
+              (click)="equipe._id && navigateToEquipeDetail(equipe._id)"
+              class="text-[#4f5fad] dark:text-[#00f7ff] hover:text-[#7826b5] dark:hover:text-[#4f5fad] text-sm font-medium transition-colors flex items-center group/details"
+            >
+              <i
+                class="fas fa-eye mr-1 group-hover/details:scale-110 transition-transform"
+              ></i>
+              Détails
+            </button>
+
+            <!-- Actions rapides -->
+            <div class="flex items-center space-x-2">
+              <button
+                (click)="equipe._id && navigateToEditEquipe(equipe._id)"
+                class="p-2 text-[#6d6870] dark:text-[#e0e0e0] hover:text-[#4f5fad] dark:hover:text-[#00f7ff] hover:bg-[#4f5fad]/10 dark:hover:bg-[#00f7ff]/10 rounded-lg transition-all"
+                title="Modifier l'équipe"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+
+              <button
+                (click)="equipe._id && navigateToTasks(equipe._id)"
+                class="p-2 text-[#6d6870] dark:text-[#e0e0e0] hover:text-[#00ff9d] hover:bg-[#00ff9d]/10 rounded-lg transition-all"
+                title="Gérer les tâches"
+              >
+                <i class="fas fa-tasks"></i>
+              </button>
+
+              <button
+                (click)="equipe._id && deleteEquipe(equipe._id)"
+                class="p-2 text-[#6d6870] dark:text-[#e0e0e0] hover:text-[#ff6b69] dark:hover:text-[#ff3b30] hover:bg-[#ff6b69]/10 dark:hover:bg-[#ff3b30]/10 rounded-lg transition-all"
+                title="Supprimer l'équipe"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

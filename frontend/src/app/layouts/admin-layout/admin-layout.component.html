@@ -204,6 +204,30 @@
               <span class="relative">Évaluations</span>
             </div>
           </a>
+          <!-- Equipes -->
+          <a
+            routerLink="/admin/equipes"
+            routerLinkActive="active bg-gradient-to-r from-[#3d4a85]/10 to-[#4f5fad]/10 dark:from-[#3d4a85]/20 dark:to-[#4f5fad]/20 text-[#4f5fad] dark:text-[#6d78c9] font-medium"
+            class="sidebar-nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-l-md text-[#6d6870] dark:text-[#a0a0a0] hover:bg-[#edf1f4] dark:hover:bg-[#2a2a2a] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all"
+          >
+            <!-- Hover effect -->
+            <span
+              class="absolute inset-0 w-1 bg-gradient-to-b from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] opacity-0 group-hover:opacity-100 transition-opacity"
+            ></span>
+
+            <div class="relative z-10 flex items-center">
+              <div class="relative">
+                <i
+                  class="fas fa-users h-5 w-5 mr-3 text-[#4f5fad] dark:text-[#6d78c9] group-hover:text-[#3d4a85] dark:group-hover:text-[#4f5fad] transition-all group-hover:scale-110"
+                ></i>
+                <!-- Glow effect -->
+                <div
+                  class="absolute inset-0 bg-[#4f5fad]/20 dark:bg-[#6d78c9]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md rounded-full"
+                ></div>
+              </div>
+              <span class="relative">Equipes</span>
+            </div>
+          </a>
 
           <!-- Back Home button -->
           <a
@@ -230,28 +254,7 @@
               <span class="relative">Back Home</span>
             </div>
           </a>
-          <!-- Equipes-->
-          <!-- <a
-            routerLink="/admin/equipes"
-            routerLinkActive="bg-[#dac4ea]/20 text-white"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-              />
-            </svg>
-            Equipes
-          </a> -->
+
           <!-- end of bo back -->
         </nav>
       </div>
@@ -464,6 +467,15 @@
             </svg>
             Évaluations
           </a>
+          <!-- Equipes -->
+          <a
+            routerLink="/admin/equipes"
+            (click)="toggleMobileMenu()"
+            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#6d6870] hover:bg-[#edf1f4] hover:text-[#4f5fad] transition-colors"
+          >
+            <i class="fas fa-users h-5 w-5 mr-3"></i>
+            Equipes
+          </a>
 
           <!-- Back Home button -->
           <a
@@ -474,28 +486,7 @@
             <i class="fas fa-home h-5 w-5 mr-3 text-[#4f5fad]"></i>
             Back Home
           </a>
-          <!-- Equipes-->
-          <!-- <a
-            routerLink="/admin/equipes"
-            (click)="toggleMobileMenu()"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-[#dac4ea] hover:bg-[#dac4ea]/20 hover:text-white transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-              />
-            </svg>
-            Equipes
-          </a> -->
+
           <!-- end of bo back -->
         </nav>
       </div>

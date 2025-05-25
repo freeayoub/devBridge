@@ -70,12 +70,14 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/front/signup/signup.module').then(
             (m) => m.SignupModule
-          ),  canActivateChild: [noguarduserGuard],
+          ),
+        canActivateChild: [noguarduserGuard],
       },
       {
         path: 'login',
         loadChildren: () =>
-          import('./views/front/login/login.module').then((m) => m.LoginModule), canActivateChild: [noguarduserGuard],
+          import('./views/front/login/login.module').then((m) => m.LoginModule),
+        canActivateChild: [noguarduserGuard],
       },
       {
         path: 'verify-email',
@@ -89,7 +91,8 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/front/reset-password/reset-password.module').then(
             (m) => m.ResetPasswordModule
-          ),  canActivateChild: [guarduserGuard],
+          ),
+        canActivateChild: [guarduserGuard],
       },
       {
         path: 'forgot-password',
@@ -101,8 +104,18 @@ const routes: Routes = [
       {
         path: 'projects',
         loadChildren: () =>
-          import('./views/front/projects/projects.module').then((m) => m.ProjectsModule),
-        canActivateChild: [guarduserGuard] // Protection pour utilisateurs authentifiés
+          import('./views/front/projects/projects.module').then(
+            (m) => m.ProjectsModule
+          ),
+        canActivateChild: [guarduserGuard], // Protection pour utilisateurs authentifiés
+      },
+      {
+        path: 'equipes',
+        loadChildren: () =>
+          import('./views/front/equipes/equipes.module').then(
+            (m) => m.EquipesModule
+          ),
+        canActivateChild: [guarduserGuard], // Protection pour utilisateurs authentifiés
       },
     ],
   },
@@ -126,7 +139,7 @@ const routes: Routes = [
             (m) => m.DashboardModule
           ),
       },
-        {
+      {
         path: 'userdetails/:id',
         loadChildren: () =>
           import('./views/admin/userdetails/userdetails.module').then(
@@ -152,13 +165,21 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/admin/projects/projects.module').then(
             (m) => m.ProjectsModule
-          ),canActivateChild: [guarduserGuard] 
+          ),
+        canActivateChild: [guarduserGuard],
       },
       {
         path: 'profile',
         loadChildren: () =>
           import('./views/admin/profile/profile.module').then(
             (m) => m.ProfileModule
+          ),
+      },
+      {
+           path: 'equipes',
+        loadChildren: () =>
+          import('./views/admin/equipes/equipes.module').then(
+            (m) => m.EquipesModule
           ),
       },
     ],

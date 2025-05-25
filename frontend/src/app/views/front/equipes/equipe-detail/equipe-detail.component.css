@@ -1,0 +1,8 @@
+/* Styles pour le composant equipe-detail */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+summary:hover {
+  text-decoration: underline;
+}

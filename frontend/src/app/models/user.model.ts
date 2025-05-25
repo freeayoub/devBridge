@@ -1,4 +1,5 @@
 export interface User {
+  // Champs principaux (premier système)
   _id: string;
   id?: string;
   username: string;
@@ -19,4 +20,21 @@ export interface User {
   group?: any;
   verified?: boolean;
   __v?: number;
+
+  // Nouveaux champs (second système)
+  firstName?: string; // Prénom
+  lastName?: string; // Nom
+  profession?: string; // Étudiant ou Professeur
+  dateOfBirth?: Date | string; // Date de naissance
+
+  // Champs supplémentaires pour la compatibilité
+  name?: string;
+  password?: string;
+  department?: string;
+  position?: string;
+  phoneNumber?: string;
+  address?: string;
+  profilePicture?: string;
+  skills?: string[];
+  joinDate?: Date;
 }
