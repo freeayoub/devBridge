@@ -47,7 +47,7 @@ export class ProjetService {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     });
     
-    return this.http.post(`${this.apiUrl}`, formData, { headers })
+    return this.http.post(`${this.apiUrl}/create`, formData, { headers })
       .pipe(
         tap(response => console.log('Projet ajouté:', response)),
         catchError(error => {
@@ -58,7 +58,7 @@ export class ProjetService {
   }
 
   updateProjet(id: string, projet: Projet): Observable<Projet> {
-    return this.http.put<Projet>(`${this.apiUrl}/${id}`, projet, { headers: this.getHeaders() })
+    return this.http.put<Projet>(`${this.apiUrl}/update/${id}`, projet, { headers: this.getHeaders() })
       .pipe(
         catchError(error => throwError(() => error))
       );

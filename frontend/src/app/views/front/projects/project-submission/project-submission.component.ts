@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProjetService } from 'src/app/services/projets.service';
+import { ProjetService } from '@app/services/projets.service';
 import { RendusService } from 'src/app/services/rendus.service';
 import { AuthuserService } from 'src/app/services/authuser.service';
 

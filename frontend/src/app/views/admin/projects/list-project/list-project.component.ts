@@ -2,10 +2,9 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Projet } from 'src/app/models/projet.model';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ProjetService } from 'src/app/services/projets.service';
+import { ProjetService } from '@app/services/projets.service';
 import { DataService } from 'src/app/services/data.service';
 import { environment } from 'src/environments/environment';
-
 
 @Component({
   selector: 'app-list-project',
@@ -18,7 +17,7 @@ export class ListProjectComponent implements OnInit {
   isAdmin = false;
   showDeleteDialog = false;
   projectIdToDelete: string | null = null;
-  
+
   // For the confirmation dialog
   dialogRef?: MatDialogRef<any>;
   dialogData = {
@@ -54,7 +53,10 @@ export class ListProjectComponent implements OnInit {
         console.error('Error loading projects', err);
         this.isLoading = false;
         // Afficher un message d'erreur à l'utilisateur
-        alert('Erreur lors du chargement des projets: ' + (err.error?.message || err.message || 'Erreur inconnue'));
+        alert(
+          'Erreur lors du chargement des projets: ' +
+            (err.error?.message || err.message || 'Erreur inconnue')
+        );
       },
     });
   }
@@ -68,7 +70,6 @@ export class ListProjectComponent implements OnInit {
     this.isAdmin = this.authService.isAdmin();
     console.log('Statut admin:', this.isAdmin);
   }
-
 
   editProjet(projetId: string | undefined): void {
     if (!projetId) {
@@ -93,18 +94,21 @@ export class ListProjectComponent implements OnInit {
       console.error('ID du projet non défini');
       return;
     }
-    
+
     if (confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
       console.log('Suppression du projet confirmée:', projetId);
       this.projetService.deleteProjet(projetId).subscribe({
         next: () => {
           console.log('Projet supprimé avec succès');
           alert('Projet supprimé avec succès');
-          this.loadProjets();  // Reload the projects after deletion
+          this.loadProjets(); // Reload the projects after deletion
         },
         error: (err) => {
           console.error('Error deleting project', err);
-          alert('Erreur lors de la suppression du projet: ' + (err.error?.message || err.message || 'Erreur inconnue'));
+          alert(
+            'Erreur lors de la suppression du projet: ' +
+              (err.error?.message || err.message || 'Erreur inconnue')
+          );
         },
       });
     }
@@ -115,9 +119,12 @@ export class ListProjectComponent implements OnInit {
       console.error('ID du projet non défini');
       return;
     }
-    console.log('Ouverture de la boîte de dialogue de confirmation pour la suppression du projet:', id);
-    this.showDeleteDialog = true;  // Show confirmation dialog
-    this.projectIdToDelete = id;  // Store the ID of the project to be deleted
+    console.log(
+      'Ouverture de la boîte de dialogue de confirmation pour la suppression du projet:',
+      id
+    );
+    this.showDeleteDialog = true; // Show confirmation dialog
+    this.projectIdToDelete = id; // Store the ID of the project to be deleted
   }
 
   onDeleteConfirm(): void {
@@ -127,12 +134,15 @@ export class ListProjectComponent implements OnInit {
         next: () => {
           console.log('Projet supprimé avec succès');
           alert('Projet supprimé avec succès');
-          this.loadProjets();  // Reload the projects after deletion
-          this.showDeleteDialog = false;  // Close the confirmation dialog
+          this.loadProjets(); // Reload the projects after deletion
+          this.showDeleteDialog = false; // Close the confirmation dialog
         },
         error: (err) => {
           console.error('Error deleting project', err);
-          alert('Erreur lors de la suppression du projet: ' + (err.error?.message || err.message || 'Erreur inconnue'));
+          alert(
+            'Erreur lors de la suppression du projet: ' +
+              (err.error?.message || err.message || 'Erreur inconnue')
+          );
           this.showDeleteDialog = false;
         },
       });
@@ -141,40 +151,34 @@ export class ListProjectComponent implements OnInit {
 
   onDeleteCancel(): void {
     console.log('Suppression du projet annulée');
-    this.showDeleteDialog = false;  // Close the confirmation dialog without deleting
+    this.showDeleteDialog = false; // Close the confirmation dialog without deleting
   }
 
   getFileUrl(filePath: string): string {
     if (!filePath) return '';
-    
+
     // Extraire uniquement le nom du fichier
     let fileName = filePath;
-    
+
     // Si le chemin contient des slashes ou backslashes, prendre la dernière partie
     if (filePath.includes('/') || filePath.includes('\\')) {
       const parts = filePath.split(/[\/\\]/);
       fileName = parts[parts.length - 1];
     }
-    
+
     // Utiliser la route spécifique pour le téléchargement
     return `${environment.urlBackend}projets/telecharger/${fileName}`;
   }
 
   getFileName(filePath: string): string {
     if (!filePath) return 'Fichier';
-    
+
     // Si le chemin contient des slashes ou backslashes, prendre la dernière partie
     if (filePath.includes('/') || filePath.includes('\\')) {
       const parts = filePath.split(/[\/\\]/);
       return parts[parts.length - 1];
     }
-    
+
     return filePath;
   }
 }
-
-
-
-
-
-

@@ -4066,3 +4066,1508 @@
 {"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 06:26:14"}
 {"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 06:26:14"}
 {"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 06:26:24"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:01:25"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:01:25"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:02:04","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 10ms","timestamp":"2025-05-25 14:02:04"}
+{"level":"http","message":"POST / 200 - 29ms","timestamp":"2025-05-25 14:02:04"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:02:04"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 19ms","timestamp":"2025-05-25 14:02:04"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 14:02:04","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 18ms","timestamp":"2025-05-25 14:02:04"}
+{"level":"http","message":"GraphQL anonymous completed in 48ms","timestamp":"2025-05-25 14:02:04"}
+{"level":"http","message":"POST / 200 - 55ms","timestamp":"2025-05-25 14:02:04"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:02:04"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:02:04"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:02:04"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:02:04"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:02:34","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 14:02:35"}
+{"level":"http","message":"POST / 200 - 294ms","timestamp":"2025-05-25 14:02:35"}
+{"level":"http","message":"GET /users 304 - 11ms","timestamp":"2025-05-25 14:02:42"}
+{"level":"http","message":"GET /getev 304 - 6ms","timestamp":"2025-05-25 14:02:56"}
+{"level":"http","message":"GET / 304 - 10ms","timestamp":"2025-05-25 14:03:03"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:03:04","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:03:04"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 14:03:04"}
+{"level":"http","message":"GET / 304 - 14ms","timestamp":"2025-05-25 14:03:16"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:03:34","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:03:34"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 14:03:34"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:04:04","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:04:04"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:04:04"}
+{"level":"warn","message":"POST /api/projets 404 - 3ms","timestamp":"2025-05-25 14:04:33"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:04:47","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 14:04:47"}
+{"level":"http","message":"POST / 200 - 112ms","timestamp":"2025-05-25 14:04:47"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:05:04","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:05:04"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:05:04"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:05:34","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:05:34"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:05:34"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:06:05","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 14:06:05"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 14:06:05"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:06:35","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:06:35"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:06:35"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:07:04","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:07:04"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 14:07:04"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:07:35","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:07:35"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 14:07:35"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:08:04","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:08:04"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:08:04"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:08:35","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:08:35"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:08:35"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:09:05","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:09:05"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 14:09:05"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:09:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 14:09:39"}
+{"level":"http","message":"POST / 200 - 12ms","timestamp":"2025-05-25 14:09:39"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 14:10:01"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:10:02","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:10:02"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 14:10:02"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:10:02"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:10:02"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:10:02"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:10:02"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:10:02"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 5ms","timestamp":"2025-05-25 14:10:03"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:10:33","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:10:33"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 14:10:33"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:11:03","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:11:03"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 14:11:03"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:11:33","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:11:33"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:11:33"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:12:03","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:12:03"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 14:12:03"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:12:33","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:12:33"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:12:33"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 14:13:08"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:13:09","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:13:09"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 14:13:09"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:13:09"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:13:09"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:13:09"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:13:09"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:13:09"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 9ms","timestamp":"2025-05-25 14:13:10"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 14:13:30"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:13:32","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:13:32"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 14:13:32"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:13:32"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:13:32"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:13:32"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:13:32"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:13:32"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 8ms","timestamp":"2025-05-25 14:13:32"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:14:03","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:14:03"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:14:03"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:14:33","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:14:33"}
+{"level":"http","message":"POST / 200 - 8ms","timestamp":"2025-05-25 14:14:33"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 14:14:56"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:14:57"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:14:57","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:14:57"}
+{"level":"http","message":"POST / 200 - 11ms","timestamp":"2025-05-25 14:14:57"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:14:57"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:14:57"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:14:57"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:14:57"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 7ms","timestamp":"2025-05-25 14:14:58"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:15:27","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:15:27"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 14:15:27"}
+{"level":"error","message":"POST /api/projets/create 500 - 22ms","timestamp":"2025-05-25 14:15:35"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:15:57","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:15:57"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 14:15:57"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:16:27","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:16:27"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:16:27"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:16:57","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:16:57"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:16:57"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:17:27","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:17:27"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 14:17:27"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:17:57","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:17:57"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 14:17:57"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:18:27","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:18:27"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 14:18:27"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:18:46"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:18:58","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:18:58"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 14:18:58"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:19:27"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:19:28","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:19:28"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 14:19:28"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:19:54"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:19:54"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:19:54"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:19:55"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:19:55"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:19:55"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:19:55"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:22:38"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:22:38"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:23:14"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:23:14"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:23:14"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:23:14"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:23:14"}
+{"level":"error","message":"POST /api/projets/create 500 - 11ms","timestamp":"2025-05-25 14:23:17"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:26:00"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:26:00"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:26:01"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:26:01"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:26:01"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:26:01"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:26:01"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:26:23"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:26:57"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:26:57"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:26:58"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:26:58"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:26:58"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:26:58"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:26:58"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:27:24"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:27:24"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:27:26"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:27:26"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:27:26"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:27:26"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:27:26"}
+{"level":"http","message":"POST /create 201 - 55ms","timestamp":"2025-05-25 14:28:55"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:29:18"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:29:18"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:29:18"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:29:18"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:29:18"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:29:18"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:29:18"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:30:59"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:30:59"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:31:00"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:31:00"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:31:00"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:31:00"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:31:00"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:31:50"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:31:50"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:31:51"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:31:51"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:31:51"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:31:51"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:31:51"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:33:52"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:33:52"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:33:53"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:33:53"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:33:53"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:33:53"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:33:53"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:34:36"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:34:36"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:34:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:34:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:34:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:34:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:34:37"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 14:37:20"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:37:20","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 6ms","timestamp":"2025-05-25 14:37:20"}
+{"level":"http","message":"POST / 200 - 20ms","timestamp":"2025-05-25 14:37:20"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:37:20"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:37:21"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:37:21"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:37:21"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:37:21"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 42ms","timestamp":"2025-05-25 14:37:21"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:37:50","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:37:50"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 14:37:50"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:38:20","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:38:20"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 14:38:20"}
+{"level":"warn","message":"POST /create 404 - 22ms","timestamp":"2025-05-25 14:38:38"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:38:51","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:38:51"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 14:38:51"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:39:21","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:39:21"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 14:39:21"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:39:50","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:39:50"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 14:39:50"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:40:21","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 14:40:21"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 14:40:21"}
+{"level":"http","message":"GET / 200 - 4ms","timestamp":"2025-05-25 14:40:50"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 14:40:51","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 14:40:51"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 14:40:51"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:41:20"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 14:41:53"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 14:41:53"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 14:41:53"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:41:53"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:41:53"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:41:53"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 14:41:53"}
+{"level":"warn","message":"POST /create 404 - 67ms","timestamp":"2025-05-25 14:42:25"}
+{"level":"warn","message":"POST /create 404 - 13ms","timestamp":"2025-05-25 14:49:59"}
+{"level":"warn","message":"POST /create 404 - 11ms","timestamp":"2025-05-25 14:50:36"}
+{"level":"warn","message":"POST /create 404 - 32ms","timestamp":"2025-05-25 14:52:22"}
+{"level":"warn","message":"POST /create 404 - 8ms","timestamp":"2025-05-25 14:54:37"}
+{"level":"warn","message":"POST /create 404 - 6ms","timestamp":"2025-05-25 14:55:01"}
+{"level":"warn","message":"POST /create 404 - 13ms","timestamp":"2025-05-25 14:57:07"}
+{"level":"warn","message":"POST /create 404 - 18ms","timestamp":"2025-05-25 14:59:13"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 15:00:40"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 15:00:40"}
+{"level":"http","message":"GET / 200 - 33ms","timestamp":"2025-05-25 15:01:07"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 15:02:01"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 15:02:01"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 15:02:33"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 15:02:33"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 15:02:46"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 15:02:46"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 15:03:06"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 15:03:06"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 15:03:15"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 15:03:15"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 15:03:24"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 15:03:24"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 15:05:28"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 15:05:28"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 15:06:05"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 15:06:05"}
+{"level":"warn","message":"POST /create 404 - 23ms","timestamp":"2025-05-25 15:10:34"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:10:44"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:10:44"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:10:44"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:10:44"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:10:44"}
+{"level":"warn","message":"POST /create 404 - 16ms","timestamp":"2025-05-25 15:11:27"}
+{"level":"warn","message":"POST /create 404 - 16ms","timestamp":"2025-05-25 15:12:57"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:13:05"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:13:07","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 116ms","timestamp":"2025-05-25 15:13:07"}
+{"level":"http","message":"POST / 200 - 349ms","timestamp":"2025-05-25 15:13:07"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:13:07"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:13:08"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:13:08"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:13:08"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:13:08"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 88ms","timestamp":"2025-05-25 15:13:08"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:13:37","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:13:37"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:13:37"}
+{"level":"http","message":"POST /create 201 - 85ms","timestamp":"2025-05-25 15:13:41"}
+{"level":"http","message":"GET / 200 - 38ms","timestamp":"2025-05-25 15:14:11"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:14:11","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:14:11"}
+{"level":"http","message":"POST / 200 - 29ms","timestamp":"2025-05-25 15:14:11"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:14:37","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:14:37"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:14:37"}
+{"level":"http","message":"POST /create 201 - 23ms","timestamp":"2025-05-25 15:14:41"}
+{"level":"http","message":"GET / 200 - 370ms","timestamp":"2025-05-25 15:14:44"}
+{"level":"http","message":"GET /68332594a097691878924d43 200 - 13ms","timestamp":"2025-05-25 15:15:04"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:15:07","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:15:07"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 15:15:07"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 15:15:13"}
+{"level":"http","message":"GET /68332594a097691878924d43 304 - 8ms","timestamp":"2025-05-25 15:15:18"}
+{"level":"http","message":"GET /68332594a097691878924d43 304 - 9ms","timestamp":"2025-05-25 15:15:19"}
+{"level":"warn","message":"PUT /api/projets/68332594a097691878924d43 404 - 13ms","timestamp":"2025-05-25 15:15:25"}
+{"level":"warn","message":"PUT /api/projets/68332594a097691878924d43 404 - 1ms","timestamp":"2025-05-25 15:15:29"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:15:37","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:15:37"}
+{"level":"http","message":"POST / 200 - 9ms","timestamp":"2025-05-25 15:15:37"}
+{"level":"warn","message":"PUT /api/projets/68332594a097691878924d43 404 - 0ms","timestamp":"2025-05-25 15:15:55"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:16:07","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:16:07"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:16:07"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:16:37","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:16:37"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 15:16:37"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:17:07","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:17:07"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:17:07"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:17:08"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:17:10","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:17:10"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:17:10"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:17:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:17:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:17:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:17:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:17:10"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 5ms","timestamp":"2025-05-25 15:17:10"}
+{"level":"http","message":"GET /68332594a097691878924d43 304 - 3ms","timestamp":"2025-05-25 15:17:10"}
+{"level":"warn","message":"PUT /api/projetsupdate/68332594a097691878924d43 404 - 1ms","timestamp":"2025-05-25 15:17:16"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:17:35"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:17:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:17:36"}
+{"level":"http","message":"POST / 200 - 15ms","timestamp":"2025-05-25 15:17:36"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:17:36"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:17:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:17:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:17:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:17:37"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 13ms","timestamp":"2025-05-25 15:17:37"}
+{"level":"http","message":"GET /68332594a097691878924d43 304 - 7ms","timestamp":"2025-05-25 15:17:37"}
+{"level":"http","message":"PUT /update/68332594a097691878924d43 200 - 17ms","timestamp":"2025-05-25 15:17:45"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 8ms","timestamp":"2025-05-25 15:17:47"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:17:47","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 61ms","timestamp":"2025-05-25 15:17:47"}
+{"level":"http","message":"POST / 200 - 65ms","timestamp":"2025-05-25 15:17:47"}
+{"level":"http","message":"GET / 200 - 8ms","timestamp":"2025-05-25 15:17:47"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/68294132b5d5c86fd2e56e23 200 - 13ms","timestamp":"2025-05-25 15:17:48"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/68294132b5d5c86fd2e56e23 200 - 6ms","timestamp":"2025-05-25 15:17:48"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/68294132b5d5c86fd2e56e23 200 - 10ms","timestamp":"2025-05-25 15:17:48"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:18:06","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:18:06"}
+{"level":"http","message":"POST / 200 - 10ms","timestamp":"2025-05-25 15:18:06"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:18:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:18:36"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:18:36"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:19:06","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:19:06"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:19:06"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:19:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:19:36"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 15:19:36"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:20:07","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:20:07"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 15:20:07"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:20:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:20:36"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 15:20:36"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:21:07","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:21:07"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:21:07"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:21:37","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:21:37"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:21:37"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:22:06","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:22:06"}
+{"level":"http","message":"POST / 200 - 9ms","timestamp":"2025-05-25 15:22:06"}
+{"level":"http","message":"GET /users 304 - 28ms","timestamp":"2025-05-25 15:22:28"}
+{"level":"http","message":"GET / 304 - 15ms","timestamp":"2025-05-25 15:22:32"}
+{"level":"http","message":"GET / 304 - 10ms","timestamp":"2025-05-25 15:22:35"}
+{"level":"http","message":"GET / 304 - 16ms","timestamp":"2025-05-25 15:22:35"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:22:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:22:36"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:22:36"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:23:06","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:23:06"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:23:06"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:23:07","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 64ms","timestamp":"2025-05-25 15:23:07"}
+{"level":"http","message":"POST / 200 - 76ms","timestamp":"2025-05-25 15:23:07"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 72ms","timestamp":"2025-05-25 15:23:07"}
+{"level":"http","message":"GET / 304 - 17ms","timestamp":"2025-05-25 15:23:13"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/68294132b5d5c86fd2e56e23 304 - 12ms","timestamp":"2025-05-25 15:23:13"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/68294132b5d5c86fd2e56e23 304 - 11ms","timestamp":"2025-05-25 15:23:13"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/68294132b5d5c86fd2e56e23 304 - 10ms","timestamp":"2025-05-25 15:23:13"}
+{"level":"http","message":"GET /users 304 - 31ms","timestamp":"2025-05-25 15:23:28"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 15:23:30"}
+{"level":"http","message":"GET / 304 - 9ms","timestamp":"2025-05-25 15:23:32"}
+{"level":"http","message":"GET / 304 - 8ms","timestamp":"2025-05-25 15:23:32"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:23:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 15:23:36"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 15:23:36"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:24:06","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:24:06"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 15:24:06"}
+{"level":"http","message":"PUT /logout?secret=2cinfo1&client=esprit 200 - 79ms","timestamp":"2025-05-25 15:24:34"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:24:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:24:36"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:24:36"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:24:41"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:24:42","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:24:42"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:24:42"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-25 15:24:42"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-25 15:24:44"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-25 15:24:49"}
+{"level":"warn","message":"POST /login 400 - 11ms","timestamp":"2025-05-25 15:24:53"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-25 15:24:53"}
+{"level":"warn","message":"POST /login 400 - 3ms","timestamp":"2025-05-25 15:24:59"}
+{"level":"warn","message":"POST /login 400 - 3ms","timestamp":"2025-05-25 15:25:00"}
+{"level":"warn","message":"POST /login 400 - 3ms","timestamp":"2025-05-25 15:25:02"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-25 15:25:02"}
+{"level":"warn","message":"POST /login 400 - 5ms","timestamp":"2025-05-25 15:25:03"}
+{"level":"warn","message":"POST /login 400 - 8ms","timestamp":"2025-05-25 15:25:11"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:25:12","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:25:12"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:25:12"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-25 15:25:21"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:25:42","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:25:42"}
+{"level":"http","message":"POST / 200 - 1ms","timestamp":"2025-05-25 15:25:42"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-25 15:25:53"}
+{"level":"error","message":"POST /login 500 - 184ms","timestamp":"2025-05-25 15:26:03"}
+{"level":"warn","message":"POST /login 400 - 115ms","timestamp":"2025-05-25 15:26:11"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:26:12","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:26:12"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:26:12"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:26:42","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:26:42"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:26:42"}
+{"level":"http","message":"POST /signup 201 - 724ms","timestamp":"2025-05-25 15:26:52"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-25 15:26:58"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:27:12","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:27:12"}
+{"level":"http","message":"POST / 200 - 9ms","timestamp":"2025-05-25 15:27:12"}
+{"level":"http","message":"POST /verify-email 200 - 31ms","timestamp":"2025-05-25 15:27:14"}
+{"level":"http","message":"POST /login 200 - 160ms","timestamp":"2025-05-25 15:27:24"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:27:42","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:27:42"}
+{"level":"http","message":"POST / 200 - 13ms","timestamp":"2025-05-25 15:27:42"}
+{"level":"http","message":"GET / 304 - 9ms","timestamp":"2025-05-25 15:27:50"}
+{"level":"http","message":"GET / 304 - 20ms","timestamp":"2025-05-25 15:27:50"}
+{"level":"http","message":"GET / 304 - 41ms","timestamp":"2025-05-25 15:27:50"}
+{"level":"http","message":"GET / 304 - 17ms","timestamp":"2025-05-25 15:28:07"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 200 - 8ms","timestamp":"2025-05-25 15:28:07"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 200 - 8ms","timestamp":"2025-05-25 15:28:07"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 200 - 9ms","timestamp":"2025-05-25 15:28:07"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:28:12","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:28:12"}
+{"level":"http","message":"POST / 200 - 11ms","timestamp":"2025-05-25 15:28:12"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:28:42","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:28:42"}
+{"level":"http","message":"POST / 200 - 16ms","timestamp":"2025-05-25 15:28:42"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:29:07"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:29:07"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:29:12","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:29:12"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:29:12"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:29:43","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:29:43"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:29:43"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:30:01"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:30:03","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:30:03"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:30:03"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:30:03"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:03"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:03"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:03"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:03"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 200 - 5ms","timestamp":"2025-05-25 15:30:04"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 3ms","timestamp":"2025-05-25 15:30:04"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:30:04","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 16ms","timestamp":"2025-05-25 15:30:04"}
+{"level":"http","message":"POST / 200 - 24ms","timestamp":"2025-05-25 15:30:04"}
+{"level":"http","message":"GET / 304 - 2ms","timestamp":"2025-05-25 15:30:04"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:30:04"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:30:04"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:30:04"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:30:33"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:30:35","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:30:35"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 15:30:35"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:30:35"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:35"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:35"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:35"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:35"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 15:30:35"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 5ms","timestamp":"2025-05-25 15:30:35"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:30:35","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 12ms","timestamp":"2025-05-25 15:30:35"}
+{"level":"http","message":"POST / 200 - 16ms","timestamp":"2025-05-25 15:30:35"}
+{"level":"http","message":"GET / 304 - 3ms","timestamp":"2025-05-25 15:30:36"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:30:36"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:30:36"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:30:36"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:30:40"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:30:42","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:30:42"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 15:30:42"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:30:42"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:42"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:42"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:42"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:30:42"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 6ms","timestamp":"2025-05-25 15:30:42"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 6ms","timestamp":"2025-05-25 15:30:42"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:30:42","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 14ms","timestamp":"2025-05-25 15:30:42"}
+{"level":"http","message":"POST / 200 - 19ms","timestamp":"2025-05-25 15:30:42"}
+{"level":"http","message":"GET / 304 - 3ms","timestamp":"2025-05-25 15:30:42"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 5ms","timestamp":"2025-05-25 15:30:42"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:30:42"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:30:42"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:31:05"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:31:09","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:31:09"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:31:09"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:31:09"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:31:09"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:31:09"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:31:09"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:31:09"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 6ms","timestamp":"2025-05-25 15:31:09"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 3ms","timestamp":"2025-05-25 15:31:09"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:31:09","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 11ms","timestamp":"2025-05-25 15:31:09"}
+{"level":"http","message":"POST / 200 - 12ms","timestamp":"2025-05-25 15:31:09"}
+{"level":"http","message":"GET / 304 - 3ms","timestamp":"2025-05-25 15:31:09"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:31:10"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:31:10"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:31:10"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:31:40","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:31:40"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:31:40"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:31:52"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:31:53","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:31:53"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 15:31:53"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:31:53"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:31:53"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:31:53"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:31:53"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:31:53"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 15:31:53"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 2ms","timestamp":"2025-05-25 15:31:53"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:31:53","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 9ms","timestamp":"2025-05-25 15:31:53"}
+{"level":"http","message":"POST / 200 - 11ms","timestamp":"2025-05-25 15:31:53"}
+{"level":"http","message":"GET / 304 - 4ms","timestamp":"2025-05-25 15:31:53"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:31:54"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:31:54"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:31:54"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:31:58"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:32:02","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:32:02"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:32:02"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:32:02"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:02"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:02"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:02"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:02"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 15:32:02"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 3ms","timestamp":"2025-05-25 15:32:02"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:32:02","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 13ms","timestamp":"2025-05-25 15:32:02"}
+{"level":"http","message":"POST / 200 - 17ms","timestamp":"2025-05-25 15:32:02"}
+{"level":"http","message":"GET / 304 - 2ms","timestamp":"2025-05-25 15:32:02"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 4ms","timestamp":"2025-05-25 15:32:03"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 5ms","timestamp":"2025-05-25 15:32:03"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 5ms","timestamp":"2025-05-25 15:32:03"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:32:33","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:32:33"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:32:33"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:32:33"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:32:34","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:32:34"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:32:34"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:32:34"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:34"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:34"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:34"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:34"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 6ms","timestamp":"2025-05-25 15:32:34"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 8ms","timestamp":"2025-05-25 15:32:34"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:32:34","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 14ms","timestamp":"2025-05-25 15:32:34"}
+{"level":"http","message":"POST / 200 - 21ms","timestamp":"2025-05-25 15:32:34"}
+{"level":"http","message":"GET / 304 - 3ms","timestamp":"2025-05-25 15:32:34"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:32:35"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:32:35"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:32:35"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:32:39"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:32:43","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:32:43"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 15:32:43"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:32:43"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:43"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:43"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:43"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:43"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 7ms","timestamp":"2025-05-25 15:32:43"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 7ms","timestamp":"2025-05-25 15:32:43"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:32:43","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 23ms","timestamp":"2025-05-25 15:32:43"}
+{"level":"http","message":"POST / 200 - 27ms","timestamp":"2025-05-25 15:32:43"}
+{"level":"http","message":"GET / 304 - 2ms","timestamp":"2025-05-25 15:32:43"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:32:43"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 4ms","timestamp":"2025-05-25 15:32:43"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 5ms","timestamp":"2025-05-25 15:32:43"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:32:51"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:32:52","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:32:52"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:32:52"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:32:52"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:52"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:52"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:52"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:32:52"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 3ms","timestamp":"2025-05-25 15:32:53"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 3ms","timestamp":"2025-05-25 15:32:53"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:32:53","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 12ms","timestamp":"2025-05-25 15:32:53"}
+{"level":"http","message":"POST / 200 - 15ms","timestamp":"2025-05-25 15:32:53"}
+{"level":"http","message":"GET / 304 - 3ms","timestamp":"2025-05-25 15:32:53"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 2ms","timestamp":"2025-05-25 15:32:53"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:32:53"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 1ms","timestamp":"2025-05-25 15:32:53"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:33:23","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:33:23"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:33:23"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:33:53","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:33:53"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:33:53"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:34:23","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:34:23"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:34:23"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:34:53","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:34:53"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:34:53"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:35:23","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:35:23"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:35:23"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:36:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:36:39"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:36:39"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:37:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:37:39"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:37:39"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:38:02"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:38:03","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:38:03"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:38:03"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:38:03"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:03"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:03"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:03"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:03"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 15:38:04"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 15:38:04"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:38:04","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 13ms","timestamp":"2025-05-25 15:38:04"}
+{"level":"http","message":"POST / 200 - 16ms","timestamp":"2025-05-25 15:38:04"}
+{"level":"http","message":"GET / 304 - 4ms","timestamp":"2025-05-25 15:38:04"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 4ms","timestamp":"2025-05-25 15:38:04"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 4ms","timestamp":"2025-05-25 15:38:04"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:38:04"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:38:30"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:38:32","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:38:32"}
+{"level":"http","message":"POST / 200 - 46ms","timestamp":"2025-05-25 15:38:32"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:38:32"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:32"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:32"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:32"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:32"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 15:38:32"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 3ms","timestamp":"2025-05-25 15:38:32"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:38:32","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 33ms","timestamp":"2025-05-25 15:38:32"}
+{"level":"http","message":"POST / 200 - 42ms","timestamp":"2025-05-25 15:38:32"}
+{"level":"http","message":"GET / 304 - 2ms","timestamp":"2025-05-25 15:38:32"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:38:32"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:38:32"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:38:32"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:38:35"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:38:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:38:36"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:38:36"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:38:36"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:36"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:36"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:36"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:38:36"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 15:38:36"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 3ms","timestamp":"2025-05-25 15:38:36"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:38:36","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 12ms","timestamp":"2025-05-25 15:38:36"}
+{"level":"http","message":"POST / 200 - 17ms","timestamp":"2025-05-25 15:38:36"}
+{"level":"http","message":"GET / 304 - 4ms","timestamp":"2025-05-25 15:38:36"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 8ms","timestamp":"2025-05-25 15:38:37"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 8ms","timestamp":"2025-05-25 15:38:37"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 100ms","timestamp":"2025-05-25 15:38:37"}
+{"level":"http","message":"GET /683325d1a097691878924d47 200 - 4ms","timestamp":"2025-05-25 15:38:40"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:39:06","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:39:06"}
+{"level":"http","message":"POST / 200 - 27ms","timestamp":"2025-05-25 15:39:06"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:39:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 15:39:36"}
+{"level":"http","message":"POST / 200 - 14ms","timestamp":"2025-05-25 15:39:36"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:40:06","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:40:06"}
+{"level":"http","message":"POST / 200 - 18ms","timestamp":"2025-05-25 15:40:06"}
+{"level":"http","message":"POST /submit 201 - 60ms","timestamp":"2025-05-25 15:40:27"}
+{"level":"http","message":"GET / 304 - 13ms","timestamp":"2025-05-25 15:40:30"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 200 - 23ms","timestamp":"2025-05-25 15:40:30"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 38ms","timestamp":"2025-05-25 15:40:30"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 21ms","timestamp":"2025-05-25 15:40:30"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:40:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:40:36"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:40:36"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:41:05"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:41:06","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 3ms","timestamp":"2025-05-25 15:41:06"}
+{"level":"http","message":"POST / 200 - 35ms","timestamp":"2025-05-25 15:41:06"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:41:06"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:41:06"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:41:07"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:41:07"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:41:07"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:41:07","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 60ms","timestamp":"2025-05-25 15:41:07"}
+{"level":"http","message":"GraphQL anonymous completed in 106ms","timestamp":"2025-05-25 15:41:07"}
+{"level":"http","message":"POST / 200 - 112ms","timestamp":"2025-05-25 15:41:07"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 50ms","timestamp":"2025-05-25 15:41:07"}
+{"level":"http","message":"GET / 304 - 8ms","timestamp":"2025-05-25 15:41:07"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 8ms","timestamp":"2025-05-25 15:41:07"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 6ms","timestamp":"2025-05-25 15:41:07"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 8ms","timestamp":"2025-05-25 15:41:07"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 11ms","timestamp":"2025-05-25 15:41:13"}
+{"level":"http","message":"GET /68332594a097691878924d43 200 - 18ms","timestamp":"2025-05-25 15:41:13"}
+{"level":"http","message":"GET / 304 - 10ms","timestamp":"2025-05-25 15:41:17"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 24ms","timestamp":"2025-05-25 15:41:17"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 36ms","timestamp":"2025-05-25 15:41:17"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 5ms","timestamp":"2025-05-25 15:41:17"}
+{"level":"http","message":"GET /68331b1748d1476bf3a21a9e 200 - 12ms","timestamp":"2025-05-25 15:41:19"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 85ms","timestamp":"2025-05-25 15:41:19"}
+{"level":"http","message":"GET / 304 - 13ms","timestamp":"2025-05-25 15:41:30"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 8ms","timestamp":"2025-05-25 15:41:30"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 11ms","timestamp":"2025-05-25 15:41:30"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 21ms","timestamp":"2025-05-25 15:41:30"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 27ms","timestamp":"2025-05-25 15:41:32"}
+{"level":"http","message":"GET /68332594a097691878924d43 304 - 19ms","timestamp":"2025-05-25 15:41:32"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 15:41:34"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 20ms","timestamp":"2025-05-25 15:41:34"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 23ms","timestamp":"2025-05-25 15:41:34"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 25ms","timestamp":"2025-05-25 15:41:34"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 23ms","timestamp":"2025-05-25 15:41:36"}
+{"level":"http","message":"GET /683325d1a097691878924d47 304 - 52ms","timestamp":"2025-05-25 15:41:36"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:41:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:41:36"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:41:36"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:42:07","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 15:42:07"}
+{"level":"http","message":"POST / 200 - 225ms","timestamp":"2025-05-25 15:42:07"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:42:37","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:42:37"}
+{"level":"http","message":"POST / 200 - 156ms","timestamp":"2025-05-25 15:42:37"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:43:06","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 15:43:06"}
+{"level":"http","message":"POST / 200 - 49ms","timestamp":"2025-05-25 15:43:06"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:43:37","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:43:37"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:43:37"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:44:07","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:44:07"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:44:07"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:44:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:44:39"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:44:39"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:45:20","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:45:20"}
+{"level":"http","message":"POST / 200 - 9ms","timestamp":"2025-05-25 15:45:20"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:45:37","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:45:37"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:45:37"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:45:53"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:46:01"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:46:01","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:46:01"}
+{"level":"http","message":"POST / 200 - 83ms","timestamp":"2025-05-25 15:46:01"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:46:01"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:46:01"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:46:01"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:46:01"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 15ms","timestamp":"2025-05-25 15:46:01"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:46:01","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 49ms","timestamp":"2025-05-25 15:46:01"}
+{"level":"http","message":"GraphQL anonymous completed in 149ms","timestamp":"2025-05-25 15:46:02"}
+{"level":"http","message":"POST / 200 - 188ms","timestamp":"2025-05-25 15:46:02"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 12ms","timestamp":"2025-05-25 15:46:02"}
+{"level":"http","message":"GET /683325d1a097691878924d47 304 - 6ms","timestamp":"2025-05-25 15:46:02"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 15:46:21"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 6ms","timestamp":"2025-05-25 15:46:21"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 10ms","timestamp":"2025-05-25 15:46:21"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 10ms","timestamp":"2025-05-25 15:46:21"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:46:31","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:46:31"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:46:31"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 30ms","timestamp":"2025-05-25 15:47:00"}
+{"level":"http","message":"GET /68332594a097691878924d43 304 - 31ms","timestamp":"2025-05-25 15:47:00"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:47:01","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:47:01"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 15:47:01"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:47:31","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:47:31"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:47:31"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:48:01","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:48:01"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:48:01"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:48:13"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:48:15","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:48:15"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:48:15"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:48:15"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:48:15"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:48:15"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:48:15"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:48:15"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 15:48:15"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 5ms","timestamp":"2025-05-25 15:48:15"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:48:15","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 9ms","timestamp":"2025-05-25 15:48:15"}
+{"level":"http","message":"POST / 200 - 13ms","timestamp":"2025-05-25 15:48:15"}
+{"level":"http","message":"GET /68332594a097691878924d43 304 - 2ms","timestamp":"2025-05-25 15:48:15"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 3ms","timestamp":"2025-05-25 15:48:15"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:48:45","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:48:45"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:48:45"}
+{"level":"http","message":"GET / 304 - 12ms","timestamp":"2025-05-25 15:48:52"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 5ms","timestamp":"2025-05-25 15:48:52"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 9ms","timestamp":"2025-05-25 15:48:52"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 20ms","timestamp":"2025-05-25 15:48:52"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 7ms","timestamp":"2025-05-25 15:48:54"}
+{"level":"http","message":"GET /683325d1a097691878924d47 304 - 5ms","timestamp":"2025-05-25 15:48:54"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:49:16","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:49:16"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:49:16"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:49:23"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:49:24","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:49:24"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:49:24"}
+{"level":"info","message":"WebSocket connection authenticated for user 683328aba097691878924d75","timestamp":"2025-05-25 15:49:24"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:49:24"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:49:24"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:49:24"}
+{"level":"info","message":"WebSocket operation for user 683328aba097691878924d75, operation: subscribe","timestamp":"2025-05-25 15:49:24"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 5ms","timestamp":"2025-05-25 15:49:24"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 5ms","timestamp":"2025-05-25 15:49:24"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:49:24","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 14ms","timestamp":"2025-05-25 15:49:24"}
+{"level":"http","message":"POST / 200 - 19ms","timestamp":"2025-05-25 15:49:24"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 4ms","timestamp":"2025-05-25 15:49:24"}
+{"level":"http","message":"GET /683325d1a097691878924d47 304 - 3ms","timestamp":"2025-05-25 15:49:24"}
+{"level":"http","message":"GET / 304 - 13ms","timestamp":"2025-05-25 15:49:38"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 16ms","timestamp":"2025-05-25 15:49:39"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 19ms","timestamp":"2025-05-25 15:49:39"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 14ms","timestamp":"2025-05-25 15:49:39"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 13ms","timestamp":"2025-05-25 15:49:41"}
+{"level":"http","message":"GET /68332594a097691878924d43 304 - 18ms","timestamp":"2025-05-25 15:49:41"}
+{"level":"http","message":"GET / 304 - 4ms","timestamp":"2025-05-25 15:49:45"}
+{"level":"http","message":"GET /check/683325d1a097691878924d47/683328aba097691878924d75 304 - 32ms","timestamp":"2025-05-25 15:49:45"}
+{"level":"http","message":"GET /check/68332594a097691878924d43/683328aba097691878924d75 304 - 32ms","timestamp":"2025-05-25 15:49:45"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 32ms","timestamp":"2025-05-25 15:49:45"}
+{"level":"http","message":"GET /check/68331b1748d1476bf3a21a9e/683328aba097691878924d75 304 - 11ms","timestamp":"2025-05-25 15:49:46"}
+{"level":"http","message":"GET /68331b1748d1476bf3a21a9e 304 - 6ms","timestamp":"2025-05-25 15:49:46"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:49:54","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:49:54"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:49:54"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 51ms","timestamp":"2025-05-25 15:50:23"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:50:24","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:50:24"}
+{"level":"http","message":"POST / 200 - 15ms","timestamp":"2025-05-25 15:50:24"}
+{"level":"http","message":"PUT /logout?secret=2cinfo1&client=esprit 200 - 34ms","timestamp":"2025-05-25 15:50:25"}
+{"level":"http","message":"POST /login 200 - 176ms","timestamp":"2025-05-25 15:50:33"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:50:37"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:50:38","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:50:38"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 15:50:38"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:50:38"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:50:38"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:50:38"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:50:38"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:50:38"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-25 15:50:38","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 200 - 8ms","timestamp":"2025-05-25 15:50:38"}
+{"level":"http","message":"GraphQL anonymous completed in 19ms","timestamp":"2025-05-25 15:50:38"}
+{"level":"http","message":"POST / 200 - 22ms","timestamp":"2025-05-25 15:50:38"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 6ms","timestamp":"2025-05-25 15:50:38"}
+{"level":"http","message":"GET /users 200 - 37ms","timestamp":"2025-05-25 15:50:44"}
+{"level":"http","message":"GET / 200 - 29ms","timestamp":"2025-05-25 15:50:52"}
+{"level":"http","message":"GET / 304 - 21ms","timestamp":"2025-05-25 15:50:52"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:51:08","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:51:08"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:51:08"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:51:38","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:51:38"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:51:38"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:52:08","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:52:08"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 15:52:08"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:52:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:52:39"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:52:39"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:53:09","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:53:09"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:53:09"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:53:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:53:39"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:53:39"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:54:24","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:54:24"}
+{"level":"http","message":"POST / 200 - 14ms","timestamp":"2025-05-25 15:54:24"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:54:33"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:54:34","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:54:34"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:54:34"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:54:34"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:54:34"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:54:34"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:54:34"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:54:34"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 200 - 9ms","timestamp":"2025-05-25 15:54:34"}
+{"level":"http","message":"GET / 304 - 45ms","timestamp":"2025-05-25 15:54:34"}
+{"level":"http","message":"GET / 304 - 64ms","timestamp":"2025-05-25 15:54:34"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:55:05","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:55:05"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:55:05"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:55:35","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:55:35"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:55:35"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:55:38"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:55:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:55:39"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:55:39"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:55:39"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:39"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:39"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:39"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:39"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 8ms","timestamp":"2025-05-25 15:55:39"}
+{"level":"http","message":"GET / 304 - 12ms","timestamp":"2025-05-25 15:55:39"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 15:55:39"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:55:43"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:55:44","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:55:44"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 15:55:44"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:55:44"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:44"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:44"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:44"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:44"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 10ms","timestamp":"2025-05-25 15:55:44"}
+{"level":"http","message":"GET / 304 - 8ms","timestamp":"2025-05-25 15:55:44"}
+{"level":"http","message":"GET / 304 - 18ms","timestamp":"2025-05-25 15:55:44"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:55:47"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:55:47","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:55:47"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 15:55:47"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:55:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:55:47"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 8ms","timestamp":"2025-05-25 15:55:47"}
+{"level":"http","message":"GET / 304 - 14ms","timestamp":"2025-05-25 15:55:47"}
+{"level":"http","message":"GET / 304 - 27ms","timestamp":"2025-05-25 15:55:47"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:56:17","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:56:17"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:56:17"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:56:48","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:56:48"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:56:48"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:56:50"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:56:51","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:56:51"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 15:56:51"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:56:51"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:56:51"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:56:51"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:56:51"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:56:51"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 5ms","timestamp":"2025-05-25 15:56:51"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 15:56:51"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 15:56:51"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:57:22","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:57:22"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:57:22"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:57:52","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:57:52"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:57:52"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:57:56"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:58:00","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:58:00"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:58:00"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:58:00"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:00"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:00"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:00"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:00"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:58:02"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:58:03","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:58:03"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:58:03"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:58:03"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:03"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:03"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:03"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:03"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 8ms","timestamp":"2025-05-25 15:58:04"}
+{"level":"http","message":"GET / 304 - 8ms","timestamp":"2025-05-25 15:58:04"}
+{"level":"http","message":"GET / 304 - 26ms","timestamp":"2025-05-25 15:58:04"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:58:10"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:58:10","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:58:10"}
+{"level":"http","message":"POST / 200 - 9ms","timestamp":"2025-05-25 15:58:10"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:58:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:10"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 9ms","timestamp":"2025-05-25 15:58:10"}
+{"level":"http","message":"GET / 304 - 23ms","timestamp":"2025-05-25 15:58:10"}
+{"level":"http","message":"GET / 304 - 32ms","timestamp":"2025-05-25 15:58:10"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:58:41","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:58:41"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:58:41"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:58:46"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:58:47","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 15:58:47"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 15:58:47"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:58:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:47"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 7ms","timestamp":"2025-05-25 15:58:47"}
+{"level":"http","message":"GET / 304 - 10ms","timestamp":"2025-05-25 15:58:48"}
+{"level":"http","message":"GET / 304 - 43ms","timestamp":"2025-05-25 15:58:48"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:58:58"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:58:59","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:58:59"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 15:58:59"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:58:59"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:59"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:59"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:59"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:58:59"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 15:58:59"}
+{"level":"http","message":"GET / 304 - 5ms","timestamp":"2025-05-25 15:58:59"}
+{"level":"http","message":"GET / 304 - 12ms","timestamp":"2025-05-25 15:58:59"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:59:29","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:59:29"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:59:29"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 15:59:38"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 15:59:43","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 15:59:43"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 15:59:43"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 15:59:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:59:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:59:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:59:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 15:59:43"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 12ms","timestamp":"2025-05-25 15:59:43"}
+{"level":"http","message":"GET / 304 - 13ms","timestamp":"2025-05-25 15:59:43"}
+{"level":"http","message":"GET / 304 - 8ms","timestamp":"2025-05-25 15:59:43"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:00:13","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:00:13"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 16:00:13"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:00:43","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:00:43"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 16:00:43"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:01:02"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:01:05","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:01:05"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 16:01:05"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:01:05"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:01:05"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:01:05"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:01:05"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:01:05"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 8ms","timestamp":"2025-05-25 16:01:06"}
+{"level":"http","message":"GET / 200 - 13ms","timestamp":"2025-05-25 16:01:06"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 16:01:06"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:01:10"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:01:10","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:01:10"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 16:01:10"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:01:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:01:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:01:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:01:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:01:10"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 8ms","timestamp":"2025-05-25 16:01:10"}
+{"level":"http","message":"GET / 304 - 9ms","timestamp":"2025-05-25 16:01:10"}
+{"level":"http","message":"GET / 304 - 20ms","timestamp":"2025-05-25 16:01:10"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:01:41","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:01:41"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 16:01:41"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:02:11","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 16:02:11"}
+{"level":"http","message":"POST / 200 - 8ms","timestamp":"2025-05-25 16:02:11"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:02:14"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:02:16","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 16:02:16"}
+{"level":"http","message":"POST / 200 - 24ms","timestamp":"2025-05-25 16:02:16"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:02:16"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:16"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:16"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:16"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:16"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 22ms","timestamp":"2025-05-25 16:02:17"}
+{"level":"http","message":"GET / 304 - 32ms","timestamp":"2025-05-25 16:02:17"}
+{"level":"http","message":"GET / 304 - 74ms","timestamp":"2025-05-25 16:02:17"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:02:28"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:02:30","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 16:02:30"}
+{"level":"http","message":"POST / 200 - 15ms","timestamp":"2025-05-25 16:02:30"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:02:30"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:30"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:30"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:30"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:30"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 14ms","timestamp":"2025-05-25 16:02:30"}
+{"level":"http","message":"GET / 304 - 23ms","timestamp":"2025-05-25 16:02:30"}
+{"level":"http","message":"GET / 304 - 17ms","timestamp":"2025-05-25 16:02:30"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:02:36"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:02:37","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:02:37"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 16:02:37"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:02:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:37"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:02:37"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 6ms","timestamp":"2025-05-25 16:02:37"}
+{"level":"http","message":"GET / 304 - 3ms","timestamp":"2025-05-25 16:02:37"}
+{"level":"http","message":"GET / 304 - 10ms","timestamp":"2025-05-25 16:02:37"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:03:08","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:03:08"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 16:03:08"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:03:38","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:03:38"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:03:38"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:04:07","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:04:07"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 16:04:07"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:04:38","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:04:38"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 16:04:38"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:05:08","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:05:08"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:05:08"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 16:05:29"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 16:05:29"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:05:30"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:05:30"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:05:30"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:05:30"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:05:30"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:05:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 4ms","timestamp":"2025-05-25 16:05:39"}
+{"level":"http","message":"POST / 200 - 12ms","timestamp":"2025-05-25 16:05:39"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 16:06:05"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 16:06:05"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:06:06"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:06"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:06"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:06"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:06"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:06:08","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 2ms","timestamp":"2025-05-25 16:06:08"}
+{"level":"http","message":"POST / 200 - 14ms","timestamp":"2025-05-25 16:06:08"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 16:06:13"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 16:06:13"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:06:13"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:13"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:13"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:13"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:13"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:06:38","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 7ms","timestamp":"2025-05-25 16:06:38"}
+{"level":"http","message":"POST / 200 - 23ms","timestamp":"2025-05-25 16:06:38"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 16:06:41"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 16:06:41"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:06:42"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:42"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:42"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:42"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:42"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:06:53"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:06:58","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 9ms","timestamp":"2025-05-25 16:06:58"}
+{"level":"http","message":"POST / 200 - 32ms","timestamp":"2025-05-25 16:06:58"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:06:58"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 26ms","timestamp":"2025-05-25 16:06:58"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:58"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:58"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:58"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:06:58"}
+{"level":"http","message":"GET / 304 - 15ms","timestamp":"2025-05-25 16:06:58"}
+{"level":"http","message":"GET / 304 - 23ms","timestamp":"2025-05-25 16:06:58"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:07:03"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:07:03","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 5ms","timestamp":"2025-05-25 16:07:03"}
+{"level":"http","message":"POST / 200 - 60ms","timestamp":"2025-05-25 16:07:03"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:07:03"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:03"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:03"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:03"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:03"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 9ms","timestamp":"2025-05-25 16:07:04"}
+{"level":"http","message":"GET / 304 - 40ms","timestamp":"2025-05-25 16:07:04"}
+{"level":"http","message":"GET / 304 - 178ms","timestamp":"2025-05-25 16:07:04"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:07:15"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:07:17","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:07:17"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-25 16:07:17"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:07:17"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:17"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:17"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:17"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:17"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 6ms","timestamp":"2025-05-25 16:07:17"}
+{"level":"http","message":"GET / 304 - 13ms","timestamp":"2025-05-25 16:07:17"}
+{"level":"http","message":"GET / 304 - 34ms","timestamp":"2025-05-25 16:07:17"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:07:25"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:07:26","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:07:26"}
+{"level":"http","message":"POST / 200 - 33ms","timestamp":"2025-05-25 16:07:26"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:07:26"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:26"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:26"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:26"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:07:26"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 16:07:26"}
+{"level":"http","message":"GET / 304 - 14ms","timestamp":"2025-05-25 16:07:26"}
+{"level":"http","message":"GET / 304 - 9ms","timestamp":"2025-05-25 16:07:26"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:07:57","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:07:57"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:07:57"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:08:27","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:08:27"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 16:08:27"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:08:34"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:08:36","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:08:36"}
+{"level":"http","message":"POST / 200 - 9ms","timestamp":"2025-05-25 16:08:36"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:08:36"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:08:36"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:08:36"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:08:36"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:08:36"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 10ms","timestamp":"2025-05-25 16:08:37"}
+{"level":"http","message":"GET / 304 - 20ms","timestamp":"2025-05-25 16:08:37"}
+{"level":"http","message":"GET / 304 - 24ms","timestamp":"2025-05-25 16:08:37"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:08:42"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:08:43","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 5ms","timestamp":"2025-05-25 16:08:43"}
+{"level":"http","message":"POST / 200 - 74ms","timestamp":"2025-05-25 16:08:43"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:08:43"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 6ms","timestamp":"2025-05-25 16:08:43"}
+{"level":"http","message":"GET / 304 - 18ms","timestamp":"2025-05-25 16:08:43"}
+{"level":"http","message":"GET / 304 - 32ms","timestamp":"2025-05-25 16:08:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:08:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:08:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:08:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:08:43"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:09:13","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:09:13"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 16:09:13"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:09:23"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:09:24","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:09:24"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:09:24"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:09:24"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:24"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:24"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:24"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:24"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 6ms","timestamp":"2025-05-25 16:09:24"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 16:09:24"}
+{"level":"http","message":"GET / 304 - 13ms","timestamp":"2025-05-25 16:09:24"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:09:31"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:09:32","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:09:32"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 16:09:32"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:09:32"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:32"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:32"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:32"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:32"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 16:09:32"}
+{"level":"http","message":"GET / 304 - 4ms","timestamp":"2025-05-25 16:09:32"}
+{"level":"http","message":"GET / 304 - 11ms","timestamp":"2025-05-25 16:09:32"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:09:37"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:09:38","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:09:38"}
+{"level":"http","message":"POST / 200 - 9ms","timestamp":"2025-05-25 16:09:38"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:09:38"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:38"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:38"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:38"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:38"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 10ms","timestamp":"2025-05-25 16:09:38"}
+{"level":"http","message":"GET / 304 - 26ms","timestamp":"2025-05-25 16:09:38"}
+{"level":"http","message":"GET / 304 - 50ms","timestamp":"2025-05-25 16:09:38"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:09:47"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:09:48","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:09:48"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 16:09:48"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:09:48"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:48"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:48"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:48"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:09:48"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 16:09:48"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 16:09:48"}
+{"level":"http","message":"GET / 304 - 6ms","timestamp":"2025-05-25 16:09:48"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:10:19","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:10:19"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:10:19"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:10:49","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:10:49"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:10:49"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:11:19","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:11:19"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-25 16:11:19"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:11:49","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:11:49"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:11:49"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:12:19","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:12:19"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:12:19"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:12:52"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:12:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:12:55"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 16:12:55"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:12:55"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:12:55"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:12:55"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:12:55"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:12:55"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 8ms","timestamp":"2025-05-25 16:12:55"}
+{"level":"http","message":"GET / 304 - 11ms","timestamp":"2025-05-25 16:12:55"}
+{"level":"http","message":"GET / 304 - 8ms","timestamp":"2025-05-25 16:12:55"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:13:10"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:13:10","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:13:10"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 16:13:10"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:13:10"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:11"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:11"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:11"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:11"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 10ms","timestamp":"2025-05-25 16:13:11"}
+{"level":"http","message":"GET / 304 - 12ms","timestamp":"2025-05-25 16:13:11"}
+{"level":"http","message":"GET / 304 - 7ms","timestamp":"2025-05-25 16:13:11"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:13:33"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:13:34","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:13:34"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:13:34"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:13:34"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:34"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:34"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:34"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:34"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 16:13:34"}
+{"level":"http","message":"GET / 304 - 6ms","timestamp":"2025-05-25 16:13:34"}
+{"level":"http","message":"GET / 304 - 11ms","timestamp":"2025-05-25 16:13:34"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:13:43"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:13:43","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:13:43"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 16:13:43"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:13:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:43"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:44"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:44"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 4ms","timestamp":"2025-05-25 16:13:44"}
+{"level":"http","message":"GET / 304 - 6ms","timestamp":"2025-05-25 16:13:44"}
+{"level":"http","message":"GET / 304 - 12ms","timestamp":"2025-05-25 16:13:44"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:13:46"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:13:47","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:13:47"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:13:47"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:13:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:47"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:47"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:13:49"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:13:49","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:13:49"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 16:13:49"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:13:49"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:49"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:49"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:49"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:49"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 3ms","timestamp":"2025-05-25 16:13:49"}
+{"level":"http","message":"GET / 304 - 9ms","timestamp":"2025-05-25 16:13:49"}
+{"level":"http","message":"GET / 304 - 6ms","timestamp":"2025-05-25 16:13:49"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-25 16:13:53"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:13:56","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:13:56"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:13:56"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:13:56"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:56"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:56"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:56"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:13:56"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 6ms","timestamp":"2025-05-25 16:13:56"}
+{"level":"http","message":"GET / 304 - 4ms","timestamp":"2025-05-25 16:13:56"}
+{"level":"http","message":"GET / 304 - 8ms","timestamp":"2025-05-25 16:13:56"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:14:27","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:14:27"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:14:27"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:14:57","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-25 16:14:57"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 16:14:57"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:15:27","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:15:27"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-25 16:15:27"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:15:57","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:15:57"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-25 16:15:57"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:16:27","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:16:27"}
+{"level":"http","message":"POST / 200 - 1ms","timestamp":"2025-05-25 16:16:27"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:17:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:17:39"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 16:17:39"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:18:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:18:39"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-25 16:18:39"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:19:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-25 16:19:39"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-25 16:19:39"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-25 16:20:16"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-25 16:20:16"}
+{"level":"info","message":"WebSocket connection authenticated for user 68294132b5d5c86fd2e56e23","timestamp":"2025-05-25 16:20:16"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:20:16"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:20:17"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:20:17"}
+{"level":"info","message":"WebSocket operation for user 68294132b5d5c86fd2e56e23, operation: subscribe","timestamp":"2025-05-25 16:20:17"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:20:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 6ms","timestamp":"2025-05-25 16:20:39"}
+{"level":"http","message":"POST / 200 - 34ms","timestamp":"2025-05-25 16:20:39"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:21:39","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 8ms","timestamp":"2025-05-25 16:21:39"}
+{"level":"http","message":"POST / 200 - 19ms","timestamp":"2025-05-25 16:21:39"}

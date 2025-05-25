@@ -3,7 +3,7 @@
     <!-- Back Button -->
     <div class="mb-6">
       <a
-        routerLink="/front/projects"
+        routerLink="/projects"
         class="text-[#4f5fad] hover:text-[#3d4a85] flex items-center"
       >
         <svg
@@ -111,7 +111,7 @@
 
           <ng-container *ngIf="!hasSubmitted">
             <a
-              [routerLink]="['/front/projects/submit', projetId]"
+              [routerLink]="['/projects/submit', projetId]"
               class="bg-[#4f5fad] hover:bg-[#3d4a85] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             >
               Soumettre mon projet

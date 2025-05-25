@@ -85,7 +85,7 @@ const callLocalModel = async (prompt) => {
         "Authorization": "Bearer not-needed" // Certaines implémentations locales requièrent un token fictif
       },
       body: JSON.stringify({
-        model: "mathstral-7b-v0.1", // Nom du modèle Mistral
+        model: "mathstral-7b-v0.3", // Nom du modèle Mistral
         messages: [
           { role: "system", content: "Tu es un assistant spécialisé dans l'évaluation de projets informatiques." },
           { role: "user", content: prompt }

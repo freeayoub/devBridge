@@ -39,10 +39,10 @@ const {
 const adminRoutes = require("./src/routes/adminRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const groupRoutes = require("./src/routes/groupRoutes");
-const teamRoutes = require('./src/routes/teamRoute');
+const teamRoutes = require("./src/routes/teamRoute");
 const teamMemberRoutes = require("./src/routes/teamMemberRoute");
-const projectsRoutes = require('./src/routes/projectRoutes'); // Import des routes des projets
-const taskRoutes = require('./src/routes/taskRoutes'); // Import des routes des tâches
+const projectsRoutes = require("./src/routes/projectRoutes"); // Import des routes des projets
+const taskRoutes = require("./src/routes/taskRoutes"); // Import des routes des tâches
 
 const projetRoute = require("./src/routes/projetRoute");
 const renduRoutes = require("./src/routes/renduRoute");
@@ -64,7 +64,12 @@ const corsOptions = {
     "ws://localhost:4200",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Apollo-Require-Preflight","role"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Apollo-Require-Preflight",
+    "role",
+  ],
   credentials: true,
 };
 
@@ -83,10 +88,10 @@ app.use(
 
 // 3. REST Routes
 
-app.use('/api/teams', teamRoutes);
-app.use('/api/teammembers', teamMemberRoutes);
-app.use('/api/projects', projectsRoutes);
-app.use('/api/tasks', taskRoutes);
+app.use("/api/teams", teamRoutes);
+app.use("/api/teammembers", teamMemberRoutes);
+app.use("/api/projects", projectsRoutes);
+app.use("/api/tasks", taskRoutes);
 app.use("/api/projets", projetRoute);
 app.use("/api/rendus", renduRoutes);
 app.use("/api/evaluations", evaluationRoute);

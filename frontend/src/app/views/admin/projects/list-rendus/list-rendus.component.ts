@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
   selector: 'app-list-rendus',
   templateUrl: './list-rendus.component.html',
   styleUrls: ['./list-rendus.component.css'],
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class ListRendusComponent implements OnInit {
   rendus: any[] = [];
@@ -18,7 +18,7 @@ export class ListRendusComponent implements OnInit {
   error = '';
   searchTerm = '';
   filterStatus: 'all' | 'evaluated' | 'pending' = 'all';
-  
+
   // Nouvelles propriétés pour les filtres
   filtreGroupe: string = '';
   filtreProjet: string = '';
@@ -30,7 +30,7 @@ export class ListRendusComponent implements OnInit {
     private projetService: ProjetService,
     private router: Router,
     private datePipe: DatePipe
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loadRendus();
@@ -49,9 +49,10 @@ export class ListRendusComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur lors du chargement des rendus', err);
-        this.error = 'Impossible de charger les rendus. Veuillez réessayer plus tard.';
+        this.error =
+          'Impossible de charger les rendus. Veuillez réessayer plus tard.';
         this.isLoading = false;
-      }
+      },
     });
   }
 
@@ -62,7 +63,7 @@ export class ListRendusComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur lors du chargement des projets', err);
-      }
+      },
     });
   }
 
@@ -70,7 +71,7 @@ export class ListRendusComponent implements OnInit {
     // Extraire les groupes uniques des rendus
     if (this.rendus && this.rendus.length > 0) {
       const groupesSet = new Set<string>();
-      this.rendus.forEach(rendu => {
+      this.rendus.forEach((rendu) => {
         if (rendu.etudiant?.groupe) {
           groupesSet.add(rendu.etudiant.groupe);
         }
@@ -81,34 +82,43 @@ export class ListRendusComponent implements OnInit {
 
   applyFilters(): void {
     let results = this.rendus;
-    
+
     // Filtre par statut d'évaluation
     if (this.filterStatus === 'evaluated') {
-      results = results.filter(rendu => rendu.evaluation && rendu.evaluation.scores);
+      results = results.filter(
+        (rendu) => rendu.evaluation && rendu.evaluation.scores
+      );
     } else if (this.filterStatus === 'pending') {
-      results = results.filter(rendu => !rendu.evaluation || !rendu.evaluation.scores);
+      results = results.filter(
+        (rendu) => !rendu.evaluation || !rendu.evaluation.scores
+      );
     }
-    
+
     // Filtre par terme de recherche
     if (this.searchTerm.trim() !== '') {
       const term = this.searchTerm.toLowerCase().trim();
-      results = results.filter(rendu => 
-        (rendu.etudiant?.nom?.toLowerCase().includes(term) || 
-         rendu.etudiant?.prenom?.toLowerCase().includes(term) ||
-         rendu.projet?.titre?.toLowerCase().includes(term))
+      results = results.filter(
+        (rendu) =>
+          rendu.etudiant?.nom?.toLowerCase().includes(term) ||
+          rendu.etudiant?.prenom?.toLowerCase().includes(term) ||
+          rendu.projet?.titre?.toLowerCase().includes(term)
       );
     }
 
     // Filtre par groupe
     if (this.filtreGroupe) {
-      results = results.filter(rendu => rendu.etudiant?.groupe === this.filtreGroupe);
+      results = results.filter(
+        (rendu) => rendu.etudiant?.groupe === this.filtreGroupe
+      );
     }
 
     // Filtre par projet
     if (this.filtreProjet) {
-      results = results.filter(rendu => rendu.projet?._id === this.filtreProjet);
+      results = results.filter(
+        (rendu) => rendu.projet?._id === this.filtreProjet
+      );
     }
-    
+
     this.filteredRendus = results;
   }
 
@@ -133,8 +143,8 @@ export class ListRendusComponent implements OnInit {
   // Méthode pour la compatibilité avec le template
   evaluerRendu(renduId: string, mode: 'manual' | 'ai'): void {
     // Rediriger vers la page d'évaluation avec le mode approprié
-    this.router.navigate(['/admin/projects/evaluate', renduId], { 
-      queryParams: { mode: mode } 
+    this.router.navigate(['/admin/projects/evaluate', renduId], {
+      queryParams: { mode: mode },
     });
   }
 
@@ -172,9 +182,14 @@ export class ListRendusComponent implements OnInit {
 
   getScoreTotal(rendu: any): number {
     if (!rendu.evaluation || !rendu.evaluation.scores) return 0;
-    
+
     const scores = rendu.evaluation.scores;
-    return scores.structure + scores.pratiques + scores.fonctionnalite + scores.originalite;
+    return (
+      scores.structure +
+      scores.pratiques +
+      scores.fonctionnalite +
+      scores.originalite
+    );
   }
 
   getScoreClass(score: number): string {
@@ -196,31 +211,29 @@ export class ListRendusComponent implements OnInit {
   // Méthodes pour gérer les fichiers
   getFileUrl(filePath: string): string {
     if (!filePath) return '';
-    
+
     // Extraire uniquement le nom du fichier
     let fileName = filePath;
-    
+
     // Si le chemin contient des slashes ou backslashes, prendre la dernière partie
     if (filePath.includes('/') || filePath.includes('\\')) {
       const parts = filePath.split(/[\/\\]/);
       fileName = parts[parts.length - 1];
     }
-    
+
     // Utiliser la route spécifique pour le téléchargement
     return `${environment.urlBackend}projets/telecharger/${fileName}`;
   }
 
   getFileName(filePath: string): string {
     if (!filePath) return 'Fichier';
-    
+
     // Si le chemin contient des slashes ou backslashes, prendre la dernière partie
     if (filePath.includes('/') || filePath.includes('\\')) {
       const parts = filePath.split(/[\/\\]/);
       return parts[parts.length - 1];
     }
-    
+
     return filePath;
   }
 }
-
-

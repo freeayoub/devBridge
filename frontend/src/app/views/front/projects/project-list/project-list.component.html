@@ -241,7 +241,7 @@
             class="flex justify-between items-center pt-3 border-t border-[#edf1f4]/50 dark:border-[#2a2a2a]"
           >
             <a
-              [routerLink]="['/front/projects/detail', projet._id]"
+              [routerLink]="['/projects/detail', projet._id]"
               class="text-[#4f5fad] dark:text-[#6d78c9] hover:text-[#3d4a85] dark:hover:text-[#4f5fad] text-sm font-medium flex items-center transition-colors relative group/details"
             >
               <div class="relative mr-1">
@@ -293,7 +293,7 @@
 
             <ng-container *ngIf="!isRendu(projet._id)">
               <a
-                [routerLink]="['/front/projects/submit', projet._id]"
+                [routerLink]="['/projects/submit', projet._id]"
                 class="relative overflow-hidden group/submit"
               >
                 <div

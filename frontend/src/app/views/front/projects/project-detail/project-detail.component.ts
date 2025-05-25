@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProjetService } from 'src/app/services/projets.service';
+import { ProjetService } from '@app/services/projets.service';
 import { RendusService } from 'src/app/services/rendus.service';
 import { AuthuserService } from 'src/app/services/authuser.service';
 
@@ -51,6 +51,7 @@ export class ProjectDetailComponent implements OnInit {
     if (etudiantId) {
       this.rendusService.checkRenduExists(this.projetId, etudiantId).subscribe({
         next: (exists) => {
+          console.log(exists)
           this.hasSubmitted = exists;
         },
         error: (err) => {
@@ -74,4 +75,3 @@ export class ProjectDetailComponent implements OnInit {
     return `http://localhost:3000/api/projets/download/${fileName}`;
   }
 }
-

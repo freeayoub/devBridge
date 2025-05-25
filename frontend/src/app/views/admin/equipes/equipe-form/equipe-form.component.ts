@@ -10,7 +10,297 @@ import { User } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-equipe-form',
-  templateUrl: './equipe-form.component.html',
+  template: `
+    <div
+      class="min-h-screen bg-[#f0f4f8] dark:bg-[#0a0a0a] relative overflow-hidden"
+    >
+      <!-- Background decorative elements -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#dac4ea]/5 to-transparent dark:from-[#00f7ff]/3 dark:to-transparent blur-3xl"
+        ></div>
+        <div
+          class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#dac4ea]/5 to-transparent dark:from-[#00f7ff]/3 dark:to-transparent blur-3xl"
+        ></div>
+
+        <!-- Grid pattern -->
+        <div class="absolute inset-0 opacity-5 dark:opacity-[0.03]">
+          <div class="h-full grid grid-cols-12">
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+            <div class="border-r border-[#dac4ea] dark:border-[#00f7ff]"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-4xl mx-auto p-6 relative z-10">
+        <!-- Header -->
+        <div class="mb-8 relative">
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#dac4ea] to-[#8b5a9f] dark:from-[#00f7ff] dark:to-[#dac4ea]"
+          ></div>
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#dac4ea] to-[#8b5a9f] dark:from-[#00f7ff] dark:to-[#dac4ea] blur-md"
+          ></div>
+
+          <div
+            class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] p-6 backdrop-blur-sm border border-[#dac4ea]/20 dark:border-[#00f7ff]/20"
+          >
+            <div
+              class="flex flex-col lg:flex-row lg:items-center lg:justify-between"
+            >
+              <div class="mb-4 lg:mb-0">
+                <h1
+                  class="text-3xl font-bold text-[#dac4ea] dark:text-[#00f7ff] mb-2 tracking-wide"
+                >
+                  {{ isEditMode ? "Modifier l'équipe" : 'Nouvelle équipe' }}
+                </h1>
+                <p class="text-[#6d6870] dark:text-[#e0e0e0] text-sm">
+                  {{
+                    isEditMode
+                      ? 'Modifiez les informations et les membres de votre équipe'
+                      : 'Créez une nouvelle équipe pour organiser vos projets et membres'
+                  }}
+                </p>
+              </div>
+
+              <button
+                (click)="cancel()"
+                class="bg-[#dac4ea]/20 dark:bg-[#00f7ff]/20 text-[#dac4ea] dark:text-[#00f7ff] px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:bg-[#dac4ea]/30 dark:hover:bg-[#00f7ff]/30"
+              >
+                <i class="fas fa-arrow-left mr-2"></i>
+                Retour à la liste
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div
+          *ngIf="loading"
+          class="flex flex-col items-center justify-center py-16"
+        >
+          <div class="relative">
+            <div
+              class="w-12 h-12 border-3 border-[#dac4ea]/20 dark:border-[#00f7ff]/20 border-t-[#dac4ea] dark:border-t-[#00f7ff] rounded-full animate-spin"
+            ></div>
+            <div
+              class="absolute inset-0 bg-[#dac4ea]/20 dark:bg-[#00f7ff]/20 blur-xl rounded-full transform scale-150 -z-10"
+            ></div>
+          </div>
+          <p
+            class="mt-4 text-[#dac4ea] dark:text-[#00f7ff] text-sm font-medium tracking-wide"
+          >
+            Chargement des données...
+          </p>
+        </div>
+
+        <!-- Error Alert -->
+        <div *ngIf="error" class="mb-6">
+          <div
+            class="bg-[#ff6b69]/10 dark:bg-[#ff3b30]/10 border-l-4 border-[#ff6b69] dark:border-[#ff3b30] rounded-lg p-4 backdrop-blur-sm"
+          >
+            <div class="flex items-start">
+              <div class="text-[#ff6b69] dark:text-[#ff3b30] mr-3 text-xl">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="flex-1">
+                <h3
+                  class="font-semibold text-[#ff6b69] dark:text-[#ff3b30] mb-1"
+                >
+                  Erreur
+                </h3>
+                <p class="text-sm text-[#6d6870] dark:text-[#e0e0e0]">
+                  {{ error }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulaire principal -->
+        <div *ngIf="!loading" class="mb-8 relative">
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#dac4ea] to-[#8b5a9f] dark:from-[#00f7ff] dark:to-[#dac4ea]"
+          ></div>
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#dac4ea] to-[#8b5a9f] dark:from-[#00f7ff] dark:to-[#dac4ea] blur-md"
+          ></div>
+
+          <div
+            class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] overflow-hidden border border-[#dac4ea]/20 dark:border-[#00f7ff]/20"
+          >
+            <!-- Header -->
+            <div
+              class="bg-gradient-to-r from-[#dac4ea] to-[#8b5a9f] dark:from-[#00f7ff] dark:to-[#dac4ea] p-6"
+            >
+              <h3 class="text-xl font-bold text-white mb-1 flex items-center">
+                <i
+                  class="fas mr-2"
+                  [ngClass]="{
+                    'fa-edit': isEditMode,
+                    'fa-plus-circle': !isEditMode
+                  }"
+                ></i>
+                {{
+                  isEditMode
+                    ? "Informations de l'équipe"
+                    : 'Détails de la nouvelle équipe'
+                }}
+              </h3>
+              <p class="text-white/80 text-sm">
+                Remplissez les informations de base de l'équipe
+              </p>
+            </div>
+
+            <!-- Form -->
+            <div class="p-6">
+              <form (ngSubmit)="onSubmit()" class="space-y-6">
+                <!-- Nom de l'équipe -->
+                <div>
+                  <label
+                    class="block text-sm font-medium text-[#dac4ea] dark:text-[#00f7ff] mb-2"
+                  >
+                    Nom de l'équipe
+                    <span class="text-[#ff6b69] dark:text-[#ff3b30]">*</span>
+                  </label>
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i
+                        class="fas fa-users text-[#dac4ea] dark:text-[#00f7ff]"
+                      ></i>
+                    </div>
+                    <input
+                      #nameInput
+                      type="text"
+                      [value]="equipe.name || ''"
+                      (input)="updateName(nameInput.value)"
+                      class="w-full pl-10 pr-4 py-3 bg-[#f0f4f8] dark:bg-[#0a0a0a] border border-[#dac4ea]/20 dark:border-[#00f7ff]/20 rounded-lg text-[#6d6870] dark:text-[#e0e0e0] placeholder-[#6d6870]/50 dark:placeholder-[#a0a0a0] focus:outline-none focus:ring-2 focus:ring-[#dac4ea] dark:focus:ring-[#00f7ff] focus:border-transparent transition-all"
+                      placeholder="Entrez le nom de l'équipe"
+                      required
+                      minlength="3"
+                    />
+                  </div>
+                  <div
+                    *ngIf="nameExists"
+                    class="mt-1 text-sm text-[#ff6b69] dark:text-[#ff3b30] flex items-center"
+                  >
+                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                    Ce nom d'équipe existe déjà. Veuillez en choisir un autre.
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                  <label
+                    class="block text-sm font-medium text-[#dac4ea] dark:text-[#00f7ff] mb-2"
+                  >
+                    Description
+                    <span class="text-[#ff6b69] dark:text-[#ff3b30]">*</span>
+                  </label>
+                  <div class="relative">
+                    <div class="absolute top-3 left-3 pointer-events-none">
+                      <i
+                        class="fas fa-file-alt text-[#dac4ea] dark:text-[#00f7ff]"
+                      ></i>
+                    </div>
+                    <textarea
+                      #descInput
+                      [value]="equipe.description || ''"
+                      (input)="updateDescription(descInput.value)"
+                      rows="4"
+                      class="w-full pl-10 pr-4 py-3 bg-[#f0f4f8] dark:bg-[#0a0a0a] border border-[#dac4ea]/20 dark:border-[#00f7ff]/20 rounded-lg text-[#6d6870] dark:text-[#e0e0e0] placeholder-[#6d6870]/50 dark:placeholder-[#a0a0a0] focus:outline-none focus:ring-2 focus:ring-[#dac4ea] dark:focus:ring-[#00f7ff] focus:border-transparent transition-all resize-none"
+                      placeholder="Décrivez l'objectif et les activités de cette équipe"
+                      required
+                      minlength="10"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <!-- Admin info -->
+                <input type="hidden" [value]="equipe.admin" />
+                <div
+                  class="bg-[#dac4ea]/10 dark:bg-[#00f7ff]/10 border-l-4 border-[#dac4ea] dark:border-[#00f7ff] rounded-lg p-4"
+                >
+                  <div class="flex items-center">
+                    <div
+                      class="text-[#dac4ea] dark:text-[#00f7ff] mr-3 text-lg"
+                    >
+                      <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="text-sm text-[#6d6870] dark:text-[#e0e0e0]">
+                      Un administrateur par défaut sera assigné à cette équipe.
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex items-center justify-between pt-4">
+                  <div class="flex items-center space-x-4">
+                    <button
+                      type="button"
+                      (click)="cancel()"
+                      class="bg-[#6d6870]/20 dark:bg-[#a0a0a0]/20 text-[#6d6870] dark:text-[#e0e0e0] px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:bg-[#6d6870]/30 dark:hover:bg-[#a0a0a0]/30"
+                    >
+                      <i class="fas fa-arrow-left mr-2"></i>
+                      Retour
+                    </button>
+
+                    <button
+                      *ngIf="isEditMode && equipeId"
+                      type="button"
+                      (click)="deleteEquipe()"
+                      class="bg-[#ff6b69]/20 dark:bg-[#ff3b30]/20 text-[#ff6b69] dark:text-[#ff3b30] px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:bg-[#ff6b69]/30 dark:hover:bg-[#ff3b30]/30"
+                    >
+                      <i class="fas fa-trash mr-2"></i>
+                      Supprimer
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    [disabled]="
+                      submitting ||
+                      !equipe.name ||
+                      !equipe.description ||
+                      nameExists ||
+                      nameError ||
+                      descriptionError
+                    "
+                    class="relative overflow-hidden group bg-gradient-to-r from-[#dac4ea] to-[#8b5a9f] dark:from-[#00f7ff] dark:to-[#dac4ea] text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-[0_0_25px_rgba(218,196,234,0.4)] dark:hover:shadow-[0_0_25px_rgba(0,247,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  >
+                    <span
+                      *ngIf="submitting"
+                      class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"
+                    ></span>
+                    <i
+                      *ngIf="!submitting"
+                      class="fas mr-2"
+                      [ngClass]="{
+                        'fa-save': isEditMode,
+                        'fa-plus-circle': !isEditMode
+                      }"
+                    ></i>
+                    {{ isEditMode ? 'Mettre à jour' : "Créer l'équipe" }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
   styleUrls: ['./equipe-form.component.css'],
 })
 export class EquipeFormComponent implements OnInit {
@@ -423,7 +713,7 @@ export class EquipeFormComponent implements OnInit {
 
   cancel(): void {
     console.log('Form cancelled');
-    this.router.navigate(['/equipes/liste']);
+    this.router.navigate(['/admin/equipes']);
   }
 
   // Méthodes pour gérer les membres
@@ -701,7 +991,7 @@ export class EquipeFormComponent implements OnInit {
 
               // Ajouter un délai avant la redirection
               setTimeout(() => {
-                this.router.navigate(['/equipes/liste']);
+                this.router.navigate(['/admin/equipes']);
               }, 500);
             },
             error: (error) => {

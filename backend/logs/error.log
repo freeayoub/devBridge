@@ -6,3 +6,6 @@
 {"level":"error","message":"POST / 500 - 20ms","timestamp":"2025-05-25 05:12:02"}
 {"level":"error","message":"POST / 500 - 23ms","timestamp":"2025-05-25 05:40:02"}
 {"level":"error","message":"POST / 500 - 10ms","timestamp":"2025-05-25 05:47:56"}
+{"level":"error","message":"POST /api/projets/create 500 - 22ms","timestamp":"2025-05-25 14:15:35"}
+{"level":"error","message":"POST /api/projets/create 500 - 11ms","timestamp":"2025-05-25 14:23:17"}
+{"level":"error","message":"POST /login 500 - 184ms","timestamp":"2025-05-25 15:26:03"}

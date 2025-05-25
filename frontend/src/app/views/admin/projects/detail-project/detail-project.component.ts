@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProjetService } from 'src/app/services/projets.service';
+import { ProjetService } from '@app/services/projets.service';
 import { FileService } from 'src/app/services/file.service';
-
 
 @Component({
   selector: 'app-detail-project',
@@ -34,7 +33,7 @@ export class DetailProjectComponent implements OnInit {
 
   deleteProjet(id: string | undefined): void {
     if (!id) return;
-    
+
     if (confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
       this.projectService.deleteProjet(id).subscribe({
         next: () => {
@@ -51,15 +50,8 @@ export class DetailProjectComponent implements OnInit {
 
   formatDate(date: string | Date): string {
     const d = new Date(date);
-    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}/${d.getFullYear()}`;
   }
 }
-
-
-
-
-
-
-
-
-

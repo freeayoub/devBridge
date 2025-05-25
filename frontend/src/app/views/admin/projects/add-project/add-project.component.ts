@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ProjetService } from 'src/app/services/projets.service';
+import { ProjetService } from '@app/services/projets.service';
+import { AuthuserService } from '@app/services/authuser.service';
 
 @Component({
   selector: 'app-add-project',
   templateUrl: './add-project.component.html',
-  styleUrls: ['./add-project.component.css']
+  styleUrls: ['./add-project.component.css'],
 })
 export class AddProjectComponent {
-
   projetForm: FormGroup;
   selectedFiles: File[] = [];
   isSubmitting = false;
@@ -17,14 +17,15 @@ export class AddProjectComponent {
   constructor(
     private fb: FormBuilder,
     private projetService: ProjetService,
-    private router: Router
+    private router: Router,
+    private authService: AuthuserService
   ) {
     this.projetForm = this.fb.group({
       titre: ['', Validators.required],
       description: [''],
       dateLimite: ['', Validators.required],
       fichiers: [null],
-      groupe: ['', Validators.required] // ← champ pour l'ID du groupe
+      groupe: ['', Validators.required], // ← champ pour l'ID du groupe
     });
   }
 
@@ -37,7 +38,7 @@ export class AddProjectComponent {
 
   onSubmit(): void {
     if (this.projetForm.invalid) return;
-    
+
     this.isSubmitting = true;
     console.log('Soumission du formulaire de projet');
 
@@ -47,13 +48,32 @@ export class AddProjectComponent {
     formData.append('dateLimite', this.projetForm.value.dateLimite);
     formData.append('groupe', this.projetForm.value.groupe);
 
-    // Ajouter l'ID du professeur (utilisateur connecté)
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      formData.append('professeur', userId);
+    // Méthode 1: Via le service d'authentification (recommandée)
+    const userIdFromService = this.authService.getCurrentUserId();
+    // Méthode 2: Via le currentUser du service
+    const currentUser = this.authService.getCurrentUser();
+
+    // Méthode 3: Vérification localStorage
+    const user = localStorage.getItem('user');
+    // Utiliser l'ID du service d'authentification en priorité
+    let userId = userIdFromService;
+    if (!userId && currentUser) {
+      userId = currentUser._id || currentUser.id;
+    }
+    if (!userId && user) {
+      userId = JSON.parse(user).id;
     }
 
-    this.selectedFiles.forEach(file => {
+    if (userId) {
+      formData.append('professeur', userId);
+    } else {
+      alert(
+        "Erreur: Impossible de récupérer l'ID utilisateur. Veuillez vous reconnecter."
+      );
+      return;
+    }
+
+    this.selectedFiles.forEach((file) => {
       formData.append('fichiers', file);
     });
 
@@ -62,7 +82,7 @@ export class AddProjectComponent {
       description: this.projetForm.value.description,
       dateLimite: this.projetForm.value.dateLimite,
       groupe: this.projetForm.value.groupe,
-      fichiers: this.selectedFiles.map(f => f.name)
+      fichiers: this.selectedFiles.map((f) => f.name),
     });
 
     this.projetService.addProjet(formData).subscribe({
@@ -71,15 +91,17 @@ export class AddProjectComponent {
         alert('Projet ajouté avec succès');
         this.router.navigate(['/admin/projects']);
       },
-      error: err => {
-        console.error('Erreur lors de l\'ajout du projet:', err);
-        alert('Erreur lors de l\'ajout du projet: ' + (err.error?.message || err.message || 'Erreur inconnue'));
+      error: (err) => {
+        console.error("Erreur lors de l'ajout du projet:", err);
+        alert(
+          "Erreur lors de l'ajout du projet: " +
+            (err.error?.message || err.message || 'Erreur inconnue')
+        );
         this.isSubmitting = false;
       },
       complete: () => {
         this.isSubmitting = false;
-      }
+      },
     });
   }
 }
-

@@ -6,13 +6,12 @@ import { ProjetService } from '@app/services/projets.service';
 @Component({
   selector: 'app-confirm-delete',
   templateUrl: './confirm-delete.component.html',
-  styleUrls: ['./confirm-delete.component.css']
+  styleUrls: ['./confirm-delete.component.css'],
 })
 export class ConfirmDeleteComponent implements OnInit {
-
   constructor(
     private projetService: ProjetService,
-    private dialogRef: MatDialogRef<ConfirmDeleteComponent>,  
+    private dialogRef: MatDialogRef<ConfirmDeleteComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { id: string }
   ) {}
 
@@ -22,7 +21,7 @@ export class ConfirmDeleteComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.dialogRef.close();  // Rien ne sera retourné
+    this.dialogRef.close(); // Rien ne sera retourné
   }
 
   onConfirm(): void {
@@ -33,8 +32,8 @@ export class ConfirmDeleteComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur lors de la suppression', err);
-        alert("Une erreur est survenue.");
-      }
+        alert('Une erreur est survenue.');
+      },
     });
   }
 }
