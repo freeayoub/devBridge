@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-edit-evaluation',
   templateUrl: './edit-evaluation.component.html',
-  styleUrls: ['./edit-evaluation.component.css'],
+  styleUrls: ['./edit-evaluation.component.css']
 })
 export class EditEvaluationComponent implements OnInit {
   renduId: string = '';
@@ -31,14 +31,14 @@ export class EditEvaluationComponent implements OnInit {
         fonctionnalite: [0, [Validators.required, Validators.min(0), Validators.max(5)]],
         originalite: [0, [Validators.required, Validators.min(0), Validators.max(5)]]
       }),
-      
+
       commentaires: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
     this.renduId = this.route.snapshot.paramMap.get('renduId') || '';
-    
+
     if (this.renduId) {
       this.loadRendu();
     } else {
@@ -52,7 +52,7 @@ export class EditEvaluationComponent implements OnInit {
     this.rendusService.getRenduById(this.renduId).subscribe({
       next: (data: any) => {
         this.rendu = data;
-        
+
         // Remplir le formulaire avec les données existantes
         if (this.rendu.evaluation && this.rendu.evaluation.scores) {
           this.evaluationForm.patchValue({
@@ -65,7 +65,7 @@ export class EditEvaluationComponent implements OnInit {
             commentaires: this.rendu.evaluation.commentaires || ''
           });
         }
-        
+
         this.isLoading = false;
       },
       error: (err: any) => {
@@ -84,12 +84,21 @@ export class EditEvaluationComponent implements OnInit {
     this.isSubmitting = true;
     const evaluationData = this.evaluationForm.value;
 
+    // Assurez-vous que renduId est disponible
+    if (!this.renduId) {
+      this.error = "ID du rendu manquant";
+      this.isSubmitting = false;
+      return;
+    }
+
     this.rendusService.updateEvaluation(this.renduId, evaluationData).subscribe({
-      next: () => {
-        this.router.navigate(['/admin/projects/evaluations']);
+      next: (response: any) => {
+        this.isSubmitting = false;
+        // Redirection vers la page de liste des rendus après succès
+        this.router.navigate(['/admin/projects/list-rendus']);
       },
       error: (err: any) => {
-        this.error = 'Erreur lors de la mise à jour de l\'évaluation: ' + (err.error?.message || err.message || 'Erreur inconnue');
+        this.error = `Erreur lors de la mise à jour de l'évaluation: ${err.message || 'Erreur inconnue'}`;
         this.isSubmitting = false;
         console.error(err);
       }
@@ -99,7 +108,7 @@ export class EditEvaluationComponent implements OnInit {
   getScoreTotal(): number {
     const scores = this.evaluationForm.get('scores')?.value;
     if (!scores) return 0;
-    
+
     return scores.structure + scores.pratiques + scores.fonctionnalite + scores.originalite;
   }
 
@@ -108,35 +117,35 @@ export class EditEvaluationComponent implements OnInit {
   }
 
   annuler(): void {
-    this.router.navigate(['/admin/projects/evaluations']);
+    this.router.navigate(['/admin/projects/list-rendus']);
   }
 
   // Méthodes pour gérer les fichiers
   getFileUrl(filePath: string): string {
     if (!filePath) return '';
-    
+
     // Extraire uniquement le nom du fichier
     let fileName = filePath;
-    
+
     // Si le chemin contient des slashes ou backslashes, prendre la dernière partie
     if (filePath.includes('/') || filePath.includes('\\')) {
       const parts = filePath.split(/[\/\\]/);
       fileName = parts[parts.length - 1];
     }
-    
+
     // Utiliser la route spécifique pour le téléchargement
     return `${environment.urlBackend}projets/telecharger/${fileName}`;
   }
 
   getFileName(filePath: string): string {
     if (!filePath) return 'Fichier';
-    
+
     // Si le chemin contient des slashes ou backslashes, prendre la dernière partie
     if (filePath.includes('/') || filePath.includes('\\')) {
       const parts = filePath.split(/[\/\\]/);
       return parts[parts.length - 1];
     }
-    
+
     return filePath;
   }
 }

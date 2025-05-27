@@ -5571,3 +5571,24 @@
 {"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-25 16:21:39","variables":{}}
 {"level":"http","message":"GraphQL anonymous completed in 8ms","timestamp":"2025-05-25 16:21:39"}
 {"level":"http","message":"POST / 200 - 19ms","timestamp":"2025-05-25 16:21:39"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-27 18:48:01"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-27 18:48:01"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:01:38"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:01:42"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:01:46"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:01:53"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:02:04"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:02:21"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:02:47"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:02:50"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:02:54"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:02:59"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:03:08"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:03:27"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:04:01"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:04:42"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:04:45"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:04:47"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:04:53"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:05:03"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 19:05:21"}

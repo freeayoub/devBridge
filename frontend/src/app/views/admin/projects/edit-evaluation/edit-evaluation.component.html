@@ -1,44 +1,218 @@
-<div class="container mx-auto px-4 py-6">
-  <h1 class="text-2xl font-bold mb-6">Modifier l'évaluation</h1>
+<div class="evaluation-container">
+  <!-- En-tête -->
+  <div class="header-section">
+    <h1 class="page-title">Modifier l'évaluation</h1>
+    <nav class="breadcrumb">
+      <a routerLink="/admin/projects" class="breadcrumb-link">Projets</a>
+      <span class="breadcrumb-separator">></span>
+      <a routerLink="/admin/projects/list-rendus" class="breadcrumb-link">Rendus</a>
+      <span class="breadcrumb-separator">></span>
+      <span class="breadcrumb-current">Modifier évaluation</span>
+    </nav>
+  </div>
 
   <!-- Loader -->
-  <div *ngIf="isLoading" class="flex justify-center items-center py-10">
-    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Chargement des données...</p>
   </div>
 
   <!-- Message d'erreur -->
-  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+  <div *ngIf="error" class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
     {{ error }}
   </div>
 
-  <div *ngIf="rendu && !isLoading">
-    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-      <h2 class="text-xl font-semibold mb-2">Informations sur le rendu</h2>
-      <p><span class="font-medium">Projet:</span> {{ rendu.projet?.titre }}</p>
-      <p><span class="font-medium">Étudiant:</span> {{ rendu.etudiant?.nom }} {{ rendu.etudiant?.prenom }}</p>
-      <p><span class="font-medium">Date de soumission:</span> {{ rendu.dateSoumission | date:'dd/MM/yyyy HH:mm' }}</p>
-      <p><span class="font-medium">Description:</span> {{ rendu.description }}</p>
+  <!-- Contenu principal -->
+  <div *ngIf="rendu && !isLoading" class="main-content">
+    <!-- Informations sur le rendu -->
+    <div class="rendu-info-card">
+      <h2 class="card-title">
+        <i class="fas fa-file-alt"></i>
+        Informations sur le rendu
+      </h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Projet:</label>
+          <span>{{ rendu.projet?.titre || 'Non spécifié' }}</span>
+        </div>
+        <div class="info-item">
+          <label>Étudiant:</label>
+          <span>{{ rendu.etudiant?.nom }} {{ rendu.etudiant?.prenom }}</span>
+        </div>
+        <div class="info-item">
+          <label>Groupe:</label>
+          <span>{{ rendu.etudiant?.groupe || 'Non spécifié' }}</span>
+        </div>
+        <div class="info-item">
+          <label>Date de soumission:</label>
+          <span>{{ rendu.dateSoumission | date:'dd/MM/yyyy à HH:mm' }}</span>
+        </div>
+        <div class="info-item full-width">
+          <label>Description:</label>
+          <span>{{ rendu.description || 'Aucune description' }}</span>
+        </div>
+        <div class="info-item full-width" *ngIf="rendu.fichierRendu">
+          <label>Fichier soumis:</label>
+          <a [href]="getFileUrl(rendu.fichierRendu)" target="_blank" class="file-link">
+            <i class="fas fa-download"></i>
+            {{ getFileName(rendu.fichierRendu) }}
+          </a>
+        </div>
+      </div>
     </div>
 
-    <form [formGroup]="evaluationForm" (ngSubmit)="onSubmit()" class="bg-white rounded-lg shadow-md p-6">
-      <div formGroupName="scores" class="mb-6">
-        <h3 class="text-lg font-semibold mb-4">Critères d'évaluation (sur 5 points chacun)</h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Structure et organisation -->
-          <div>
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="structure">
-              Structure et organisation du code
-            </label>
-            <input
-              id="structure"
-              type="number"
-              formControlName="structure"
-              min="0"
-              max="5"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
+    <!-- Formulaire d'évaluation -->
+    <form [formGroup]="evaluationForm" (ngSubmit)="onSubmit()" class="evaluation-form">
+      <div class="form-card">
+        <h3 class="card-title">
+          <i class="fas fa-star"></i>
+          Critères d'évaluation
+        </h3>
+
+        <div formGroupName="scores" class="scores-section">
+          <div class="score-grid">
+            <!-- Structure et organisation -->
+            <div class="score-item">
+              <label for="structure" class="score-label">
+                <i class="fas fa-code"></i>
+                Structure et organisation du code
+              </label>
+              <div class="score-input-container">
+                <input
+                  id="structure"
+                  type="number"
+                  formControlName="structure"
+                  min="0"
+                  max="5"
+                  step="0.5"
+                  class="score-input"
+                  placeholder="0"
+                />
+                <span class="score-max">/ 5</span>
+              </div>
+              <small class="score-description">Qualité de l'organisation et de la structure du code</small>
+            </div>
+
+            <!-- Bonnes pratiques -->
+            <div class="score-item">
+              <label for="pratiques" class="score-label">
+                <i class="fas fa-check-circle"></i>
+                Bonnes pratiques
+              </label>
+              <div class="score-input-container">
+                <input
+                  id="pratiques"
+                  type="number"
+                  formControlName="pratiques"
+                  min="0"
+                  max="5"
+                  step="0.5"
+                  class="score-input"
+                  placeholder="0"
+                />
+                <span class="score-max">/ 5</span>
+              </div>
+              <small class="score-description">Respect des conventions et bonnes pratiques</small>
+            </div>
+
+            <!-- Fonctionnalité -->
+            <div class="score-item">
+              <label for="fonctionnalite" class="score-label">
+                <i class="fas fa-cogs"></i>
+                Fonctionnalité
+              </label>
+              <div class="score-input-container">
+                <input
+                  id="fonctionnalite"
+                  type="number"
+                  formControlName="fonctionnalite"
+                  min="0"
+                  max="5"
+                  step="0.5"
+                  class="score-input"
+                  placeholder="0"
+                />
+                <span class="score-max">/ 5</span>
+              </div>
+              <small class="score-description">Fonctionnement correct et complet</small>
+            </div>
+
+            <!-- Originalité -->
+            <div class="score-item">
+              <label for="originalite" class="score-label">
+                <i class="fas fa-lightbulb"></i>
+                Originalité et créativité
+              </label>
+              <div class="score-input-container">
+                <input
+                  id="originalite"
+                  type="number"
+                  formControlName="originalite"
+                  min="0"
+                  max="5"
+                  step="0.5"
+                  class="score-input"
+                  placeholder="0"
+                />
+                <span class="score-max">/ 5</span>
+              </div>
+              <small class="score-description">Innovation et créativité dans la solution</small>
+            </div>
           </div>
+
+          <!-- Score total -->
+          <div class="score-total">
+            <div class="total-display">
+              <span class="total-label">Score total:</span>
+              <span class="total-value">{{ getScoreTotal() }}</span>
+              <span class="total-max">/ {{ getScoreMaximum() }}</span>
+            </div>
+            <div class="total-percentage">
+              {{ ((getScoreTotal() / getScoreMaximum()) * 100).toFixed(1) }}%
+            </div>
+          </div>
+        </div>
+
+        <!-- Commentaires -->
+        <div class="comments-section">
+          <label for="commentaires" class="comments-label">
+            <i class="fas fa-comment-alt"></i>
+            Commentaires et observations
+          </label>
+          <textarea
+            id="commentaires"
+            formControlName="commentaires"
+            rows="6"
+            class="comments-textarea"
+            placeholder="Ajoutez vos commentaires détaillés sur le travail de l'étudiant..."
+          ></textarea>
+          <div class="form-validation" *ngIf="evaluationForm.get('commentaires')?.invalid && evaluationForm.get('commentaires')?.touched">
+            <small class="error-text">Les commentaires sont obligatoires</small>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button
+            type="button"
+            (click)="annuler()"
+            class="btn btn-secondary"
+            [disabled]="isSubmitting"
+          >
+            <i class="fas fa-times"></i>
+            Annuler
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="evaluationForm.invalid || isSubmitting"
+          >
+            <i class="fas fa-spinner fa-spin" *ngIf="isSubmitting"></i>
+            <i class="fas fa-save" *ngIf="!isSubmitting"></i>
+            {{ isSubmitting ? 'Enregistrement...' : 'Enregistrer l\'évaluation' }}
+          </button>
         </div>
       </div>
     </form>
