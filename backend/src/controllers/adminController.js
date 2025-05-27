@@ -46,6 +46,44 @@ exports.updateUserRole = async (req, res) => {
   }
 };
 
+// PUT /api/admin/users/:id/activation
+exports.toggleUserActivation = async (req, res) => {
+  const { id } = req.params;
+  const { isActive } = req.body;
+
+  if (typeof isActive !== 'boolean') {
+    return res.status(400).json({ message: "isActive must be a boolean value" });
+  }
+
+  try {
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Prevent admin from deactivating themselves
+    if (req.user.id === id && !isActive) {
+      return res.status(400).json({
+        message: "You cannot deactivate your own account"
+      });
+    }
+
+    user.isActive = isActive;
+    await user.save();
+
+    // Get updated user with group info
+    const updatedUser = await User.findById(id)
+      .select("-password -verificationCode -resetCode")
+      .populate("group", "name description");
+
+    const action = isActive ? "activated" : "deactivated";
+    res.json({
+      message: `User ${action} successfully`,
+      user: updatedUser,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 // PUT /api/admin/users/:id/group
 exports.updateUserGroup = async (req, res) => {
   const { id } = req.params;

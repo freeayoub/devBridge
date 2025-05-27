@@ -9,3 +9,15 @@
 {"level":"error","message":"POST /api/projets/create 500 - 22ms","timestamp":"2025-05-25 14:15:35"}
 {"level":"error","message":"POST /api/projets/create 500 - 11ms","timestamp":"2025-05-25 14:23:17"}
 {"level":"error","message":"POST /login 500 - 184ms","timestamp":"2025-05-25 15:26:03"}
+{"level":"error","message":"PUT /users/68038b686229308a4e6b3e81/activation 500 - 22ms","timestamp":"2025-05-26 14:07:27"}
+{"level":"error","message":"PUT /users/68038b686229308a4e6b3e81/activation 500 - 10ms","timestamp":"2025-05-26 14:07:34"}
+{"level":"error","message":"PUT /users/68038b686229308a4e6b3e81/activation 500 - 8ms","timestamp":"2025-05-26 14:07:35"}
+{"level":"error","message":"PUT /users/6803a3aea2987ba81b2d0d84/activation 500 - 6ms","timestamp":"2025-05-26 14:07:38"}
+{"level":"error","message":"PUT /users/68038e6b11c5e2dbcff30509/activation 500 - 10ms","timestamp":"2025-05-26 14:11:16"}
+{"level":"error","message":"PUT /users/680398ee77cf38097b72ecfd/activation 500 - 10ms","timestamp":"2025-05-26 14:16:11"}
+{"level":"error","message":"PUT /users/6803a3d7a2987ba81b2d0d87/activation 500 - 8ms","timestamp":"2025-05-26 14:29:41"}
+{"level":"error","message":"PUT /users/680395e3db62312bb24d1d20/activation 500 - 6ms","timestamp":"2025-05-26 14:33:44"}
+{"level":"error","message":"PUT /users/68038e6b11c5e2dbcff30509/activation 500 - 13ms","timestamp":"2025-05-26 14:34:11"}
+{"level":"error","message":"PUT /users/680395e3db62312bb24d1d20/activation 500 - 7ms","timestamp":"2025-05-26 14:34:17"}
+{"level":"error","message":"PUT /users/680395e3db62312bb24d1d20/activation 500 - 11ms","timestamp":"2025-05-26 14:41:09"}
+{"level":"error","message":"PUT /users/68038b686229308a4e6b3e81/activation 500 - 6ms","timestamp":"2025-05-26 15:23:45"}

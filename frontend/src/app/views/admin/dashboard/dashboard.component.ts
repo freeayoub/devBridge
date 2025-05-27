@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
+import { ToastService } from 'src/app/services/toast.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,7 +18,11 @@ export class DashboardComponent implements OnInit {
   searchTerm = '';
   filteredUsers: any[] = [];
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
     this.loadUserData();
@@ -70,6 +75,10 @@ export class DashboardComponent implements OnInit {
   clearSearch(): void {
     this.searchTerm = '';
     this.filteredUsers = [...this.users];
+  }
+
+  applyFilters(): void {
+    this.searchUsers();
   }
 
   onRoleChange(userId: string, newRole: string) {
@@ -141,15 +150,27 @@ export class DashboardComponent implements OnInit {
   toggleUserActivation(userId: string, currentStatus: boolean) {
     const newStatus = !currentStatus;
     const action = newStatus ? 'activate' : 'deactivate';
+
+    // Find the user to get their name for better messaging
+    const user = this.users.find(u => u._id === userId);
+    const userName = user?.fullName || user?.firstName || 'User';
+
     const confirmAction = confirm(
-      `Are you sure you want to ${action} this user?`
+      `Are you sure you want to ${action} ${userName}?`
     );
     if (!confirmAction) return;
 
     const token = localStorage.getItem('token');
     this.authService.toggleUserActivation(userId, newStatus, token!).subscribe({
       next: (res: any) => {
-        this.message = res.message || `User ${action}d successfully`;
+        const statusText = newStatus ? 'activated' : 'deactivated';
+        const successMessage = `${userName} has been ${statusText} successfully`;
+
+        // Show success toast
+        this.toastService.showSuccess(successMessage);
+
+        // Clear any existing messages
+        this.message = '';
         this.error = '';
 
         // Update user in both arrays
@@ -165,19 +186,19 @@ export class DashboardComponent implements OnInit {
           this.filteredUsers[filteredIndex].isActive = newStatus;
         }
 
-        // Auto-hide message after 3 seconds
-        setTimeout(() => {
-          this.message = '';
-        }, 3000);
+        // Apply filters to refresh the view
+        this.applyFilters();
       },
       error: (err) => {
-        this.error = err.error?.message || `Failed to ${action} user`;
-        this.message = '';
+        const statusText = newStatus ? 'activate' : 'deactivate';
+        const errorMessage = err.error?.message || `Failed to ${statusText} ${userName}`;
 
-        // Auto-hide error after 3 seconds
-        setTimeout(() => {
-          this.error = '';
-        }, 3000);
+        // Show error toast
+        this.toastService.showError(errorMessage);
+
+        // Clear any existing messages
+        this.message = '';
+        this.error = '';
       },
     });
   }

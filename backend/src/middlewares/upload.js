@@ -1,25 +1,74 @@
 const multer = require('multer');
 const path = require('path');
 
-// Define storage strategy
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Create this folder if it doesn't exist
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
+// Memory storage for Cloudinary uploads
+const storage = multer.memoryStorage();
 
-// Accept only image files
-const fileFilter = (req, file, cb) => {
-  const ext = path.extname(file.originalname).toLowerCase();
-  if (ext === '.jpg' || ext === '.jpeg' || ext === '.png') {
+// File filter for images only
+const imageFilter = (req, file, cb) => {
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Only images are allowed'), false);
+    cb(new Error('Only image files (JPEG, PNG, WebP) are allowed'), false);
   }
 };
 
-const upload = multer({ storage, fileFilter });
-module.exports = upload;
+// File filter for project files (more permissive)
+const projectFileFilter = (req, file, cb) => {
+  const allowedTypes = [
+    // Images
+    'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif',
+    // Documents
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    // Text files
+    'text/plain',
+    'text/csv',
+    // Archives
+    'application/zip',
+    'application/x-rar-compressed',
+    'application/x-7z-compressed',
+    // Code files
+    'text/javascript',
+    'text/html',
+    'text/css',
+    'application/json',
+    'application/xml'
+  ];
+
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error(`File type ${file.mimetype} is not allowed. Please upload documents, images, or code files.`), false);
+  }
+};
+
+// Upload configurations
+const uploadImage = multer({
+  storage,
+  fileFilter: imageFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit for images
+  }
+});
+
+const uploadProjectFiles = multer({
+  storage,
+  fileFilter: projectFileFilter,
+  limits: {
+    fileSize: 50 * 1024 * 1024 // 50MB limit for project files
+  }
+});
+
+// Default export for backward compatibility (images only)
+module.exports = uploadImage;
+
+// Named exports for specific use cases
+module.exports.uploadImage = uploadImage;
+module.exports.uploadProjectFiles = uploadProjectFiles;
