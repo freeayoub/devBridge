@@ -23,6 +23,19 @@ export class DashboardComponent implements OnInit {
   selectedImageUrl = '';
   selectedUserName = '';
 
+  // User form modal properties
+  showUserFormModal = false;
+  editUserMode = false;
+  selectedUser: any = null;
+
+  // User filter modal properties
+  showUserFilterModal = false;
+  activeFilters: any = {
+    role: '',
+    status: '',
+    verification: ''
+  };
+
   // Bulk actions properties
   selectedUsers: string[] = [];
   selectAll = false;
@@ -85,26 +98,111 @@ export class DashboardComponent implements OnInit {
   }
 
   searchUsers(): void {
-    if (!this.searchTerm.trim()) {
-      this.filteredUsers = [...this.users];
-    } else {
+    // Apply search term first
+    let results = [...this.users];
+
+    if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase().trim();
-      this.filteredUsers = this.users.filter(user =>
+      results = results.filter(user =>
         user.fullName.toLowerCase().includes(term) ||
         user.email.toLowerCase().includes(term) ||
         user.role.toLowerCase().includes(term)
       );
     }
 
-    // Reset to first page when searching
+    // Then apply any active filters
+    if (this.activeFilters.role) {
+      results = results.filter(user => user.role === this.activeFilters.role);
+    }
+
+    if (this.activeFilters.status) {
+      if (this.activeFilters.status === 'active') {
+        results = results.filter(user => user.isActive !== false);
+      } else if (this.activeFilters.status === 'inactive') {
+        results = results.filter(user => user.isActive === false);
+      }
+    }
+
+    if (this.activeFilters.verification) {
+      if (this.activeFilters.verification === 'verified') {
+        results = results.filter(user => user.verified === true);
+      } else if (this.activeFilters.verification === 'unverified') {
+        results = results.filter(user => user.verified !== true);
+      }
+    }
+
+    this.filteredUsers = results;
+
+    // Reset to first page when searching or filtering
     this.currentPage = 1;
     this.updatePagination();
   }
 
   clearSearch(): void {
     this.searchTerm = '';
+    this.activeFilters = {
+      role: '',
+      status: '',
+      verification: ''
+    };
     this.filteredUsers = [...this.users];
     this.updatePagination();
+  }
+
+  // User form modal methods
+  openUserFormModal(user?: any): void {
+    if (user) {
+      // Edit mode
+      this.editUserMode = true;
+      this.selectedUser = user;
+    } else {
+      // Create mode
+      this.editUserMode = false;
+      this.selectedUser = null;
+    }
+    this.showUserFormModal = true;
+  }
+
+  closeUserFormModal(): void {
+    this.showUserFormModal = false;
+    this.editUserMode = false;
+    this.selectedUser = null;
+  }
+
+  handleUserCreated(user: any): void {
+    this.users.push(user);
+    this.searchUsers(); // This will apply any active filters
+    this.message = 'User created successfully';
+    setTimeout(() => {
+      this.message = '';
+    }, 3000);
+  }
+
+  handleUserUpdated(updatedUser: any): void {
+    // Find and update the user in the array
+    const index = this.users.findIndex(u => u._id === updatedUser._id);
+    if (index !== -1) {
+      this.users[index] = updatedUser;
+      this.searchUsers(); // This will apply any active filters
+    }
+    this.message = 'User updated successfully';
+    setTimeout(() => {
+      this.message = '';
+    }, 3000);
+  }
+
+  // User filter modal methods
+  openUserFilterModal(): void {
+    this.showUserFilterModal = true;
+  }
+
+  closeUserFilterModal(): void {
+    this.showUserFilterModal = false;
+  }
+
+  applyFilters(filters: any): void {
+    this.activeFilters = filters;
+    this.searchUsers();
   }
 
   // Pagination methods
@@ -587,4 +685,84 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  // Export user data to CSV
+  exportUserData(): void {
+    if (!this.users || this.users.length === 0) {
+      this.error = 'No data to export';
+      setTimeout(() => {
+        this.error = '';
+      }, 3000);
+      return;
+    }
+
+    try {
+      // Define CSV headers
+      const headers = ['Full Name', 'Email', 'Role', 'Status', 'Verified', 'Joined Date', 'Last Login'];
+
+      // Helper function to escape CSV fields properly
+      const escapeCSV = (field: any) => {
+        const value = String(field || '');
+        // If the field contains commas, quotes, or newlines, wrap it in quotes and escape any quotes
+        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
+      };
+
+      // Convert user data to CSV rows
+      const rows = this.users.map(user => [
+        escapeCSV(user.fullName || 'N/A'),
+        escapeCSV(user.email || 'N/A'),
+        escapeCSV((user.role || 'N/A').charAt(0).toUpperCase() + (user.role || 'N/A').slice(1)),
+        escapeCSV(user.isActive !== false ? 'Active' : 'Inactive'),
+        escapeCSV(user.verified ? 'Yes' : 'No'),
+        escapeCSV(user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'),
+        escapeCSV(user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'N/A')
+      ]);
+
+      // Combine headers and rows
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+
+      // Add BOM for Excel to recognize UTF-8
+      const BOM = '\uFEFF';
+      const csvContentWithBOM = BOM + csvContent;
+
+      // Create a Blob with the CSV data
+      const blob = new Blob([csvContentWithBOM], { type: 'text/csv;charset=utf-8;' });
+
+      // Create a download link
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+
+      // Set link properties
+      link.setAttribute('href', url);
+      link.setAttribute('download', `user-data-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+
+      // Add link to document, click it, and remove it
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      this.message = 'User data exported successfully';
+      setTimeout(() => {
+        this.message = '';
+      }, 3000);
+    } catch (error) {
+      console.error('Export error:', error);
+      this.error = 'Failed to export user data';
+      setTimeout(() => {
+        this.error = '';
+      }, 3000);
+    }
+  }
+
+  // Refresh user data
+  refreshData(): void {
+    this.message = 'Refreshing data...';
+    this.loadUserData();
+  }
 }

@@ -11,6 +11,8 @@ import { DashboardComponent as UserDashboardComponent } from './user/dashboard/d
 // Import modules
 import { SharedModule } from './shared/shared.module';
 import { AdminModule } from './admin/admin.module';
+import { ProjectsModule } from './projects/projects.module';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,7 +26,8 @@ import { AdminModule } from './admin/admin.module';
     FormsModule,
     HttpClientModule,
     SharedModule,
-    AdminModule
+    AdminModule,
+    ProjectsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

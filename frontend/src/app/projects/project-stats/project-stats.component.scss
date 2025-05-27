@@ -1,0 +1,11 @@
+// Additional styles for the project stats component
+// Most styling is handled by Tailwind CSS classes in the template
+
+// Animation for loading spinner
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

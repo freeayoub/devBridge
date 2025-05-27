@@ -1,0 +1,88 @@
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex justify-center items-center py-4">
+    <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-light dark:border-primary-dark"></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4">
+    {{ error }}
+  </div>
+
+  <!-- Stats Content -->
+  <div *ngIf="!loading && !error" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <!-- Total Projects -->
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+      <div class="flex items-center mb-2">
+        <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center mr-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Projects</h3>
+          <p class="text-lg font-medium text-gray-900 dark:text-white">{{ stats.total }}</p>
+        </div>
+      </div>
+      <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">
+        <div class="bg-blue-500 h-1.5 rounded-full" [style.width.%]="getCompletionPercentage()"></div>
+      </div>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ getCompletionPercentage() }}% completed</p>
+    </div>
+
+    <!-- Project Status Breakdown -->
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+      <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Project Status</h3>
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-blue-600 dark:text-blue-400">Planning</span>
+          <span class="text-xs font-medium">{{ stats.planning }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-yellow-600 dark:text-yellow-400">In Progress</span>
+          <span class="text-xs font-medium">{{ stats.inProgress }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-green-600 dark:text-green-400">Completed</span>
+          <span class="text-xs font-medium">{{ stats.completed }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-red-600 dark:text-red-400">On Hold</span>
+          <span class="text-xs font-medium">{{ stats.onHold }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Completion -->
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+      <div class="flex items-center mb-2">
+        <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center mr-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 12l2 2 4-4" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">Tasks</h3>
+          <p class="text-lg font-medium text-gray-900 dark:text-white">{{ stats.tasksCompleted }}/{{ stats.tasksTotal }}</p>
+        </div>
+      </div>
+      <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">
+        <div class="bg-green-500 h-1.5 rounded-full" [style.width.%]="getTaskCompletionPercentage()"></div>
+      </div>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ getTaskCompletionPercentage() }}% completed</p>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+      <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Activity</h3>
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs text-gray-600 dark:text-gray-300">Last 7 days</span>
+        <span class="text-xs font-medium text-green-600 dark:text-green-400">+{{ stats.completed }} completed</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-gray-600 dark:text-gray-300">Last 30 days</span>
+        <span class="text-xs font-medium text-blue-600 dark:text-blue-400">+{{ stats.total }} created</span>
+      </div>
+    </div>
+  </div>
+</div>

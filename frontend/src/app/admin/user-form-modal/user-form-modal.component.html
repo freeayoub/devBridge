@@ -1,0 +1,108 @@
+<!-- Modal Backdrop -->
+<div *ngIf="show" class="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
+  <!-- Modal Content -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <!-- Modal Header -->
+    <div class="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+        {{ editMode ? 'Edit User' : 'Add New User' }}
+      </h2>
+      <button
+        (click)="closeModal()"
+        class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-4">
+      <!-- Form -->
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- Full Name -->
+        <div>
+          <label for="fullName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+          <input
+            type="text"
+            id="fullName"
+            formControlName="fullName"
+            placeholder="John Doe"
+            class="w-full px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-primary-light dark:focus:border-primary-dark focus:ring-1 focus:ring-primary-light dark:focus:ring-primary-dark transition-all"
+          />
+          <div *ngIf="userForm.get('fullName')?.touched && userForm.get('fullName')?.invalid" class="text-red-500 text-xs mt-1">
+            Full name is required
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            placeholder="user@example.com"
+            class="w-full px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-primary-light dark:focus:border-primary-dark focus:ring-1 focus:ring-primary-light dark:focus:ring-primary-dark transition-all"
+          />
+          <div *ngIf="userForm.get('email')?.touched && userForm.get('email')?.errors?.['required']" class="text-red-500 text-xs mt-1">
+            Email is required
+          </div>
+          <div *ngIf="userForm.get('email')?.touched && userForm.get('email')?.errors?.['email']" class="text-red-500 text-xs mt-1">
+            Please enter a valid email
+          </div>
+        </div>
+
+        <!-- Password Note - Only show in create mode -->
+        <div *ngIf="!editMode" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 p-3 rounded text-sm">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>A random password will be generated and sent to the user's email.</span>
+          </div>
+        </div>
+
+        <!-- Role -->
+        <div>
+          <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+          <select
+            id="role"
+            formControlName="role"
+            class="w-full px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-primary-light dark:focus:border-primary-dark focus:ring-1 focus:ring-primary-light dark:focus:ring-primary-dark transition-all"
+          >
+            <option *ngFor="let role of roles" [value]="role">{{ role | titlecase }}</option>
+          </select>
+        </div>
+
+        <!-- Error / Success Messages -->
+        <div *ngIf="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 p-3 rounded text-sm">
+          {{ error }}
+        </div>
+        <div *ngIf="message" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 p-3 rounded text-sm">
+          {{ message }}
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+          <button
+            type="button"
+            (click)="closeModal()"
+            class="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 text-sm bg-primary-light dark:bg-primary-dark text-white rounded-lg hover:bg-primary-light/90 dark:hover:bg-primary-dark/90 transition-colors"
+            [disabled]="loading"
+          >
+            <span *ngIf="loading" class="inline-block animate-spin mr-1">⟳</span>
+            {{ loading ? (editMode ? 'Updating...' : 'Creating...') : (editMode ? 'Update User' : 'Create User') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

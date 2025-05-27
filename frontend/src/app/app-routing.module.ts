@@ -10,6 +10,7 @@ import { RoleGuard } from './auth/role.guard';
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'auth', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) },
+  { path: 'projects', loadChildren: () => import('./projects/projects.module').then(m => m.ProjectsModule) },
   {
     path: 'admin/dashboard',
     component: DashboardComponent,

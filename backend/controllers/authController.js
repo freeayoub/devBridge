@@ -16,6 +16,12 @@ exports.signup = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: 'Email already exists' });
 
+    // Validate role if provided, default to student if not provided or invalid
+    let userRole = 'student';
+    if (role && ['student', 'teacher', 'admin'].includes(role)) {
+      userRole = role;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
 
@@ -23,8 +29,8 @@ exports.signup = async (req, res) => {
       fullName,
       email,
       password: hashedPassword,
-      role: 'student',
-      profileImage: 'uploads/default.png',
+      role: userRole,
+      profileImage: 'uploads/default-avatar.png',
       verificationCode: code,
       verified: false
     });
@@ -231,7 +237,7 @@ exports.verifyEmail = async (req, res) => {
 
     try {
       const user = await User.findOne({ email });
-      if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' });
+      if (!user) return res.status(404).json({ message: 'User not found' });
 
       // Generate new code
       const code = generateCode();
@@ -241,9 +247,9 @@ exports.verifyEmail = async (req, res) => {
       // Send email with user's name
       await sendVerificationEmail(email, code, user.fullName);
 
-      res.json({ message: 'Un nouveau code a été envoyé à votre email.' });
+      res.json({ message: 'A new verification code has been sent to your email.' });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: 'Erreur lors de l\'envoi du code.', error: err.message });
+      res.status(500).json({ message: 'Error sending verification code.', error: err.message });
     }
   };

@@ -1,0 +1,58 @@
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
+  <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Project Timeline</h2>
+  
+  <div *ngIf="timelineEvents.length === 0" class="text-center py-6">
+    <p class="text-gray-500 dark:text-gray-400">No timeline events available.</p>
+  </div>
+  
+  <div *ngIf="timelineEvents.length > 0" class="relative">
+    <!-- Timeline Line -->
+    <div class="absolute left-5 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
+    
+    <!-- Timeline Events -->
+    <div class="space-y-6">
+      <div *ngFor="let event of timelineEvents" class="relative pl-10">
+        <!-- Timeline Dot -->
+        <div class="absolute left-0 top-0 w-10 h-10 flex items-center justify-center">
+          <div [ngClass]="getIconClass(event.type)" class="w-6 h-6 rounded-full flex items-center justify-center">
+            <svg *ngIf="event.icon === 'create'" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            <svg *ngIf="event.icon === 'status'" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            </svg>
+            <svg *ngIf="event.icon === 'task'" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <svg *ngIf="event.icon === 'complete'" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        </div>
+        
+        <!-- Event Content -->
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
+          <div class="flex justify-between items-start mb-1">
+            <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ event.title }}</h3>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ getTimeAgo(event.date) }}</span>
+          </div>
+          <p class="text-xs text-gray-600 dark:text-gray-300 mb-1">{{ event.description }}</p>
+          
+          <!-- Status Badge -->
+          <span 
+            *ngIf="event.type === 'status'" 
+            class="inline-block px-2 py-0.5 text-xs rounded-full mt-1"
+            [ngClass]="getStatusClass(event.status)"
+          >
+            {{ event.status }}
+          </span>
+          
+          <!-- Date -->
+          <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {{ formatDate(event.date) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+// Additional styles for the project kanban component
+// Most styling is handled by Tailwind CSS classes in the template
+
+// Line clamp for descriptions
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Animation for loading spinner
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

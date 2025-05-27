@@ -1,0 +1,24 @@
+// Additional styles for the project detail component
+// Most styling is handled by Tailwind CSS classes in the template
+
+// Add any custom styles here if needed
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Hover effect for task items
+.dark .hover\:bg-gray-750:hover {
+  background-color: rgba(55, 65, 81, 0.5);
+}
+
+// Animation for loading spinner
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

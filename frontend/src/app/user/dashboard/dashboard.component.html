@@ -46,7 +46,7 @@
         <!-- Stats Cards Grid -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Projects -->
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer" (click)="navigateToProjects()">
             <div class="flex items-center">
               <div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center mr-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,7 +55,52 @@
               </div>
               <div>
                 <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">Projects</h3>
-                <p class="text-lg font-medium text-gray-900 dark:text-white">12</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-white">{{ projects.length }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Projects -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer" (click)="navigateToProjects()">
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">Active Projects</h3>
+                <p class="text-lg font-medium text-gray-900 dark:text-white">{{ getActiveProjects() }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Completed Projects -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer" (click)="navigateToProjects()">
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 12l2 2 4-4" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">Completed</h3>
+                <p class="text-lg font-medium text-gray-900 dark:text-white">{{ getCompletedProjects() }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Tasks -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer" (click)="navigateToProjects()">
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">Pending Tasks</h3>
+                <p class="text-lg font-medium text-gray-900 dark:text-white">{{ getPendingTasks() }}</p>
               </div>
             </div>
           </div>
@@ -101,6 +146,227 @@
               <div>
                 <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">Alerts</h3>
                 <p class="text-lg font-medium text-gray-900 dark:text-white">5</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Projects -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary-light dark:text-primary-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              My Projects
+            </h2>
+            <a routerLink="/projects" class="text-xs text-primary-light dark:text-primary-dark hover:underline">View All</a>
+          </div>
+
+          <!-- Projects Loading State -->
+          <div *ngIf="projectsLoading" class="flex justify-center items-center py-8">
+            <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-light dark:border-primary-dark"></div>
+          </div>
+
+          <!-- Projects Error State -->
+          <div *ngIf="projectsError" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-3 py-2 rounded text-sm mb-4">
+            <p>{{ projectsError }}</p>
+          </div>
+
+          <!-- No Projects State -->
+          <div *ngIf="!projectsLoading && !projectsError && projects.length === 0" class="text-center py-8">
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">You don't have any projects yet.</p>
+            <a routerLink="/projects" class="inline-block px-3 py-1.5 text-xs bg-primary-light dark:bg-primary-dark text-white rounded hover:bg-primary-light/90 dark:hover:bg-primary-dark/90 transition-colors">
+              Browse Projects
+            </a>
+          </div>
+
+          <!-- Projects List -->
+          <div *ngIf="!projectsLoading && !projectsError && projects.length > 0" class="space-y-3">
+            <div *ngFor="let project of projects.slice(0, 3)" class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer" [routerLink]="['/projects', project._id]">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="text-sm font-medium text-gray-800 dark:text-white">{{ project.title }}</h3>
+                <span class="px-2 py-0.5 text-xs rounded-full"
+                      [ngClass]="{
+                        'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300': project.status === 'planning',
+                        'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300': project.status === 'in-progress',
+                        'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300': project.status === 'completed',
+                        'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300': project.status === 'on-hold'
+                      }">
+                  {{ project.status | titlecase }}
+                </span>
+              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">{{ project.description }}</p>
+              <div class="flex justify-between items-center text-xs">
+                <div class="flex items-center text-gray-500 dark:text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>Due: {{ project.endDate | date:'mediumDate' }}</span>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-16 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden mr-1.5">
+                    <div class="h-full bg-primary-light dark:bg-primary-dark rounded-full" [style.width.%]="project.progress"></div>
+                  </div>
+                  <span class="text-gray-600 dark:text-gray-300">{{ project.progress }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Tasks -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary-light dark:text-primary-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 12l2 2 4-4" />
+              </svg>
+              My Tasks
+            </h2>
+            <a routerLink="/projects" class="text-xs text-primary-light dark:text-primary-dark hover:underline">View All</a>
+          </div>
+
+          <!-- Tasks Loading State -->
+          <div *ngIf="tasksLoading" class="flex justify-center items-center py-8">
+            <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-light dark:border-primary-dark"></div>
+          </div>
+
+          <!-- Tasks Error State -->
+          <div *ngIf="tasksError" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-3 py-2 rounded text-sm mb-4">
+            <p>{{ tasksError }}</p>
+            <button (click)="loadUserTasks()" class="mt-2 px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs">
+              Retry Loading Tasks
+            </button>
+          </div>
+
+          <!-- No Tasks State -->
+          <div *ngIf="!tasksLoading && !tasksError && tasks.length === 0" class="text-center py-8">
+            <p class="text-sm text-gray-500 dark:text-gray-400">You don't have any tasks assigned yet.</p>
+          </div>
+
+          <!-- Tasks List -->
+          <div *ngIf="!tasksLoading && !tasksError && tasks.length > 0">
+            <!-- Overdue Tasks -->
+            <div *ngIf="getOverdueTasks().length > 0" class="mb-4">
+              <h3 class="text-xs font-medium text-red-600 dark:text-red-400 mb-2">Overdue</h3>
+              <div class="space-y-2">
+                <div *ngFor="let task of getOverdueTasks().slice(0, 3)"
+                  class="p-3 bg-red-50 dark:bg-red-900/10 rounded border border-red-100 dark:border-red-800/30 hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                  (click)="navigateToTask(task.project._id, task._id)">
+                  <div class="flex justify-between items-start mb-1">
+                    <h4 class="text-sm font-medium text-gray-800 dark:text-white">{{ task.title }}</h4>
+                    <span class="px-2 py-0.5 text-xs rounded-full"
+                      [ngClass]="{
+                        'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300': task.status === 'pending',
+                        'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300': task.status === 'in-progress',
+                        'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300': task.status === 'review',
+                        'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300': task.status === 'completed'
+                      }">
+                      {{ task.status | titlecase }}
+                    </span>
+                  </div>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">{{ task.project.title }}</p>
+                  <div class="flex justify-between items-center text-xs">
+                    <div class="flex items-center text-red-600 dark:text-red-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Due: {{ formatDate(task.dueDate) }}</span>
+                    </div>
+                    <span class="px-2 py-0.5 text-xs rounded-full"
+                      [ngClass]="{
+                        'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300': task.priority === 'low',
+                        'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300': task.priority === 'medium',
+                        'bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300': task.priority === 'high',
+                        'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300': task.priority === 'urgent'
+                      }">
+                      {{ task.priority | titlecase }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upcoming Tasks -->
+            <div *ngIf="getUpcomingTasks().length > 0" class="mb-4">
+              <h3 class="text-xs font-medium text-blue-600 dark:text-blue-400 mb-2">Due Soon</h3>
+              <div class="space-y-2">
+                <div *ngFor="let task of getUpcomingTasks().slice(0, 3)"
+                  class="p-3 bg-blue-50 dark:bg-blue-900/10 rounded border border-blue-100 dark:border-blue-800/30 hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+                  (click)="navigateToTask(task.project._id, task._id)">
+                  <div class="flex justify-between items-start mb-1">
+                    <h4 class="text-sm font-medium text-gray-800 dark:text-white">{{ task.title }}</h4>
+                    <span class="px-2 py-0.5 text-xs rounded-full"
+                      [ngClass]="{
+                        'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300': task.status === 'pending',
+                        'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300': task.status === 'in-progress',
+                        'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300': task.status === 'review',
+                        'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300': task.status === 'completed'
+                      }">
+                      {{ task.status | titlecase }}
+                    </span>
+                  </div>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">{{ task.project.title }}</p>
+                  <div class="flex justify-between items-center text-xs">
+                    <div class="flex items-center text-gray-600 dark:text-gray-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Due: {{ formatDate(task.dueDate) }}</span>
+                    </div>
+                    <span class="px-2 py-0.5 text-xs rounded-full"
+                      [ngClass]="{
+                        'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300': task.priority === 'low',
+                        'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300': task.priority === 'medium',
+                        'bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300': task.priority === 'high',
+                        'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300': task.priority === 'urgent'
+                      }">
+                      {{ task.priority | titlecase }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Other Tasks -->
+            <div *ngIf="getRemainingTasks().length > 0">
+              <h3 class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Other Tasks</h3>
+              <div class="space-y-2">
+                <div *ngFor="let task of getRemainingTasks().slice(0, 3)"
+                  class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                  (click)="navigateToTask(task.project._id, task._id)">
+                  <div class="flex justify-between items-start mb-1">
+                    <h4 class="text-sm font-medium text-gray-800 dark:text-white">{{ task.title }}</h4>
+                    <span class="px-2 py-0.5 text-xs rounded-full"
+                      [ngClass]="{
+                        'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300': task.status === 'pending',
+                        'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300': task.status === 'in-progress',
+                        'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300': task.status === 'review',
+                        'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300': task.status === 'completed'
+                      }">
+                      {{ task.status | titlecase }}
+                    </span>
+                  </div>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">{{ task.project.title }}</p>
+                  <div class="flex justify-between items-center text-xs">
+                    <div class="flex items-center text-gray-600 dark:text-gray-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Due: {{ formatDate(task.dueDate) }}</span>
+                    </div>
+                    <span class="px-2 py-0.5 text-xs rounded-full"
+                      [ngClass]="{
+                        'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300': task.priority === 'low',
+                        'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300': task.priority === 'medium',
+                        'bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300': task.priority === 'high',
+                        'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300': task.priority === 'urgent'
+                      }">
+                      {{ task.priority | titlecase }}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

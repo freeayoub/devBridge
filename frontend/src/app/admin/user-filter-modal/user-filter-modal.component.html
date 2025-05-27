@@ -1,0 +1,99 @@
+<!-- Modal Backdrop -->
+<div *ngIf="show" class="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
+  <!-- Modal Content -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
+    <!-- Modal Header -->
+    <div class="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Filter Users</h2>
+      <button 
+        (click)="closeModal()" 
+        class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-4 space-y-4">
+      <!-- Role Filter -->
+      <div>
+        <label for="roleFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+        <div class="relative">
+          <select 
+            id="roleFilter" 
+            [(ngModel)]="roleFilter"
+            class="block w-full pl-3 pr-10 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark appearance-none"
+          >
+            <option value="">All Roles</option>
+            <option *ngFor="let role of roles" [value]="role">{{ role | titlecase }}</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Filter -->
+      <div>
+        <label for="statusFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+        <div class="relative">
+          <select 
+            id="statusFilter" 
+            [(ngModel)]="statusFilter"
+            class="block w-full pl-3 pr-10 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark appearance-none"
+          >
+            <option value="">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verification Filter -->
+      <div>
+        <label for="verificationFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Verification</label>
+        <div class="relative">
+          <select 
+            id="verificationFilter" 
+            [(ngModel)]="verificationFilter"
+            class="block w-full pl-3 pr-10 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark appearance-none"
+          >
+            <option value="">All</option>
+            <option value="verified">Verified</option>
+            <option value="unverified">Unverified</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="border-t border-gray-200 dark:border-gray-700 p-4 flex justify-end space-x-3">
+      <button 
+        (click)="reset()" 
+        class="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+      >
+        Reset
+      </button>
+      <button 
+        (click)="apply()" 
+        class="px-4 py-2 text-sm bg-primary-light dark:bg-primary-dark text-white rounded-lg hover:bg-primary-light/90 dark:hover:bg-primary-dark/90 transition-colors"
+      >
+        Apply Filters
+      </button>
+    </div>
+  </div>
+</div>

@@ -5,10 +5,25 @@ const moment = require('moment');
 
 // GET /api/admin/users
 exports.getAllUsers = async (req, res) => {
-    console.log('Admin Access by:', req.user);
+  console.log('User Access by:', req.user);
 
   try {
-    const users = await User.find()
+    // Check if role filter is provided
+    const { role } = req.query;
+    let query = {};
+
+    // If user is a teacher, they can only see students
+    if (req.user.role === 'teacher') {
+      query.role = 'student';
+      // Only return active and verified students
+      query.isActive = true;
+      query.verified = true;
+    } else {
+      // Admin can see all users or filter by role
+      query = role ? { role } : {};
+    }
+
+    const users = await User.find(query)
       .select('-password -verificationCode -resetCode')
       .populate('group', 'name description');
 

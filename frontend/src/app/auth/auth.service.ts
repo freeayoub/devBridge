@@ -86,6 +86,18 @@ export class AuthService {
     });
   }
 
+  createUser(userData: any, token: string) {
+    return this.http.post(`${this.ADMIN_API}/users`, userData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  updateUser(userId: string, userData: any, token: string) {
+    return this.http.put(`${this.ADMIN_API}/users/${userId}`, userData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
 
 
   getUserGrowthData(period: string, token: string) {

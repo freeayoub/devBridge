@@ -1,0 +1,47 @@
+<div class="project-navbar bg-white dark:bg-gray-800 shadow-sm mb-6 rounded-lg">
+  <div class="container mx-auto px-4 py-3">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <!-- Left side: Title and breadcrumbs -->
+      <div class="mb-3 md:mb-0">
+        <h1 class="text-xl font-bold text-gray-800 dark:text-white">Projects</h1>
+        <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Manage and track your development projects
+        </div>
+      </div>
+
+      <!-- Right side: Navigation and actions -->
+      <div class="flex items-center space-x-4">
+        <nav class="flex space-x-4">
+          <a
+            routerLink="/projects"
+            [class.text-primary-light]="isActive('/projects')"
+            [class.dark:text-primary-dark]="isActive('/projects')"
+            class="px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            [class.bg-gray-100]="isActive('/projects')"
+            [class.dark:bg-gray-700]="isActive('/projects')"
+          >
+            All Projects
+          </a>
+          <a
+            *ngIf="currentUser?.role === 'student'"
+            routerLink="/user/dashboard"
+            class="px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            My Tasks
+          </a>
+        </nav>
+
+        <a
+          *ngIf="canCreateProject()"
+          routerLink="/projects/new"
+          class="px-4 py-2 bg-primary-light dark:bg-primary-dark text-white rounded-md hover:bg-opacity-90 transition-colors flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          New Project
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

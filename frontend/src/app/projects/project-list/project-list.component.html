@@ -1,0 +1,194 @@
+<div class="project-list-container">
+  <!-- Project Navbar -->
+  <app-project-navbar></app-project-navbar>
+
+  <div class="container mx-auto px-4">
+    <!-- Project Statistics -->
+    <app-project-stats></app-project-stats>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <!-- Search Box -->
+        <div class="relative flex-grow max-w-md">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            placeholder="Search projects..."
+            [value]="searchQuery"
+            (input)="searchQuery = $any($event.target).value; applyFilters()"
+            class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
+          />
+        </div>
+
+        <!-- Filter Options -->
+        <div class="flex flex-wrap gap-3">
+          <div class="relative">
+            <select
+              [value]="statusFilter"
+              (change)="statusFilter = $any($event.target).value; applyFilters()"
+              class="block w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark appearance-none"
+            >
+              <option value="">All Statuses</option>
+              <option value="planning">Planning</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="on-hold">On Hold</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+
+          <button
+            (click)="clearFilters()"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
+          >
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-light dark:border-primary-dark"></div>
+      <p class="ml-3 text-gray-600 dark:text-gray-300">Loading projects...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-6">
+      {{ error }}
+    </div>
+
+    <!-- No Projects Found -->
+    <div *ngIf="!loading && !error && filteredProjects.length === 0" class="text-center py-12">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <p class="text-gray-600 dark:text-gray-400 text-lg mb-4">No projects found.</p>
+      <button
+        *ngIf="canCreateProject()"
+        (click)="navigateToCreateProject()"
+        class="px-4 py-2 bg-primary-light dark:bg-primary-dark text-white rounded-md hover:bg-opacity-90 transition-colors"
+      >
+        Create Your First Project
+      </button>
+    </div>
+
+    <!-- Project Grid -->
+    <div *ngIf="!loading && !error && filteredProjects.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div
+        *ngFor="let project of filteredProjects"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer border border-gray-100 dark:border-gray-700"
+        (click)="navigateToProjectDetail(project._id)"
+      >
+        <!-- Project Header -->
+        <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+          <h3 class="font-semibold text-lg text-gray-900 dark:text-white truncate">{{ project.title }}</h3>
+          <span
+            class="px-2 py-1 text-xs rounded-full"
+            [ngClass]="{
+              'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300': project.status === 'planning',
+              'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300': project.status === 'in-progress',
+              'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300': project.status === 'completed',
+              'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300': project.status === 'on-hold'
+            }"
+          >
+            {{ project.status }}
+          </span>
+        </div>
+
+        <!-- Project Body -->
+        <div class="p-4">
+          <!-- Description -->
+          <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
+            {{ project.description || 'No description provided.' }}
+          </p>
+
+          <!-- Dates -->
+          <div class="grid grid-cols-2 gap-2 mb-4">
+            <div class="text-xs text-gray-500 dark:text-gray-400">
+              <div class="flex items-center mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Start
+              </div>
+              <div>{{ formatDate(project.startDate) }}</div>
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">
+              <div class="flex items-center mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                End
+              </div>
+              <div>{{ formatDate(project.endDate) }}</div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Progress</span>
+              <span class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ project.progress }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+              <div
+                class="h-1.5 rounded-full"
+                [ngClass]="{
+                  'bg-blue-500': project.progress < 25,
+                  'bg-yellow-500': project.progress >= 25 && project.progress < 50,
+                  'bg-orange-500': project.progress >= 50 && project.progress < 75,
+                  'bg-green-500': project.progress >= 75
+                }"
+                [style.width.%]="project.progress"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Footer -->
+        <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 flex justify-between items-center">
+          <!-- Created By -->
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full overflow-hidden mr-2">
+              <img
+                [src]="project.createdBy?.profileImageURL || 'assets/default-avatar.png'"
+                alt="Creator"
+                class="w-full h-full object-cover"
+              >
+            </div>
+            <span class="text-xs text-gray-600 dark:text-gray-300">{{ project.createdBy?.fullName }}</span>
+          </div>
+
+          <!-- Assigned Users -->
+          <div class="flex items-center">
+            <div class="flex -space-x-2 mr-2">
+              <div *ngFor="let user of project.assignedTo?.slice(0, 3)" class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-700 overflow-hidden">
+                <img
+                  [src]="user.profileImageURL || 'assets/default-avatar.png'"
+                  [alt]="user.fullName"
+                  class="w-full h-full object-cover"
+                >
+              </div>
+              <div
+                *ngIf="project.assignedTo?.length > 3"
+                class="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-xs border-2 border-white dark:border-gray-700"
+              >
+                +{{ project.assignedTo.length - 3 }}
+              </div>
+            </div>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ project.assignedTo?.length || 0 }} members</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

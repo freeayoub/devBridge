@@ -5,11 +5,13 @@
 
 // Base64 encoded SVG logo for the app
 exports.getLogoSvg = () => {
-  // This is a simplified version of the app logo as an SVG
+  // This is a more detailed version of the app logo as an SVG
   const svgLogo = `
   <svg xmlns="http://www.w3.org/2000/svg" width="120" height="60" viewBox="0 0 120 60">
-    <path d="M30,15 C20,25 20,35 30,45 L20,55 C5,40 5,20 20,5 L30,15 Z" fill="#FFFFFF"/>
-    <path d="M50,15 C40,25 40,35 50,45 L40,55 C25,40 25,20 40,5 L50,15 Z" fill="#FFFFFF"/>
+    <rect width="120" height="60" rx="8" fill="#7826b5" opacity="0.2"/>
+    <path d="M25,15 C15,25 15,35 25,45 L15,55 C0,40 0,20 15,5 L25,15 Z" fill="#FFFFFF"/>
+    <path d="M45,15 C35,25 35,35 45,45 L35,55 C20,40 20,20 35,5 L45,15 Z" fill="#FFFFFF"/>
+    <text x="60" y="35" font-family="Arial" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">DevBridge</text>
   </svg>
   `;
 

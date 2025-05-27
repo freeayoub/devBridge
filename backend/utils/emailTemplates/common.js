@@ -110,7 +110,7 @@ function getEmailHeader(appName = 'DevBridge') {
   <div class="container">
     <div class="header">
       <div class="logo-container">
-        <img src="https://via.placeholder.com/150x50/7826b5/FFFFFF?text=DevBridge" alt="${appName} Logo" style="max-width: 150px;">
+        ${require('../emailLogo').getLogoHtml()}
       </div>
     </div>
     <div class="content">

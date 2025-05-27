@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
     ref: 'Group',
     default: null
   },
+  projects: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project'
+  }],
   profileImage: { type: String, default: 'uploads/default-avatar.png' },
   createdAt: { type: Date, default: Date.now },
   verified: { type: Boolean, default: false },
