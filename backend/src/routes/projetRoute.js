@@ -1,36 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const projetController = require("../controllers/projetController");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-
-// Configuration de multer pour le stockage des fichiers
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, "../uploads/uploads/");
-
-    // Vérifier si le dossier existe, sinon le créer
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({ storage: storage });
+const { uploadProjectFiles } = require("../middlewares/upload");
 
 // Routes
-router.post("/create", upload.array("fichiers"), projetController.createProjet);
+router.post("/create", uploadProjectFiles.array("fichiers"), projetController.createProjet);
 router.get("/:id", projetController.getProjet);
 router.get("/", projetController.getAllProjets);
 router.put(
   "/update/:id",
-  upload.array("fichiers"),
+  uploadProjectFiles.array("fichiers"),
   projetController.updateProjet
 );
 router.delete("/delete/:id", projetController.deleteProjet);

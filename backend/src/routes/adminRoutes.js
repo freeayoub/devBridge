@@ -5,6 +5,7 @@ const {
   getAllUsers,
   updateUserRole,
   updateUserGroup,
+  toggleUserActivation,
 } = require("../controllers/adminController");
 const User = require("../models/User"); // ✅ required
 
@@ -16,6 +17,9 @@ router.put("/users/:id/role", auth, authorizeRoles("admin"), updateUserRole);
 
 // Update user group
 router.put("/users/:id/group", auth, authorizeRoles("admin"), updateUserGroup);
+
+// Toggle user activation/deactivation
+router.put("/users/:id/activation", auth, authorizeRoles("admin"), toggleUserActivation);
 
 // Delete user
 router.delete("/users/:id", auth, authorizeRoles("admin"), async (req, res) => {
