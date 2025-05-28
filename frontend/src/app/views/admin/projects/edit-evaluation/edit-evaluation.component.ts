@@ -117,7 +117,9 @@ export class EditEvaluationComponent implements OnInit {
   }
 
   annuler(): void {
+    
     this.router.navigate(['/admin/projects/list-rendus']);
+
   }
 
   // Méthodes pour gérer les fichiers
