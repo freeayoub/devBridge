@@ -1,64 +1,91 @@
+<!-- Overlay pour mode plein écran -->
+<div
+  *ngIf="isOpen && isFullscreen"
+  class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
+  (click)="toggleFullscreen()"
+></div>
+
 <!-- Bouton flottant IA -->
 <div class="fixed bottom-6 right-6 z-50">
-  <!-- Bouton principal -->
+  <!-- Bouton principal modernisé -->
   <button
     (click)="toggleChat()"
-    class="group relative w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-purple-300 dark:focus:ring-purple-800"
+    class="group relative w-16 h-16 bg-gradient-to-br from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-[#4f5fad]/30 dark:focus:ring-[#6d78c9]/30"
     [class.rotate-180]="isOpen"
   >
-    <!-- Glow effect -->
-    <div class="absolute inset-0 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300"></div>
-    
-    <!-- Icône IA -->
+    <!-- Glow effect amélioré -->
+    <div class="absolute inset-0 bg-gradient-to-br from-[#4f5fad]/40 to-[#3d4a85]/40 rounded-2xl opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300 scale-150"></div>
+
+    <!-- Icône IA modernisée -->
     <div class="relative z-10 flex items-center justify-center w-full h-full">
-      <svg *ngIf="!isOpen" class="w-7 h-7 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg *ngIf="!isOpen" class="w-8 h-8 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
       </svg>
-      <svg *ngIf="isOpen" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg *ngIf="isOpen" class="w-7 h-7 transition-transform duration-300 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
       </svg>
     </div>
 
-    <!-- Badge de notification (optionnel) -->
-    <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-      <span class="text-xs text-white font-bold">!</span>
+    <!-- Badge de notification modernisé -->
+    <div class="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+      <div class="w-2 h-2 bg-white rounded-full"></div>
     </div>
   </button>
 
-  <!-- Fenêtre de chat -->
+  <!-- Fenêtre de chat avec mode plein écran -->
   <div
     *ngIf="isOpen"
-    class="absolute bottom-16 right-0 w-80 h-96 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden transform transition-all duration-300 ease-out"
+    [ngClass]="{
+      'fixed inset-4 w-auto h-auto': isFullscreen,
+      'absolute bottom-16 right-0 w-96 h-[32rem]': !isFullscreen
+    }"
+    class="bg-white/90 dark:bg-[#1e1e1e]/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#edf1f4]/50 dark:border-[#2a2a2a]/50 overflow-hidden transform transition-all duration-300 ease-out z-50"
     [@slideInOut]
   >
-    <!-- Header du chat -->
-    <div class="bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 p-4 text-white">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+    <!-- Header du chat ultra-simplifié -->
+    <div class="bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] px-4 py-3 text-white rounded-t-2xl">
+      <div class="flex items-center justify-between gap-3">
+        <!-- Info IA -->
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
             </svg>
           </div>
-          <div>
-            <h3 class="font-semibold text-sm">Assistant IA</h3>
-            <p class="text-xs text-white/80">En ligne</p>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-sm font-semibold text-white truncate">Assistant IA</h3>
+            <div class="flex items-center gap-1.5">
+              <div class="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+              <span class="text-xs text-white/80">En ligne</span>
+            </div>
           </div>
         </div>
-        <div class="flex items-center space-x-2">
+
+        <!-- Boutons -->
+        <div class="flex items-center gap-1">
           <button
-            (click)="clearChat()"
-            class="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-            title="Effacer la conversation"
+            (click)="toggleFullscreen()"
+            class="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors"
+            [title]="isFullscreen ? 'Mode fenêtre' : 'Plein écran'"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              <path *ngIf="!isFullscreen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+              <path *ngIf="isFullscreen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9V4.5M9 9H4.5M9 9L3.5 3.5M15 9h4.5M15 9V4.5M15 9l5.5-5.5M9 15v4.5M9 15H4.5M9 15l-5.5 5.5M15 15h4.5M15 15v4.5m0-4.5l5.5 5.5"></path>
+            </svg>
+          </button>
+          <button
+            (click)="clearChat()"
+            class="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors"
+            title="Nouvelle conversation"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
             </svg>
           </button>
           <button
             (click)="closeChat()"
-            class="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-            title="Fermer"
+            class="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors"
+            title="Fermer le chat"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -68,79 +95,106 @@
       </div>
     </div>
 
-    <!-- Messages -->
-    <div #messagesContainer class="flex-1 overflow-y-auto p-4 space-y-3 h-64">
+    <!-- Messages avec hauteur adaptative -->
+    <div
+      #messagesContainer
+      class="flex-1 overflow-y-auto p-6 space-y-4 messages-container"
+      [ngStyle]="{
+        'height': isFullscreen ? 'calc(100vh - 280px)' : 'calc(32rem - 200px)'
+      }"
+    >
       <div *ngFor="let message of messages; trackBy: trackByMessageId" class="flex" [ngClass]="{'justify-end': message.isUser}">
         <div
-          class="max-w-xs px-3 py-2 rounded-2xl text-sm"
           [ngClass]="{
-            'bg-purple-500 text-white': message.isUser,
-            'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200': !message.isUser && !message.isTyping,
-            'bg-gray-100 dark:bg-gray-800': message.isTyping
+            'max-w-sm': !isFullscreen,
+            'max-w-2xl': isFullscreen,
+            'bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] text-white shadow-lg': message.isUser,
+            'bg-[#edf1f4]/80 dark:bg-[#2a2a2a]/80 text-[#3d4a85] dark:text-[#6d78c9] backdrop-blur-sm border border-[#edf1f4] dark:border-[#2a2a2a]': !message.isUser && !message.isTyping,
+            'bg-[#edf1f4]/80 dark:bg-[#2a2a2a]/80 backdrop-blur-sm': message.isTyping
           }"
+          class="px-4 py-3 rounded-2xl text-base leading-relaxed font-medium"
         >
-          <!-- Message normal -->
-          <div *ngIf="!message.isTyping" class="whitespace-pre-wrap">{{ message.content }}</div>
-          
-          <!-- Indicateur de frappe -->
-          <div *ngIf="message.isTyping" class="flex items-center space-x-1 py-1">
+          <!-- Message normal avec meilleure typographie -->
+          <div *ngIf="!message.isTyping" class="whitespace-pre-wrap leading-relaxed">{{ message.content }}</div>
+
+          <!-- Indicateur de frappe amélioré -->
+          <div *ngIf="message.isTyping" class="flex items-center space-x-3 py-2">
             <div class="flex space-x-1">
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+              <div class="w-3 h-3 bg-[#4f5fad] dark:bg-[#6d78c9] rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+              <div class="w-3 h-3 bg-[#4f5fad] dark:bg-[#6d78c9] rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+              <div class="w-3 h-3 bg-[#4f5fad] dark:bg-[#6d78c9] rounded-full animate-bounce" style="animation-delay: 300ms"></div>
             </div>
-            <span class="text-xs text-gray-500 ml-2">IA écrit...</span>
+            <span class="text-sm text-[#6d6870] dark:text-[#a0a0a0] font-medium">L'IA réfléchit...</span>
           </div>
-          
-          <!-- Timestamp -->
-          <div *ngIf="!message.isTyping" class="text-xs opacity-70 mt-1" [ngClass]="{'text-right': message.isUser}">
+
+          <!-- Timestamp amélioré -->
+          <div *ngIf="!message.isTyping" class="text-xs opacity-75 mt-2 font-medium" [ngClass]="{'text-right text-white/80': message.isUser, 'text-[#6d6870] dark:text-[#a0a0a0]': !message.isUser}">
             {{ formatTime(message.timestamp) }}
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Messages rapides -->
-    <div *ngIf="messages.length <= 1" class="px-4 pb-2">
-      <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">Suggestions :</div>
-      <div class="flex flex-wrap gap-1">
+    <!-- Messages rapides modernisés -->
+    <div *ngIf="messages.length <= 1" class="px-6 pb-4">
+      <div class="flex items-center space-x-2 mb-4">
+        <div class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 p-1.5 rounded-lg">
+          <svg class="w-4 h-4 text-[#4f5fad] dark:text-[#6d78c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <span class="text-sm font-semibold text-[#3d4a85] dark:text-[#6d78c9]">Suggestions rapides :</span>
+      </div>
+      <div class="grid grid-cols-1 gap-2">
         <button
           *ngFor="let quickMsg of quickMessages"
           (click)="sendQuickMessage(quickMsg)"
-          class="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+          class="text-sm px-4 py-3 bg-[#edf1f4]/70 dark:bg-[#2a2a2a]/70 text-[#3d4a85] dark:text-[#6d78c9] rounded-xl hover:bg-[#4f5fad]/10 dark:hover:bg-[#6d78c9]/10 hover:border-[#4f5fad] dark:hover:border-[#6d78c9] border border-transparent transition-all duration-200 font-medium text-left hover:scale-105 hover:shadow-md"
         >
           {{ quickMsg }}
         </button>
       </div>
     </div>
 
-    <!-- Input de message -->
-    <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-      <form [formGroup]="chatForm" (ngSubmit)="sendMessage()" class="flex items-center space-x-2">
+    <!-- Input de message modernisé -->
+    <div class="p-6 border-t border-[#edf1f4]/50 dark:border-[#2a2a2a]/50 bg-[#edf1f4]/30 dark:bg-[#2a2a2a]/30">
+      <form [formGroup]="chatForm" (ngSubmit)="sendMessage()" class="flex items-end space-x-3">
         <div class="flex-1 relative">
-          <input
+          <textarea
             #messageInput
-            type="text"
             formControlName="message"
-            placeholder="Tapez votre message..."
+            placeholder="Posez votre question à l'assistant IA..."
             (keypress)="onKeyPress($event)"
-            class="w-full px-3 py-2 pr-10 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
+            rows="1"
+            class="w-full px-4 py-3 pr-12 bg-white dark:bg-[#1e1e1e] border-2 border-[#edf1f4] dark:border-[#2a2a2a] rounded-2xl focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-4 focus:ring-[#4f5fad]/10 dark:focus:ring-[#6d78c9]/20 text-base text-[#3d4a85] dark:text-[#6d78c9] placeholder-[#6d6870] dark:placeholder-[#a0a0a0] resize-none transition-all duration-200 font-medium leading-relaxed"
             [disabled]="isLoading"
-          />
-          <div *ngIf="isLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <div class="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+            style="min-height: 48px; max-height: 120px;"
+          ></textarea>
+          <div *ngIf="isLoading" class="absolute right-4 bottom-3">
+            <div class="w-5 h-5 border-2 border-[#4f5fad]/30 dark:border-[#6d78c9]/30 border-t-[#4f5fad] dark:border-t-[#6d78c9] rounded-full animate-spin"></div>
           </div>
         </div>
         <button
           type="submit"
           [disabled]="chatForm.invalid || isLoading"
-          class="p-2 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400"
+          class="p-3 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 group"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
           </svg>
         </button>
       </form>
+
+      <!-- Indication de raccourci -->
+      <div class="flex items-center justify-between mt-3 text-xs text-[#6d6870] dark:text-[#a0a0a0]">
+        <span>Appuyez sur Entrée pour envoyer</span>
+        <div class="flex items-center space-x-1">
+          <div class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 px-2 py-1 rounded">
+            <span class="font-mono">⏎</span>
+          </div>
+          <span>Envoyer</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>

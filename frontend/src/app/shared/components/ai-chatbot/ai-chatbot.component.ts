@@ -29,6 +29,7 @@ export class AiChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   messages: ChatMessage[] = [];
   isOpen = false;
   isLoading = false;
+  isFullscreen = false;
   private destroy$ = new Subject<void>();
   private shouldScrollToBottom = false;
 
@@ -82,6 +83,15 @@ export class AiChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   closeChat(): void {
     this.geminiService.closeChat();
+    this.isFullscreen = false; // Reset fullscreen when closing
+  }
+
+  toggleFullscreen(): void {
+    this.isFullscreen = !this.isFullscreen;
+    // Scroll to bottom after fullscreen toggle
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 100);
   }
 
   sendMessage(): void {
