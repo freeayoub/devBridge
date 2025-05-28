@@ -102,4 +102,100 @@ export class ProjectListComponent implements OnInit {
   isRendu(projetId: string | undefined): boolean {
     return projetId ? this.rendusMap.get(projetId) === true : false;
   }
+
+  // Méthodes pour les statistiques
+  getTotalProjects(): number {
+    return this.projets.length;
+  }
+
+  getRendusCount(): number {
+    return this.projets.filter(projet =>
+      projet._id && this.isRendu(projet._id)
+    ).length;
+  }
+
+  getPendingCount(): number {
+    return this.projets.filter(projet =>
+      projet._id && !this.isRendu(projet._id)
+    ).length;
+  }
+
+  getSuccessRate(): number {
+    if (this.projets.length === 0) return 0;
+    return Math.round((this.getRendusCount() / this.projets.length) * 100);
+  }
+
+  // Méthode pour obtenir les projets urgents (date limite dans moins de 7 jours)
+  getUrgentProjects(): Projet[] {
+    const now = new Date();
+    const oneWeekFromNow = new Date();
+    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+
+    return this.projets.filter(projet => {
+      if (!projet.dateLimite || this.isRendu(projet._id)) return false;
+      const deadline = new Date(projet.dateLimite);
+      return deadline >= now && deadline <= oneWeekFromNow;
+    });
+  }
+
+  // Méthode pour obtenir les projets expirés
+  getExpiredProjects(): Projet[] {
+    const now = new Date();
+    return this.projets.filter(projet => {
+      if (!projet.dateLimite || this.isRendu(projet._id)) return false;
+      const deadline = new Date(projet.dateLimite);
+      return deadline < now;
+    });
+  }
+
+  // Méthode pour obtenir le statut d'un projet
+  getProjectStatus(projet: Projet): 'completed' | 'urgent' | 'expired' | 'active' {
+    if (this.isRendu(projet._id)) return 'completed';
+
+    if (!projet.dateLimite) return 'active';
+
+    const now = new Date();
+    const deadline = new Date(projet.dateLimite);
+
+    if (deadline < now) return 'expired';
+
+    const oneWeekFromNow = new Date();
+    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+
+    if (deadline <= oneWeekFromNow) return 'urgent';
+
+    return 'active';
+  }
+
+  // Méthode pour obtenir la classe CSS du statut
+  getStatusClass(projet: Projet): string {
+    const status = this.getProjectStatus(projet);
+
+    switch (status) {
+      case 'completed':
+        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400';
+      case 'urgent':
+        return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-400';
+      case 'expired':
+        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400';
+      default:
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400';
+    }
+  }
+
+  // Méthode pour obtenir le texte du statut
+  getStatusText(projet: Projet): string {
+    const status = this.getProjectStatus(projet);
+
+    switch (status) {
+      case 'completed':
+        return 'Rendu';
+      case 'urgent':
+        return 'Urgent';
+      case 'expired':
+        return 'Expiré';
+      default:
+        return 'Actif';
+    }
+  }
 }

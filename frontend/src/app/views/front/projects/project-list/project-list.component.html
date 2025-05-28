@@ -27,39 +27,125 @@
   </div>
 
   <div class="max-w-6xl mx-auto relative z-10">
-    <div class="flex justify-between items-center mb-8">
-      <div>
-        <h1
-          class="text-3xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
-        >
-          Projets
-        </h1>
-        <p class="text-[#6d6870] dark:text-[#a0a0a0] text-sm md:text-base mt-1">
-          Vos missions académiques
-        </p>
-      </div>
-      <div
-        class="h-12 w-12 rounded-full bg-gradient-to-br from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] flex items-center justify-center text-white shadow-lg relative group overflow-hidden"
-      >
-        <!-- Glow effect -->
+    <!-- Header moderne avec statistiques -->
+    <div class="mb-8">
+      <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6">
+        <div>
+          <h1
+            class="text-3xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
+          >
+            Mes Projets
+          </h1>
+          <p class="text-[#6d6870] dark:text-[#a0a0a0] text-sm md:text-base mt-1">
+            Gérez vos missions académiques et suivez vos rendus
+          </p>
+        </div>
         <div
-          class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-full opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
-        ></div>
-
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 relative z-10 group-hover:scale-110 transition-transform duration-300"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+          class="h-12 w-12 rounded-full bg-gradient-to-br from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] flex items-center justify-center text-white shadow-lg relative group overflow-hidden mt-4 lg:mt-0"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
+          <!-- Glow effect -->
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#3d4a85] dark:to-[#6d78c9] rounded-full opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+          ></div>
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 relative z-10 group-hover:scale-110 transition-transform duration-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Statistiques -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" *ngIf="!isLoading">
+        <!-- Total projets -->
+        <div class="bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-sm rounded-xl p-4 border border-[#edf1f4]/50 dark:border-[#2a2a2a] shadow-md hover:shadow-lg transition-all duration-300 group">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-[#4f5fad] dark:text-[#6d78c9] uppercase tracking-wider">Total</p>
+              <p class="text-2xl font-bold text-[#3d4a85] dark:text-[#6d78c9]">{{ getTotalProjects() }}</p>
+              <p class="text-xs text-[#6d6870] dark:text-[#a0a0a0] mt-1">Projets</p>
+            </div>
+            <div class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 p-3 rounded-xl group-hover:scale-110 transition-transform">
+              <svg class="w-5 h-5 text-[#4f5fad] dark:text-[#6d78c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H3a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Projets rendus -->
+        <div class="bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-sm rounded-xl p-4 border border-[#edf1f4]/50 dark:border-[#2a2a2a] shadow-md hover:shadow-lg transition-all duration-300 group">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">Rendus</p>
+              <p class="text-2xl font-bold text-green-700 dark:text-green-400">{{ getRendusCount() }}</p>
+              <p class="text-xs text-[#6d6870] dark:text-[#a0a0a0] mt-1">Complétés</p>
+            </div>
+            <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-xl group-hover:scale-110 transition-transform">
+              <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Projets en attente -->
+        <div class="bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-sm rounded-xl p-4 border border-[#edf1f4]/50 dark:border-[#2a2a2a] shadow-md hover:shadow-lg transition-all duration-300 group">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wider">En attente</p>
+              <p class="text-2xl font-bold text-orange-700 dark:text-orange-400">{{ getPendingCount() }}</p>
+              <p class="text-xs text-[#6d6870] dark:text-[#a0a0a0] mt-1">À rendre</p>
+            </div>
+            <div class="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-xl group-hover:scale-110 transition-transform">
+              <svg class="w-5 h-5 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Taux de réussite -->
+        <div class="bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-sm rounded-xl p-4 border border-[#edf1f4]/50 dark:border-[#2a2a2a] shadow-md hover:shadow-lg transition-all duration-300 group">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-[#4f5fad] dark:text-[#6d78c9] uppercase tracking-wider">Taux</p>
+              <p class="text-2xl font-bold text-[#3d4a85] dark:text-[#6d78c9]">{{ getSuccessRate() }}%</p>
+              <p class="text-xs text-[#6d6870] dark:text-[#a0a0a0] mt-1">Réussite</p>
+            </div>
+            <div class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 p-3 rounded-xl group-hover:scale-110 transition-transform">
+              <svg class="w-5 h-5 text-[#4f5fad] dark:text-[#6d78c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barre de progression -->
+      <div class="bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-sm rounded-xl p-6 border border-[#edf1f4]/50 dark:border-[#2a2a2a] shadow-md mb-8" *ngIf="!isLoading && projets.length > 0">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-semibold text-[#3d4a85] dark:text-[#6d78c9]">Progression globale</h3>
+          <span class="text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0]">{{ getSuccessRate() }}% complété</span>
+        </div>
+        <div class="w-full bg-[#edf1f4] dark:bg-[#2a2a2a] rounded-full h-3">
+          <div class="bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] h-3 rounded-full transition-all duration-500"
+               [style.width.%]="getSuccessRate()"></div>
+        </div>
+        <div class="flex justify-between text-xs text-[#6d6870] dark:text-[#a0a0a0] mt-2">
+          <span>{{ getRendusCount() }} projets rendus</span>
+          <span>{{ getPendingCount() }} en attente</span>
+        </div>
       </div>
     </div>
 
@@ -134,21 +220,36 @@
           ></div>
 
           <div class="p-5 bg-white dark:bg-[#1e1e1e] relative">
+            <!-- Badge de statut en haut à droite -->
+            <div class="absolute top-3 right-3">
+              <span [ngClass]="getStatusClass(projet)" class="text-xs px-2 py-1 rounded-full font-medium backdrop-blur-sm">
+                {{ getStatusText(projet) }}
+              </span>
+            </div>
+
             <h3
-              class="text-lg font-bold pr-10 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent group-hover:scale-[1.01] transition-transform duration-300 origin-left"
+              class="text-lg font-bold pr-16 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent group-hover:scale-[1.01] transition-transform duration-300 origin-left"
             >
               {{ projet.titre }}
             </h3>
             <div class="flex items-center mt-2 text-xs space-x-2">
               <span
-                class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 text-[#4f5fad] dark:text-[#6d78c9] px-2 py-0.5 rounded-full backdrop-blur-sm"
-                >{{ projet.groupe || "Tous" }}</span
+                class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 text-[#4f5fad] dark:text-[#6d78c9] px-2 py-0.5 rounded-full backdrop-blur-sm flex items-center"
               >
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                {{ projet.groupe || "Tous" }}
+              </span>
               <span class="text-[#6d6870] dark:text-[#a0a0a0]">•</span>
               <span
-                class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 text-[#4f5fad] dark:text-[#6d78c9] px-2 py-0.5 rounded-full backdrop-blur-sm"
-                >{{ projet.dateLimite | date : "dd/MM/yyyy" }}</span
+                class="bg-[#4f5fad]/10 dark:bg-[#6d78c9]/10 text-[#4f5fad] dark:text-[#6d78c9] px-2 py-0.5 rounded-full backdrop-blur-sm flex items-center"
               >
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                {{ projet.dateLimite | date : "dd/MM/yyyy" }}
+              </span>
             </div>
           </div>
         </div>

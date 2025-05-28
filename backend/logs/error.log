@@ -22,3 +22,7 @@
 {"level":"error","message":"PUT /users/680395e3db62312bb24d1d20/activation 500 - 11ms","timestamp":"2025-05-26 14:41:09"}
 {"level":"error","message":"PUT /users/68038b686229308a4e6b3e81/activation 500 - 6ms","timestamp":"2025-05-26 15:23:45"}
 {"level":"error","message":"POST /evaluations/683639e58d6ed3b9c5abb881 500 - 1771ms","timestamp":"2025-05-27 23:18:02"}
+{"level":"error","message":"POST /evaluations/683658c7f892d6e57f7a4ef0 500 - 415ms","timestamp":"2025-05-28 01:29:39"}
+{"level":"error","message":"POST /evaluations/683658c7f892d6e57f7a4ef0 500 - 29ms","timestamp":"2025-05-28 01:29:46"}
+{"level":"error","message":"POST /evaluations/683658c7f892d6e57f7a4ef0 500 - 20ms","timestamp":"2025-05-28 01:29:47"}
+{"level":"error","message":"POST /evaluations/683658c7f892d6e57f7a4ef0 500 - 23ms","timestamp":"2025-05-28 01:29:53"}
