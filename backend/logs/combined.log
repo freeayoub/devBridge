@@ -9437,3 +9437,119 @@
 {"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-26 22:36:37"}
 {"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-26 22:36:37"}
 {"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-26 22:36:37"}
+{"level":"info","message":"✅ Apollo Server ready","timestamp":"2025-05-27 12:47:06"}
+{"level":"info","message":"\n      🚀 Server running at http://localhost:3000\n      🔐 REST API: http://localhost:3000/api/user\n      🔮 GraphQL: http://localhost:3000/graphql\n      🔌 Subscriptions endpoint: ws://localhost:3000/graphql\n    ","timestamp":"2025-05-27 12:47:06"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:49:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 17ms","timestamp":"2025-05-27 12:49:25"}
+{"level":"http","message":"POST / 200 - 44ms","timestamp":"2025-05-27 12:49:25"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 12:49:25"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 12:49:28"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 12:49:31"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 12:49:38"}
+{"level":"warn","message":"Unauthorized connection attempt - No token provided","timestamp":"2025-05-27 12:49:46"}
+{"level":"http","message":"POST /login 200 - 170ms","timestamp":"2025-05-27 12:49:54"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:49:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-27 12:49:55"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-27 12:49:55"}
+{"level":"info","message":"WebSocket connection authenticated for user 6834468be9e36ff27bd2a6d1","timestamp":"2025-05-27 12:50:05"}
+{"level":"info","message":"WebSocket operation for user 6834468be9e36ff27bd2a6d1, operation: subscribe","timestamp":"2025-05-27 12:50:05"}
+{"level":"info","message":"WebSocket operation for user 6834468be9e36ff27bd2a6d1, operation: subscribe","timestamp":"2025-05-27 12:50:05"}
+{"level":"http","message":"GET / 304 - 14ms","timestamp":"2025-05-27 12:50:11"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:50:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:50:25"}
+{"level":"http","message":"POST / 200 - 8ms","timestamp":"2025-05-27 12:50:25"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:50:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-27 12:50:55"}
+{"level":"http","message":"POST / 200 - 7ms","timestamp":"2025-05-27 12:50:55"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:51:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:51:25"}
+{"level":"http","message":"POST / 200 - 6ms","timestamp":"2025-05-27 12:51:25"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:51:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:51:55"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-27 12:51:55"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:52:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-27 12:52:25"}
+{"level":"http","message":"POST / 200 - 8ms","timestamp":"2025-05-27 12:52:25"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 200 - 21ms","timestamp":"2025-05-27 12:52:29"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 10ms","timestamp":"2025-05-27 12:52:41"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 11ms","timestamp":"2025-05-27 12:52:45"}
+{"level":"http","message":"PUT /logout?secret=2cinfo1&client=esprit 200 - 35ms","timestamp":"2025-05-27 12:52:46"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:52:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:52:55"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-27 12:52:55"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:53:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-27 12:53:25"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-27 12:53:25"}
+{"level":"warn","message":"POST /login 400 - 4ms","timestamp":"2025-05-27 12:53:34"}
+{"level":"warn","message":"POST /login 400 - 6ms","timestamp":"2025-05-27 12:53:39"}
+{"level":"warn","message":"POST /login 400 - 100ms","timestamp":"2025-05-27 12:53:50"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:53:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:53:55"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-27 12:53:55"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:54:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:54:25"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-27 12:54:25"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:54:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-27 12:54:55"}
+{"level":"http","message":"POST / 200 - 1ms","timestamp":"2025-05-27 12:54:55"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:55:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-27 12:55:25"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-27 12:55:25"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:55:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:55:55"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-27 12:55:55"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:57:10","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:57:10"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-27 12:57:10"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:57:27","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:57:27"}
+{"level":"http","message":"POST / 200 - 2ms","timestamp":"2025-05-27 12:57:27"}
+{"level":"warn","message":"POST /login 400 - 5ms","timestamp":"2025-05-27 12:57:45"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:57:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:57:55"}
+{"level":"http","message":"POST / 200 - 1ms","timestamp":"2025-05-27 12:57:55"}
+{"level":"http","message":"POST /login 200 - 117ms","timestamp":"2025-05-27 12:57:55"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 200 - 11ms","timestamp":"2025-05-27 12:58:00"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 10ms","timestamp":"2025-05-27 12:58:13"}
+{"level":"http","message":"GET /users 200 - 56ms","timestamp":"2025-05-27 12:58:15"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query GetUserNotifications {\n  getUserNotifications {\n    id\n    type\n    content\n    timestamp\n    isRead\n    senderId {\n      id\n      username\n      image\n    }\n    message {\n      id\n      content\n    }\n    readAt\n    relatedEntity\n    metadata\n  }\n}","timestamp":"2025-05-27 12:58:19","variables":{"limit":10,"page":1}}
+{"level":"http","message":"GraphQL anonymous completed in 18ms","timestamp":"2025-05-27 12:58:19"}
+{"level":"http","message":"POST / 200 - 26ms","timestamp":"2025-05-27 12:58:19"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 14ms","timestamp":"2025-05-27 12:58:19"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:58:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-27 12:58:25"}
+{"level":"http","message":"POST / 200 - 3ms","timestamp":"2025-05-27 12:58:25"}
+{"level":"http","message":"GET / 304 - 5ms","timestamp":"2025-05-27 12:58:25"}
+{"level":"http","message":"GET /profile?secret=2cinfo1&client=esprit 304 - 10ms","timestamp":"2025-05-27 12:58:27"}
+{"level":"http","message":"GET /users 304 - 40ms","timestamp":"2025-05-27 12:58:30"}
+{"level":"error","message":"PUT /users/6803a340671914c7396b6776/activation 500 - 12ms","timestamp":"2025-05-27 12:58:34"}
+{"level":"http","message":"PUT /users/6834468be9e36ff27bd2a6d1/activation 200 - 22ms","timestamp":"2025-05-27 12:58:50"}
+{"level":"http","message":"PUT /users/6834468be9e36ff27bd2a6d1/activation 200 - 28ms","timestamp":"2025-05-27 12:58:53"}
+{"level":"http","message":"PUT /users/6834468be9e36ff27bd2a6d1/activation 200 - 17ms","timestamp":"2025-05-27 12:58:55"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:58:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-27 12:58:55"}
+{"level":"http","message":"POST / 200 - 10ms","timestamp":"2025-05-27 12:58:55"}
+{"level":"http","message":"PUT /users/6834468be9e36ff27bd2a6d1/activation 200 - 16ms","timestamp":"2025-05-27 12:58:59"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:59:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 12:59:25"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-27 12:59:25"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 12:59:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-27 12:59:55"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-27 12:59:55"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 13:00:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 1ms","timestamp":"2025-05-27 13:00:25"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-27 13:00:25"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 13:00:55","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 13:00:55"}
+{"level":"http","message":"POST / 200 - 4ms","timestamp":"2025-05-27 13:00:55"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 13:01:25","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 13:01:25"}
+{"level":"http","message":"POST / 200 - 5ms","timestamp":"2025-05-27 13:01:25"}
+{"level":"info","message":"Client disconnected (1006): No reason provided","timestamp":"2025-05-27 13:01:29"}
+{"level":"http","message":"GraphQL anonymous operation started","query":"query Ping {\n  __typename\n}","timestamp":"2025-05-27 13:16:58","variables":{}}
+{"level":"http","message":"GraphQL anonymous completed in 0ms","timestamp":"2025-05-27 13:16:58"}
+{"level":"http","message":"POST / 200 - 11ms","timestamp":"2025-05-27 13:16:58"}
+{"level":"info","message":"WebSocket connection authenticated for user 68344d3c7230af7cda872c1e","timestamp":"2025-05-27 13:16:59"}
+{"level":"info","message":"WebSocket operation for user 68344d3c7230af7cda872c1e, operation: subscribe","timestamp":"2025-05-27 13:16:59"}
+{"level":"info","message":"WebSocket operation for user 68344d3c7230af7cda872c1e, operation: subscribe","timestamp":"2025-05-27 13:16:59"}
+{"level":"info","message":"Client disconnected (1001): No reason provided","timestamp":"2025-05-27 13:17:12"}
