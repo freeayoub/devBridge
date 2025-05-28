@@ -1,7 +1,4 @@
 # Environment files
-.env
-backend/.env
-backend/.env.local
 
 # Node.js
 node_modules/
