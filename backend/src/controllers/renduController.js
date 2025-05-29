@@ -58,12 +58,12 @@ exports.createRendu = async (req, res) => {
 exports.checkRenduExists = async (req, res) => {
   try {
     const { projetId, etudiantId } = req.params;
-    
-    const rendu = await Rendu.findOne({ 
+
+    const rendu = await Rendu.findOne({
       projet: projetId,
       etudiant: etudiantId
     });
-    
+
     res.status(200).json({ exists: !!rendu });
   } catch (err) {
     console.error(err);
@@ -76,10 +76,12 @@ exports.getAllRendus = async (req, res) => {
   try {
     const rendus = await Rendu.find()
       .populate('projet')
-      .populate('etudiant')
+      .populate('etudiant') // Populate seulement l'étudiant, pas le groupe
       .populate('evaluation');
+
     res.status(200).json(rendus);
   } catch (err) {
+    console.error('Erreur getAllRendus:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -89,9 +91,9 @@ exports.getRenduById = async (req, res) => {
   try {
     const rendu = await Rendu.findById(req.params.id)
       .populate('projet')
-      .populate('etudiant')
+      .populate('etudiant') // Populate seulement l'étudiant, pas le groupe
       .populate('evaluation');
-    
+
     if (!rendu) return res.status(404).json({ message: "Rendu non trouvé" });
     res.status(200).json(rendu);
   } catch (err) {
@@ -130,18 +132,18 @@ exports.updateRendu = async (req, res) => {
     }
 
     let updateData = { ...req.body };
-    
+
     // Gestion des fichiers si présents
     if (req.files && req.files.length > 0) {
       updateData.fichiers = req.files.map(f => f.path);
     }
 
     const rendu = await Rendu.findByIdAndUpdate(
-      req.params.id, 
-      updateData, 
+      req.params.id,
+      updateData,
       { new: true }
     );
-    
+
     if (!rendu) return res.status(404).json({ message: "Rendu non trouvé" });
     res.status(200).json(rendu);
   } catch (err) {

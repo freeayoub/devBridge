@@ -54,4 +54,125 @@ export class DetailProjectComponent implements OnInit {
       .toString()
       .padStart(2, '0')}/${d.getFullYear()}`;
   }
+
+  getFileName(filePath: string): string {
+    if (!filePath) return 'Fichier';
+
+    // Si le chemin contient des slashes ou backslashes, prendre la dernière partie
+    if (filePath.includes('/') || filePath.includes('\\')) {
+      const parts = filePath.split(/[\/\\]/);
+      return parts[parts.length - 1];
+    }
+
+    return filePath;
+  }
+
+  getProjectStatus(): string {
+    if (!this.projet?.dateLimite) return 'En cours';
+
+    const now = new Date();
+    const deadline = new Date(this.projet.dateLimite);
+
+    if (deadline < now) {
+      return 'Expiré';
+    } else if (deadline.getTime() - now.getTime() < 7 * 24 * 60 * 60 * 1000) {
+      return 'Urgent';
+    } else {
+      return 'Actif';
+    }
+  }
+
+  getStatusClass(): string {
+    const status = this.getProjectStatus();
+
+    switch (status) {
+      case 'Actif':
+        return 'bg-success/10 dark:bg-dark-accent-secondary/20 text-success dark:text-dark-accent-secondary border border-success/20 dark:border-dark-accent-secondary/30';
+      case 'Urgent':
+        return 'bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning border border-warning/20 dark:border-warning/30';
+      case 'Expiré':
+        return 'bg-danger/10 dark:bg-danger-dark/20 text-danger dark:text-danger-dark border border-danger/20 dark:border-danger-dark/30';
+      default:
+        return 'bg-info/10 dark:bg-dark-accent-primary/20 text-info dark:text-dark-accent-primary border border-info/20 dark:border-dark-accent-primary/30';
+    }
+  }
+
+  getProgressPercentage(): number {
+    const total = this.projet?.totalEtudiants || 0;
+    const rendus = this.projet?.etudiantsRendus?.length || 0;
+
+    if (total === 0) return 0;
+    return Math.round((rendus / total) * 100);
+  }
+
+  getRemainingDays(): number {
+    if (!this.projet?.dateLimite) return 0;
+
+    const now = new Date();
+    const deadline = new Date(this.projet.dateLimite);
+    const diffTime = deadline.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return Math.max(0, diffDays);
+  }
+
+  getStudentInitials(etudiant: any): string {
+    if (!etudiant) return '??';
+
+    // Priorité 1: firstName + lastName
+    const firstName = etudiant.firstName || etudiant.prenom || '';
+    const lastName = etudiant.lastName || etudiant.nom || '';
+
+    if (firstName && lastName) {
+      return (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+    }
+
+    // Priorité 2: fullName
+    const fullName = etudiant.fullName || etudiant.name || '';
+    if (fullName) {
+      const parts = fullName.trim().split(' ');
+      if (parts.length >= 2) {
+        return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+      } else {
+        return fullName.substring(0, 2).toUpperCase();
+      }
+    }
+
+    // Priorité 3: firstName seul
+    if (firstName) {
+      return firstName.substring(0, 2).toUpperCase();
+    }
+
+    return '??';
+  }
+
+  getStudentName(etudiant: any): string {
+    if (!etudiant) return 'Utilisateur inconnu';
+
+    // Priorité 1: firstName + lastName
+    const firstName = etudiant.firstName || etudiant.prenom || '';
+    const lastName = etudiant.lastName || etudiant.nom || '';
+
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`.trim();
+    }
+
+    // Priorité 2: fullName
+    const fullName = etudiant.fullName || etudiant.name || '';
+    if (fullName) {
+      return fullName.trim();
+    }
+
+    // Priorité 3: firstName seul
+    if (firstName) {
+      return firstName.trim();
+    }
+
+    // Priorité 4: email comme fallback
+    if (etudiant.email) {
+      return etudiant.email;
+    }
+
+    return 'Utilisateur inconnu';
+  }
 }

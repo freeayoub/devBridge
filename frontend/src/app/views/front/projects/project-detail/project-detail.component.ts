@@ -8,7 +8,7 @@ import { AuthuserService } from 'src/app/services/authuser.service';
 @Component({
   selector: 'app-project-detail',
   templateUrl: './project-detail.component.html',
-  styleUrls: ['./project-detail.component.css'],
+  styleUrls: ['./project-detail.component.css']
 })
 export class ProjectDetailComponent implements OnInit {
   projetId: string = '';
@@ -50,11 +50,11 @@ export class ProjectDetailComponent implements OnInit {
     const etudiantId = this.authService.getCurrentUserId();
     if (etudiantId) {
       this.rendusService.checkRenduExists(this.projetId, etudiantId).subscribe({
-        next: (exists) => {
+        next: (exists: boolean) => {
           console.log(exists)
           this.hasSubmitted = exists;
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Erreur lors de la vérification du rendu', err);
         },
       });

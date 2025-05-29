@@ -61,8 +61,7 @@ const userSchema = new mongoose.Schema(
       },
     },
     group: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Group",
+      type: mongoose.Schema.Types.Mixed, // Permet ObjectId ou String
       default: null,
     },
     profileImage: {
