@@ -86,4 +86,32 @@ export class ProjectSubmissionComponent implements OnInit {
       },
     });
   }
+
+  // Méthode pour supprimer un fichier de la sélection
+  removeFile(index: number): void {
+    this.selectedFiles.splice(index, 1);
+  }
+
+  // Méthode pour formater la taille des fichiers
+  getFileSize(bytes: number): string {
+    if (bytes === 0) return '0 B';
+
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // Méthode pour calculer les jours restants
+  getRemainingDays(): number {
+    if (!this.projet?.dateLimite) return 0;
+
+    const now = new Date();
+    const deadline = new Date(this.projet.dateLimite);
+    const diffTime = deadline.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return Math.max(0, diffDays);
+  }
 }

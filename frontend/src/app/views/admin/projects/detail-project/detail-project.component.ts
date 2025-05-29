@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjetService } from '@app/services/projets.service';
 import { FileService } from 'src/app/services/file.service';
+import { RendusService } from '@app/services/rendus.service';
 
 @Component({
   selector: 'app-detail-project',
@@ -10,21 +11,76 @@ import { FileService } from 'src/app/services/file.service';
 })
 export class DetailProjectComponent implements OnInit {
   projet: any = null;
+  rendus: any[] = [];
+  totalEtudiants: number = 0;
+  etudiantsRendus: any[] = [];
+  derniersRendus: any[] = [];
+  isLoading: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private projectService: ProjetService,
-    private fileService: FileService
+    private fileService: FileService,
+    private rendusService: RendusService
   ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.projectService.getProjetById(id).subscribe((data: any) => {
-        this.projet = data;
-      });
+      this.loadProjectData(id);
     }
+  }
+
+  loadProjectData(id: string): void {
+    this.isLoading = true;
+
+    // Charger les données du projet
+    this.projectService.getProjetById(id).subscribe({
+      next: (data: any) => {
+        this.projet = data;
+        this.loadProjectStatistics(id);
+      },
+      error: (err: any) => {
+        console.error('Erreur lors du chargement du projet:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadProjectStatistics(projetId: string): void {
+    // Charger les rendus pour ce projet
+    this.rendusService.getRendusByProjet(projetId).subscribe({
+      next: (rendus: any[]) => {
+        this.rendus = rendus;
+        this.etudiantsRendus = rendus.filter(rendu => rendu.etudiant);
+
+        // Trier par date pour avoir les derniers rendus
+        this.derniersRendus = [...this.etudiantsRendus]
+          .sort((a, b) => new Date(b.dateRendu).getTime() - new Date(a.dateRendu).getTime())
+          .slice(0, 5); // Prendre les 5 derniers
+
+        // Pour le total d'étudiants, on peut estimer ou récupérer depuis le backend
+        // Pour l'instant, on utilise le nombre d'étudiants uniques qui ont rendu + estimation
+        const etudiantsUniques = new Set(this.etudiantsRendus.map(r => r.etudiant._id || r.etudiant));
+        this.totalEtudiants = Math.max(etudiantsUniques.size, this.estimateStudentCount());
+
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Erreur lors du chargement des statistiques:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  estimateStudentCount(): number {
+    // Estimation basée sur le groupe du projet
+    const groupe = this.projet?.groupe?.toLowerCase();
+    if (groupe?.includes('1c')) return 25; // Première année
+    if (groupe?.includes('2c')) return 20; // Deuxième année
+    if (groupe?.includes('3c')) return 15; // Troisième année
+    return 20; // Valeur par défaut
   }
 
   getFileUrl(filePath: string): string {
@@ -98,11 +154,8 @@ export class DetailProjectComponent implements OnInit {
   }
 
   getProgressPercentage(): number {
-    const total = this.projet?.totalEtudiants || 0;
-    const rendus = this.projet?.etudiantsRendus?.length || 0;
-
-    if (total === 0) return 0;
-    return Math.round((rendus / total) * 100);
+    if (this.totalEtudiants === 0) return 0;
+    return Math.round((this.etudiantsRendus.length / this.totalEtudiants) * 100);
   }
 
   getRemainingDays(): number {

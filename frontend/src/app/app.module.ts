@@ -14,6 +14,7 @@ import { CallModule } from './components/call/call.module';
 import { ConnectionStatusModule } from './components/connection-status/connection-status.module';
 import { GraphqlStatusModule } from './components/graphql-status/graphql-status.module';
 import { VoiceMessageModule } from './components/voice-message/voice-message.module';
+import { SharedModule } from './shared/shared.module';
 // Factory simplifiée sans injection de JwtHelperService
 export function jwtOptionsFactory() {
   return {
@@ -50,6 +51,7 @@ export function jwtOptionsFactory() {
     ConnectionStatusModule,
     GraphqlStatusModule,
     VoiceMessageModule,
+    SharedModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

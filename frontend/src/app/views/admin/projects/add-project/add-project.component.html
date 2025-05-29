@@ -61,12 +61,7 @@
                 </label>
                 <div class="relative">
                   <input type="text" id="titre" formControlName="titre" placeholder="Ex: Développement d'une application web"
-                         class="w-full px-4 py-3 pl-12 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-secondary">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-400 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a1.994 1.994 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                    </svg>
-                  </div>
+                         class="w-full px-4 py-3 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-secondary">
                 </div>
                 <div *ngIf="projetForm.get('titre')?.invalid && projetForm.get('titre')?.touched"
                      class="flex items-center space-x-2 text-danger dark:text-danger-dark text-sm">
@@ -88,12 +83,7 @@
                 </label>
                 <div class="relative">
                   <textarea id="description" formControlName="description" rows="4" placeholder="Décrivez les objectifs, les livrables attendus et les critères d'évaluation..."
-                            class="w-full px-4 py-3 pl-12 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-secondary resize-none"></textarea>
-                  <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-400 dark:text-dark-text-secondary mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
-                    </svg>
-                  </div>
+                            class="w-full px-4 py-3 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-secondary resize-none"></textarea>
                 </div>
                 <div *ngIf="projetForm.get('description')?.invalid && projetForm.get('description')?.touched"
                      class="flex items-center space-x-2 text-danger dark:text-danger-dark text-sm">
@@ -117,12 +107,7 @@
                   </label>
                   <div class="relative">
                     <input type="date" id="dateLimite" formControlName="dateLimite"
-                           class="w-full px-4 py-3 pl-12 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg class="w-5 h-5 text-gray-400 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                      </svg>
-                    </div>
+                           class="w-full px-4 py-3 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary">
                   </div>
                   <div *ngIf="projetForm.get('dateLimite')?.invalid && projetForm.get('dateLimite')?.touched"
                        class="flex items-center space-x-2 text-danger dark:text-danger-dark text-sm">
@@ -144,7 +129,7 @@
                   </label>
                   <div class="relative">
                     <select id="groupe" formControlName="groupe"
-                            class="w-full px-4 py-3 pl-12 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary appearance-none">
+                            class="w-full px-4 py-3 pr-10 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary appearance-none">
                       <option value="">Sélectionner un groupe</option>
                       <option value="1cinfo">1cinfo</option>
                       <option value="2cinfo1">2cinfo1</option>
@@ -152,11 +137,6 @@
                       <option value="2cinfo3">2cinfo3</option>
                       <option value="tous">Tous les groupes</option>
                     </select>
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg class="w-5 h-5 text-gray-400 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                      </svg>
-                    </div>
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                       <svg class="w-5 h-5 text-gray-400 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>

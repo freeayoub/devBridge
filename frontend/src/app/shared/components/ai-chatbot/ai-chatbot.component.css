@@ -1,0 +1,301 @@
+/* Animations pour le chatbot */
+@keyframes slideInOut {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.animate-bounce-dot {
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+/* Scrollbar personnalisée pour les messages */
+.messages-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 2px;
+}
+
+.messages-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+/* Dark mode scrollbar */
+.dark .messages-container::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.dark .messages-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+/* Animation du bouton flottant */
+.floating-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Animation de pulsation pour le badge de notification */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.notification-badge {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Effet de glassmorphism pour la fenêtre de chat */
+.chat-window {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Animation des messages */
+.message-enter {
+  animation: messageSlideIn 0.3s ease-out;
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles pour les suggestions rapides */
+.quick-message-btn {
+  transition: all 0.2s ease;
+}
+
+.quick-message-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation de l'indicateur de frappe */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #9CA3AF;
+  margin: 0 1px;
+  animation: typingAnimation 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes typingAnimation {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Mode plein écran */
+.fullscreen-chat {
+  position: fixed !important;
+  top: 1rem !important;
+  left: 1rem !important;
+  right: 1rem !important;
+  bottom: 1rem !important;
+  width: auto !important;
+  height: auto !important;
+  z-index: 9999 !important;
+}
+
+.fullscreen-messages {
+  height: calc(100vh - 280px) !important;
+}
+
+/* Responsive design amélioré */
+@media (max-width: 640px) {
+  .chat-window:not(.fullscreen-chat) {
+    width: calc(100vw - 1rem);
+    height: calc(100vh - 8rem);
+    right: 0.5rem;
+    left: 0.5rem;
+    bottom: 5rem;
+  }
+
+  .messages-container:not(.fullscreen-messages) {
+    height: calc(100vh - 16rem) !important;
+  }
+
+  .fullscreen-chat {
+    top: 0.5rem !important;
+    left: 0.5rem !important;
+    right: 0.5rem !important;
+    bottom: 0.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-window:not(.fullscreen-chat) {
+    width: calc(100vw - 0.5rem);
+    height: calc(100vh - 6rem);
+    right: 0.25rem;
+    left: 0.25rem;
+    bottom: 4rem;
+  }
+
+  .fullscreen-chat {
+    top: 0.25rem !important;
+    left: 0.25rem !important;
+    right: 0.25rem !important;
+    bottom: 0.25rem !important;
+  }
+}
+
+/* Focus states pour l'accessibilité */
+.focus\:ring-purple-500:focus {
+  --tw-ring-color: rgb(168 85 247 / 0.5);
+}
+
+.dark .focus\:ring-purple-400:focus {
+  --tw-ring-color: rgb(196 181 253 / 0.5);
+}
+
+/* Corrections pour l'en-tête */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: linear-gradient(to right, #3d4a85, #4f5fad);
+  color: white;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.ai-icon {
+  width: 2rem;
+  height: 2rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ai-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.ai-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ai-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: white;
+  margin: 0;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.status-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  background-color: #4ade80;
+  border-radius: 50%;
+}
+
+.status-text {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.header-button {
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  color: white;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.header-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Transitions fluides */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
