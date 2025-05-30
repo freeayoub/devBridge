@@ -1,7 +1,13 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  HostListener,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { Subject, Subscription, Observable } from 'rxjs';
-import { filter, takeUntil, distinctUntilChanged } from 'rxjs/operators';
+import { filter, takeUntil, distinctUntilChanged, take } from 'rxjs/operators';
 import { AuthuserService } from 'src/app/services/authuser.service';
 import { UserStatusService } from 'src/app/services/user-status.service';
 import { MessageService } from 'src/app/services/message.service';
@@ -36,7 +42,8 @@ export class FrontLayoutComponent implements OnInit, OnDestroy {
     public statusService: UserStatusService,
     private MessageService: MessageService,
     private themeService: ThemeService,
-    private dataService: DataService
+    private dataService: DataService,
+    private cdr: ChangeDetectorRef
   ) {
     this.checkViewport();
     this.loadUserProfile();
@@ -98,12 +105,58 @@ export class FrontLayoutComponent implements OnInit, OnDestroy {
     }
   }
   private setupNotificationSystem(): void {
-    // Real-time count updates
-    this.MessageService.notificationCount$
-      .pipe(takeUntil(this.destroy$), distinctUntilChanged())
+    console.log('🔔 LAYOUT: Setting up notification system...');
+
+    // Approche 1: Subscription normale
+    const countSubscription = this.MessageService.notificationCount$
+      .pipe(takeUntil(this.destroy$))
       .subscribe((count) => {
+        console.log(
+          '🔔 LAYOUT: Notification count updated via subscription:',
+          count
+        );
         this.unreadNotificationsCount = count;
+        this.cdr.detectChanges();
       });
+
+    this.subscriptions.push(countSubscription);
+
+    // Approche 2: Événement personnalisé (solution de secours)
+    const handleNotificationCountChange = (event: any) => {
+      const count = event.detail.count;
+      console.log(
+        '🔔 LAYOUT: Notification count updated via custom event:',
+        count
+      );
+      this.unreadNotificationsCount = count;
+      this.cdr.detectChanges();
+    };
+
+    window.addEventListener(
+      'notificationCountChanged',
+      handleNotificationCountChange
+    );
+
+    // Nettoyer l'événement à la destruction
+    this.subscriptions.push({
+      unsubscribe: () =>
+        window.removeEventListener(
+          'notificationCountChanged',
+          handleNotificationCountChange
+        ),
+    } as Subscription);
+
+    // Forcer une première lecture du compteur
+    setTimeout(() => {
+      this.MessageService.notificationCount$
+        .pipe(take(1))
+        .subscribe((currentCount) => {
+          console.log('🔔 LAYOUT: Initial count read:', currentCount);
+          this.unreadNotificationsCount = currentCount;
+          this.cdr.detectChanges();
+        });
+    }, 100);
+
     // Charger les notifications initiales si l'utilisateur est connecté
     if (this.authService.userLoggedIn()) {
       this.MessageService.getNotifications(true).subscribe();

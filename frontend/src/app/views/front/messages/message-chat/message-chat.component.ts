@@ -4,1771 +4,1540 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
-  AfterViewChecked,
   ChangeDetectorRef,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthuserService } from 'src/app/services/authuser.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subscription, combineLatest, Observable, of } from 'rxjs';
-import { User } from '@app/models/user.model';
-import { UserStatusService } from 'src/app/services/user-status.service';
-import {
-  Message,
-  Conversation,
-  Attachment,
-  MessageType,
-  CallType,
-} from 'src/app/models/message.model';
-import { ToastService } from 'src/app/services/toast.service';
-import { switchMap, distinctUntilChanged, filter } from 'rxjs/operators';
-import { MessageService } from '@app/services/message.service';
-import { LoggerService } from 'src/app/services/logger.service';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { MessageService } from '../../../../services/message.service';
+import { ToastService } from '../../../../services/toast.service';
+import { CallType, Call, IncomingCall } from '../../../../models/message.model';
+
 @Component({
   selector: 'app-message-chat',
-  templateUrl: 'message-chat.component.html',
-  styleUrls: ['./message-chat.component.css', './message-chat-magic.css'],
+  templateUrl: './message-chat.component.html',
 })
-export class MessageChatComponent
-  implements OnInit, OnDestroy, AfterViewChecked
-{
+export class MessageChatComponent implements OnInit, OnDestroy {
+  // === RÉFÉRENCES DOM ===
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   @ViewChild('fileInput', { static: false })
   fileInput!: ElementRef<HTMLInputElement>;
 
-  messages: Message[] = [];
-  messageForm: FormGroup;
-  conversation: Conversation | null = null;
-  loading = true;
-  error: any;
+  // === DONNÉES PRINCIPALES ===
+  conversation: any = null;
+  messages: any[] = [];
   currentUserId: string | null = null;
-  currentUsername: string = 'You';
-  otherParticipant: User | null = null;
-  selectedFile: File | null = null;
-  previewUrl: string | ArrayBuffer | null = null;
-  isUploading = false;
-  isTyping = false;
-  typingTimeout: any;
+  currentUsername = 'You';
+  messageForm: FormGroup;
+  otherParticipant: any = null;
+
+  // === ÉTATS DE L'INTERFACE ===
+  isLoading = false;
+  isLoadingMore = false;
+  hasMoreMessages = true;
+  showEmojiPicker = false;
+  showAttachmentMenu = false;
+  showSearch = false;
+  searchQuery = '';
+  searchResults: any[] = [];
+  searchMode = false;
+  isSendingMessage = false;
+  otherUserIsTyping = false;
+
+  // === ENREGISTREMENT VOCAL ===
   isRecordingVoice = false;
   voiceRecordingDuration = 0;
+  voiceRecordingState: 'idle' | 'recording' | 'processing' = 'idle';
+  private mediaRecorder: MediaRecorder | null = null;
+  private audioChunks: Blob[] = [];
+  private recordingTimer: any = null;
 
-  private readonly MAX_MESSAGES_PER_SIDE = 5; // Nombre maximum de messages à afficher par côté (expéditeur/destinataire)
-  private readonly MAX_MESSAGES_TO_LOAD = 10; // Nombre maximum de messages à charger à la fois (pagination)
-  private readonly MAX_TOTAL_MESSAGES = 100; // Limite totale de messages à conserver en mémoire
-  private currentPage = 1; // Page actuelle pour la pagination
-  isLoadingMore = false; // Indicateur de chargement en cours (public pour le template)
-  hasMoreMessages = true; // Indique s'il y a plus de messages à charger (public pour le template)
-  private subscriptions: Subscription = new Subscription();
+  // === APPELS WEBRTC ===
+  isInCall = false;
+  callType: 'VIDEO' | 'AUDIO' | null = null;
+  callDuration = 0;
+  private callTimer: any = null;
 
-  // Variables pour le sélecteur de thème
-  selectedTheme: string = 'theme-default'; // Thème par défaut
-  showThemeSelector: boolean = false; // Affichage du sélecteur de thème
+  // État de l'appel WebRTC
+  activeCall: any = null;
+  isCallConnected = false;
+  isMuted = false;
+  isVideoEnabled = true;
+  localVideoElement: HTMLVideoElement | null = null;
+  remoteVideoElement: HTMLVideoElement | null = null;
 
-  // Variables pour le sélecteur d'émojis
-  showEmojiPicker: boolean = false;
-
-  // Variables pour les appels
-  incomingCall: any = null;
-  showCallModal: boolean = false;
-
-  commonEmojis: string[] = [
-    '😀',
-    '😃',
-    '😄',
-    '😁',
-    '😆',
-    '😅',
-    '😂',
-    '🤣',
-    '😊',
-    '😇',
-    '🙂',
-    '🙃',
-    '😉',
-    '😌',
-    '😍',
-    '🥰',
-    '😘',
-    '😗',
-    '😙',
-    '😚',
-    '😋',
-    '😛',
-    '😝',
-    '😜',
-    '🤪',
-    '🤨',
-    '🧐',
-    '🤓',
-    '😎',
-    '🤩',
-    '😏',
-    '😒',
-    '😞',
-    '😔',
-    '😟',
-    '😕',
-    '🙁',
-    '☹️',
-    '😣',
-    '😖',
-    '😫',
-    '😩',
-    '🥺',
-    '😢',
-    '😭',
-    '😤',
-    '😠',
-    '😡',
-    '🤬',
-    '🤯',
-    '😳',
-    '🥵',
-    '🥶',
-    '😱',
-    '😨',
-    '😰',
-    '😥',
-    '😓',
-    '🤗',
-    '🤔',
-    '👍',
-    '👎',
-    '👏',
-    '🙌',
-    '👐',
-    '🤲',
-    '🤝',
-    '🙏',
-    '✌️',
-    '🤞',
-    '❤️',
-    '🧡',
-    '💛',
-    '💚',
-    '💙',
-    '💜',
-    '🖤',
-    '💔',
-    '💯',
-    '💢',
+  // === ÉMOJIS ===
+  emojiCategories: any[] = [
+    {
+      id: 'smileys',
+      name: 'Smileys',
+      icon: '😀',
+      emojis: [
+        { emoji: '😀', name: 'grinning face' },
+        { emoji: '😃', name: 'grinning face with big eyes' },
+        { emoji: '😄', name: 'grinning face with smiling eyes' },
+        { emoji: '😁', name: 'beaming face with smiling eyes' },
+        { emoji: '😆', name: 'grinning squinting face' },
+        { emoji: '😅', name: 'grinning face with sweat' },
+        { emoji: '😂', name: 'face with tears of joy' },
+        { emoji: '🤣', name: 'rolling on the floor laughing' },
+        { emoji: '😊', name: 'smiling face with smiling eyes' },
+        { emoji: '😇', name: 'smiling face with halo' },
+      ],
+    },
+    {
+      id: 'people',
+      name: 'People',
+      icon: '👤',
+      emojis: [
+        { emoji: '👶', name: 'baby' },
+        { emoji: '🧒', name: 'child' },
+        { emoji: '👦', name: 'boy' },
+        { emoji: '👧', name: 'girl' },
+        { emoji: '🧑', name: 'person' },
+        { emoji: '👨', name: 'man' },
+        { emoji: '👩', name: 'woman' },
+        { emoji: '👴', name: 'old man' },
+        { emoji: '👵', name: 'old woman' },
+      ],
+    },
+    {
+      id: 'nature',
+      name: 'Nature',
+      icon: '🌿',
+      emojis: [
+        { emoji: '🐶', name: 'dog face' },
+        { emoji: '🐱', name: 'cat face' },
+        { emoji: '🐭', name: 'mouse face' },
+        { emoji: '🐹', name: 'hamster' },
+        { emoji: '🐰', name: 'rabbit face' },
+        { emoji: '🦊', name: 'fox' },
+        { emoji: '🐻', name: 'bear' },
+        { emoji: '🐼', name: 'panda' },
+      ],
+    },
   ];
+  selectedEmojiCategory = this.emojiCategories[0];
+
+  // === PAGINATION ===
+  private readonly MAX_MESSAGES_TO_LOAD = 10;
+  private currentPage = 1;
+
+  // === AUTRES ÉTATS ===
+  isTyping = false;
+  isUserTyping = false;
+  private typingTimeout: any = null;
+  private subscriptions = new Subscription();
 
   constructor(
-    private MessageService: MessageService,
-    public route: ActivatedRoute,
-    private authService: AuthuserService,
     private fb: FormBuilder,
-    public statusService: UserStatusService,
-    public router: Router,
+    private route: ActivatedRoute,
+    private MessageService: MessageService,
     private toastService: ToastService,
-    private logger: LoggerService,
     private cdr: ChangeDetectorRef
   ) {
     this.messageForm = this.fb.group({
-      content: ['', [Validators.maxLength(1000)]],
+      content: ['', [Validators.required, Validators.minLength(1)]],
     });
   }
-  ngOnInit(): void {
-    this.currentUserId = this.authService.getCurrentUserId();
 
-    // Charger le thème sauvegardé
-    const savedTheme = localStorage.getItem('chat-theme');
-    if (savedTheme) {
-      this.selectedTheme = savedTheme;
-      this.logger.debug('MessageChat', `Loaded saved theme: ${savedTheme}`);
-    }
-
-    // Récupérer les messages vocaux pour assurer leur persistance
-    this.loadVoiceMessages();
-
-    // S'abonner aux notifications en temps réel
-    this.subscribeToNotifications();
-
-    const routeSub = this.route.params
-      .pipe(
-        filter((params) => params['id']),
-        distinctUntilChanged(),
-        switchMap((params) => {
-          this.loading = true;
-          this.messages = [];
-          this.currentPage = 1; // Réinitialiser à la page 1
-          this.hasMoreMessages = true; // Réinitialiser l'indicateur de messages supplémentaires
-
-          this.logger.debug(
-            'MessageChat',
-            `Loading conversation with pagination: page=${this.currentPage}, limit=${this.MAX_MESSAGES_TO_LOAD}`
-          );
-
-          // Charger la conversation avec pagination (page 1, limit 10)
-          return this.MessageService.getConversation(
-            params['id'],
-            this.MAX_MESSAGES_TO_LOAD,
-            this.currentPage // Utiliser la page au lieu de l'offset
-          );
-        })
-      )
-      .subscribe({
-        next: (conversation) => {
-          this.handleConversationLoaded(conversation);
-        },
-        error: (error) => {
-          this.handleError('Failed to load conversation', error);
-        },
-      });
-    this.subscriptions.add(routeSub);
-  }
-
-  /**
-   * Charge les messages vocaux pour assurer leur persistance
-   */
-  private loadVoiceMessages(): void {
-    this.logger.debug('MessageChat', 'Loading voice messages for persistence');
-
-    const sub = this.MessageService.getVoiceMessages().subscribe({
-      next: (voiceMessages) => {
-        this.logger.info(
-          'MessageChat',
-          `Retrieved ${voiceMessages.length} voice messages`
-        );
-
-        // Les messages vocaux sont maintenant chargés et disponibles dans le service
-        // Ils seront automatiquement associés aux conversations correspondantes
-        if (voiceMessages.length > 0) {
-          this.logger.debug(
-            'MessageChat',
-            'Voice messages loaded successfully'
-          );
-
-          // Forcer le rafraîchissement de la vue après le chargement des messages vocaux
-          setTimeout(() => {
-            this.cdr.detectChanges();
-            this.logger.debug(
-              'MessageChat',
-              'View refreshed after loading voice messages'
-            );
-          }, 100);
-        }
-      },
-      error: (error) => {
-        this.logger.error(
-          'MessageChat',
-          'Error loading voice messages:',
-          error
-        );
-        // Ne pas bloquer l'expérience utilisateur si le chargement des messages vocaux échoue
-      },
-    });
-
-    this.subscriptions.add(sub);
-  }
-
-  /**
-   * Gère les erreurs et les affiche à l'utilisateur
-   * @param message Message d'erreur à afficher
-   * @param error Objet d'erreur
-   */
-  private handleError(message: string, error: any): void {
-    this.logger.error('MessageChat', message, error);
-    this.loading = false;
-    this.error = error;
-    this.toastService.showError(message);
-  }
-
-  // logique FileService
-  getFileIcon(mimeType?: string): string {
-    if (!mimeType) return 'fa-file';
-    if (mimeType.startsWith('image/')) return 'fa-image';
-    if (mimeType.includes('pdf')) return 'fa-file-pdf';
-    if (mimeType.includes('word') || mimeType.includes('msword'))
-      return 'fa-file-word';
-    if (mimeType.includes('excel')) return 'fa-file-excel';
-    if (mimeType.includes('powerpoint')) return 'fa-file-powerpoint';
-    if (mimeType.includes('audio')) return 'fa-file-audio';
-    if (mimeType.includes('video')) return 'fa-file-video';
-    if (mimeType.includes('zip') || mimeType.includes('compressed'))
-      return 'fa-file-archive';
-    return 'fa-file';
-  }
-  getFileType(mimeType?: string): string {
-    if (!mimeType) return 'File';
-
-    const typeMap: Record<string, string> = {
-      'image/': 'Image',
-      'application/pdf': 'PDF',
-      'application/msword': 'Word Doc',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-        'Word Doc',
-      'application/vnd.ms-excel': 'Excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-        'Excel',
-      'application/vnd.ms-powerpoint': 'PowerPoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-        'PowerPoint',
-      'audio/': 'Audio',
-      'video/': 'Video',
-      'application/zip': 'ZIP Archive',
-      'application/x-rar-compressed': 'RAR Archive',
-    };
-    for (const [key, value] of Object.entries(typeMap)) {
-      if (mimeType.includes(key)) return value;
-    }
-    return 'File';
-  }
-
-  private handleConversationLoaded(conversation: Conversation): void {
-    this.logger.info(
-      'MessageChat',
-      `Handling loaded conversation: ${conversation.id}`
+  // Méthode pour vérifier si le champ de saisie doit être désactivé
+  isInputDisabled(): boolean {
+    return (
+      !this.otherParticipant || this.isRecordingVoice || this.isSendingMessage
     );
-    this.logger.debug(
-      'MessageChat',
-      `Conversation has ${conversation?.messages?.length || 0} messages and ${
-        conversation?.participants?.length || 0
-      } participants`
-    );
+  }
 
-    // Log détaillé des messages pour le débogage
-    if (conversation?.messages && conversation.messages.length > 0) {
-      this.logger.debug(
-        'MessageChat',
-        `First message details: id=${
-          conversation.messages[0].id
-        }, content=${conversation.messages[0].content?.substring(
-          0,
-          20
-        )}, sender=${conversation.messages[0].sender?.username}`
-      );
-    }
-
-    this.conversation = conversation;
-
-    // Si la conversation n'a pas de messages, initialiser un tableau vide
-    if (!conversation?.messages || conversation.messages.length === 0) {
-      this.logger.debug('MessageChat', 'No messages found in conversation');
-
-      // Récupérer les participants
-      this.otherParticipant =
-        conversation?.participants?.find(
-          (p) => p.id !== this.currentUserId && p._id !== this.currentUserId
-        ) || null;
-
-      // Initialiser un tableau vide pour les messages
-      this.messages = [];
-
-      this.logger.debug('MessageChat', 'Initialized empty messages array');
+  // Méthode pour gérer l'état du contrôle de saisie
+  private updateInputState(): void {
+    const contentControl = this.messageForm.get('content');
+    if (this.isInputDisabled()) {
+      contentControl?.disable();
     } else {
-      // Récupérer les messages de la conversation
-      const conversationMessages = [...(conversation?.messages || [])];
-
-      // Trier les messages par date (du plus ancien au plus récent)
-      conversationMessages.sort((a, b) => {
-        const timeA =
-          a.timestamp instanceof Date
-            ? a.timestamp.getTime()
-            : new Date(a.timestamp as string).getTime();
-        const timeB =
-          b.timestamp instanceof Date
-            ? b.timestamp.getTime()
-            : new Date(b.timestamp as string).getTime();
-        return timeA - timeB;
-      });
-
-      // Log détaillé pour comprendre la structure des messages
-      if (conversationMessages.length > 0) {
-        const firstMessage = conversationMessages[0];
-        this.logger.debug(
-          'MessageChat',
-          `Message structure: sender.id=${firstMessage.sender?.id}, sender._id=${firstMessage.sender?._id}, senderId=${firstMessage.senderId}, receiver.id=${firstMessage.receiver?.id}, receiver._id=${firstMessage.receiver?._id}, receiverId=${firstMessage.receiverId}`
-        );
-      }
-
-      // Utiliser directement tous les messages triés sans filtrage supplémentaire
-      this.messages = conversationMessages;
-
-      this.logger.debug(
-        'MessageChat',
-        `Using all ${this.messages.length} messages from conversation`
-      );
-
-      this.logger.debug(
-        'MessageChat',
-        `Using ${conversationMessages.length} messages from conversation, showing last ${this.messages.length}`
-      );
-    }
-
-    this.otherParticipant =
-      conversation?.participants?.find(
-        (p) => p.id !== this.currentUserId && p._id !== this.currentUserId
-      ) || null;
-
-    this.logger.debug(
-      'MessageChat',
-      `Other participant identified: ${
-        this.otherParticipant?.username || 'Unknown'
-      }`
-    );
-
-    this.loading = false;
-    setTimeout(() => this.scrollToBottom(), 100);
-
-    this.logger.debug('MessageChat', `Marking unread messages as read`);
-    this.markMessagesAsRead();
-
-    if (this.conversation?.id) {
-      this.logger.debug(
-        'MessageChat',
-        `Setting up subscriptions for conversation: ${this.conversation.id}`
-      );
-      this.subscribeToConversationUpdates(this.conversation.id);
-      this.subscribeToNewMessages(this.conversation.id);
-      this.subscribeToTypingIndicators(this.conversation.id);
-    }
-
-    this.logger.info('MessageChat', `Conversation loaded successfully`);
-  }
-
-  private subscribeToConversationUpdates(conversationId: string): void {
-    const sub = this.MessageService.subscribeToConversationUpdates(
-      conversationId
-    ).subscribe({
-      next: (updatedConversation) => {
-        this.conversation = updatedConversation;
-        this.messages = updatedConversation.messages
-          ? [...updatedConversation.messages]
-          : [];
-        this.scrollToBottom();
-      },
-      error: (error) => {
-        this.toastService.showError('Connection to conversation updates lost');
-      },
-    });
-    this.subscriptions.add(sub);
-  }
-
-  private subscribeToNewMessages(conversationId: string): void {
-    const sub = this.MessageService.subscribeToNewMessages(
-      conversationId
-    ).subscribe({
-      next: (newMessage) => {
-        if (newMessage?.conversationId === this.conversation?.id) {
-          // Ajouter le nouveau message à la liste complète
-          this.messages = [...this.messages, newMessage].sort((a, b) => {
-            const timeA =
-              a.timestamp instanceof Date
-                ? a.timestamp.getTime()
-                : new Date(a.timestamp as string).getTime();
-            const timeB =
-              b.timestamp instanceof Date
-                ? b.timestamp.getTime()
-                : new Date(b.timestamp as string).getTime();
-            return timeA - timeB; // Tri par ordre croissant pour l'affichage
-          });
-
-          this.logger.debug(
-            'MessageChat',
-            `Added new message, now showing ${this.messages.length} messages`
-          );
-
-          setTimeout(() => this.scrollToBottom(), 100);
-
-          // Marquer le message comme lu s'il vient d'un autre utilisateur
-          if (
-            newMessage.sender?.id !== this.currentUserId &&
-            newMessage.sender?._id !== this.currentUserId
-          ) {
-            if (newMessage.id) {
-              this.MessageService.markMessageAsRead(newMessage.id).subscribe();
-            }
-          }
-        }
-      },
-      error: (error) => {
-        this.toastService.showError('Connection to new messages lost');
-      },
-    });
-    this.subscriptions.add(sub);
-  }
-
-  private subscribeToTypingIndicators(conversationId: string): void {
-    const sub = this.MessageService.subscribeToTypingIndicator(
-      conversationId
-    ).subscribe({
-      next: (event) => {
-        if (event.userId !== this.currentUserId) {
-          this.isTyping = event.isTyping;
-          if (this.isTyping) {
-            clearTimeout(this.typingTimeout);
-            this.typingTimeout = setTimeout(() => {
-              this.isTyping = false;
-            }, 2000);
-          }
-        }
-      },
-    });
-    this.subscriptions.add(sub);
-  }
-
-  private markMessagesAsRead(): void {
-    const unreadMessages = this.messages.filter(
-      (msg) =>
-        !msg.isRead &&
-        (msg.receiver?.id === this.currentUserId ||
-          msg.receiver?._id === this.currentUserId)
-    );
-
-    unreadMessages.forEach((msg) => {
-      if (msg.id) {
-        const sub = this.MessageService.markMessageAsRead(msg.id).subscribe({
-          error: (error) => {
-            this.logger.error(
-              'MessageChat',
-              'Error marking message as read:',
-              error
-            );
-          },
-        });
-        this.subscriptions.add(sub);
-      }
-    });
-  }
-
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    // Validate file size (e.g., 5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      this.toastService.showError('File size should be less than 5MB');
-      return;
-    }
-
-    // Validate file type
-    const validTypes = [
-      'image/jpeg',
-      'image/png',
-      'image/gif',
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    ];
-    if (!validTypes.includes(file.type)) {
-      this.toastService.showError(
-        'Invalid file type. Only images, PDFs and Word docs are allowed'
-      );
-      return;
-    }
-
-    this.selectedFile = file;
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.previewUrl = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  removeAttachment(): void {
-    this.selectedFile = null;
-    this.previewUrl = null;
-    if (this.fileInput?.nativeElement) {
-      this.fileInput.nativeElement.value = '';
+      contentControl?.enable();
     }
   }
 
-  private typingTimer: any;
-  private isCurrentlyTyping = false;
-  private readonly TYPING_DELAY = 500; // Délai en ms avant d'envoyer l'événement de frappe
-  private readonly TYPING_TIMEOUT = 3000; // Délai en ms avant d'arrêter l'indicateur de frappe
-
-  /**
-   * Gère l'événement de frappe de l'utilisateur
-   * Envoie un indicateur de frappe avec un délai pour éviter trop de requêtes
-   */
-  onTyping(): void {
-    if (!this.conversation?.id || !this.currentUserId) {
-      return;
-    }
-
-    // Stocker l'ID de conversation pour éviter les erreurs TypeScript
-    const conversationId = this.conversation.id;
-
-    // Annuler le timer précédent
-    clearTimeout(this.typingTimer);
-
-    // Si l'utilisateur n'est pas déjà en train de taper, envoyer l'événement immédiatement
-    if (!this.isCurrentlyTyping) {
-      this.isCurrentlyTyping = true;
-      this.logger.debug('MessageChat', 'Starting typing indicator');
-
-      this.MessageService.startTyping(conversationId).subscribe({
-        next: () => {
-          this.logger.debug(
-            'MessageChat',
-            'Typing indicator started successfully'
-          );
-        },
-        error: (error) => {
-          this.logger.error(
-            'MessageChat',
-            'Error starting typing indicator:',
-            error
-          );
-        },
-      });
-    }
-
-    // Définir un timer pour arrêter l'indicateur de frappe après un délai d'inactivité
-    this.typingTimer = setTimeout(() => {
-      if (this.isCurrentlyTyping) {
-        this.isCurrentlyTyping = false;
-        this.logger.debug(
-          'MessageChat',
-          'Stopping typing indicator due to inactivity'
-        );
-
-        this.MessageService.stopTyping(conversationId).subscribe({
-          next: () => {
-            this.logger.debug(
-              'MessageChat',
-              'Typing indicator stopped successfully'
-            );
-          },
-          error: (error) => {
-            this.logger.error(
-              'MessageChat',
-              'Error stopping typing indicator:',
-              error
-            );
-          },
-        });
-      }
-    }, this.TYPING_TIMEOUT);
+  ngOnInit(): void {
+    this.initializeComponent();
   }
 
-  /**
-   * Affiche ou masque le sélecteur de thème
-   */
-  toggleThemeSelector(): void {
-    this.showThemeSelector = !this.showThemeSelector;
-
-    // Fermer le sélecteur de thème lorsqu'on clique ailleurs
-    if (this.showThemeSelector) {
-      setTimeout(() => {
-        const clickHandler = (event: MouseEvent) => {
-          const target = event.target as HTMLElement;
-          if (!target.closest('.theme-selector')) {
-            this.showThemeSelector = false;
-            document.removeEventListener('click', clickHandler);
-          }
-        };
-        document.addEventListener('click', clickHandler);
-      }, 0);
-    }
+  private initializeComponent(): void {
+    this.loadCurrentUser();
+    this.loadConversation();
+    this.setupCallSubscriptions();
   }
 
-  /**
-   * Change le thème de la conversation
-   * @param theme Nom du thème à appliquer
-   */
-  changeTheme(theme: string): void {
-    this.selectedTheme = theme;
-    this.showThemeSelector = false;
-
-    // Sauvegarder le thème dans le localStorage pour le conserver entre les sessions
-    localStorage.setItem('chat-theme', theme);
-
-    this.logger.debug('MessageChat', `Theme changed to: ${theme}`);
-  }
-
-  sendMessage(): void {
-    this.logger.info('MessageChat', `Attempting to send message`);
-
-    // Vérifier l'authentification
-    const token = localStorage.getItem('token');
-    this.logger.debug(
-      'MessageChat',
-      `Authentication check: token=${!!token}, userId=${this.currentUserId}`
-    );
-
-    if (
-      (this.messageForm.invalid && !this.selectedFile) ||
-      !this.currentUserId ||
-      !this.otherParticipant?.id
-    ) {
-      this.logger.warn(
-        'MessageChat',
-        `Cannot send message: form invalid or missing user IDs`
-      );
-      return;
-    }
-
-    // Arrêter l'indicateur de frappe lorsqu'un message est envoyé
-    this.stopTypingIndicator();
-
-    const content = this.messageForm.get('content')?.value;
-
-    // Créer un message temporaire pour l'affichage immédiat (comme dans Facebook Messenger)
-    const tempMessage: Message = {
-      id: 'temp-' + new Date().getTime(),
-      content: content || '',
-      sender: {
-        id: this.currentUserId || '',
-        username: this.currentUsername,
-      },
-      receiver: {
-        id: this.otherParticipant.id,
-        username: this.otherParticipant.username || 'Recipient',
-      },
-      timestamp: new Date(),
-      isRead: false,
-      isPending: true, // Marquer comme en attente
-    };
-
-    // Si un fichier est sélectionné, ajouter l'aperçu au message temporaire
-    if (this.selectedFile) {
-      // Déterminer le type de fichier
-      let fileType = 'file';
-      if (this.selectedFile.type.startsWith('image/')) {
-        fileType = 'image';
-
-        // Pour les images, ajouter un aperçu immédiat
-        if (this.previewUrl) {
-          tempMessage.attachments = [
-            {
-              id: 'temp-attachment',
-              url: this.previewUrl ? this.previewUrl.toString() : '',
-              type: MessageType.IMAGE,
-              name: this.selectedFile.name,
-              size: this.selectedFile.size,
-            },
-          ];
-        }
-      }
-
-      // Définir le type de message en fonction du type de fichier
-      if (fileType === 'image') {
-        tempMessage.type = MessageType.IMAGE;
-      } else if (fileType === 'file') {
-        tempMessage.type = MessageType.FILE;
-      }
-    }
-
-    // Ajouter immédiatement le message temporaire à la liste
-    this.messages = [...this.messages, tempMessage];
-
-    // Réinitialiser le formulaire immédiatement pour une meilleure expérience utilisateur
-    const fileToSend = this.selectedFile; // Sauvegarder une référence
-    this.messageForm.reset();
-    this.removeAttachment();
-
-    // Forcer le défilement vers le bas immédiatement
-    setTimeout(() => this.scrollToBottom(true), 50);
-
-    // Maintenant, envoyer le message au serveur
-    this.isUploading = true;
-
-    const sendSub = this.MessageService.sendMessage(
-      this.otherParticipant.id,
-      content,
-      fileToSend || undefined,
-      MessageType.TEXT
-    ).subscribe({
-      next: (message) => {
-        this.logger.info(
-          'MessageChat',
-          `Message sent successfully: ${message?.id || 'unknown'}`
-        );
-
-        // Remplacer le message temporaire par le message réel
-        this.messages = this.messages.map((msg) =>
-          msg.id === tempMessage.id ? message : msg
-        );
-
-        this.isUploading = false;
-      },
-      error: (error) => {
-        this.logger.error('MessageChat', `Error sending message:`, error);
-
-        // Marquer le message temporaire comme échoué
-        this.messages = this.messages.map((msg) => {
-          if (msg.id === tempMessage.id) {
-            return {
-              ...msg,
-              isPending: false,
-              isError: true,
-            };
-          }
-          return msg;
-        });
-
-        this.isUploading = false;
-        this.toastService.showError('Failed to send message');
-      },
-    });
-
-    this.subscriptions.add(sendSub);
-  }
-
-  formatMessageTime(timestamp: string | Date | undefined): string {
-    if (!timestamp) {
-      return 'Unknown time';
-    }
-    try {
-      const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
-      // Format heure:minute sans les secondes, comme dans l'image de référence
-      return date.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
-    } catch (error) {
-      this.logger.error('MessageChat', 'Error formatting message time:', error);
-      return 'Invalid time';
-    }
-  }
-
-  formatLastActive(lastActive: string | Date | undefined): string {
-    if (!lastActive) return 'Offline';
-    const lastActiveDate =
-      lastActive instanceof Date ? lastActive : new Date(lastActive);
-    const now = new Date();
-    const diffHours =
-      Math.abs(now.getTime() - lastActiveDate.getTime()) / (1000 * 60 * 60);
-
-    if (diffHours < 24) {
-      return `Active ${lastActiveDate.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      })}`;
-    }
-    return `Active ${lastActiveDate.toLocaleDateString()}`;
-  }
-
-  formatMessageDate(timestamp: string | Date | undefined): string {
-    if (!timestamp) {
-      return 'Unknown date';
-    }
-
-    try {
-      const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
-      const today = new Date();
-
-      // Format pour l'affichage comme dans l'image de référence
-      const options: Intl.DateTimeFormatOptions = {
-        weekday: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-      };
-
-      if (date.toDateString() === today.toDateString()) {
-        return date.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        });
-      }
-
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-
-      if (date.toDateString() === yesterday.toDateString()) {
-        return `LUN., ${date.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        })}`;
-      }
-
-      // Format pour les autres jours (comme dans l'image)
-      const day = date
-        .toLocaleDateString('fr-FR', { weekday: 'short' })
-        .toUpperCase();
-      return `${day}., ${date.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      })}`;
-    } catch (error) {
-      this.logger.error('MessageChat', 'Error formatting message date:', error);
-      return 'Invalid date';
-    }
-  }
-
-  shouldShowDateHeader(index: number): boolean {
-    if (index === 0) return true;
-
-    try {
-      const currentMsg = this.messages[index];
-      const prevMsg = this.messages[index - 1];
-
-      if (!currentMsg?.timestamp || !prevMsg?.timestamp) {
-        return true;
-      }
-
-      const currentDate = this.getDateFromTimestamp(currentMsg.timestamp);
-      const prevDate = this.getDateFromTimestamp(prevMsg.timestamp);
-
-      return currentDate !== prevDate;
-    } catch (error) {
-      this.logger.error('MessageChat', 'Error checking date header:', error);
-      return false;
-    }
-  }
-
-  private getDateFromTimestamp(timestamp: string | Date | undefined): string {
-    if (!timestamp) {
-      return 'unknown-date';
-    }
-
-    try {
-      return (
-        timestamp instanceof Date ? timestamp : new Date(timestamp)
-      ).toDateString();
-    } catch (error) {
-      this.logger.error(
-        'MessageChat',
-        'Error getting date from timestamp:',
-        error
-      );
-      return 'invalid-date';
-    }
-  }
-  getMessageType(message: Message | null | undefined): MessageType {
-    if (!message) {
-      return MessageType.TEXT;
-    }
-
-    try {
-      // Vérifier d'abord le type de message explicite
-      if (message.type) {
-        // Convertir les types en minuscules en leurs équivalents en majuscules
-        const msgType = message.type.toString();
-        if (msgType === 'text' || msgType === 'TEXT') {
-          return MessageType.TEXT;
-        } else if (msgType === 'image' || msgType === 'IMAGE') {
-          return MessageType.IMAGE;
-        } else if (msgType === 'file' || msgType === 'FILE') {
-          return MessageType.FILE;
-        } else if (msgType === 'audio' || msgType === 'AUDIO') {
-          return MessageType.AUDIO;
-        } else if (msgType === 'video' || msgType === 'VIDEO') {
-          return MessageType.VIDEO;
-        } else if (msgType === 'system' || msgType === 'SYSTEM') {
-          return MessageType.SYSTEM;
-        }
-      }
-
-      // Ensuite, vérifier les pièces jointes
-      if (message.attachments?.length) {
-        const attachment = message.attachments[0];
-        if (attachment && attachment.type) {
-          const attachmentTypeStr = attachment.type.toString();
-
-          // Gérer les différentes formes de types d'attachements
-          if (attachmentTypeStr === 'image' || attachmentTypeStr === 'IMAGE') {
-            return MessageType.IMAGE;
-          } else if (
-            attachmentTypeStr === 'file' ||
-            attachmentTypeStr === 'FILE'
-          ) {
-            return MessageType.FILE;
-          } else if (
-            attachmentTypeStr === 'audio' ||
-            attachmentTypeStr === 'AUDIO'
-          ) {
-            return MessageType.AUDIO;
-          } else if (
-            attachmentTypeStr === 'video' ||
-            attachmentTypeStr === 'VIDEO'
-          ) {
-            return MessageType.VIDEO;
-          }
-        }
-
-        // Type par défaut pour les pièces jointes
-        return MessageType.FILE;
-      }
-
-      // Type par défaut
-      return MessageType.TEXT;
-    } catch (error) {
-      this.logger.error('MessageChat', 'Error getting message type:', error);
-      return MessageType.TEXT;
-    }
-  }
-
-  // Méthode auxiliaire pour vérifier si un message contient une image
-  hasImage(message: Message | null | undefined): boolean {
-    if (!message || !message.attachments || message.attachments.length === 0) {
-      return false;
-    }
-
-    const attachment = message.attachments[0];
-    if (!attachment || !attachment.type) {
-      return false;
-    }
-
-    const type = attachment.type.toString();
-    return type === 'IMAGE' || type === 'image';
-  }
-
-  /**
-   * Vérifie si le message est un message vocal
-   */
-  isVoiceMessage(message: Message | null | undefined): boolean {
-    if (!message) {
-      return false;
-    }
-
-    // Vérifier le type du message
-    if (
-      message.type === MessageType.VOICE_MESSAGE ||
-      message.type === MessageType.VOICE_MESSAGE_LOWER
-    ) {
-      return true;
-    }
-
-    // Vérifier les pièces jointes
-    if (message.attachments && message.attachments.length > 0) {
-      return message.attachments.some((att) => {
-        const type = att.type?.toString();
-        return (
-          type === 'VOICE_MESSAGE' ||
-          type === 'voice_message' ||
-          (message.metadata?.isVoiceMessage &&
-            (type === 'AUDIO' || type === 'audio'))
-        );
-      });
-    }
-
-    // Vérifier les métadonnées
-    return !!message.metadata?.isVoiceMessage;
-  }
-
-  /**
-   * Récupère l'URL du message vocal
-   */
-  getVoiceMessageUrl(message: Message | null | undefined): string {
-    if (!message || !message.attachments || message.attachments.length === 0) {
-      return '';
-    }
-
-    // Chercher une pièce jointe de type message vocal ou audio
-    const voiceAttachment = message.attachments.find((att) => {
-      const type = att.type?.toString();
-      return (
-        type === 'VOICE_MESSAGE' ||
-        type === 'voice_message' ||
-        type === 'AUDIO' ||
-        type === 'audio'
-      );
-    });
-
-    return voiceAttachment?.url || '';
-  }
-
-  /**
-   * Récupère la durée du message vocal
-   */
-  getVoiceMessageDuration(message: Message | null | undefined): number {
-    if (!message) {
-      return 0;
-    }
-
-    // Essayer d'abord de récupérer la durée depuis les métadonnées
-    if (message.metadata?.duration) {
-      return message.metadata.duration;
-    }
-
-    // Sinon, essayer de récupérer depuis les pièces jointes
-    if (message.attachments && message.attachments.length > 0) {
-      const voiceAttachment = message.attachments.find((att) => {
-        const type = att.type?.toString();
-        return (
-          type === 'VOICE_MESSAGE' ||
-          type === 'voice_message' ||
-          type === 'AUDIO' ||
-          type === 'audio'
-        );
-      });
-
-      if (voiceAttachment && voiceAttachment.duration) {
-        return voiceAttachment.duration;
-      }
-    }
-
-    return 0;
-  }
-
-  // Méthode pour obtenir l'URL de l'image en toute sécurité
-  getImageUrl(message: Message | null | undefined): string {
-    if (!message || !message.attachments || message.attachments.length === 0) {
-      return '';
-    }
-
-    const attachment = message.attachments[0];
-    return attachment?.url || '';
-  }
-
-  getMessageTypeClass(message: Message | null | undefined): string {
-    if (!message) {
-      return 'bg-gray-100 rounded-lg px-4 py-2';
-    }
-
-    try {
-      const isCurrentUser =
-        message.sender?.id === this.currentUserId ||
-        message.sender?._id === this.currentUserId ||
-        message.senderId === this.currentUserId;
-
-      // Utiliser une couleur plus foncée pour les messages de l'utilisateur actuel (à droite)
-      // et une couleur plus claire pour les messages des autres utilisateurs (à gauche)
-      // Couleurs et forme adaptées exactement à l'image de référence mobile
-      const baseClass = isCurrentUser
-        ? 'bg-blue-500 text-white rounded-2xl rounded-br-sm'
-        : 'bg-gray-200 text-gray-800 rounded-2xl rounded-bl-sm';
-
-      const messageType = this.getMessageType(message);
-
-      // Vérifier si le message contient une image
-      if (message.attachments && message.attachments.length > 0) {
-        const attachment = message.attachments[0];
-        if (attachment && attachment.type) {
-          const attachmentTypeStr = attachment.type.toString();
-          if (attachmentTypeStr === 'IMAGE' || attachmentTypeStr === 'image') {
-            // Pour les images, on utilise un style sans bordure
-            return `p-1 max-w-xs`;
-          } else if (
-            attachmentTypeStr === 'FILE' ||
-            attachmentTypeStr === 'file'
-          ) {
-            return `${baseClass} p-3`;
-          }
-        }
-      }
-
-      // Vérifier le type de message
-      if (
-        messageType === MessageType.IMAGE ||
-        messageType === MessageType.IMAGE_LOWER
-      ) {
-        // Pour les images, on utilise un style sans bordure
-        return `p-1 max-w-xs`;
-      } else if (
-        messageType === MessageType.FILE ||
-        messageType === MessageType.FILE_LOWER
-      ) {
-        return `${baseClass} p-3`;
-      }
-
-      // Type par défaut (texte)
-      return `${baseClass} px-4 py-3 whitespace-normal break-words min-w-[120px]`;
-    } catch (error) {
-      this.logger.error(
-        'MessageChat',
-        'Error getting message type class:',
-        error
-      );
-      return 'bg-gray-100 rounded-lg px-4 py-2 whitespace-normal break-words';
-    }
-  }
-
-  // La méthode ngAfterViewChecked est implémentée plus bas dans le fichier
-
-  // Méthode pour détecter le défilement vers le haut et charger plus de messages
-  onScroll(event: any): void {
-    const container = event.target;
-    const scrollTop = container.scrollTop;
-
-    // Si on est proche du haut de la liste et qu'on n'est pas déjà en train de charger
-    if (
-      scrollTop < 50 &&
-      !this.isLoadingMore &&
-      this.conversation?.id &&
-      this.hasMoreMessages
-    ) {
-      // Afficher un indicateur de chargement en haut de la liste
-      this.showLoadingIndicator();
-
-      // Sauvegarder la hauteur actuelle et la position des messages
-      const oldScrollHeight = container.scrollHeight;
-      const firstVisibleMessage = this.getFirstVisibleMessage();
-
-      // Marquer comme chargement en cours
-      this.isLoadingMore = true;
-
-      // Charger plus de messages avec un délai réduit
-      this.loadMoreMessages();
-
-      // Maintenir la position de défilement pour que l'utilisateur reste au même endroit
-      // en utilisant le premier message visible comme ancre
-      requestAnimationFrame(() => {
-        const preserveScrollPosition = () => {
-          if (firstVisibleMessage) {
-            const messageElement = this.findMessageElement(
-              firstVisibleMessage.id
-            );
-            if (messageElement) {
-              // Faire défiler jusqu'à l'élément qui était visible avant
-              messageElement.scrollIntoView({ block: 'center' });
-            } else {
-              // Fallback: utiliser la différence de hauteur
-              const newScrollHeight = container.scrollHeight;
-              const scrollDiff = newScrollHeight - oldScrollHeight;
-              container.scrollTop = scrollTop + scrollDiff;
-            }
-          }
-
-          // Masquer l'indicateur de chargement
-          this.hideLoadingIndicator();
-        };
-
-        // Attendre que le DOM soit mis à jour
-        setTimeout(preserveScrollPosition, 100);
-      });
-    }
-  }
-
-  // Méthode pour trouver le premier message visible dans la vue
-  private getFirstVisibleMessage(): Message | null {
-    if (!this.messagesContainer?.nativeElement || !this.messages.length)
-      return null;
-
-    const container = this.messagesContainer.nativeElement;
-    const messageElements = container.querySelectorAll('.message-item');
-
-    for (let i = 0; i < messageElements.length; i++) {
-      const element = messageElements[i];
-      const rect = element.getBoundingClientRect();
-
-      // Si l'élément est visible dans la vue
-      if (rect.top >= 0 && rect.bottom <= container.clientHeight) {
-        const messageId = element.getAttribute('data-message-id');
-        return this.messages.find((m) => m.id === messageId) || null;
-      }
-    }
-
-    return null;
-  }
-
-  // Méthode pour trouver un élément de message par ID
-  private findMessageElement(
-    messageId: string | undefined
-  ): HTMLElement | null {
-    if (!this.messagesContainer?.nativeElement || !messageId) return null;
-    return this.messagesContainer.nativeElement.querySelector(
-      `[data-message-id="${messageId}"]`
-    );
-  }
-
-  // Afficher un indicateur de chargement en haut de la liste
-  private showLoadingIndicator(): void {
-    // Créer l'indicateur s'il n'existe pas déjà
-    if (!document.getElementById('message-loading-indicator')) {
-      const indicator = document.createElement('div');
-      indicator.id = 'message-loading-indicator';
-      indicator.className = 'text-center py-2 text-gray-500 text-sm';
-      indicator.innerHTML =
-        '<i class="fas fa-spinner fa-spin mr-2"></i> Loading older messages...';
-
-      if (this.messagesContainer?.nativeElement) {
-        this.messagesContainer.nativeElement.prepend(indicator);
-      }
-    }
-  }
-
-  // Masquer l'indicateur de chargement
-  private hideLoadingIndicator(): void {
-    const indicator = document.getElementById('message-loading-indicator');
-    if (indicator && indicator.parentNode) {
-      indicator.parentNode.removeChild(indicator);
-    }
-  }
-
-  // Méthode pour charger plus de messages (style Facebook Messenger)
-  loadMoreMessages(): void {
-    if (this.isLoadingMore || !this.conversation?.id || !this.hasMoreMessages)
-      return;
-
-    // Marquer comme chargement en cours
-    this.isLoadingMore = true;
-
-    // Augmenter la page pour charger les messages plus anciens
-    this.currentPage++;
-
-    // Charger plus de messages depuis le serveur avec pagination
-    this.MessageService.getConversation(
-      this.conversation.id,
-      this.MAX_MESSAGES_TO_LOAD,
-      this.currentPage
-    ).subscribe({
-      next: (conversation) => {
-        if (
-          conversation &&
-          conversation.messages &&
-          conversation.messages.length > 0
-        ) {
-          // Sauvegarder les messages actuels
-          const oldMessages = [...this.messages];
-
-          // Créer un Set des IDs existants pour une recherche de doublons plus rapide
-          const existingIds = new Set(oldMessages.map((msg) => msg.id));
-
-          // Filtrer et trier les nouveaux messages plus efficacement
-          const newMessages = conversation.messages
-            .filter((msg) => !existingIds.has(msg.id))
-            .sort((a, b) => {
-              const timeA = new Date(a.timestamp as string).getTime();
-              const timeB = new Date(b.timestamp as string).getTime();
-              return timeA - timeB;
-            });
-
-          if (newMessages.length > 0) {
-            // Ajouter les nouveaux messages au début de la liste
-            this.messages = [...newMessages, ...oldMessages];
-
-            // Limiter le nombre total de messages pour éviter les problèmes de performance
-            if (this.messages.length > this.MAX_TOTAL_MESSAGES) {
-              this.messages = this.messages.slice(0, this.MAX_TOTAL_MESSAGES);
-            }
-
-            // Vérifier s'il y a plus de messages à charger
-            this.hasMoreMessages =
-              newMessages.length >= this.MAX_MESSAGES_TO_LOAD;
-          } else {
-            // Si aucun nouveau message n'est chargé, c'est qu'on a atteint le début de la conversation
-            this.hasMoreMessages = false;
-          }
-        } else {
-          this.hasMoreMessages = false;
-        }
-
-        // Désactiver le flag de chargement après un court délai
-        // pour permettre au DOM de se mettre à jour
-        setTimeout(() => {
-          this.isLoadingMore = false;
-        }, 200);
-      },
-      error: (error) => {
-        this.logger.error('MessageChat', 'Error loading more messages:', error);
-        this.isLoadingMore = false;
-        this.hideLoadingIndicator();
-        this.toastService.showError('Failed to load more messages');
-      },
-    });
-  }
-
-  // Méthode utilitaire pour comparer les timestamps
-  private isSameTimestamp(
-    timestamp1: string | Date | undefined,
-    timestamp2: string | Date | undefined
-  ): boolean {
-    if (!timestamp1 || !timestamp2) return false;
-
-    try {
-      const time1 =
-        timestamp1 instanceof Date
-          ? timestamp1.getTime()
-          : new Date(timestamp1 as string).getTime();
-      const time2 =
-        timestamp2 instanceof Date
-          ? timestamp2.getTime()
-          : new Date(timestamp2 as string).getTime();
-      return Math.abs(time1 - time2) < 1000; // Tolérance d'une seconde
-    } catch (error) {
-      return false;
-    }
-  }
-
-  scrollToBottom(force: boolean = false): void {
-    try {
-      if (!this.messagesContainer?.nativeElement) return;
-
-      // Utiliser requestAnimationFrame pour s'assurer que le DOM est prêt
-      requestAnimationFrame(() => {
-        const container = this.messagesContainer.nativeElement;
-        const isScrolledToBottom =
-          container.scrollHeight - container.clientHeight <=
-          container.scrollTop + 150;
-
-        // Faire défiler vers le bas si:
-        // - force est true (pour les nouveaux messages envoyés par l'utilisateur)
-        // - ou si l'utilisateur est déjà proche du bas
-        if (force || isScrolledToBottom) {
-          // Utiliser une animation fluide pour le défilement (comme dans Messenger)
-          container.scrollTo({
-            top: container.scrollHeight,
-            behavior: 'smooth',
-          });
-        }
-      });
-    } catch (err) {
-      this.logger.error('MessageChat', 'Error scrolling to bottom:', err);
-    }
-  }
-
-  // Méthode pour ouvrir l'image en plein écran (style Messenger)
-  /**
-   * Active/désactive l'enregistrement vocal
-   */
-  toggleVoiceRecording(): void {
-    this.isRecordingVoice = !this.isRecordingVoice;
-
-    if (!this.isRecordingVoice) {
-      // Si on désactive l'enregistrement, réinitialiser la durée
-      this.voiceRecordingDuration = 0;
-    }
-  }
-
-  /**
-   * Gère la fin de l'enregistrement vocal
-   * @param audioBlob Blob audio enregistré
-   */
-  onVoiceRecordingComplete(audioBlob: Blob): void {
-    this.logger.debug(
-      'MessageChat',
-      'Voice recording complete, size:',
-      audioBlob.size
-    );
-
-    if (!this.conversation?.id && !this.otherParticipant?.id) {
-      this.toastService.showError('No conversation or recipient selected');
-      this.isRecordingVoice = false;
-      return;
-    }
-
-    // Récupérer l'ID du destinataire
-    const receiverId = this.otherParticipant?.id || '';
-
-    // Envoyer le message vocal
-    this.MessageService.sendVoiceMessage(
-      receiverId,
-      audioBlob,
-      this.conversation?.id,
-      this.voiceRecordingDuration
-    ).subscribe({
-      next: (message) => {
-        this.logger.debug('MessageChat', 'Voice message sent:', message);
-        this.isRecordingVoice = false;
-        this.voiceRecordingDuration = 0;
-        this.scrollToBottom(true);
-      },
-      error: (error) => {
-        this.logger.error('MessageChat', 'Error sending voice message:', error);
-        this.toastService.showError('Failed to send voice message');
-        this.isRecordingVoice = false;
-      },
-    });
-  }
-
-  /**
-   * Gère l'annulation de l'enregistrement vocal
-   */
-  onVoiceRecordingCancelled(): void {
-    this.logger.debug('MessageChat', 'Voice recording cancelled');
-    this.isRecordingVoice = false;
-    this.voiceRecordingDuration = 0;
-  }
-
-  /**
-   * Ouvre une image en plein écran (méthode conservée pour compatibilité)
-   * @param imageUrl URL de l'image à afficher
-   */
-  openImageFullscreen(imageUrl: string): void {
-    // Ouvrir l'image dans un nouvel onglet
-    window.open(imageUrl, '_blank');
-    this.logger.debug('MessageChat', `Image opened in new tab: ${imageUrl}`);
-  }
-
-  /**
-   * Détecte les changements après chaque vérification de la vue
-   * Cela permet de s'assurer que les messages vocaux sont correctement affichés
-   * et que le défilement est maintenu
-   */
-  ngAfterViewChecked(): void {
-    // Faire défiler vers le bas si nécessaire
-    this.scrollToBottom();
-
-    // Forcer la détection des changements pour les messages vocaux
-    // Cela garantit que les messages vocaux sont correctement affichés même après avoir quitté la conversation
-    if (this.messages.some((msg) => msg.type === MessageType.VOICE_MESSAGE)) {
-      // Utiliser setTimeout pour éviter l'erreur ExpressionChangedAfterItHasBeenCheckedError
-      setTimeout(() => {
-        this.cdr.detectChanges();
-      }, 0);
-    }
-  }
-
-  /**
-   * Arrête l'indicateur de frappe
-   */
-  private stopTypingIndicator(): void {
-    if (this.isCurrentlyTyping && this.conversation?.id) {
-      this.isCurrentlyTyping = false;
-      clearTimeout(this.typingTimer);
-
-      this.logger.debug('MessageChat', 'Stopping typing indicator');
-
-      // Utiliser l'opérateur de chaînage optionnel pour éviter les erreurs TypeScript
-      const conversationId = this.conversation?.id;
-      if (conversationId) {
-        this.MessageService.stopTyping(conversationId).subscribe({
-          next: () => {
-            this.logger.debug(
-              'MessageChat',
-              'Typing indicator stopped successfully'
-            );
-          },
-          error: (error) => {
-            this.logger.error(
-              'MessageChat',
-              'Error stopping typing indicator:',
-              error
-            );
-          },
-        });
-      }
-    }
-  }
-
-  ngOnDestroy(): void {
-    // Arrêter l'indicateur de frappe lorsque l'utilisateur quitte la conversation
-    this.stopTypingIndicator();
-
-    this.subscriptions.unsubscribe();
-    clearTimeout(this.typingTimeout);
-  }
-
-  /**
-   * Navigue vers la liste des conversations
-   */
-  goBackToConversations(): void {
-    this.router.navigate(['/messages/conversations']);
-  }
-
-  /**
-   * Bascule l'affichage du sélecteur d'émojis
-   */
-  toggleEmojiPicker(): void {
-    this.showEmojiPicker = !this.showEmojiPicker;
-    if (this.showEmojiPicker) {
-      this.showThemeSelector = false;
-    }
-  }
-
-  /**
-   * Insère un emoji dans le champ de message
-   * @param emoji Emoji à insérer
-   */
-  insertEmoji(emoji: string): void {
-    const control = this.messageForm.get('content');
-    if (control) {
-      const currentValue = control.value || '';
-      control.setValue(currentValue + emoji);
-      control.markAsDirty();
-      // Garder le focus sur le champ de saisie
-      setTimeout(() => {
-        const inputElement = document.querySelector(
-          '.whatsapp-input-field'
-        ) as HTMLInputElement;
-        if (inputElement) {
-          inputElement.focus();
-        }
-      }, 0);
-    }
-  }
-
-  /**
-   * S'abonne aux notifications en temps réel
-   */
-  private subscribeToNotifications(): void {
-    // S'abonner aux nouvelles notifications
-    const notificationSub =
-      this.MessageService.subscribeToNewNotifications().subscribe({
-        next: (notification) => {
-          this.logger.debug(
-            'MessageChat',
-            `Nouvelle notification reçue: ${notification.type}`
-          );
-
-          // Si c'est une notification de message et que nous sommes dans la conversation concernée
-          if (
-            notification.type === 'NEW_MESSAGE' &&
-            notification.conversationId === this.conversation?.id
-          ) {
-            // Marquer automatiquement comme lue
-            if (notification.id) {
-              this.MessageService.markAsRead([notification.id]).subscribe();
-            }
-          }
-        },
-        error: (error) => {
-          this.logger.error(
-            'MessageChat',
-            'Erreur lors de la réception des notifications:',
-            error
-          );
-        },
-      });
-    this.subscriptions.add(notificationSub);
-
+  private setupCallSubscriptions(): void {
     // S'abonner aux appels entrants
-    const callSub = this.MessageService.incomingCall$.subscribe({
-      next: (call) => {
-        if (call) {
-          this.logger.debug(
-            'MessageChat',
-            `Appel entrant de: ${call.caller.username}`
-          );
-          this.incomingCall = call;
-          this.showCallModal = true;
-
-          // Jouer la sonnerie
-          this.MessageService.play('ringtone');
-        } else {
-          this.showCallModal = false;
-          this.incomingCall = null;
-        }
-      },
-    });
-    this.subscriptions.add(callSub);
-  }
-
-  /**
-   * Initie un appel audio ou vidéo avec l'autre participant
-   * @param type Type d'appel (AUDIO ou VIDEO)
-   */
-  initiateCall(type: 'AUDIO' | 'VIDEO'): void {
-    if (!this.otherParticipant || !this.otherParticipant.id) {
-      console.error("Impossible d'initier un appel: participant invalide");
-      return;
-    }
-
-    this.logger.info(
-      'MessageChat',
-      `Initiation d'un appel ${type} avec ${this.otherParticipant.username}`
+    this.subscriptions.add(
+      this.MessageService.incomingCall$.subscribe({
+        next: (incomingCall) => {
+          if (incomingCall) {
+            console.log('📞 Incoming call received:', incomingCall);
+            this.handleIncomingCall(incomingCall);
+          }
+        },
+        error: (error) => {
+          console.error('❌ Error in incoming call subscription:', error);
+        },
+      })
     );
 
-    // Utiliser le service d'appel pour initier l'appel
-    this.MessageService.initiateCall(
-      this.otherParticipant.id,
-      type === 'AUDIO' ? CallType.AUDIO : CallType.VIDEO,
-      this.conversation?.id
-    ).subscribe({
-      next: (call) => {
-        this.logger.info('MessageChat', 'Appel initié avec succès:', call);
-        // Ici, vous pourriez ouvrir une fenêtre d'appel ou rediriger vers une page d'appel
-      },
-      error: (error) => {
-        this.logger.error(
-          'MessageChat',
-          "Erreur lors de l'initiation de l'appel:",
-          error
-        );
-        this.toastService.showError(
-          "Impossible d'initier l'appel. Veuillez réessayer."
-        );
-      },
-    });
+    // S'abonner aux changements d'état d'appel
+    this.subscriptions.add(
+      this.MessageService.activeCall$.subscribe({
+        next: (call) => {
+          if (call) {
+            console.log('📞 Active call updated:', call);
+            this.activeCall = call;
+          }
+        },
+        error: (error) => {
+          console.error('❌ Error in active call subscription:', error);
+        },
+      })
+    );
   }
 
-  /**
-   * Accepte un appel entrant
-   */
-  acceptCall(): void {
-    if (!this.incomingCall) {
-      this.logger.error('MessageChat', 'Aucun appel entrant à accepter');
-      return;
-    }
-
-    this.logger.info(
-      'MessageChat',
-      `Acceptation de l'appel de ${this.incomingCall.caller.username}`
+  private handleIncomingCall(incomingCall: IncomingCall): void {
+    // Afficher une notification ou modal d'appel entrant
+    // Pour l'instant, on log juste
+    console.log(
+      '🔔 Handling incoming call from:',
+      incomingCall.caller.username
     );
 
-    this.MessageService.acceptCall(this.incomingCall.id).subscribe({
-      next: (call) => {
-        this.logger.info('MessageChat', 'Appel accepté avec succès:', call);
-        this.showCallModal = false;
-        // Ici, vous pourriez ouvrir une fenêtre d'appel ou rediriger vers une page d'appel
-      },
-      error: (error) => {
-        this.logger.error(
-          'MessageChat',
-          "Erreur lors de l'acceptation de l'appel:",
-          error
-        );
-        this.toastService.showError(
-          "Impossible d'accepter l'appel. Veuillez réessayer."
-        );
-        this.showCallModal = false;
-        this.incomingCall = null;
-      },
-    });
+    // Jouer la sonnerie
+    this.MessageService.play('ringtone');
+
+    // Ici on pourrait afficher une modal ou notification
+    // Pour l'instant, on accepte automatiquement pour tester
+    // this.acceptCall(incomingCall);
   }
 
-  /**
-   * Rejette un appel entrant
-   */
-  rejectCall(): void {
-    if (!this.incomingCall) {
-      this.logger.error('MessageChat', 'Aucun appel entrant à rejeter');
-      return;
-    }
+  private loadCurrentUser(): void {
+    try {
+      const userString = localStorage.getItem('user');
+      console.log('🔍 Raw user from localStorage:', userString);
 
-    this.logger.info(
-      'MessageChat',
-      `Rejet de l'appel de ${this.incomingCall.caller.username}`
-    );
-
-    this.MessageService.rejectCall(this.incomingCall.id).subscribe({
-      next: (call) => {
-        this.logger.info('MessageChat', 'Appel rejeté avec succès:', call);
-        this.showCallModal = false;
-        this.incomingCall = null;
-      },
-      error: (error) => {
-        this.logger.error(
-          'MessageChat',
-          "Erreur lors du rejet de l'appel:",
-          error
-        );
-        this.showCallModal = false;
-        this.incomingCall = null;
-      },
-    });
-  }
-
-  /**
-   * Termine un appel en cours
-   */
-  endCall(): void {
-    // Utiliser une variable pour stocker la dernière valeur de l'observable
-    let activeCall: any = null;
-
-    // S'abonner à l'observable pour obtenir la valeur actuelle
-    const sub = this.MessageService.activeCall$.subscribe((call) => {
-      activeCall = call;
-
-      if (!activeCall) {
-        this.logger.error('MessageChat', 'Aucun appel actif à terminer');
+      if (!userString || userString === 'null' || userString === 'undefined') {
+        console.error('❌ No user data in localStorage');
+        this.currentUserId = null;
+        this.currentUsername = 'You';
         return;
       }
 
-      this.logger.info('MessageChat', `Fin de l'appel`);
+      const user = JSON.parse(userString);
+      console.log('🔍 Parsed user object:', user);
 
-      this.MessageService.endCall(activeCall.id).subscribe({
-        next: (call) => {
-          this.logger.info('MessageChat', 'Appel terminé avec succès:', call);
+      // Essayer différentes propriétés pour l'ID utilisateur
+      const userId = user._id || user.id || user.userId;
+      console.log('🔍 Trying to extract user ID:', {
+        _id: user._id,
+        id: user.id,
+        userId: user.userId,
+        extracted: userId,
+      });
+
+      if (userId) {
+        this.currentUserId = userId;
+        this.currentUsername = user.username || user.name || 'You';
+        console.log('✅ Current user loaded successfully:', {
+          id: this.currentUserId,
+          username: this.currentUsername,
+        });
+      } else {
+        console.error('❌ No valid user ID found in user object:', user);
+        this.currentUserId = null;
+        this.currentUsername = 'You';
+      }
+    } catch (error) {
+      console.error('❌ Error parsing user from localStorage:', error);
+      this.currentUserId = null;
+      this.currentUsername = 'You';
+    }
+  }
+
+  private loadConversation(): void {
+    const conversationId = this.route.snapshot.paramMap.get('id');
+    console.log('Loading conversation with ID:', conversationId);
+
+    if (!conversationId) {
+      this.toastService.showError('ID de conversation manquant');
+      return;
+    }
+
+    this.isLoading = true;
+    this.MessageService.getConversation(conversationId).subscribe({
+      next: (conversation) => {
+        console.log('🔍 Conversation loaded successfully:', conversation);
+        console.log('🔍 Conversation structure:', {
+          id: conversation?.id,
+          participants: conversation?.participants,
+          participantsCount: conversation?.participants?.length,
+          isGroup: conversation?.isGroup,
+          messages: conversation?.messages,
+          messagesCount: conversation?.messages?.length,
+        });
+        this.conversation = conversation;
+        this.setOtherParticipant();
+        this.loadMessages();
+
+        // Configurer les subscriptions temps réel après le chargement de la conversation
+        this.setupSubscriptions();
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement de la conversation:', error);
+        this.toastService.showError(
+          'Erreur lors du chargement de la conversation'
+        );
+        this.isLoading = false;
+      },
+    });
+  }
+
+  private setOtherParticipant(): void {
+    if (
+      !this.conversation?.participants ||
+      this.conversation.participants.length === 0
+    ) {
+      console.warn('No participants found in conversation');
+      this.otherParticipant = null;
+      return;
+    }
+
+    console.log('Setting other participant...');
+    console.log('Current user ID:', this.currentUserId);
+    console.log('All participants:', this.conversation.participants);
+
+    // Dans une conversation 1-à-1, on veut afficher l'autre personne (pas l'utilisateur actuel)
+    // Dans une conversation de groupe, on peut afficher le nom du groupe ou le premier autre participant
+
+    if (this.conversation.isGroup) {
+      // Pour les groupes, on pourrait afficher le nom du groupe
+      // Mais pour l'instant, on prend le premier participant qui n'est pas l'utilisateur actuel
+      this.otherParticipant = this.conversation.participants.find((p: any) => {
+        const participantId = p.id || p._id;
+        return String(participantId) !== String(this.currentUserId);
+      });
+    } else {
+      // Pour les conversations 1-à-1, on prend l'autre participant
+      this.otherParticipant = this.conversation.participants.find((p: any) => {
+        const participantId = p.id || p._id;
+        console.log(
+          'Comparing participant ID:',
+          participantId,
+          'with current user ID:',
+          this.currentUserId
+        );
+        return String(participantId) !== String(this.currentUserId);
+      });
+    }
+
+    // Fallback si aucun autre participant n'est trouvé
+    if (!this.otherParticipant && this.conversation.participants.length > 0) {
+      console.log('Fallback: using first participant');
+      this.otherParticipant = this.conversation.participants[0];
+
+      // Si le premier participant est l'utilisateur actuel et qu'il y en a d'autres
+      if (this.conversation.participants.length > 1) {
+        const firstParticipantId =
+          this.otherParticipant.id || this.otherParticipant._id;
+        if (String(firstParticipantId) === String(this.currentUserId)) {
+          console.log(
+            'First participant is current user, using second participant'
+          );
+          this.otherParticipant = this.conversation.participants[1];
+        }
+      }
+    }
+
+    // Vérification finale et logs
+    if (this.otherParticipant) {
+      console.log('✅ Other participant set successfully:', {
+        id: this.otherParticipant.id || this.otherParticipant._id,
+        username: this.otherParticipant.username,
+        image: this.otherParticipant.image,
+        isOnline: this.otherParticipant.isOnline,
+      });
+
+      // Log très visible pour debug
+      console.log(
+        '🎯 FINAL RESULT: otherParticipant =',
+        this.otherParticipant.username
+      );
+      console.log(
+        '🎯 Should display in sidebar:',
+        this.otherParticipant.username
+      );
+    } else {
+      console.error('❌ No other participant found! This should not happen.');
+      console.log('Conversation participants:', this.conversation.participants);
+      console.log('Current user ID:', this.currentUserId);
+
+      // Log très visible pour debug
+      console.log('🚨 ERROR: No otherParticipant found!');
+    }
+
+    // Mettre à jour l'état du champ de saisie
+    this.updateInputState();
+  }
+
+  private loadMessages(): void {
+    if (!this.conversation?.id) return;
+
+    // Les messages sont déjà chargés avec la conversation
+    let messages = this.conversation.messages || [];
+
+    // Trier les messages par timestamp (plus anciens en premier)
+    this.messages = messages.sort((a: any, b: any) => {
+      const dateA = new Date(a.timestamp || a.createdAt).getTime();
+      const dateB = new Date(b.timestamp || b.createdAt).getTime();
+      return dateA - dateB; // Ordre croissant (plus anciens en premier)
+    });
+
+    console.log('📋 Messages loaded and sorted:', {
+      total: this.messages.length,
+      first: this.messages[0]?.content,
+      last: this.messages[this.messages.length - 1]?.content,
+    });
+
+    this.hasMoreMessages = this.messages.length === this.MAX_MESSAGES_TO_LOAD;
+    this.isLoading = false;
+    this.scrollToBottom();
+  }
+
+  loadMoreMessages(): void {
+    if (this.isLoadingMore || !this.hasMoreMessages || !this.conversation?.id)
+      return;
+
+    this.isLoadingMore = true;
+    this.currentPage++;
+
+    // Calculer l'offset basé sur les messages déjà chargés
+    const offset = this.messages.length;
+
+    this.MessageService.getMessages(
+      this.currentUserId!, // senderId
+      this.otherParticipant?.id || this.otherParticipant?._id!, // receiverId
+      this.conversation.id,
+      this.currentPage,
+      this.MAX_MESSAGES_TO_LOAD
+    ).subscribe({
+      next: (newMessages: any[]) => {
+        if (newMessages && newMessages.length > 0) {
+          // Ajouter les nouveaux messages au début de la liste
+          this.messages = [...newMessages.reverse(), ...this.messages];
+          this.hasMoreMessages =
+            newMessages.length === this.MAX_MESSAGES_TO_LOAD;
+        } else {
+          this.hasMoreMessages = false;
+        }
+        this.isLoadingMore = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des messages:', error);
+        this.toastService.showError('Erreur lors du chargement des messages');
+        this.isLoadingMore = false;
+        this.currentPage--; // Revenir à la page précédente en cas d'erreur
+      },
+    });
+  }
+
+  private setupSubscriptions(): void {
+    if (!this.conversation?.id) {
+      console.warn('❌ Cannot setup subscriptions: no conversation ID');
+      return;
+    }
+
+    console.log(
+      '🔄 Setting up real-time subscriptions for conversation:',
+      this.conversation.id
+    );
+
+    // Subscription pour les nouveaux messages
+    console.log('📨 Setting up message subscription...');
+    this.subscriptions.add(
+      this.MessageService.subscribeToNewMessages(
+        this.conversation.id
+      ).subscribe({
+        next: (newMessage: any) => {
+          console.log('📨 New message received via subscription:', newMessage);
+          console.log('📨 Message structure:', {
+            id: newMessage.id,
+            type: newMessage.type,
+            content: newMessage.content,
+            sender: newMessage.sender,
+            senderId: newMessage.senderId,
+            receiverId: newMessage.receiverId,
+            attachments: newMessage.attachments,
+          });
+
+          // Ajouter le message à la liste s'il n'existe pas déjà
+          const messageExists = this.messages.some(
+            (msg) => msg.id === newMessage.id
+          );
+          if (!messageExists) {
+            // Ajouter le nouveau message à la fin (en bas)
+            this.messages.push(newMessage);
+            console.log(
+              '✅ Message added to list, total messages:',
+              this.messages.length
+            );
+
+            // Forcer la détection de changements
+            this.cdr.detectChanges();
+
+            // Scroll vers le bas après un court délai
+            setTimeout(() => {
+              this.scrollToBottom();
+            }, 50);
+
+            // Marquer comme lu si ce n'est pas notre message
+            const senderId = newMessage.sender?.id || newMessage.senderId;
+            console.log('📨 Checking if message should be marked as read:', {
+              senderId,
+              currentUserId: this.currentUserId,
+              shouldMarkAsRead: senderId !== this.currentUserId,
+            });
+
+            if (senderId && senderId !== this.currentUserId) {
+              this.markMessageAsRead(newMessage.id);
+            }
+          }
         },
         error: (error) => {
-          this.logger.error(
-            'MessageChat',
-            "Erreur lors de la fin de l'appel:",
-            error
+          console.error('❌ Error in message subscription:', error);
+        },
+      })
+    );
+
+    // Subscription pour les indicateurs de frappe
+    console.log('📝 Setting up typing indicator subscription...');
+    this.subscriptions.add(
+      this.MessageService.subscribeToTypingIndicator(
+        this.conversation.id
+      ).subscribe({
+        next: (typingData: any) => {
+          console.log('📝 Typing indicator received:', typingData);
+
+          // Afficher l'indicateur seulement si c'est l'autre utilisateur qui tape
+          if (typingData.userId !== this.currentUserId) {
+            this.otherUserIsTyping = typingData.isTyping;
+            this.cdr.detectChanges();
+          }
+        },
+        error: (error: any) => {
+          console.error('❌ Error in typing subscription:', error);
+        },
+      })
+    );
+
+    // Subscription pour les mises à jour de conversation
+    this.subscriptions.add(
+      this.MessageService.subscribeToConversationUpdates(
+        this.conversation.id
+      ).subscribe({
+        next: (conversationUpdate: any) => {
+          console.log('📋 Conversation update:', conversationUpdate);
+
+          // Mettre à jour la conversation si nécessaire
+          if (conversationUpdate.id === this.conversation.id) {
+            this.conversation = { ...this.conversation, ...conversationUpdate };
+            this.cdr.detectChanges();
+          }
+        },
+        error: (error: any) => {
+          console.error('❌ Error in conversation subscription:', error);
+        },
+      })
+    );
+  }
+
+  private markMessageAsRead(messageId: string): void {
+    this.MessageService.markMessageAsRead(messageId).subscribe({
+      next: () => {
+        console.log('✅ Message marked as read:', messageId);
+      },
+      error: (error) => {
+        console.error('❌ Error marking message as read:', error);
+      },
+    });
+  }
+
+  // === ENVOI DE MESSAGES ===
+  sendMessage(): void {
+    if (!this.messageForm.valid || !this.conversation?.id) return;
+
+    const content = this.messageForm.get('content')?.value?.trim();
+    if (!content) return;
+
+    const receiverId = this.otherParticipant?.id || this.otherParticipant?._id;
+
+    if (!receiverId) {
+      this.toastService.showError('Destinataire introuvable');
+      return;
+    }
+
+    // Désactiver le bouton d'envoi
+    this.isSendingMessage = true;
+    this.updateInputState();
+
+    console.log('📤 Sending message:', {
+      content,
+      receiverId,
+      conversationId: this.conversation.id,
+    });
+
+    this.MessageService.sendMessage(
+      receiverId,
+      content,
+      undefined,
+      'TEXT' as any,
+      this.conversation.id
+    ).subscribe({
+      next: (message: any) => {
+        console.log('✅ Message sent successfully:', message);
+
+        // Ajouter le message à la liste s'il n'y est pas déjà
+        const messageExists = this.messages.some(
+          (msg) => msg.id === message.id
+        );
+        if (!messageExists) {
+          this.messages.push(message);
+          console.log(
+            '📋 Message added to local list, total:',
+            this.messages.length
           );
+        }
+
+        // Réinitialiser le formulaire
+        this.messageForm.reset();
+        this.isSendingMessage = false;
+        this.updateInputState();
+
+        // Forcer la détection de changements et scroll
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.scrollToBottom();
+        }, 50);
+      },
+      error: (error: any) => {
+        console.error("❌ Erreur lors de l'envoi du message:", error);
+        this.toastService.showError("Erreur lors de l'envoi du message");
+        this.isSendingMessage = false;
+        this.updateInputState();
+      },
+    });
+  }
+
+  scrollToBottom(): void {
+    setTimeout(() => {
+      if (this.messagesContainer) {
+        const element = this.messagesContainer.nativeElement;
+        element.scrollTop = element.scrollHeight;
+      }
+    }, 100);
+  }
+
+  // === MÉTHODES POUR LE TEMPLATE ===
+  formatLastActive(lastActive: string | Date | null): string {
+    if (!lastActive) return 'Hors ligne';
+
+    const date = new Date(lastActive);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 1) return "À l'instant";
+    if (diffMins < 60) return `Il y a ${diffMins} min`;
+
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `Il y a ${diffHours}h`;
+
+    const diffDays = Math.floor(diffHours / 24);
+    return `Il y a ${diffDays}j`;
+  }
+
+  formatMessageTime(timestamp: string | Date): string {
+    if (!timestamp) return '';
+
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  formatDateSeparator(timestamp: string | Date): string {
+    if (!timestamp) return '';
+
+    const date = new Date(timestamp);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return "Aujourd'hui";
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Hier';
+    } else {
+      return date.toLocaleDateString('fr-FR');
+    }
+  }
+
+  formatMessageContent(content: string): string {
+    if (!content) return '';
+
+    // Remplacer les URLs par des liens
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return content.replace(
+      urlRegex,
+      '<a href="$1" target="_blank" class="text-blue-500 underline">$1</a>'
+    );
+  }
+
+  shouldShowDateSeparator(index: number): boolean {
+    if (index === 0) return true;
+
+    const currentMessage = this.messages[index];
+    const previousMessage = this.messages[index - 1];
+
+    if (!currentMessage?.timestamp || !previousMessage?.timestamp) return false;
+
+    const currentDate = new Date(currentMessage.timestamp).toDateString();
+    const previousDate = new Date(previousMessage.timestamp).toDateString();
+
+    return currentDate !== previousDate;
+  }
+
+  shouldShowAvatar(index: number): boolean {
+    const currentMessage = this.messages[index];
+    const nextMessage = this.messages[index + 1];
+
+    if (!nextMessage) return true;
+
+    return currentMessage.sender?.id !== nextMessage.sender?.id;
+  }
+
+  shouldShowSenderName(index: number): boolean {
+    const currentMessage = this.messages[index];
+    const previousMessage = this.messages[index - 1];
+
+    if (!previousMessage) return true;
+
+    return currentMessage.sender?.id !== previousMessage.sender?.id;
+  }
+
+  getMessageType(message: any): string {
+    if (message.attachments && message.attachments.length > 0) {
+      const attachment = message.attachments[0];
+      if (attachment.type?.startsWith('image/')) return 'image';
+      if (attachment.type?.startsWith('video/')) return 'video';
+      if (attachment.type?.startsWith('audio/')) return 'audio';
+      return 'file';
+    }
+    return 'text';
+  }
+
+  hasImage(message: any): boolean {
+    return (
+      message.attachments?.some((att: any) => att.type?.startsWith('image/')) ||
+      false
+    );
+  }
+
+  hasFile(message: any): boolean {
+    return (
+      message.attachments?.some(
+        (att: any) => !att.type?.startsWith('image/')
+      ) || false
+    );
+  }
+
+  getImageUrl(message: any): string {
+    const imageAttachment = message.attachments?.find((att: any) =>
+      att.type?.startsWith('image/')
+    );
+    return imageAttachment?.url || '';
+  }
+
+  getFileName(message: any): string {
+    const fileAttachment = message.attachments?.find(
+      (att: any) => !att.type?.startsWith('image/')
+    );
+    return fileAttachment?.name || 'Fichier';
+  }
+
+  getFileSize(message: any): string {
+    const fileAttachment = message.attachments?.find(
+      (att: any) => !att.type?.startsWith('image/')
+    );
+    if (!fileAttachment?.size) return '';
+
+    const bytes = fileAttachment.size;
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return Math.round(bytes / 1024) + ' KB';
+    return Math.round(bytes / 1048576) + ' MB';
+  }
+
+  getFileIcon(message: any): string {
+    const fileAttachment = message.attachments?.find(
+      (att: any) => !att.type?.startsWith('image/')
+    );
+    if (!fileAttachment?.type) return 'fas fa-file';
+
+    if (fileAttachment.type.startsWith('audio/')) return 'fas fa-file-audio';
+    if (fileAttachment.type.startsWith('video/')) return 'fas fa-file-video';
+    if (fileAttachment.type.includes('pdf')) return 'fas fa-file-pdf';
+    if (fileAttachment.type.includes('word')) return 'fas fa-file-word';
+    if (fileAttachment.type.includes('excel')) return 'fas fa-file-excel';
+    return 'fas fa-file';
+  }
+
+  getUserColor(userId: string): string {
+    // Générer une couleur basée sur l'ID utilisateur
+    const colors = [
+      '#FF6B6B',
+      '#4ECDC4',
+      '#45B7D1',
+      '#96CEB4',
+      '#FFEAA7',
+      '#DDA0DD',
+      '#98D8C8',
+    ];
+    const index = userId.charCodeAt(0) % colors.length;
+    return colors[index];
+  }
+
+  // === MÉTHODES D'INTERACTION ===
+  onMessageClick(message: any, event: any): void {
+    console.log('Message clicked:', message);
+  }
+
+  onMessageContextMenu(message: any, event: any): void {
+    event.preventDefault();
+    console.log('Message context menu:', message);
+  }
+
+  onInputChange(event: any): void {
+    // Gérer les changements dans le champ de saisie
+    this.handleTypingIndicator();
+  }
+
+  onInputKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
+    }
+  }
+
+  onInputFocus(): void {
+    // Gérer le focus sur le champ de saisie
+  }
+
+  onInputBlur(): void {
+    // Gérer la perte de focus sur le champ de saisie
+  }
+
+  onScroll(event: any): void {
+    // Gérer le scroll pour charger plus de messages
+    const element = event.target;
+    if (
+      element.scrollTop === 0 &&
+      this.hasMoreMessages &&
+      !this.isLoadingMore
+    ) {
+      this.loadMoreMessages();
+    }
+  }
+
+  openUserProfile(userId: string): void {
+    console.log('Opening user profile for:', userId);
+  }
+
+  openImageViewer(message: any): void {
+    const imageAttachment = message.attachments?.find((att: any) =>
+      att.type?.startsWith('image/')
+    );
+    if (imageAttachment?.url) {
+      window.open(imageAttachment.url, '_blank');
+    }
+  }
+
+  downloadFile(message: any): void {
+    const fileAttachment = message.attachments?.find(
+      (att: any) => !att.type?.startsWith('image/')
+    );
+    if (fileAttachment?.url) {
+      window.open(fileAttachment.url, '_blank');
+    }
+  }
+
+  toggleReaction(messageId: string, emoji: string): void {
+    console.log('Toggle reaction:', messageId, emoji);
+  }
+
+  hasUserReacted(reaction: any, userId: string): boolean {
+    return reaction.users?.includes(userId) || false;
+  }
+
+  toggleSearch(): void {
+    this.searchMode = !this.searchMode;
+    if (!this.searchMode) {
+      this.searchQuery = '';
+      this.searchResults = [];
+    }
+  }
+
+  searchMessages(): void {
+    if (!this.searchQuery.trim()) {
+      this.searchResults = [];
+      return;
+    }
+
+    this.searchResults = this.messages.filter(
+      (message) =>
+        message.content
+          ?.toLowerCase()
+          .includes(this.searchQuery.toLowerCase()) ||
+        message.sender?.username
+          ?.toLowerCase()
+          .includes(this.searchQuery.toLowerCase())
+    );
+  }
+
+  onSearchQueryChange(): void {
+    this.searchMessages();
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.searchResults = [];
+  }
+
+  jumpToMessage(messageId: string): void {
+    const messageElement = document.getElementById(`message-${messageId}`);
+    if (messageElement) {
+      messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Highlight temporairement le message
+      messageElement.classList.add('highlight');
+      setTimeout(() => {
+        messageElement.classList.remove('highlight');
+      }, 2000);
+    }
+  }
+
+  toggleMainMenu(): void {
+    console.log('Toggle main menu');
+  }
+
+  // === MÉTHODES DE TEST ===
+  testAddMessage(): void {
+    // Méthode de test pour ajouter un message simulé
+    const testMessage = {
+      id: `test-${Date.now()}`,
+      content: `Message de test ${new Date().toLocaleTimeString()}`,
+      timestamp: new Date().toISOString(),
+      sender: {
+        id: this.otherParticipant?.id || 'test-user',
+        username: this.otherParticipant?.username || 'Test User',
+        image:
+          this.otherParticipant?.image || 'assets/images/default-avatar.png',
+      },
+      type: 'TEXT',
+      isRead: false,
+    };
+
+    console.log('🧪 Adding test message:', testMessage);
+    this.messages.push(testMessage);
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 50);
+  }
+
+  toggleAttachmentMenu(): void {
+    this.showAttachmentMenu = !this.showAttachmentMenu;
+    this.showEmojiPicker = false;
+  }
+
+  toggleEmojiPicker(): void {
+    this.showEmojiPicker = !this.showEmojiPicker;
+    this.showAttachmentMenu = false;
+  }
+
+  triggerFileInput(type?: string): void {
+    // Utiliser l'input caché existant dans le template
+    const input = this.fileInput?.nativeElement;
+    if (!input) {
+      console.error('File input element not found');
+      return;
+    }
+
+    // Configurer le type de fichier accepté
+    if (type === 'image') {
+      input.accept = 'image/*';
+    } else if (type === 'video') {
+      input.accept = 'video/*';
+    } else if (type === 'document') {
+      input.accept = '.pdf,.doc,.docx,.xls,.xlsx,.txt';
+    } else {
+      input.accept = '*/*';
+    }
+
+    // Réinitialiser la valeur pour permettre la sélection du même fichier
+    input.value = '';
+
+    // Déclencher la sélection de fichier
+    input.click();
+    this.showAttachmentMenu = false;
+  }
+
+  openCamera(): void {
+    console.log('Opening camera...');
+    this.showAttachmentMenu = false;
+  }
+
+  // === MÉTHODES POUR LES ÉMOJIS ===
+  getEmojisForCategory(category: any): any[] {
+    return category?.emojis || [];
+  }
+
+  selectEmojiCategory(category: any): void {
+    this.selectedEmojiCategory = category;
+  }
+
+  insertEmoji(emoji: any): void {
+    const currentContent = this.messageForm.get('content')?.value || '';
+    const newContent = currentContent + (emoji.emoji || emoji);
+    this.messageForm.patchValue({ content: newContent });
+
+    this.showEmojiPicker = false;
+
+    setTimeout(() => {
+      const textarea = document.querySelector(
+        'textarea[formControlName="content"]'
+      ) as HTMLTextAreaElement;
+      if (textarea) {
+        textarea.focus();
+      }
+    }, 100);
+  }
+
+  // === MÉTHODES MANQUANTES ===
+  goBackToConversations(): void {
+    window.history.back();
+  }
+
+  // === MÉTHODES D'APPEL WEBRTC ===
+  startVideoCall(): void {
+    this.initiateCall(CallType.VIDEO);
+  }
+
+  startVoiceCall(): void {
+    this.initiateCall(CallType.AUDIO);
+  }
+
+  private initiateCall(callType: CallType): void {
+    if (!this.otherParticipant) {
+      this.toastService.showError('Aucun destinataire sélectionné');
+      return;
+    }
+
+    const recipientId = this.otherParticipant.id || this.otherParticipant._id;
+    if (!recipientId) {
+      this.toastService.showError('ID du destinataire introuvable');
+      return;
+    }
+
+    console.log(`🔄 Initiating ${callType} call to user:`, recipientId);
+
+    this.isInCall = true;
+    this.callType = callType === CallType.VIDEO ? 'VIDEO' : 'AUDIO';
+    this.callDuration = 0;
+
+    // Démarrer le timer d'appel
+    this.startCallTimer();
+
+    // Utiliser le vrai service WebRTC
+    this.MessageService.initiateCall(
+      recipientId,
+      callType,
+      this.conversation?.id
+    ).subscribe({
+      next: (call: Call) => {
+        console.log('✅ Call initiated successfully:', call);
+        this.activeCall = call;
+        this.isCallConnected = false;
+        this.toastService.showSuccess(
+          `Appel ${callType === CallType.VIDEO ? 'vidéo' : 'audio'} initié`
+        );
+      },
+      error: (error) => {
+        console.error('❌ Error initiating call:', error);
+        this.endCall();
+        this.toastService.showError("Erreur lors de l'initiation de l'appel");
+      },
+    });
+  }
+
+  acceptCall(incomingCall: IncomingCall): void {
+    console.log('🔄 Accepting incoming call:', incomingCall);
+
+    this.MessageService.acceptCall(incomingCall).subscribe({
+      next: (call: Call) => {
+        console.log('✅ Call accepted successfully:', call);
+        this.activeCall = call;
+        this.isInCall = true;
+        this.isCallConnected = true;
+        this.callType = call.type === CallType.VIDEO ? 'VIDEO' : 'AUDIO';
+        this.startCallTimer();
+        this.toastService.showSuccess('Appel accepté');
+      },
+      error: (error) => {
+        console.error('❌ Error accepting call:', error);
+        this.toastService.showError("Erreur lors de l'acceptation de l'appel");
+      },
+    });
+  }
+
+  rejectCall(incomingCall: IncomingCall): void {
+    console.log('🔄 Rejecting incoming call:', incomingCall);
+
+    this.MessageService.rejectCall(incomingCall.id, 'User rejected').subscribe({
+      next: () => {
+        console.log('✅ Call rejected successfully');
+        this.toastService.showSuccess('Appel rejeté');
+      },
+      error: (error) => {
+        console.error('❌ Error rejecting call:', error);
+        this.toastService.showError("Erreur lors du rejet de l'appel");
+      },
+    });
+  }
+
+  endCall(): void {
+    console.log('🔄 Ending call');
+
+    if (this.activeCall) {
+      this.MessageService.endCall(this.activeCall.id).subscribe({
+        next: () => {
+          console.log('✅ Call ended successfully');
+          this.resetCallState();
+          this.toastService.showSuccess('Appel terminé');
+        },
+        error: (error) => {
+          console.error('❌ Error ending call:', error);
+          this.resetCallState();
+          this.toastService.showError("Erreur lors de la fin de l'appel");
+        },
+      });
+    } else {
+      this.resetCallState();
+    }
+  }
+
+  private startCallTimer(): void {
+    this.callDuration = 0;
+    this.callTimer = setInterval(() => {
+      this.callDuration++;
+      this.cdr.detectChanges();
+    }, 1000);
+  }
+
+  private resetCallState(): void {
+    if (this.callTimer) {
+      clearInterval(this.callTimer);
+      this.callTimer = null;
+    }
+
+    this.isInCall = false;
+    this.callType = null;
+    this.callDuration = 0;
+    this.activeCall = null;
+    this.isCallConnected = false;
+    this.isMuted = false;
+    this.isVideoEnabled = true;
+  }
+
+  // === CONTRÔLES D'APPEL ===
+  toggleMute(): void {
+    if (!this.activeCall) return;
+
+    this.isMuted = !this.isMuted;
+
+    // Utiliser la méthode toggleMedia du service
+    this.MessageService.toggleMedia(
+      this.activeCall.id,
+      undefined, // video unchanged
+      !this.isMuted // audio state
+    ).subscribe({
+      next: () => {
+        this.toastService.showSuccess(
+          this.isMuted ? 'Micro coupé' : 'Micro activé'
+        );
+      },
+      error: (error) => {
+        console.error('❌ Error toggling mute:', error);
+        // Revert state on error
+        this.isMuted = !this.isMuted;
+        this.toastService.showError('Erreur lors du changement du micro');
+      },
+    });
+  }
+
+  toggleVideo(): void {
+    if (!this.activeCall) return;
+
+    this.isVideoEnabled = !this.isVideoEnabled;
+
+    // Utiliser la méthode toggleMedia du service
+    this.MessageService.toggleMedia(
+      this.activeCall.id,
+      this.isVideoEnabled, // video state
+      undefined // audio unchanged
+    ).subscribe({
+      next: () => {
+        this.toastService.showSuccess(
+          this.isVideoEnabled ? 'Caméra activée' : 'Caméra désactivée'
+        );
+      },
+      error: (error) => {
+        console.error('❌ Error toggling video:', error);
+        // Revert state on error
+        this.isVideoEnabled = !this.isVideoEnabled;
+        this.toastService.showError('Erreur lors du changement de la caméra');
+      },
+    });
+  }
+
+  formatCallDuration(duration: number): string {
+    const hours = Math.floor(duration / 3600);
+    const minutes = Math.floor((duration % 3600) / 60);
+    const seconds = duration % 60;
+
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds
+        .toString()
+        .padStart(2, '0')}`;
+    }
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  trackByMessageId(index: number, message: any): any {
+    return message.id || index;
+  }
+
+  isGroupConversation(): boolean {
+    return this.conversation?.participants?.length > 2 || false;
+  }
+
+  async startVoiceRecording(): Promise<void> {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+
+      this.mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus',
+      });
+
+      this.audioChunks = [];
+      this.isRecordingVoice = true;
+      this.voiceRecordingDuration = 0;
+      this.voiceRecordingState = 'recording';
+
+      this.recordingTimer = setInterval(() => {
+        this.voiceRecordingDuration++;
+        this.cdr.detectChanges();
+      }, 1000);
+
+      this.mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.audioChunks.push(event.data);
+        }
+      };
+
+      this.mediaRecorder.onstop = () => {
+        this.processRecordedAudio();
+      };
+
+      this.mediaRecorder.start(100);
+      this.toastService.showSuccess('Enregistrement vocal démarré');
+    } catch (error) {
+      console.error("Erreur lors du démarrage de l'enregistrement:", error);
+      this.toastService.showError("Impossible d'accéder au microphone");
+      this.cancelVoiceRecording();
+    }
+  }
+
+  stopVoiceRecording(): void {
+    if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+      this.mediaRecorder.stop();
+      this.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+    }
+
+    if (this.recordingTimer) {
+      clearInterval(this.recordingTimer);
+      this.recordingTimer = null;
+    }
+
+    this.isRecordingVoice = false;
+    this.voiceRecordingState = 'processing';
+  }
+
+  cancelVoiceRecording(): void {
+    if (this.mediaRecorder) {
+      if (this.mediaRecorder.state === 'recording') {
+        this.mediaRecorder.stop();
+      }
+      this.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+      this.mediaRecorder = null;
+    }
+
+    if (this.recordingTimer) {
+      clearInterval(this.recordingTimer);
+      this.recordingTimer = null;
+    }
+
+    this.isRecordingVoice = false;
+    this.voiceRecordingDuration = 0;
+    this.voiceRecordingState = 'idle';
+    this.audioChunks = [];
+  }
+
+  private async processRecordedAudio(): Promise<void> {
+    try {
+      if (this.audioChunks.length === 0) {
+        this.toastService.showError('Aucun audio enregistré');
+        this.cancelVoiceRecording();
+        return;
+      }
+
+      const audioBlob = new Blob(this.audioChunks, {
+        type: 'audio/webm;codecs=opus',
+      });
+
+      if (this.voiceRecordingDuration < 1) {
+        this.toastService.showError(
+          'Enregistrement trop court (minimum 1 seconde)'
+        );
+        this.cancelVoiceRecording();
+        return;
+      }
+
+      const audioFile = new File([audioBlob], `voice_${Date.now()}.webm`, {
+        type: 'audio/webm;codecs=opus',
+      });
+
+      await this.sendVoiceMessage(audioFile);
+      this.toastService.showSuccess('Message vocal envoyé');
+    } catch (error) {
+      console.error("Erreur lors du traitement de l'audio:", error);
+      this.toastService.showError("Erreur lors de l'envoi du message vocal");
+    } finally {
+      this.voiceRecordingState = 'idle';
+      this.voiceRecordingDuration = 0;
+      this.audioChunks = [];
+    }
+  }
+
+  private async sendVoiceMessage(audioFile: File): Promise<void> {
+    const receiverId = this.otherParticipant?.id || this.otherParticipant?._id;
+
+    if (!receiverId) {
+      throw new Error('Destinataire introuvable');
+    }
+
+    return new Promise((resolve, reject) => {
+      this.MessageService.sendMessage(
+        receiverId,
+        '',
+        audioFile,
+        'AUDIO' as any,
+        this.conversation.id
+      ).subscribe({
+        next: (message: any) => {
+          this.messages.push(message);
+          this.scrollToBottom();
+          resolve();
+        },
+        error: (error: any) => {
+          console.error("Erreur lors de l'envoi du message vocal:", error);
+          reject(error);
         },
       });
     });
+  }
 
-    // Se désabonner immédiatement après avoir obtenu la valeur
-    sub.unsubscribe();
+  formatRecordingDuration(duration: number): string {
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  onFileSelected(event: any): void {
+    console.log('📁 [Upload] File selection triggered');
+    const files = event.target.files;
+
+    if (!files || files.length === 0) {
+      console.log('📁 [Upload] No files selected');
+      return;
+    }
+
+    console.log(`📁 [Upload] ${files.length} file(s) selected:`, files);
+
+    for (let file of files) {
+      console.log(
+        `📁 [Upload] Processing file: ${file.name}, size: ${file.size}, type: ${file.type}`
+      );
+      this.uploadFile(file);
+    }
+  }
+
+  private uploadFile(file: File): void {
+    console.log(`📁 [Upload] Starting upload for file: ${file.name}`);
+
+    const receiverId = this.otherParticipant?.id || this.otherParticipant?._id;
+
+    if (!receiverId) {
+      console.error('📁 [Upload] No receiver ID found');
+      this.toastService.showError('Destinataire introuvable');
+      return;
+    }
+
+    console.log(`📁 [Upload] Receiver ID: ${receiverId}`);
+
+    // Vérifier la taille du fichier (max 50MB)
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    if (file.size > maxSize) {
+      console.error(`📁 [Upload] File too large: ${file.size} bytes`);
+      this.toastService.showError('Fichier trop volumineux (max 50MB)');
+      return;
+    }
+
+    const messageType = this.getFileMessageType(file);
+    console.log(`📁 [Upload] Message type determined: ${messageType}`);
+    console.log(`📁 [Upload] Conversation ID: ${this.conversation.id}`);
+
+    this.isSendingMessage = true;
+    console.log('📁 [Upload] Calling MessageService.sendMessage...');
+
+    this.MessageService.sendMessage(
+      receiverId,
+      '',
+      file,
+      messageType,
+      this.conversation.id
+    ).subscribe({
+      next: (message: any) => {
+        console.log('📁 [Upload] ✅ File sent successfully:', message);
+        this.messages.push(message);
+        this.scrollToBottom();
+        this.toastService.showSuccess('Fichier envoyé avec succès');
+        this.isSendingMessage = false;
+      },
+      error: (error: any) => {
+        console.error('📁 [Upload] ❌ Error sending file:', error);
+        this.toastService.showError("Erreur lors de l'envoi du fichier");
+        this.isSendingMessage = false;
+      },
+    });
+  }
+
+  private getFileMessageType(file: File): any {
+    if (file.type.startsWith('image/')) return 'IMAGE' as any;
+    if (file.type.startsWith('video/')) return 'VIDEO' as any;
+    if (file.type.startsWith('audio/')) return 'AUDIO' as any;
+    return 'FILE' as any;
+  }
+
+  getFileAcceptTypes(): string {
+    return '*/*';
+  }
+
+  closeAllMenus(): void {
+    this.showEmojiPicker = false;
+    this.showAttachmentMenu = false;
+    this.showSearch = false;
+  }
+
+  // === MÉTHODES DE FORMATAGE SUPPLÉMENTAIRES ===
+
+  private handleTypingIndicator(): void {
+    if (!this.isTyping) {
+      this.isTyping = true;
+      // Envoyer l'indicateur de frappe à l'autre utilisateur
+      this.sendTypingIndicator(true);
+    }
+
+    // Reset le timer
+    if (this.typingTimeout) {
+      clearTimeout(this.typingTimeout);
+    }
+
+    this.typingTimeout = setTimeout(() => {
+      this.isTyping = false;
+      // Arrêter l'indicateur de frappe
+      this.sendTypingIndicator(false);
+    }, 2000);
+  }
+
+  private sendTypingIndicator(isTyping: boolean): void {
+    // Envoyer l'indicateur de frappe via WebSocket/GraphQL
+    const receiverId = this.otherParticipant?.id || this.otherParticipant?._id;
+    if (receiverId && this.conversation?.id) {
+      console.log(
+        `📝 Sending typing indicator: ${isTyping} to user ${receiverId}`
+      );
+      // TODO: Implémenter l'envoi via WebSocket/GraphQL subscription
+      // this.MessageService.sendTypingIndicator(this.conversation.id, receiverId, isTyping);
+    }
+  }
+
+  // === MÉTHODES POUR L'INTERFACE D'APPEL ===
+
+  onCallAccepted(call: Call): void {
+    console.log('🔄 Call accepted from interface:', call);
+    this.activeCall = call;
+    this.isInCall = true;
+    this.isCallConnected = true;
+    this.startCallTimer();
+    this.toastService.showSuccess('Appel accepté');
+  }
+
+  onCallRejected(): void {
+    console.log('🔄 Call rejected from interface');
+    this.endCall();
+    this.toastService.showInfo('Appel rejeté');
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+
+    // Nettoyer les timers
+    if (this.callTimer) {
+      clearInterval(this.callTimer);
+    }
+    if (this.recordingTimer) {
+      clearInterval(this.recordingTimer);
+    }
+    if (this.typingTimeout) {
+      clearTimeout(this.typingTimeout);
+    }
+
+    // Nettoyer les ressources audio
+    if (this.mediaRecorder) {
+      if (this.mediaRecorder.state === 'recording') {
+        this.mediaRecorder.stop();
+      }
+      this.mediaRecorder.stream?.getTracks().forEach((track) => track.stop());
+    }
   }
 }

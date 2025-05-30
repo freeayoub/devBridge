@@ -92,9 +92,7 @@ export class UserListComponent implements OnInit, OnDestroy {
       this.autoRefreshSubscription = interval(
         this.autoRefreshInterval
       ).subscribe(() => {
-        // Only refresh if not currently loading and no active search
         if (!this.loading && !this.filterForm.get('searchQuery')?.value) {
-          this.logger.debug('Auto-refreshing user list');
           this.loadUsers(true);
         }
       });
@@ -106,11 +104,9 @@ export class UserListComponent implements OnInit, OnDestroy {
 
     if (this.autoRefreshEnabled) {
       this.setupAutoRefresh();
-      this.logger.info('Auto-refresh enabled');
     } else if (this.autoRefreshSubscription) {
       this.autoRefreshSubscription.unsubscribe();
       this.autoRefreshSubscription = undefined;
-      this.logger.info('Auto-refresh disabled');
     }
   }
 
@@ -141,20 +137,6 @@ export class UserListComponent implements OnInit, OnDestroy {
     const searchQuery = this.filterForm.get('searchQuery')?.value || '';
     const isOnline = this.filterForm.get('isOnline')?.value;
 
-    this.logger.info('Loading users', {
-      searchQuery: searchQuery || '(empty)',
-      currentUserId: this.currentUserId || '(not logged in)',
-      page: this.currentPage,
-      limit: this.pageSize,
-      sortBy: this.sortBy,
-      sortOrder: this.sortOrder,
-      isOnline: isOnline,
-    });
-
-    if (!this.currentUserId) {
-      this.logger.warn('Loading users without being logged in');
-    }
-
     const sub = this.MessageService.getAllUsers(
       forceRefresh,
       searchQuery,
@@ -162,13 +144,10 @@ export class UserListComponent implements OnInit, OnDestroy {
       this.pageSize,
       this.sortBy,
       this.sortOrder,
-      isOnline === true
+      isOnline === true ? true : undefined
     ).subscribe({
       next: (users) => {
-        this.logger.debug(`Received ${users.length} users from service`);
-
         if (!Array.isArray(users)) {
-          this.logger.error('Received invalid users data (not an array)');
           this.users = [];
           this.loading = false;
           this.loadingMore = false;
@@ -210,29 +189,19 @@ export class UserListComponent implements OnInit, OnDestroy {
 
         this.loading = false;
         this.loadingMore = false;
-
-        this.logger.info('Users loaded successfully', {
-          totalUsers: this.totalUsers,
-          filteredUsers: this.users.length,
-          currentPage: this.currentPage,
-          totalPages: this.totalPages,
-        });
       },
       error: (error) => {
         this.loading = false;
         this.loadingMore = false;
-        this.logger.error('Failed to load users', error);
         this.toastService.showError(
           `Failed to load users: ${error.message || 'Unknown error'}`
         );
 
-        // Reset the users list in case of error
         if (this.currentPage === 1) {
           this.users = [];
         }
       },
       complete: () => {
-        // Ensure loading indicator is disabled even in case of completion without data
         this.loading = false;
         this.loadingMore = false;
       },
@@ -243,47 +212,32 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   startConversation(userId: string | undefined) {
     if (!userId) {
-      this.logger.error('Cannot start conversation: userId is undefined');
       this.toastService.showError(
         'Cannot start conversation with undefined user'
       );
       return;
     }
 
-    this.logger.info('Creating conversation with user', { userId });
-
-    // Afficher un indicateur de chargement
     this.toastService.showInfo('Creating conversation...');
 
     this.MessageService.createConversation(userId).subscribe({
       next: (conversation) => {
         if (!conversation || !conversation.id) {
-          this.logger.error('Received invalid conversation object');
           this.toastService.showError(
             'Failed to create conversation: Invalid response'
           );
           return;
         }
 
-        this.logger.info('Conversation created successfully', {
-          conversationId: conversation.id,
-          participantCount: conversation.participants?.length || 0,
-        });
-
-        // Naviguer vers la conversation avec un chemin absolu
         this.router
           .navigate(['/messages/conversations/chat', conversation.id])
           .then((success) => {
             if (!success) {
-              this.logger.error(
-                `Failed to navigate to conversation ${conversation.id}`
-              );
               this.toastService.showError('Failed to open conversation');
             }
           });
       },
       error: (error) => {
-        this.logger.error('Error creating conversation', error);
         this.toastService.showError(
           `Failed to create conversation: ${error.message || 'Unknown error'}`
         );
@@ -291,41 +245,27 @@ export class UserListComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Initier un appel audio
   startAudioCall(userId: string): void {
     if (!userId) return;
 
-    this.logger.debug('Starting audio call with user', { userId });
-
     this.MessageService.initiateCall(userId, CallType.AUDIO).subscribe({
       next: (call) => {
-        this.logger.debug('Audio call initiated successfully', {
-          callId: call.id,
-        });
         this.toastService.showSuccess('Audio call initiated');
       },
       error: (error) => {
-        this.logger.error('Error initiating audio call', error);
         this.toastService.showError('Failed to initiate audio call');
       },
     });
   }
 
-  // Initier un appel vidéo
   startVideoCall(userId: string): void {
     if (!userId) return;
 
-    this.logger.debug('Starting video call with user', { userId });
-
     this.MessageService.initiateCall(userId, CallType.VIDEO).subscribe({
       next: (call) => {
-        this.logger.debug('Video call initiated successfully', {
-          callId: call.id,
-        });
         this.toastService.showSuccess('Video call initiated');
       },
       error: (error) => {
-        this.logger.error('Error initiating video call', error);
         this.toastService.showError('Failed to initiate video call');
       },
     });
@@ -348,7 +288,6 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   refreshUsers(): void {
-    this.logger.info('Manually refreshing user list');
     this.resetPagination();
     this.loadUsers(true);
   }
@@ -380,7 +319,6 @@ export class UserListComponent implements OnInit, OnDestroy {
    * Navigue vers la liste des conversations
    */
   goBackToConversations(): void {
-    this.logger.info('UserList', 'Navigating back to conversations list');
     this.router.navigate(['/messages/conversations']);
   }
 

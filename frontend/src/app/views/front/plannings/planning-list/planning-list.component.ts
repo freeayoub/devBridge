@@ -45,9 +45,10 @@ export class PlanningListComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = err.error?.message || 'Erreur serveur';
+        // Afficher plus de détails sur l'erreur pour le débogage
+        console.error('Erreur détaillée:', JSON.stringify(err));
+        this.error = `Erreur lors du chargement des plannings: ${err.message || err.statusText || 'Erreur inconnue'}`;
         this.loading = false;
-        console.error('Erreur:', err);
       }
     });
   }

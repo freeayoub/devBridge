@@ -543,6 +543,54 @@ export const UPDATE_GROUP_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_GROUP_MUTATION = gql`
+  mutation DeleteGroup($id: ID!) {
+    deleteGroup(id: $id) {
+      success
+      message
+    }
+  }
+`;
+
+export const ADD_GROUP_PARTICIPANTS_MUTATION = gql`
+  mutation AddGroupParticipants($groupId: ID!, $participantIds: [ID!]!) {
+    addGroupParticipants(groupId: $groupId, participantIds: $participantIds) {
+      id
+      participants {
+        id
+        username
+        image
+      }
+    }
+  }
+`;
+
+export const REMOVE_GROUP_PARTICIPANTS_MUTATION = gql`
+  mutation RemoveGroupParticipants($groupId: ID!, $participantIds: [ID!]!) {
+    removeGroupParticipants(
+      groupId: $groupId
+      participantIds: $participantIds
+    ) {
+      id
+      participants {
+        id
+        username
+        image
+      }
+    }
+  }
+`;
+
+export const LEAVE_GROUP_MUTATION = gql`
+  mutation LeaveGroup($groupId: ID!) {
+    leaveGroup(groupId: $groupId) {
+      success
+      message
+    }
+  }
+`;
+
 // Add to exports
 export const TYPING_INDICATOR_SUBSCRIPTION = gql`
   subscription TypingIndicator($conversationId: ID!) {

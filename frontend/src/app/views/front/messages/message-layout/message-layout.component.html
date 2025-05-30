@@ -1,9 +1,5 @@
-<div class="layout-container futuristic-layout">
-  <!-- <app-messages-sidebar *ngIf="context === 'messages'"></app-messages-sidebar> -->
-  <div
-    class="main-content futuristic-main-content"
-    [class.sidebar-hidden]="!(sidebarVisible$ | async)"
-  >
+<div class="layout-container">
+  <div class="main-content">
     <router-outlet></router-outlet>
   </div>
 </div>

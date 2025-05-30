@@ -40,39 +40,86 @@ class MessageService {
     }
     return true;
   }
-  // Gestion des fichiers
+  // ✅ Gestion optimisée des fichiers avec compression et validation
   async handleFileUpload(file) {
-    const { createReadStream, filename, mimetype } = await file;
-    const stream = createReadStream();
+    const { createReadStream, filename, mimetype, encoding } = await file;
 
-    const url = await uploadFile(stream, filename, {
-      mime_type: mimetype,
-      folder: "message_attachments",
-    });
+    logger.debug(
+      `[MessageService] Processing file upload: ${filename} (${mimetype})`
+    );
+
+    // ✅ Lire le fichier et calculer la taille
+    const stream = createReadStream();
+    const chunks = [];
+    let totalSize = 0;
+
+    for await (const chunk of stream) {
+      chunks.push(chunk);
+      totalSize += chunk.length;
+    }
+
+    const fileBuffer = Buffer.concat(chunks);
+    logger.debug(`[MessageService] File size: ${totalSize} bytes`);
+
+    // ✅ Validation de la taille (100MB max)
+    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+    if (totalSize > MAX_FILE_SIZE) {
+      throw new Error(
+        `File too large: ${totalSize} bytes (max: ${MAX_FILE_SIZE})`
+      );
+    }
 
     const type = mimetype.split("/")[0];
     const validTypes = ["image", "video", "audio"];
     const fileType = validTypes.includes(type) ? type : "file";
-
-    // Convertir le type de fichier en majuscules pour correspondre à l'énumération AttachmentType
     const attachmentType = fileType.toUpperCase();
+
+    // ✅ Upload du fichier avec le service existant
+    const bufferStream = require("stream").Readable.from(fileBuffer);
+    const url = await uploadFile(bufferStream, filename, {
+      mime_type: mimetype,
+      folder: "message_attachments",
+    });
 
     const attachment = {
       url,
-      type: attachmentType, // Utiliser la valeur en majuscules
+      type: attachmentType,
       name: filename,
-      size: 0, // À remplacer par la taille réelle si possible
-      mimeType: fileType !== "file" ? mimetype : undefined,
+      size: totalSize, // ✅ Taille réelle
+      mimeType: mimetype,
     };
 
+    // ✅ Générer thumbnail pour images/vidéos
     if (["image", "video"].includes(fileType.toLowerCase())) {
-      attachment.thumbnailUrl = await this.generateThumbnail(url);
+      try {
+        attachment.thumbnailUrl = await this.generateThumbnail(url);
+        logger.debug(`[MessageService] Thumbnail generated for: ${filename}`);
+      } catch (error) {
+        logger.warn(
+          `[MessageService] Thumbnail generation failed: ${error.message}`
+        );
+        attachment.thumbnailUrl = url; // Fallback à l'URL originale
+      }
     }
 
+    // ✅ Extraire durée pour audio/vidéo
     if (["audio", "video"].includes(fileType.toLowerCase())) {
-      attachment.duration = await this.getMediaDuration(url);
+      try {
+        attachment.duration = await this.getMediaDuration(url);
+        logger.debug(
+          `[MessageService] Duration extracted: ${attachment.duration}s`
+        );
+      } catch (error) {
+        logger.warn(
+          `[MessageService] Duration extraction failed: ${error.message}`
+        );
+        attachment.duration = 0;
+      }
     }
 
+    logger.info(
+      `[MessageService] File upload completed: ${filename} -> ${url}`
+    );
     return attachment;
   }
   // Gestion  thumbnail
@@ -99,6 +146,110 @@ class MessageService {
       return originalUrl;
     }
   }
+  // ✅ Nouvelle méthode optimisée pour récupérer les messages avec pagination
+  async getMessages(conversationId, userId, options = {}) {
+    const {
+      limit = 50,
+      offset = 0,
+      before = null, // Message ID pour charger les messages avant
+      after = null, // Message ID pour charger les messages après
+    } = options;
+
+    logger.debug(
+      `[MessageService] Getting messages for conversation: ${conversationId}, limit: ${limit}, offset: ${offset}`
+    );
+
+    // ✅ Vérifier l'autorisation
+    const conversation = await Conversation.findOne({
+      _id: conversationId,
+      participants: userId,
+    }).select("_id participants");
+
+    if (!conversation) {
+      throw new Error("Conversation not found or unauthorized");
+    }
+
+    // ✅ Construire la requête avec pagination optimisée
+    let query = { conversationId };
+    let sort = { timestamp: -1 }; // Plus récents en premier
+
+    // Pagination par cursor (plus efficace que offset)
+    if (before) {
+      const beforeMessage = await Message.findById(before).select("timestamp");
+      if (beforeMessage) {
+        query.timestamp = { $lt: beforeMessage.timestamp };
+      }
+    } else if (after) {
+      const afterMessage = await Message.findById(after).select("timestamp");
+      if (afterMessage) {
+        query.timestamp = { $gt: afterMessage.timestamp };
+        sort = { timestamp: 1 }; // Plus anciens en premier pour "after"
+      }
+    }
+
+    // ✅ Requête optimisée avec population sélective
+    const messages = await Message.find(query)
+      .populate({
+        path: "senderId",
+        select: "_id username image isOnline",
+      })
+      .select(
+        "_id content type timestamp isRead status attachments reactions replyTo editedAt"
+      )
+      .sort(sort)
+      .limit(limit)
+      .lean();
+
+    // ✅ Si on utilisait "after", remettre dans l'ordre chronologique
+    if (after) {
+      messages.reverse();
+    }
+
+    // ✅ Formater les messages
+    const formattedMessages = messages.map((msg) => ({
+      id: msg._id.toString(),
+      content: msg.content,
+      type: msg.type,
+      timestamp: msg.timestamp?.toISOString(),
+      isRead: msg.isRead,
+      status: msg.status,
+      sender: msg.senderId
+        ? {
+            id: msg.senderId._id.toString(),
+            username: msg.senderId.username,
+            image: msg.senderId.image,
+            isOnline: msg.senderId.isOnline,
+          }
+        : null,
+      attachments: msg.attachments || [],
+      reactions: msg.reactions || [],
+      replyTo: msg.replyTo,
+      editedAt: msg.editedAt?.toISOString(),
+      conversationId: conversationId,
+    }));
+
+    // ✅ Métadonnées de pagination
+    const hasMore = messages.length === limit;
+    const firstMessage = messages[0];
+    const lastMessage = messages[messages.length - 1];
+
+    logger.info(
+      `[MessageService] Retrieved ${messages.length} messages for conversation: ${conversationId}`
+    );
+
+    return {
+      messages: formattedMessages,
+      pagination: {
+        hasMore,
+        limit,
+        offset,
+        firstCursor: firstMessage?.id,
+        lastCursor: lastMessage?.id,
+        total: await Message.countDocuments({ conversationId }), // Cache this if needed
+      },
+    };
+  }
+
   // Helper methods
   async getMediaDuration() {
     // Implémentation à ajouter
@@ -749,38 +900,77 @@ class MessageService {
         `[MessageService] Message saved successfully: ${savedMessage._id}`
       );
 
-      // Mise à jour de la conversation
+      // ✅ Mise à jour optimisée de la conversation avec compteurs
       logger.debug(
-        `[MessageService] Updating conversation with new last message: ${savedMessage._id}`
+        `[MessageService] Updating conversation with optimized counters: ${savedMessage._id}`
       );
       await Conversation.findByIdAndUpdate(conversation._id, {
         $set: {
           lastMessage: savedMessage._id,
+          lastMessageTime: new Date(),
           updatedAt: new Date(),
           [`lastRead.${senderId}`]: new Date(),
         },
-      });
-      logger.debug(`[MessageService] Conversation updated successfully`);
-
-      // Publier l'événement de message
-      logger.debug(`[MessageService] Publishing message event`);
-      this.publishMessageEvent({
-        eventType: "MESSAGE_SENT",
-        conversationId: conversation._id,
-        senderId,
-        receiverId,
-        message: savedMessage,
+        $inc: {
+          messageCount: 1, // ✅ Incrémenter le compteur de messages
+        },
       });
 
-      // Envoyer une notification
-      logger.debug(`[MessageService] Sending message notification`);
-      try {
-        await NotificationService.sendMessageNotification(savedMessage);
-        logger.debug(`[MessageService] Notification sent successfully`);
-      } catch (error) {
-        logger.error(`[MessageService] Error sending notification:`, error);
-        // Ne pas bloquer l'envoi du message si la notification échoue
+      // ✅ Mettre à jour le unread count pour le destinataire (conversations privées)
+      if (!conversation.isGroup && receiverId) {
+        try {
+          const conv = await Conversation.findById(conversation._id);
+          if (conv && conv.updateUnreadCount) {
+            await conv.updateUnreadCount(receiverId, true);
+          }
+        } catch (unreadError) {
+          logger.warn(
+            `[MessageService] Could not update unread count: ${unreadError.message}`
+          );
+        }
       }
+
+      logger.debug(
+        `[MessageService] Conversation updated successfully with optimized counters`
+      );
+
+      // PUBLICATION INSTANTANÉE des événements WebSocket
+      console.log(`🔥 [MessageService] PREPARING WebSocket publishing`);
+      logger.debug(`[MessageService] 🚀 INSTANT WebSocket publishing`);
+
+      // Publier l'événement de message IMMÉDIATEMENT
+      console.log(
+        `🔥 [MessageService] Calling setImmediate for publishMessageEvent`
+      );
+      setImmediate(() => {
+        console.log(
+          `🔥 [MessageService] INSIDE setImmediate - about to call publishMessageEvent`
+        );
+        this.publishMessageEvent({
+          eventType: "MESSAGE_SENT",
+          conversationId: conversation._id,
+          senderId,
+          receiverId,
+          message: savedMessage,
+        });
+        console.log(`🔥 [MessageService] publishMessageEvent call completed`);
+        logger.debug(`[MessageService] ⚡ Message event published instantly`);
+      });
+
+      // Envoyer une notification EN PARALLÈLE (non-bloquant)
+      setImmediate(async () => {
+        try {
+          logger.debug(`[MessageService] 📡 Sending INSTANT notification`);
+          await NotificationService.sendMessageNotification(savedMessage);
+          logger.debug(`[MessageService] ✅ Notification sent successfully`);
+        } catch (error) {
+          logger.error(
+            `[MessageService] ⚠️ Error sending notification:`,
+            error
+          );
+          // Ne pas bloquer l'envoi du message si la notification échoue
+        }
+      });
 
       // Formatage de la réponse
       logger.debug(`[MessageService] Formatting message response`);
@@ -853,41 +1043,116 @@ class MessageService {
     message,
   }) {
     try {
+      console.log(
+        `🔥 [MessageService] STARTING publishMessageEvent - eventType: ${eventType}`
+      );
+      console.log(
+        `🔥 [MessageService] conversationId: ${conversationId}, senderId: ${senderId}, receiverId: ${receiverId}`
+      );
+      console.log(`🔥 [MessageService] pubsub available: ${!!this.pubsub}`);
+
+      logger.debug(
+        `[MessageService] 🚀 INSTANT WebSocket publishing for ${eventType}`
+      );
+
+      // ✅ Formater le message pour s'assurer que le type soit en majuscule
+      const formatMessageType = (type) => {
+        if (!type) return "TEXT";
+        const upperType = type.toUpperCase();
+        console.log(
+          `🔧 [MessageService] Formatting type: "${type}" → "${upperType}"`
+        );
+        // Gérer les cas spéciaux avec underscore
+        if (upperType === "VOICE_MESSAGE" || upperType === "VOICE_MESSAGE")
+          return "VOICE_MESSAGE";
+        return upperType;
+      };
+
+      const formattedMessage = {
+        ...message.toObject(),
+        id: message._id.toString(),
+        type: formatMessageType(message.type), // ✅ Formatage amélioré
+        timestamp: message.timestamp?.toISOString(),
+        readAt: message.readAt?.toISOString(),
+        createdAt: message.createdAt?.toISOString(),
+        updatedAt: message.updatedAt?.toISOString(),
+        senderId: message.senderId,
+        receiverId: message.receiverId,
+        conversationId: message.conversationId,
+        // ✅ Formater aussi les attachments si présents
+        attachments:
+          message.attachments?.map((att) => ({
+            ...att,
+            type: formatMessageType(att.type),
+          })) || [],
+      };
+
       const payload = {
         [eventType === "GROUP_MESSAGE_SENT"
           ? "groupMessageSent"
-          : "messageSent"]: message,
+          : "messageSent"]: formattedMessage,
       };
 
-      // Common channels for all message types
+      console.log(
+        `🔥 [MessageService] Payload created with formatted message:`,
+        payload
+      );
+
+      // PUBLICATION INSTANTANÉE - Canaux communs
       const commonChannels = [
         `MESSAGE_SENT_${conversationId}`,
         `USER_${senderId}`,
       ];
 
-      // Handle different event types
+      console.log(`🔥 [MessageService] Common channels:`, commonChannels);
+
+      // OPTIMISATION: Publication immédiate selon le type
       if (eventType === "MESSAGE_SENT") {
-        // Private message channels
+        // Canaux pour messages privés - INCLURE SENDER ET RECEIVER
         const privateChannels = [
           `MESSAGE_SENT_${senderId}_${receiverId}`,
           `UNREAD_MESSAGES_${receiverId}`,
           `USER_${receiverId}`,
+          // 🔥 AJOUT: Canaux pour le sender aussi !
+          `USER_${senderId}`, // Pour mettre à jour l'interface du sender
+          `CONVERSATION_${senderId}`, // Pour mettre à jour les conversations du sender
         ];
 
-        // Publish to all relevant channels
-        [...commonChannels, ...privateChannels].forEach((channel) => {
+        // Publication INSTANTANÉE à tous les canaux
+        const allChannels = [...commonChannels, ...privateChannels];
+        console.log(
+          `🔥 [MessageService] All channels for publication (SENDER + RECEIVER):`,
+          allChannels
+        );
+
+        logger.debug(
+          `[MessageService] 📡 Publishing to ${allChannels.length} private channels (sender + receiver)`
+        );
+
+        allChannels.forEach((channel) => {
+          console.log(`🔥 [MessageService] Publishing to channel: ${channel}`);
           this.pubsub.publish(channel, payload);
+          console.log(
+            `🔥 [MessageService] Published to channel: ${channel} ✅`
+          );
         });
+
+        console.log(
+          `🔥 [MessageService] ALL PUBLICATIONS COMPLETED ✅ (SENDER + RECEIVER)`
+        );
+        logger.debug(
+          `[MessageService] ⚡ Private message published instantly to both sender and receiver`
+        );
       } else if (eventType === "GROUP_MESSAGE_SENT") {
         let participantIds = [];
 
-        // Try to get participants from message if available
+        // OPTIMISATION: Récupération rapide des participants
         if (message.group?.participants) {
           participantIds = message.group.participants.filter(
             (id) => id.toString() !== senderId.toString()
           );
         } else {
-          // Fallback: fetch conversation if participants not populated
+          // Fallback rapide: récupération conversation
           const conversation = await Conversation.findById(conversationId)
             .select("participants")
             .lean();
@@ -898,34 +1163,65 @@ class MessageService {
           }
         }
 
-        // Group message channels
+        // Canaux pour messages de groupe
         const groupChannels = [
           `GROUP_MESSAGE_${conversationId}`,
           ...participantIds.map((id) => `USER_${id}`),
         ];
 
-        // Publish to all relevant channels
-        [...commonChannels, ...groupChannels].forEach((channel) => {
+        // Publication INSTANTANÉE à tous les canaux
+        const allChannels = [...commonChannels, ...groupChannels];
+        logger.debug(
+          `[MessageService] 📡 Publishing to ${allChannels.length} group channels`
+        );
+
+        allChannels.forEach((channel) => {
           this.pubsub.publish(channel, payload);
         });
+
+        logger.debug(
+          `[MessageService] ⚡ Group message published instantly to ${participantIds.length} participants`
+        );
       }
+
+      logger.debug(`[MessageService] ✅ WebSocket event publishing completed`);
     } catch (error) {
-      console.error("Error in publishMessageEvent:", error);
-      // Don't throw error here as it would prevent message sending
+      logger.error(`[MessageService] ❌ Error in publishMessageEvent:`, error);
+      // Ne pas bloquer l'envoi du message même si la publication échoue
     }
   }
 
   async getConversations(userId) {
     try {
-      // 1. Fetch conversations with forced population
-      const conversations = await Conversation.find({ participants: userId })
+      logger.debug(
+        `[MessageService] Fetching conversations for user: ${userId}`
+      );
+
+      // 1. Fetch conversations optimisées - SANS les messages
+      const conversations = await Conversation.find({
+        participants: userId,
+        isArchived: { $ne: true }, // Exclure les conversations archivées
+      })
         .populate({
           path: "participants",
           select: "_id username email image isOnline lastActive role",
           model: "User",
         })
-        .populate("lastMessage")
+        .populate({
+          path: "lastMessage",
+          select: "_id content type timestamp isRead senderId", // Seulement les champs essentiels
+          populate: {
+            path: "senderId",
+            select: "_id username image",
+          },
+        })
+        .select("-pinnedMessages -typingUsers") // Exclure les champs lourds
+        .sort({ lastMessageTime: -1 }) // Trier par dernière activité
         .lean({ virtuals: true });
+
+      logger.info(
+        `[MessageService] Found ${conversations.length} conversations`
+      );
 
       // 2. Debug: Verify populated data
       if (
@@ -993,7 +1289,7 @@ class MessageService {
         userId
       );
 
-      // 5. Format final output
+      // 5. Format final output - OPTIMISÉ SANS MESSAGES
       return enhancedConversations.map((conv) => ({
         id: conv._id.toString(),
         participants: conv.participants.map((p) => ({
@@ -1009,16 +1305,28 @@ class MessageService {
           ? {
               id: conv.lastMessage._id.toString(),
               content: conv.lastMessage.content,
+              type: conv.lastMessage.type,
               timestamp: conv.lastMessage.timestamp?.toISOString(),
               isRead: conv.lastMessage.isRead,
+              sender: conv.lastMessage.senderId
+                ? {
+                    id: conv.lastMessage.senderId._id?.toString(),
+                    username: conv.lastMessage.senderId.username,
+                    image: conv.lastMessage.senderId.image,
+                  }
+                : null,
             }
           : null,
         unreadCount: unreadCounts.get(conv._id.toString()) || 0,
+        messageCount: conv.messageCount || 0, // Utiliser le compteur optimisé
         isGroup: conv.isGroup || false,
         groupName: conv.groupName || null,
         groupPhoto: conv.groupPhoto || null,
+        groupDescription: conv.groupDescription || null,
         createdAt: conv.createdAt.toISOString(),
         updatedAt: conv.updatedAt.toISOString(),
+        lastMessageTime: conv.lastMessageTime?.toISOString(),
+        // ❌ PLUS DE CHAMP MESSAGES - Chargés séparément
       }));
     } catch (error) {
       console.error("Conversation fetch error:", error);
@@ -1626,13 +1934,6 @@ class MessageService {
       );
       const unreadCount = await this.getUnreadCount(conversation._id, userId);
 
-      logger.debug(
-        `[MessageService] Getting message count for conversation: ${conversationId}`
-      );
-      const messageCount = await Message.countDocuments({
-        conversationId: conversation._id,
-      });
-
       logger.debug(`[MessageService] Formatting conversation response`);
       const result = {
         id: conversation._id.toString(),
@@ -1647,7 +1948,7 @@ class MessageService {
           : null,
         lastMessageId: conversation.lastMessage?._id.toString(),
         unreadCount,
-        messageCount,
+        messageCount: conversation.messageCount || 0, // ✅ Utiliser le compteur optimisé
         isGroup: conversation.isGroup,
         groupName: conversation.groupName,
         groupPhoto: conversation.groupPhoto,
@@ -1658,20 +1959,27 @@ class MessageService {
             username: a.username,
             email: a.email,
           })) || [],
-        pinnedMessages: [], // Seront chargés via le resolver
-        typingUsers:
-          conversation.typingUsers?.map((u) => ({
-            id: u._id.toString(),
-            username: u.username,
-          })) || [],
-        lastRead: [], // À implémenter selon votre modèle
         createdAt: conversation.createdAt.toISOString(),
         updatedAt: conversation.updatedAt.toISOString(),
+        lastMessageTime: conversation.lastMessageTime?.toISOString(),
+        // ❌ PLUS DE CHAMP MESSAGES - Chargés séparément via getMessages()
+        // ❌ PLUS DE pinnedMessages, typingUsers - Optimisation
       };
 
       logger.info(
-        `[MessageService] Conversation retrieval completed: ${conversationId}, unread: ${unreadCount}, messages: ${messageCount}`
+        `[MessageService] Conversation retrieval completed: ${conversationId}, unread: ${unreadCount}, messages: ${result.messageCount}`
       );
+
+      // Log détaillé de la conversation retournée
+      console.log("🔍 [MessageService] Conversation result:", {
+        id: result.id,
+        participantsCount: result.participants?.length,
+        participants: result.participants,
+        isGroup: result.isGroup,
+        messageCount: result.messageCount,
+        unreadCount: result.unreadCount,
+      });
+
       return result;
     } catch (error) {
       logger.error(`[MessageService] Error getting conversation:`, {

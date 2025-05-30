@@ -9,6 +9,7 @@ import { ReunionSchedulerComponent } from './reunion-scheduler/reunion-scheduler
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ReunionEditComponent } from './reunion-edit/reunion-edit.component';
+import { PipesModule } from '../../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -23,9 +24,8 @@ import { ReunionEditComponent } from './reunion-edit/reunion-edit.component';
     ReunionsRoutingModule,
     RouterModule,
     FormsModule,
-    ReactiveFormsModule
-    
-    
-    ],
+    ReactiveFormsModule,
+    PipesModule,
+  ],
 })
 export class ReunionsModule {}

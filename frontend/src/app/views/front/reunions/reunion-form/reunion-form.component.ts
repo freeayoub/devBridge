@@ -22,8 +22,11 @@ export class ReunionFormComponent implements OnInit {
   loading = true;
   isSubmitting = false;
   error: any = null;
+  successMessage: string | null = null;
   isEditMode = false;
   currentReunionId: string | null = null;
+  planningIdFromUrl: string | null = null;
+  selectedPlanning: Planning | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -53,6 +56,7 @@ export class ReunionFormComponent implements OnInit {
   ngOnInit(): void {
     this.loadPlannings();
     this.checkEditMode();
+    this.checkPlanningParam();
   }
 
   checkEditMode(): void {
@@ -104,10 +108,34 @@ export class ReunionFormComponent implements OnInit {
     return new Date(date).toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
   }
 
+  checkPlanningParam(): void {
+    const planningId = this.route.snapshot.queryParamMap.get('planningId');
+    if (planningId) {
+      this.planningIdFromUrl = planningId;
+
+      // Si un ID de planning est fourni dans les paramètres de requête, le sélectionner automatiquement
+      this.reunionForm.patchValue({
+        planning: planningId
+      });
+
+      // Récupérer les détails du planning pour l'affichage
+      this.planningService.getPlanningById(planningId).subscribe({
+        next: (response: any) => {
+          this.selectedPlanning = response.planning;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération du planning:', err);
+        }
+      });
+    }
+  }
+
   onSubmit(): void {
     if (this.reunionForm.invalid) return;
 
     this.isSubmitting = true;
+    this.error = null;
+    this.successMessage = null;
     const formValue = this.reunionForm.value;
 
     const date = formValue.date; // already in yyyy-MM-dd format from input[type=date]
@@ -129,15 +157,36 @@ export class ReunionFormComponent implements OnInit {
     console.log(reunionData);
 
     this.reunionService.createReunion(reunionData).subscribe({
-      next: (res) => {
-        this.router.navigate(['/reunions', res?.id]);
+      next: () => {
+        this.successMessage = 'Réunion créée avec succès!';
         this.isSubmitting = false;
+        // Redirect to reunions list page
+        this.router.navigate(['/reunions']);
       },
       error: (err) => {
         this.error = err;
         this.isSubmitting = false;
       }
     });
+  }
+
+  resetForm(): void {
+    // Reset the form to its initial state
+    this.reunionForm.reset({
+      titre: '',
+      description: '',
+      date: '',
+      heureDebut: '',
+      heureFin: '',
+      lieu: '',
+      lienVisio: '',
+      planning: '',
+      participants: []
+    });
+
+    // Mark the form as pristine and untouched to reset validation states
+    this.reunionForm.markAsPristine();
+    this.reunionForm.markAsUntouched();
   }
 
 

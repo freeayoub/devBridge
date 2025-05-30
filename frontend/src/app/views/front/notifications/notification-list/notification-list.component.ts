@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'src/app/services/message.service';
-import { Observable, Subject, of, throwError, BehaviorSubject } from 'rxjs';
+import { Observable, Subject, of, BehaviorSubject } from 'rxjs';
 import {
   Notification,
   Attachment,
@@ -20,7 +20,6 @@ import {
   catchError,
   map,
   takeUntil,
-  switchMap,
   take,
   debounceTime,
   distinctUntilChanged,
@@ -83,9 +82,7 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    * @param notification Notification contenant les informations de la conversation ou du groupe
    */
   joinConversation(notification: Notification): void {
-    console.log('Rejoindre la conversation:', notification);
-
-    // Marquer la notification comme lue
+    // Marquer la notification comme lue d'abord
     this.markAsRead(notification.id);
 
     // Extraire les informations pertinentes de la notification
@@ -107,59 +104,34 @@ export class NotificationListComponent implements OnInit, OnDestroy {
 
     // Déterminer où rediriger l'utilisateur
     if (conversationId) {
-      // Rediriger vers la conversation existante
-      console.log(
-        'Redirection vers la conversation existante:',
-        conversationId
-      );
-      // Utiliser le format exact de l'URL fournie avec l'ID
-      window.location.href = `/messages/conversations/chat/${conversationId}`;
+      this.router.navigate(['/messages/conversations/chat', conversationId]);
     } else if (groupId) {
-      // Rediriger vers le groupe
-      console.log('Redirection vers le groupe:', groupId);
-      window.location.href = `/messages/group/${groupId}`;
+      this.router.navigate(['/messages/group', groupId]);
     } else if (notification.senderId && notification.senderId.id) {
-      // Si aucun ID de conversation n'est trouvé, mais qu'il y a un expéditeur,
-      // utiliser getOrCreateConversation pour obtenir ou créer une conversation
-      console.log(
-        "Création/récupération d'une conversation avec l'utilisateur:",
-        notification.senderId.id
-      );
-
-      // Afficher un indicateur de chargement si nécessaire
-      // this.loading = true;
+      this.loading = true;
 
       this.messageService
         .getOrCreateConversation(notification.senderId.id)
         .subscribe({
           next: (conversation) => {
-            console.log('Conversation obtenue:', conversation);
-            // this.loading = false;
-
+            this.loading = false;
             if (conversation && conversation.id) {
-              // Rediriger vers la conversation nouvellement créée ou récupérée
-              // Utiliser le format exact de l'URL fournie avec l'ID
-              window.location.href = `/messages/conversations/chat/${conversation.id}`;
+              this.router.navigate([
+                '/messages/conversations/chat',
+                conversation.id,
+              ]);
             } else {
-              console.error('Conversation invalide reçue:', conversation);
-              window.location.href = '/messages';
+              this.router.navigate(['/messages']);
             }
           },
           error: (error) => {
-            console.error(
-              'Erreur lors de la création/récupération de la conversation:',
-              error
-            );
-            // this.loading = false;
-
-            // En cas d'erreur, rediriger vers la liste des messages
-            window.location.href = '/messages';
+            this.loading = false;
+            this.error = error;
+            this.router.navigate(['/messages']);
           },
         });
     } else {
-      // Si aucune information n'est trouvée, rediriger vers la liste des messages
-      console.log('Redirection vers la liste des messages');
-      window.location.href = '/messages';
+      this.router.navigate(['/messages']);
     }
   }
 
@@ -181,11 +153,6 @@ export class NotificationListComponent implements OnInit, OnDestroy {
     const savedMutePreference = localStorage.getItem('notificationSoundMuted');
     if (savedMutePreference !== null) {
       this.isSoundMuted = savedMutePreference === 'true';
-      console.log(
-        `Préférence de son chargée: ${
-          this.isSoundMuted ? 'désactivé' : 'activé'
-        }`
-      );
       this.messageService.setMuted(this.isSoundMuted);
     }
 
@@ -199,30 +166,19 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    * Filtre les notifications supprimées lors du chargement initial
    */
   private filterDeletedNotifications(): void {
-    // Récupérer les IDs des notifications supprimées du localStorage
     const deletedNotificationIds = this.getDeletedNotificationIds();
 
     if (deletedNotificationIds.size > 0) {
-      console.log(
-        `Filtrage de ${deletedNotificationIds.size} notifications supprimées`
-      );
-
-      // Filtrer les notifications pour exclure celles qui ont été supprimées
       this.notifications$.pipe(take(1)).subscribe((notifications) => {
         const filteredNotifications = notifications.filter(
           (notification) => !deletedNotificationIds.has(notification.id)
         );
 
-        // Mettre à jour l'interface utilisateur
         (this.messageService as any).notifications.next(filteredNotifications);
-
-        // Mettre à jour le compteur de notifications non lues
         const unreadCount = filteredNotifications.filter(
           (n) => !n.isRead
         ).length;
         (this.messageService as any).notificationCount.next(unreadCount);
-
-        // Mettre à jour le cache de notifications dans le service
         this.updateNotificationCache(filteredNotifications);
       });
     }
@@ -242,24 +198,18 @@ export class NotificationListComponent implements OnInit, OnDestroy {
       });
   }
   loadNotifications(): void {
-    console.log('NotificationListComponent: Loading notifications');
     this.loading = true;
     this.loadingMore = false;
     this.error = null;
     this.hasMoreNotifications = true;
 
-    // Récupérer les IDs des notifications supprimées du localStorage
     const deletedNotificationIds = this.getDeletedNotificationIds();
-    console.log(
-      `${deletedNotificationIds.size} notifications supprimées trouvées dans le localStorage`
-    );
 
     this.messageService
       .getNotifications(true)
       .pipe(
         takeUntil(this.destroy$),
         map((notifications) => {
-          // Filtrer les notifications supprimées
           if (deletedNotificationIds.size > 0) {
             return notifications.filter(
               (notification) => !deletedNotificationIds.has(notification.id)
@@ -270,27 +220,14 @@ export class NotificationListComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (notifications) => {
-          console.log(
-            'NotificationListComponent: Notifications loaded successfully',
-            notifications
-          );
-
-          // Mettre à jour l'interface utilisateur avec les notifications filtrées
           (this.messageService as any).notifications.next(notifications);
-
-          // Mettre à jour le compteur de notifications non lues
           const unreadCount = notifications.filter((n) => !n.isRead).length;
           (this.messageService as any).notificationCount.next(unreadCount);
-
           this.loading = false;
           this.hasMoreNotifications =
             this.messageService.hasMoreNotifications();
         },
         error: (err: Error) => {
-          console.error(
-            'NotificationListComponent: Error loading notifications',
-            err
-          );
           this.error = err;
           this.loading = false;
           this.hasMoreNotifications = false;
@@ -301,43 +238,24 @@ export class NotificationListComponent implements OnInit, OnDestroy {
   loadMoreNotifications(): void {
     if (this.loadingMore || !this.hasMoreNotifications) return;
 
-    console.log('NotificationListComponent: Loading more notifications');
     this.loadingMore = true;
-
-    // Récupérer les IDs des notifications supprimées du localStorage
     const deletedNotificationIds = this.getDeletedNotificationIds();
-    console.log(
-      `${deletedNotificationIds.size} notifications supprimées trouvées dans le localStorage`
-    );
 
     this.messageService
       .loadMoreNotifications()
       .pipe(
         takeUntil(this.destroy$),
         map((notifications) => {
-          // Filtrer les notifications supprimées
           if (deletedNotificationIds.size > 0) {
-            const filteredNotifications = notifications.filter(
+            return notifications.filter(
               (notification) => !deletedNotificationIds.has(notification.id)
             );
-            console.log(
-              `Filtré ${
-                notifications.length - filteredNotifications.length
-              } notifications supprimées`
-            );
-            return filteredNotifications;
           }
           return notifications;
         })
       )
       .subscribe({
         next: (notifications) => {
-          console.log(
-            'NotificationListComponent: More notifications loaded successfully',
-            notifications
-          );
-
-          // Mettre à jour l'interface utilisateur avec les notifications filtrées
           this.notifications$
             .pipe(take(1))
             .subscribe((existingNotifications) => {
@@ -346,14 +264,10 @@ export class NotificationListComponent implements OnInit, OnDestroy {
                 ...notifications,
               ];
               (this.messageService as any).notifications.next(allNotifications);
-
-              // Mettre à jour le compteur de notifications non lues
               const unreadCount = allNotifications.filter(
                 (n) => !n.isRead
               ).length;
               (this.messageService as any).notificationCount.next(unreadCount);
-
-              // Mettre à jour le cache de notifications dans le service
               this.updateNotificationCache(allNotifications);
             });
 
@@ -362,10 +276,6 @@ export class NotificationListComponent implements OnInit, OnDestroy {
             this.messageService.hasMoreNotifications();
         },
         error: (err: Error) => {
-          console.error(
-            'NotificationListComponent: Error loading more notifications',
-            err
-          );
           this.loadingMore = false;
           this.hasMoreNotifications = false;
         },
@@ -377,7 +287,7 @@ export class NotificationListComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((error) => {
-          console.error('Notification stream error:', error);
+          console.log('Notification stream error:', error);
           return of(null);
         })
       )
@@ -387,169 +297,137 @@ export class NotificationListComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((error) => {
-          console.error('Notifications read stream error:', error);
+          console.log('Notifications read stream error:', error);
           return of(null);
         })
       )
       .subscribe();
   }
   markAsRead(notificationId: string): void {
-    console.log('Marking notification as read:', notificationId);
-
     if (!notificationId) {
-      console.error('Invalid notification ID:', notificationId);
-      this.error = new Error('Invalid notification ID');
+      this.error = new Error('ID de notification invalide');
       return;
     }
 
-    // Afficher des informations de débogage sur la notification
     this.notifications$.pipe(take(1)).subscribe((notifications) => {
       const notification = notifications.find((n) => n.id === notificationId);
       if (notification) {
-        console.log('Found notification to mark as read:', {
-          id: notification.id,
-          type: notification.type,
-          isRead: notification.isRead,
-        });
+        if (notification.isRead) return;
 
-        // Mettre à jour localement la notification
         const updatedNotifications = notifications.map((n) =>
           n.id === notificationId
             ? { ...n, isRead: true, readAt: new Date().toISOString() }
             : n
         );
 
-        // Mettre à jour l'interface utilisateur immédiatement
-        (this.messageService as any).notifications.next(updatedNotifications);
+        this.updateUIWithNotifications(updatedNotifications);
 
-        // Mettre à jour le compteur de notifications non lues
-        const unreadCount = updatedNotifications.filter(
-          (n) => !n.isRead
-        ).length;
-        (this.messageService as any).notificationCount.next(unreadCount);
-
-        // Mettre à jour le cache de notifications dans le service
-        this.updateNotificationCache(updatedNotifications);
-
-        // Appeler le service pour marquer la notification comme lue
         this.messageService
           .markAsRead([notificationId])
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (result) => {
-              console.log('Mark as read result:', result);
               if (result && result.success) {
-                console.log('Notification marked as read successfully');
-                // Si l'erreur était liée à cette opération, la réinitialiser
                 if (this.error && this.error.message.includes('mark')) {
                   this.error = null;
                 }
               }
             },
             error: (err) => {
-              console.error('Error marking notification as read:', err);
-              console.error('Error details:', {
-                message: err.message,
-                stack: err.stack,
-                notificationId,
-              });
-              // Ne pas définir d'erreur pour éviter de perturber l'interface utilisateur
-              // this.error = err;
+              const revertedNotifications = notifications.map((n) =>
+                n.id === notificationId
+                  ? { ...n, isRead: false, readAt: undefined }
+                  : n
+              );
+              (this.messageService as any).notifications.next(
+                revertedNotifications
+              );
+
+              const revertedUnreadCount = revertedNotifications.filter(
+                (n) => !n.isRead
+              ).length;
+              (this.messageService as any).notificationCount.next(
+                revertedUnreadCount
+              );
             },
           });
       } else {
-        console.warn('Notification not found in local cache:', notificationId);
-
-        // Forcer le rechargement des notifications
         this.loadNotifications();
       }
     });
   }
 
-  // Méthode pour mettre à jour le cache de notifications dans le service
-  private updateNotificationCache(notifications: any[]): void {
+  /**
+   * Met à jour l'interface utilisateur avec les nouvelles notifications
+   * @param notifications Notifications à afficher
+   */
+  private updateUIWithNotifications(notifications: any[]): void {
+    // Mettre à jour l'interface utilisateur immédiatement
+    (this.messageService as any).notifications.next(notifications);
+
+    // Mettre à jour le compteur de notifications non lues
+    const unreadCount = notifications.filter((n) => !n.isRead).length;
+    (this.messageService as any).notificationCount.next(unreadCount);
+
     // Mettre à jour le cache de notifications dans le service
-    const notificationCache = (this.messageService as any).notificationCache;
-    if (notificationCache) {
-      notifications.forEach((notification) => {
-        notificationCache.set(notification.id, notification);
-      });
+    this.updateNotificationCache(notifications);
+  }
 
-      // Forcer la mise à jour du compteur
-      const unreadCount = notifications.filter((n) => !n.isRead).length;
-      (this.messageService as any).notificationCount.next(unreadCount);
+  /**
+   * Met à jour le cache de notifications dans le service
+   * @param notifications Notifications à mettre à jour
+   */
+  private updateNotificationCache(notifications: any[]): void {
+    notifications.forEach((notification) => {
+      (this.messageService as any).updateNotificationCache?.(notification);
+    });
+  }
 
-      console.log('Notification cache updated, new unread count:', unreadCount);
-    }
+  /**
+   * Réinitialise la sélection des notifications
+   */
+  private resetSelection(): void {
+    this.selectedNotifications.clear();
+    this.allSelected = false;
+    this.showSelectionBar = false;
   }
 
   markAllAsRead(): void {
-    console.log('Marking all notifications as read');
-
     this.notifications$.pipe(take(1)).subscribe((notifications) => {
-      console.log('All notifications:', notifications);
       const unreadIds = notifications.filter((n) => !n.isRead).map((n) => n.id);
 
-      console.log('Unread notification IDs to mark as read:', unreadIds);
+      if (unreadIds.length === 0) return;
 
-      if (unreadIds.length === 0) {
-        console.log('No unread notifications to mark as read');
-        return;
-      }
-
-      // Vérifier que tous les IDs sont valides
       const validIds = unreadIds.filter(
         (id) => id && typeof id === 'string' && id.trim() !== ''
       );
 
       if (validIds.length !== unreadIds.length) {
-        console.error('Some notification IDs are invalid:', unreadIds);
         this.error = new Error('Invalid notification IDs');
         return;
       }
 
-      console.log('Marking all notifications as read:', validIds);
-
-      // Mettre à jour localement toutes les notifications
       const updatedNotifications = notifications.map((n) =>
         validIds.includes(n.id)
           ? { ...n, isRead: true, readAt: new Date().toISOString() }
           : n
       );
 
-      // Mettre à jour l'interface utilisateur immédiatement
-      (this.messageService as any).notifications.next(updatedNotifications);
+      this.updateUIWithNotifications(updatedNotifications);
 
-      // Mettre à jour le compteur de notifications non lues
-      const unreadCount = updatedNotifications.filter((n) => !n.isRead).length;
-      (this.messageService as any).notificationCount.next(unreadCount);
-
-      // Mettre à jour le cache de notifications dans le service
-      this.updateNotificationCache(updatedNotifications);
-
-      // Appeler le service pour marquer toutes les notifications comme lues
       this.messageService
         .markAsRead(validIds)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (result) => {
-            console.log('Mark all as read result:', result);
             if (result && result.success) {
-              console.log('All notifications marked as read successfully');
-              // Si l'erreur était liée à cette opération, la réinitialiser
               if (this.error && this.error.message.includes('mark')) {
                 this.error = null;
               }
             }
           },
           error: (err) => {
-            console.error('Error marking all notifications as read:', err);
-            console.error('Error details:', {
-              message: err.message,
-              stack: err.stack,
-            });
             // Ne pas définir d'erreur pour éviter de perturber l'interface utilisateur
-            // this.error = err;
           },
         });
     });
@@ -569,18 +447,11 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    */
   toggleUnreadFilter(): void {
     this.showOnlyUnread = !this.showOnlyUnread;
-    console.log(
-      `Filtre des notifications non lues ${
-        this.showOnlyUnread ? 'activé' : 'désactivé'
-      }`
-    );
 
     if (this.showOnlyUnread) {
-      // Utiliser la méthode du service pour obtenir uniquement les notifications non lues
       this.filteredNotifications$ =
         this.messageService.getUnreadNotifications();
     } else {
-      // Afficher toutes les notifications
       this.filteredNotifications$ = this.notifications$;
     }
   }
@@ -590,30 +461,17 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    */
   toggleSound(): void {
     this.isSoundMuted = !this.isSoundMuted;
-    console.log(
-      `Son des notifications ${this.isSoundMuted ? 'désactivé' : 'activé'}`
-    );
-
-    // Utiliser la méthode du service pour activer/désactiver le son
     this.messageService.setMuted(this.isSoundMuted);
 
-    // Tester le son si activé
     if (!this.isSoundMuted) {
-      console.log('Test du son de notification...');
-
-      // Jouer le son après un court délai pour s'assurer que le navigateur est prêt
       setTimeout(() => {
-        // Jouer le son deux fois pour s'assurer qu'il est audible
         this.messageService.playNotificationSound();
-
-        // Jouer une deuxième fois après 1 seconde
         setTimeout(() => {
           this.messageService.playNotificationSound();
         }, 1000);
       }, 100);
     }
 
-    // Sauvegarder la préférence dans le localStorage
     localStorage.setItem(
       'notificationSoundMuted',
       this.isSoundMuted.toString()
@@ -625,24 +483,14 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    * @param notificationId ID de la notification
    */
   getNotificationAttachments(notificationId: string): void {
-    if (!notificationId) {
-      console.error('ID de notification invalide');
-      return;
-    }
+    if (!notificationId) return;
 
-    console.log(
-      `Récupération des pièces jointes pour la notification ${notificationId}`
-    );
-
-    // Réinitialiser les pièces jointes et afficher le modal
     this.currentAttachments = [];
     this.loadingAttachments = true;
     this.showAttachmentsModal = true;
 
-    // Vérifier d'abord si la notification existe dans le cache local
     let notification: Notification | undefined;
 
-    // Utiliser pipe(take(1)) pour obtenir la valeur actuelle de l'Observable
     this.notifications$.pipe(take(1)).subscribe((notifications) => {
       notification = notifications.find(
         (n: Notification) => n.id === notificationId
@@ -655,44 +503,30 @@ export class NotificationListComponent implements OnInit, OnDestroy {
       notification.message.attachments &&
       notification.message.attachments.length > 0
     ) {
-      console.log(
-        'Pièces jointes trouvées dans le cache local:',
-        notification.message.attachments
-      );
       this.loadingAttachments = false;
-      // Conversion des pièces jointes au format attendu
       this.currentAttachments = notification.message.attachments.map(
         (attachment: NotificationAttachment) =>
           ({
-            id: '', // NotificationAttachment n'a pas d'ID
+            id: '',
             url: attachment.url || '',
-            type: this.convertAttachmentType(attachment.type),
+            type: this.convertAttachmentTypeToMessageType(attachment.type),
             name: attachment.name || '',
             size: attachment.size || 0,
-            duration: 0, // NotificationAttachment n'a pas de durée
+            duration: 0,
           } as Attachment)
       );
       return;
     }
 
-    // Si aucune pièce jointe n'est trouvée localement, essayer de les récupérer du serveur
     this.messageService
       .getNotificationAttachments(notificationId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (attachments) => {
-          console.log(
-            `${attachments.length} pièces jointes récupérées du serveur`,
-            attachments
-          );
           this.loadingAttachments = false;
           this.currentAttachments = attachments;
         },
         error: (err) => {
-          console.error(
-            'Erreur lors de la récupération des pièces jointes',
-            err
-          );
           this.loadingAttachments = false;
         },
       });
@@ -710,13 +544,11 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    * @param notification Notification à afficher
    */
   openNotificationDetails(notification: Notification): void {
-    console.log('Ouverture des détails de la notification:', notification);
     this.currentNotification = notification;
     this.showNotificationDetailsModal = true;
 
-    // Marquer la notification comme lue
-    if (!notification.isRead) {
-      this.markAsRead(notification.id);
+    if (notification.message?.attachments?.length) {
+      this.getNotificationAttachmentsForModal(notification.id);
     }
   }
 
@@ -726,12 +558,57 @@ export class NotificationListComponent implements OnInit, OnDestroy {
   closeNotificationDetailsModal(): void {
     this.showNotificationDetailsModal = false;
     this.currentNotification = null;
+    this.currentAttachments = [];
   }
 
   /**
-   * Vérifie si le type de fichier est une image
-   * @param type Type MIME du fichier
-   * @returns true si c'est une image, false sinon
+   * Récupère les pièces jointes d'une notification pour le modal de détails
+   */
+  private getNotificationAttachmentsForModal(notificationId: string): void {
+    this.currentAttachments = [];
+
+    if (this.currentNotification?.message?.attachments?.length) {
+      this.currentAttachments =
+        this.currentNotification.message.attachments.map(
+          (attachment: NotificationAttachment) =>
+            ({
+              id: '',
+              url: attachment.url || '',
+              type: this.convertAttachmentTypeToMessageType(attachment.type),
+              name: attachment.name || '',
+              size: attachment.size || 0,
+              duration: 0,
+            } as Attachment)
+        );
+    }
+  }
+
+  /**
+   * Convertit AttachmentType en MessageType
+   */
+  private convertAttachmentTypeToMessageType(
+    type: AttachmentType
+  ): MessageType {
+    switch (type) {
+      case 'IMAGE':
+      case 'image':
+        return MessageType.IMAGE;
+      case 'VIDEO':
+      case 'video':
+        return MessageType.VIDEO;
+      case 'AUDIO':
+      case 'audio':
+        return MessageType.AUDIO;
+      case 'FILE':
+      case 'file':
+        return MessageType.FILE;
+      default:
+        return MessageType.FILE;
+    }
+  }
+
+  /**
+   * Vérifie si un type de fichier est une image
    */
   isImage(type: string): boolean {
     return type?.startsWith('image/') || false;
@@ -839,44 +716,27 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    * @param notificationId ID de la notification à supprimer
    */
   deleteNotification(notificationId: string): void {
-    console.log('Suppression de la notification:', notificationId);
-
     if (!notificationId) {
-      console.error('ID de notification invalide');
       this.error = new Error('ID de notification invalide');
       return;
     }
 
-    // Récupérer les IDs des notifications supprimées du localStorage
     const deletedNotificationIds = this.getDeletedNotificationIds();
-
-    // Ajouter l'ID de la notification à supprimer
     deletedNotificationIds.add(notificationId);
-
-    // Sauvegarder les IDs dans le localStorage
     this.saveDeletedNotificationIds(deletedNotificationIds);
 
-    // Appeler le service pour supprimer la notification
     this.messageService
       .deleteNotification(notificationId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (result) => {
-          console.log('Résultat de la suppression:', result);
           if (result && result.success) {
-            console.log('Notification supprimée avec succès');
-            // Si l'erreur était liée à cette opération, la réinitialiser
             if (this.error && this.error.message.includes('suppression')) {
               this.error = null;
             }
           }
         },
         error: (err) => {
-          console.error(
-            'Erreur lors de la suppression de la notification:',
-            err
-          );
-          // Même en cas d'erreur, conserver l'ID dans le localStorage
           this.error = err;
         },
       });
@@ -886,47 +746,27 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    * Supprime toutes les notifications et les stocke dans le localStorage
    */
   deleteAllNotifications(): void {
-    console.log('Suppression de toutes les notifications');
-
-    // Récupérer toutes les notifications actuelles
     this.notifications$.pipe(take(1)).subscribe((notifications) => {
-      // Récupérer les IDs des notifications supprimées du localStorage
       const deletedNotificationIds = this.getDeletedNotificationIds();
 
-      // Ajouter tous les IDs des notifications actuelles
       notifications.forEach((notification) => {
         deletedNotificationIds.add(notification.id);
       });
 
-      // Sauvegarder les IDs dans le localStorage
       this.saveDeletedNotificationIds(deletedNotificationIds);
 
-      // Appeler le service pour supprimer toutes les notifications
       this.messageService
         .deleteAllNotifications()
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (result) => {
-            console.log(
-              'Résultat de la suppression de toutes les notifications:',
-              result
-            );
             if (result && result.success) {
-              console.log(
-                `${result.count} notifications supprimées avec succès`
-              );
-              // Si l'erreur était liée à cette opération, la réinitialiser
               if (this.error && this.error.message.includes('suppression')) {
                 this.error = null;
               }
             }
           },
           error: (err) => {
-            console.error(
-              'Erreur lors de la suppression de toutes les notifications:',
-              err
-            );
-            // Même en cas d'erreur, conserver les IDs dans le localStorage
             this.error = err;
           },
         });
@@ -949,10 +789,6 @@ export class NotificationListComponent implements OnInit, OnDestroy {
       }
       return new Set<string>();
     } catch (error) {
-      console.error(
-        'Erreur lors de la récupération des IDs de notifications supprimées:',
-        error
-      );
       return new Set<string>();
     }
   }
@@ -967,14 +803,8 @@ export class NotificationListComponent implements OnInit, OnDestroy {
         'deletedNotificationIds',
         JSON.stringify(Array.from(deletedIds))
       );
-      console.log(
-        `${deletedIds.size} IDs de notifications supprimées sauvegardés dans le localStorage`
-      );
     } catch (error) {
-      console.error(
-        'Erreur lors de la sauvegarde des IDs de notifications supprimées:',
-        error
-      );
+      // Ignore silently
     }
   }
 
@@ -1044,51 +874,28 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    * Supprime les notifications sélectionnées
    */
   deleteSelectedNotifications(): void {
-    if (this.selectedNotifications.size === 0) {
-      return;
-    }
+    if (this.selectedNotifications.size === 0) return;
 
     const selectedIds = Array.from(this.selectedNotifications);
-    console.log('Suppression des notifications sélectionnées:', selectedIds);
 
-    // Supprimer localement les notifications sélectionnées
     this.notifications$.pipe(take(1)).subscribe((notifications) => {
       const updatedNotifications = notifications.filter(
         (notification) => !this.selectedNotifications.has(notification.id)
       );
 
-      // Mettre à jour l'interface utilisateur immédiatement
-      (this.messageService as any).notifications.next(updatedNotifications);
-
-      // Mettre à jour le compteur de notifications non lues
-      const unreadCount = updatedNotifications.filter((n) => !n.isRead).length;
-      (this.messageService as any).notificationCount.next(unreadCount);
-
-      // Mettre à jour le cache de notifications dans le service
-      this.updateNotificationCache(updatedNotifications);
-
-      // Réinitialiser la sélection
-      this.selectedNotifications.clear();
-      this.allSelected = false;
-      this.showSelectionBar = false;
+      this.updateUIWithNotifications(updatedNotifications);
+      this.resetSelection();
     });
 
-    // Appeler le service pour supprimer les notifications sélectionnées
     this.messageService
       .deleteMultipleNotifications(selectedIds)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (result) => {
-          console.log('Résultat de la suppression multiple:', result);
-          if (result && result.success) {
-            console.log(`${result.count} notifications supprimées avec succès`);
-          }
+          // Success handled silently
         },
         error: (err) => {
-          console.error(
-            'Erreur lors de la suppression multiple des notifications:',
-            err
-          );
+          // Error handled silently
         },
       });
   }
@@ -1097,17 +904,10 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    * Marque les notifications sélectionnées comme lues
    */
   markSelectedAsRead(): void {
-    if (this.selectedNotifications.size === 0) {
-      return;
-    }
+    if (this.selectedNotifications.size === 0) return;
 
     const selectedIds = Array.from(this.selectedNotifications);
-    console.log(
-      'Marquage des notifications sélectionnées comme lues:',
-      selectedIds
-    );
 
-    // Marquer localement les notifications sélectionnées comme lues
     this.notifications$.pipe(take(1)).subscribe((notifications) => {
       const updatedNotifications = notifications.map((notification) =>
         this.selectedNotifications.has(notification.id)
@@ -1115,38 +915,19 @@ export class NotificationListComponent implements OnInit, OnDestroy {
           : notification
       );
 
-      // Mettre à jour l'interface utilisateur immédiatement
-      (this.messageService as any).notifications.next(updatedNotifications);
-
-      // Mettre à jour le compteur de notifications non lues
-      const unreadCount = updatedNotifications.filter((n) => !n.isRead).length;
-      (this.messageService as any).notificationCount.next(unreadCount);
-
-      // Mettre à jour le cache de notifications dans le service
-      this.updateNotificationCache(updatedNotifications);
-
-      // Réinitialiser la sélection
-      this.selectedNotifications.clear();
-      this.allSelected = false;
-      this.showSelectionBar = false;
+      this.updateUIWithNotifications(updatedNotifications);
+      this.resetSelection();
     });
 
-    // Appeler le service pour marquer les notifications comme lues
     this.messageService
       .markAsRead(selectedIds)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (result) => {
-          console.log('Résultat du marquage comme lu:', result);
-          if (result && result.success) {
-            console.log('Notifications marquées comme lues avec succès');
-          }
+          // Success handled silently
         },
         error: (err) => {
-          console.error(
-            'Erreur lors du marquage des notifications comme lues:',
-            err
-          );
+          // Error handled silently
         },
       });
   }
@@ -1158,33 +939,5 @@ export class NotificationListComponent implements OnInit, OnDestroy {
    */
   isSelected(notificationId: string): boolean {
     return this.selectedNotifications.has(notificationId);
-  }
-
-  /**
-   * Convertit un type de pièce jointe de notification en type de message
-   * @param type Type de pièce jointe
-   * @returns Type de message correspondant
-   */
-  private convertAttachmentType(type: AttachmentType): MessageType {
-    switch (type) {
-      case 'IMAGE':
-        return MessageType.IMAGE;
-      case 'FILE':
-        return MessageType.FILE;
-      case 'AUDIO':
-        return MessageType.AUDIO;
-      case 'VIDEO':
-        return MessageType.VIDEO;
-      case 'image':
-        return MessageType.IMAGE_LOWER;
-      case 'file':
-        return MessageType.FILE_LOWER;
-      case 'audio':
-        return MessageType.AUDIO_LOWER;
-      case 'video':
-        return MessageType.VIDEO_LOWER;
-      default:
-        return MessageType.FILE; // Type par défaut
-    }
   }
 }

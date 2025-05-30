@@ -258,13 +258,16 @@
             <button
               *ngIf="
                 notification.type === 'NEW_MESSAGE' ||
-                notification.type === 'GROUP_INVITE'
+                notification.type === 'GROUP_INVITE' ||
+                notification.type === 'MESSAGE_REACTION'
               "
               (click)="joinConversation(notification); $event.stopPropagation()"
               class="notification-action-button notification-join-button"
               title="Rejoindre la conversation"
+              [disabled]="loading"
             >
-              <i class="fas fa-comments"></i>
+              <i class="fas fa-comments" *ngIf="!loading"></i>
+              <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
             </button>
 
             <!-- Bouton pour voir les détails de la notification -->
@@ -273,7 +276,7 @@
                 openNotificationDetails(notification); $event.stopPropagation()
               "
               class="notification-action-button notification-details-button"
-              title="Voir les détails"
+              title="Voir les détails (ne marque PAS comme lu automatiquement)"
             >
               <i class="fas fa-info-circle"></i>
             </button>
@@ -283,7 +286,7 @@
               *ngIf="!notification.isRead"
               (click)="markAsRead(notification.id); $event.stopPropagation()"
               class="notification-action-button notification-read-button"
-              title="Marquer comme lu"
+              title="Marquer cette notification comme lue"
             >
               <i class="fas fa-check"></i>
             </button>
@@ -409,6 +412,239 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pour afficher les détails de notification -->
+<div
+  class="futuristic-modal-overlay"
+  [style.display]="showNotificationDetailsModal ? 'flex' : 'none'"
+  (click)="closeNotificationDetailsModal()"
+>
+  <div class="futuristic-modal-container" (click)="$event.stopPropagation()">
+    <div class="futuristic-modal-header">
+      <h3 class="futuristic-modal-title">
+        <i class="fas fa-info-circle mr-2"></i>
+        Détails de la notification
+      </h3>
+      <button
+        class="futuristic-modal-close"
+        (click)="closeNotificationDetailsModal()"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="futuristic-modal-body" *ngIf="currentNotification">
+      <!-- Informations de l'expéditeur -->
+      <div class="notification-detail-section">
+        <h4 class="notification-detail-title">
+          <i class="fas fa-user mr-2"></i>
+          Expéditeur
+        </h4>
+        <div class="notification-sender-info">
+          <img
+            [src]="
+              currentNotification.senderId?.image ||
+              'assets/images/default-avatar.png'
+            "
+            alt="Avatar"
+            class="notification-sender-avatar"
+            onerror="this.src='assets/images/default-avatar.png'"
+          />
+          <div class="notification-sender-details">
+            <span class="notification-sender-name">
+              {{ currentNotification.senderId?.username || "Système" }}
+            </span>
+            <span class="notification-timestamp">
+              {{ currentNotification.timestamp | date : "medium" }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenu de la notification -->
+      <div class="notification-detail-section">
+        <h4 class="notification-detail-title">
+          <i class="fas fa-message mr-2"></i>
+          Message
+        </h4>
+        <div class="notification-content-detail">
+          {{ currentNotification.content }}
+        </div>
+        <div
+          *ngIf="currentNotification.message?.content"
+          class="notification-message-detail"
+        >
+          <strong>Message original :</strong>
+          {{ currentNotification.message?.content }}
+        </div>
+      </div>
+
+      <!-- Type et statut -->
+      <div class="notification-detail-section">
+        <h4 class="notification-detail-title">
+          <i class="fas fa-tag mr-2"></i>
+          Informations
+        </h4>
+        <div class="notification-info-grid">
+          <div class="notification-info-item">
+            <span class="notification-info-label">Type :</span>
+            <span class="notification-info-value">{{
+              currentNotification.type
+            }}</span>
+          </div>
+          <div class="notification-info-item">
+            <span class="notification-info-label">Statut :</span>
+            <span
+              class="notification-info-value"
+              [class.text-green-500]="currentNotification.isRead"
+              [class.text-orange-500]="!currentNotification.isRead"
+            >
+              {{ currentNotification.isRead ? "Lu" : "Non lu" }}
+            </span>
+          </div>
+          <div
+            class="notification-info-item"
+            *ngIf="currentNotification.readAt"
+          >
+            <span class="notification-info-label">Lu le :</span>
+            <span class="notification-info-value">{{
+              currentNotification.readAt | date : "medium"
+            }}</span>
+          </div>
+          <div
+            class="notification-info-item"
+            *ngIf="!currentNotification.isRead"
+            style="
+              background: rgba(255, 140, 0, 0.1);
+              border: 1px solid rgba(255, 140, 0, 0.3);
+            "
+          >
+            <span class="notification-info-label">
+              <i class="fas fa-info-circle mr-1"></i>
+              Note :
+            </span>
+            <span
+              class="notification-info-value"
+              style="color: #ff8c00; font-style: italic"
+            >
+              Ouvrir les détails ne marque pas automatiquement comme lu
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pièces jointes -->
+      <div
+        class="notification-detail-section"
+        *ngIf="currentAttachments.length > 0"
+      >
+        <h4 class="notification-detail-title">
+          <i class="fas fa-paperclip mr-2"></i>
+          Pièces jointes ({{ currentAttachments.length }})
+        </h4>
+        <div class="notification-attachments-grid">
+          <div
+            *ngFor="let attachment of currentAttachments"
+            class="notification-attachment-item"
+          >
+            <!-- Image -->
+            <div
+              *ngIf="isImage(attachment.type)"
+              class="notification-attachment-preview"
+            >
+              <img
+                [src]="attachment.url"
+                alt="Image"
+                (click)="openAttachment(attachment.url)"
+              />
+            </div>
+
+            <!-- Document -->
+            <div
+              *ngIf="!isImage(attachment.type)"
+              class="notification-attachment-icon"
+            >
+              <i [class]="getFileIcon(attachment.type)"></i>
+            </div>
+
+            <div class="notification-attachment-info">
+              <div class="notification-attachment-name">
+                {{ attachment.name || "Pièce jointe" }}
+              </div>
+              <div class="notification-attachment-meta">
+                <span class="notification-attachment-type">{{
+                  getFileTypeLabel(attachment.type)
+                }}</span>
+                <span
+                  *ngIf="attachment.size"
+                  class="notification-attachment-size"
+                  >{{ formatFileSize(attachment.size) }}</span
+                >
+              </div>
+            </div>
+
+            <div class="notification-attachment-actions">
+              <button
+                class="notification-attachment-button"
+                (click)="openAttachment(attachment.url)"
+                title="Ouvrir"
+              >
+                <i class="fas fa-external-link-alt"></i>
+              </button>
+              <button
+                class="notification-attachment-button"
+                (click)="downloadAttachment(attachment)"
+                title="Télécharger"
+              >
+                <i class="fas fa-download"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="notification-detail-actions">
+        <button
+          *ngIf="
+            currentNotification.type === 'NEW_MESSAGE' ||
+            currentNotification.type === 'GROUP_INVITE' ||
+            currentNotification.type === 'MESSAGE_REACTION'
+          "
+          (click)="
+            joinConversation(currentNotification);
+            closeNotificationDetailsModal()
+          "
+          class="futuristic-primary-button"
+          [disabled]="loading"
+        >
+          <i class="fas fa-comments mr-2" *ngIf="!loading"></i>
+          <i class="fas fa-spinner fa-spin mr-2" *ngIf="loading"></i>
+          Rejoindre la conversation
+        </button>
+
+        <button
+          *ngIf="!currentNotification.isRead"
+          (click)="markAsRead(currentNotification.id)"
+          class="futuristic-secondary-button"
+        >
+          <i class="fas fa-check mr-2"></i>
+          Marquer comme lu
+        </button>
+
+        <button
+          (click)="
+            deleteNotification(currentNotification.id);
+            closeNotificationDetailsModal()
+          "
+          class="futuristic-danger-button"
+        >
+          <i class="fas fa-trash-alt mr-2"></i>
+          Supprimer
+        </button>
       </div>
     </div>
   </div>

@@ -1,0 +1,272 @@
+<!-- Interface d'appel WebRTC avec Tailwind CSS -->
+<div
+  class="fixed inset-0 z-50 transition-all duration-300"
+  [class.opacity-100]="isVisible"
+  [class.opacity-0]="!isVisible"
+  [class.pointer-events-none]="!isVisible"
+  style="
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  "
+>
+  <!-- === APPEL VIDÉO === -->
+  <div *ngIf="callType === 'VIDEO'" class="relative w-full h-full">
+    <!-- Vidéo distante (plein écran) -->
+    <video
+      #remoteVideo
+      class="w-full h-full object-cover bg-gray-800"
+      [class.cursor-pointer]="remoteStream"
+      autoplay
+      playsinline
+      (click)="toggleFullscreen()"
+    ></video>
+
+    <!-- Placeholder si pas de vidéo distante -->
+    <div
+      *ngIf="!remoteStream"
+      class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
+    >
+      <div class="relative mb-8">
+        <img
+          [src]="otherParticipant?.image || '/assets/images/default-avatar.png'"
+          [alt]="otherParticipant?.username"
+          class="w-32 h-32 rounded-full border-4 border-white/20 shadow-2xl"
+        />
+        <div
+          class="absolute inset-0 rounded-full border-4 border-cyan-400 animate-pulse"
+        ></div>
+      </div>
+      <h2 class="text-2xl font-semibold text-white mb-2">
+        {{ otherParticipant?.username }}
+      </h2>
+      <p class="text-cyan-300 text-lg">{{ callStatus }}</p>
+    </div>
+
+    <!-- Vidéo locale (picture-in-picture) -->
+    <div
+      class="absolute top-4 right-4 w-32 h-24 bg-gray-800 rounded-lg overflow-hidden border-2 border-white/20 shadow-lg"
+    >
+      <video
+        #localVideo
+        *ngIf="isVideoEnabled"
+        class="w-full h-full object-cover"
+        autoplay
+        playsinline
+        muted
+      ></video>
+
+      <!-- Placeholder vidéo locale désactivée -->
+      <div
+        *ngIf="!isVideoEnabled"
+        class="w-full h-full bg-gray-700 flex items-center justify-center"
+      >
+        <i class="material-icons text-white text-2xl">videocam_off</i>
+      </div>
+    </div>
+
+    <!-- En-tête d'appel vidéo -->
+    <div
+      class="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/50 to-transparent p-4"
+    >
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <img
+            [src]="
+              otherParticipant?.image || '/assets/images/default-avatar.png'
+            "
+            [alt]="otherParticipant?.username"
+            class="w-10 h-10 rounded-full border-2 border-white/30"
+          />
+          <div>
+            <p class="text-white font-medium">
+              {{ otherParticipant?.username }}
+            </p>
+            <p class="text-cyan-300 text-sm">{{ callStatus }}</p>
+            <p
+              *ngIf="isConnected && callDuration > 0"
+              class="text-green-400 text-sm"
+            >
+              {{ formatDuration(callDuration) }}
+            </p>
+          </div>
+        </div>
+
+        <button
+          (click)="toggleFullscreen()"
+          class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+        >
+          <i class="material-icons text-white">{{
+            isFullscreen ? "fullscreen_exit" : "fullscreen"
+          }}</i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === APPEL AUDIO === -->
+  <div
+    *ngIf="callType === 'AUDIO'"
+    class="flex flex-col items-center justify-center h-full p-8"
+  >
+    <!-- Avatar principal -->
+    <div class="relative mb-8">
+      <img
+        [src]="otherParticipant?.image || '/assets/images/default-avatar.png'"
+        [alt]="otherParticipant?.username"
+        class="w-48 h-48 rounded-full border-4 border-white/20 shadow-2xl"
+      />
+      <div
+        class="absolute inset-0 rounded-full border-4 border-cyan-400"
+        [class.animate-pulse]="!isConnected"
+      ></div>
+    </div>
+
+    <!-- Informations utilisateur -->
+    <h2 class="text-4xl font-bold text-white mb-4">
+      {{ otherParticipant?.username }}
+    </h2>
+    <p class="text-cyan-300 text-xl mb-2">{{ callStatus }}</p>
+    <p
+      *ngIf="isConnected && callDuration > 0"
+      class="text-green-400 text-2xl font-mono"
+    >
+      {{ formatDuration(callDuration) }}
+    </p>
+  </div>
+
+  <!-- === CONTRÔLES D'APPEL === -->
+  <div
+    class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6"
+  >
+    <div class="flex items-center justify-center space-x-6">
+      <!-- Bouton Micro -->
+      <button
+        (click)="toggleMute()"
+        class="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg"
+        [class]="
+          isMuted
+            ? 'bg-red-500 hover:bg-red-600'
+            : 'bg-white/20 hover:bg-white/30'
+        "
+        [title]="isMuted ? 'Activer le micro' : 'Couper le micro'"
+      >
+        <i class="material-icons text-white text-2xl">{{
+          isMuted ? "mic_off" : "mic"
+        }}</i>
+      </button>
+
+      <!-- Bouton Vidéo (seulement pour appels vidéo) -->
+      <button
+        *ngIf="callType === 'VIDEO'"
+        (click)="toggleVideo()"
+        class="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg"
+        [class]="
+          !isVideoEnabled
+            ? 'bg-red-500 hover:bg-red-600'
+            : 'bg-white/20 hover:bg-white/30'
+        "
+        [title]="isVideoEnabled ? 'Désactiver la caméra' : 'Activer la caméra'"
+      >
+        <i class="material-icons text-white text-2xl">{{
+          isVideoEnabled ? "videocam" : "videocam_off"
+        }}</i>
+      </button>
+
+      <!-- Bouton Haut-parleur -->
+      <button
+        (click)="toggleSpeaker()"
+        class="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg"
+        [class]="
+          isSpeakerOn
+            ? 'bg-blue-500 hover:bg-blue-600'
+            : 'bg-white/20 hover:bg-white/30'
+        "
+        [title]="
+          isSpeakerOn ? 'Désactiver haut-parleur' : 'Activer haut-parleur'
+        "
+      >
+        <i class="material-icons text-white text-2xl">{{
+          isSpeakerOn ? "volume_up" : "volume_down"
+        }}</i>
+      </button>
+
+      <!-- Bouton Raccrocher -->
+      <button
+        (click)="endCall()"
+        class="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-all duration-200 shadow-lg"
+        title="Raccrocher"
+      >
+        <i class="material-icons text-white text-2xl">call_end</i>
+      </button>
+    </div>
+  </div>
+
+  <!-- === MODAL APPEL ENTRANT === -->
+  <div
+    *ngIf="isIncoming && !isConnected"
+    class="absolute inset-0 bg-black/80 flex items-center justify-center p-8"
+  >
+    <div
+      class="bg-gray-800 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl border border-gray-700"
+    >
+      <!-- Avatar et info -->
+      <div class="mb-8">
+        <div class="relative inline-block mb-4">
+          <img
+            [src]="
+              otherParticipant?.image || '/assets/images/default-avatar.png'
+            "
+            [alt]="otherParticipant?.username"
+            class="w-24 h-24 rounded-full border-4 border-white/20"
+          />
+          <div
+            class="absolute inset-0 rounded-full border-4 border-cyan-400 animate-pulse"
+          ></div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-white mb-2">
+          {{ otherParticipant?.username }}
+        </h2>
+        <p class="text-cyan-300 text-lg">{{ getCallTypeLabel() }} entrant...</p>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="flex items-center justify-center space-x-8">
+        <button
+          (click)="rejectCall()"
+          class="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-all duration-200 shadow-lg"
+          title="Rejeter l'appel"
+        >
+          <i class="material-icons text-white text-2xl">call_end</i>
+        </button>
+
+        <button
+          (click)="acceptCall()"
+          class="w-16 h-16 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center transition-all duration-200 shadow-lg"
+          title="Accepter l'appel"
+        >
+          <i class="material-icons text-white text-2xl">{{
+            getCallTypeIcon()
+          }}</i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio éléments (cachés) -->
+  <audio #remoteAudio autoplay *ngIf="callType === 'AUDIO'"></audio>
+</div>
+
+<!-- Overlay de chargement -->
+<div
+  *ngIf="isVisible && !isConnected && !isIncoming"
+  class="fixed inset-0 z-60 bg-black/50 flex items-center justify-center"
+>
+  <div
+    class="bg-gray-800 rounded-xl p-8 text-center shadow-2xl border border-gray-700"
+  >
+    <div
+      class="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+    ></div>
+    <p class="text-white text-lg">{{ callStatus }}</p>
+  </div>
+</div>

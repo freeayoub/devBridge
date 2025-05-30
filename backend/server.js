@@ -80,9 +80,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(httpLogger); // Ajouter le middleware de journalisation HTTP
 app.use(
   rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 1000,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10000, // Augmenté à 10000 requêtes par 15 minutes
     message: "Too many requests from this IP, please try again later",
+    standardHeaders: true, // Retourner les headers de rate limit
+    legacyHeaders: false, // Désactiver les headers X-RateLimit-*
+    // Exclure certaines routes du rate limiting
+    skip: (req) => {
+      // Exclure les WebSocket connections et les health checks
+      return req.path === "/health" || req.headers.upgrade === "websocket";
+    },
   })
 );
 

@@ -10,30 +10,72 @@ class NotificationService {
   }
   async sendPushNotification(userId, notificationData) {
     try {
-      // Créer une nouvelle notification MongoDB
+      console.log(
+        `[NotificationService] 🚀 INSTANT NOTIFICATION: Sending to user ${userId}`
+      );
+
+      // Créer une nouvelle notification MongoDB avec timestamp précis
       const savedNotification = await this.Notification.create({
         ...notificationData,
         userId,
         timestamp: new Date(),
+        createdAt: new Date(),
       });
 
-      // Publier vers GraphQL
-      this.pubsub.publish(`NOTIFICATION_${userId}`, {
+      console.log(
+        `[NotificationService] ✅ Notification saved to DB: ${savedNotification._id}`
+      );
+
+      // PUBLICATION INSTANTANÉE via WebSocket
+      const notificationPayload = {
         notificationReceived: {
           ...savedNotification.toObject(),
           id: savedNotification._id.toString(),
+          senderId: savedNotification.senderId
+            ? {
+                id:
+                  savedNotification.senderId._id?.toString() ||
+                  savedNotification.senderId.toString(),
+                username: savedNotification.senderId.username || "Unknown User",
+                image: savedNotification.senderId.image || null,
+              }
+            : null,
         },
+      };
+
+      // Publier IMMÉDIATEMENT via WebSocket
+      console.log(
+        `[NotificationService] 📡 Publishing WebSocket event to NOTIFICATION_${userId}`
+      );
+      this.pubsub.publish(`NOTIFICATION_${userId}`, notificationPayload);
+
+      // Mettre à jour l'utilisateur en arrière-plan (non-bloquant)
+      setImmediate(async () => {
+        try {
+          await User.findByIdAndUpdate(userId, {
+            $inc: { notificationCount: 1 },
+            lastNotification: new Date(),
+          });
+          console.log(
+            `[NotificationService] 📊 User notification count updated for ${userId}`
+          );
+        } catch (updateError) {
+          console.error(
+            `[NotificationService] ⚠️ Error updating user count:`,
+            updateError
+          );
+        }
       });
 
-      // Mettre à jour l'utilisateur
-      await User.findByIdAndUpdate(userId, {
-        $inc: { notificationCount: 1 },
-        lastNotification: new Date(),
-      });
-
+      console.log(
+        `[NotificationService] ⚡ INSTANT notification sent successfully to ${userId}`
+      );
       return true;
     } catch (error) {
-      console.error("Notification error:", error);
+      console.error(
+        `[NotificationService] ❌ CRITICAL: Notification error for ${userId}:`,
+        error
+      );
       return false;
     }
   }
@@ -89,93 +131,112 @@ class NotificationService {
   async sendMessageNotification(message) {
     try {
       console.log(
-        "[NotificationService] Sending message notification for message:",
-        message._id
+        `[NotificationService] ⚡ INSTANT MESSAGE NOTIFICATION: Processing message ${message._id}`
       );
 
-      // Déterminer le destinataire de la notification
+      // Déterminer le destinataire de la notification RAPIDEMENT
       let receiverId = null;
+      const senderId = message.senderId || message.sender;
 
       // Si c'est un message de groupe
       if (message.group) {
         console.log(
-          "[NotificationService] Group message detected, getting participants"
+          `[NotificationService] 👥 Group message detected, getting participants`
         );
         receiverId = await this.getGroupParticipants(message.group);
       }
       // Si c'est un message privé
       else if (message.receiverId) {
         console.log(
-          "[NotificationService] Private message detected, receiver:",
-          message.receiverId
+          `[NotificationService] 💬 Private message detected, receiver: ${message.receiverId}`
         );
         receiverId = message.receiverId;
       }
       // Si le message a un champ receiver (objet)
       else if (message.receiver) {
         console.log(
-          "[NotificationService] Message with receiver object detected"
+          `[NotificationService] 📨 Message with receiver object detected`
         );
         receiverId = message.receiver._id || message.receiver;
       }
 
       if (!receiverId) {
         console.error(
-          "[NotificationService] No receiver found for message:",
-          message._id
+          `[NotificationService] ❌ No receiver found for message: ${message._id}`
         );
         return;
       }
 
-      console.log("[NotificationService] Creating notification object");
+      // Créer la notification OPTIMISÉE
       const notification = {
         type: "NEW_MESSAGE",
         messageId: message._id,
-        senderId: message.senderId || message.sender,
+        senderId: senderId,
         content: message.content
           ? message.content.substring(0, 100)
+          : message.type === "VOICE_MESSAGE"
+          ? "🎤 Voice message"
+          : message.type === "IMAGE"
+          ? "📷 Image"
+          : message.type === "FILE"
+          ? "📎 File"
           : "New message",
         isRead: false,
         createdAt: new Date(),
+        timestamp: new Date(),
       };
 
       console.log(
-        "[NotificationService] Notification object created:",
-        notification
+        `[NotificationService] 📋 Notification object created for ${
+          Array.isArray(receiverId)
+            ? receiverId.length + " recipients"
+            : "1 recipient"
+        }`
       );
 
+      // ENVOI PARALLÈLE ET INSTANTANÉ
       if (Array.isArray(receiverId)) {
         console.log(
-          "[NotificationService] Sending to multiple recipients:",
-          receiverId.length
+          `[NotificationService] 🚀 Sending to ${receiverId.length} group recipients INSTANTLY`
         );
-        await Promise.all(
-          receiverId
-            .filter(
-              (id) =>
-                id.toString() !==
-                (message.senderId || message.sender).toString()
-            )
-            .map((id) => this.sendPushNotification(id, notification))
+
+        // Filtrer l'expéditeur et envoyer en parallèle
+        const recipients = receiverId.filter(
+          (id) => id.toString() !== senderId.toString()
+        );
+
+        // Envoi PARALLÈLE pour performance maximale
+        const notificationPromises = recipients.map((id) =>
+          this.sendPushNotification(id, notification)
+        );
+
+        await Promise.all(notificationPromises);
+        console.log(
+          `[NotificationService] ✅ Group notifications sent to ${recipients.length} users`
         );
       } else {
-        console.log(
-          "[NotificationService] Sending to single recipient:",
-          receiverId
-        );
-        await this.sendPushNotification(receiverId, notification);
+        // Vérifier que ce n'est pas l'expéditeur qui se notifie lui-même
+        if (receiverId.toString() !== senderId.toString()) {
+          console.log(
+            `[NotificationService] 🎯 Sending to single recipient: ${receiverId}`
+          );
+          await this.sendPushNotification(receiverId, notification);
+          console.log(`[NotificationService] ✅ Private notification sent`);
+        } else {
+          console.log(`[NotificationService] 🔄 Skipping self-notification`);
+        }
       }
 
       console.log(
-        "[NotificationService] Message notification sent successfully"
+        `[NotificationService] ⚡ INSTANT message notification completed successfully`
       );
     } catch (error) {
       console.error(
-        "[NotificationService] Error sending message notification:",
+        `[NotificationService] ❌ CRITICAL: Error sending message notification:`,
         error
       );
-      console.error("[NotificationService] Error stack:", error.stack);
-      throw new Error("Failed to send message notification");
+      console.error(`[NotificationService] Error stack:`, error.stack);
+      // Ne pas bloquer l'envoi du message même si la notification échoue
     }
   }
 

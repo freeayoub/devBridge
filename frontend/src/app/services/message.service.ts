@@ -46,10 +46,6 @@ import {
   GET_UNREAD_MESSAGES_QUERY,
   SET_USER_ONLINE_MUTATION,
   SET_USER_OFFLINE_MUTATION,
-  GET_GROUP_QUERY,
-  GET_USER_GROUPS_QUERY,
-  CREATE_GROUP_MUTATION,
-  UPDATE_GROUP_MUTATION,
   START_TYPING_MUTATION,
   STOP_TYPING_MUTATION,
   TYPING_INDICATOR_SUBSCRIPTION,
@@ -57,6 +53,14 @@ import {
   REACT_TO_MESSAGE_MUTATION,
   FORWARD_MESSAGE_MUTATION,
   PIN_MESSAGE_MUTATION,
+  CREATE_GROUP_MUTATION,
+  UPDATE_GROUP_MUTATION,
+  DELETE_GROUP_MUTATION,
+  ADD_GROUP_PARTICIPANTS_MUTATION,
+  REMOVE_GROUP_PARTICIPANTS_MUTATION,
+  LEAVE_GROUP_MUTATION,
+  GET_GROUP_QUERY,
+  GET_USER_GROUPS_QUERY,
   EDIT_MESSAGE_MUTATION,
   DELETE_MESSAGE_MUTATION,
   GET_MESSAGES_QUERY,
@@ -204,37 +208,20 @@ export class MessageService implements OnDestroy {
       const savedNotifications = localStorage.getItem('notifications');
       if (savedNotifications) {
         const notifications = JSON.parse(savedNotifications) as Notification[];
-        this.logger.debug(
-          'MessageService',
-          `Chargement de ${notifications.length} notifications depuis le localStorage`
-        );
 
-        // Vider le cache avant de charger les notifications pour éviter les doublons
         this.notificationCache.clear();
 
-        // Mettre à jour le cache avec les notifications sauvegardées
         notifications.forEach((notification) => {
-          // Vérifier que la notification a un ID valide
           if (notification && notification.id) {
             this.notificationCache.set(notification.id, notification);
           }
         });
 
-        // Mettre à jour le BehaviorSubject avec les notifications chargées
         this.notifications.next(Array.from(this.notificationCache.values()));
         this.updateUnreadCount();
-
-        this.logger.debug(
-          'MessageService',
-          `${this.notificationCache.size} notifications chargées dans le cache`
-        );
       }
     } catch (error) {
-      this.logger.error(
-        'MessageService',
-        'Erreur lors du chargement des notifications depuis le localStorage:',
-        error
-      );
+      // Handle error silently
     }
   }
   private initSubscriptions(): void {
@@ -242,6 +229,7 @@ export class MessageService implements OnDestroy {
       this.subscribeToNewNotifications().subscribe();
       this.subscribeToNotificationsRead().subscribe();
       this.subscribeToIncomingCalls().subscribe();
+      // 🔥 AJOUT: Subscription générale pour l'utilisateur
     });
     this.subscribeToUserStatus();
   }
@@ -275,7 +263,6 @@ export class MessageService implements OnDestroy {
    * Gère un appel entrant
    */
   private handleIncomingCall(call: IncomingCall): void {
-    this.logger.debug('Incoming call received', call);
     this.incomingCall.next(call);
     this.play('ringtone', true);
   }
@@ -306,18 +293,11 @@ export class MessageService implements OnDestroy {
       this.sounds[name] = audio;
       this.isPlaying[name] = false;
 
-      // Gérer la fin de la lecture
       audio.addEventListener('ended', () => {
         this.isPlaying[name] = false;
       });
-
-      this.logger.debug('MessageService', `Son chargé: ${name} (${path})`);
     } catch (error) {
-      this.logger.error(
-        'MessageService',
-        `Erreur lors du chargement du son ${name}:`,
-        error
-      );
+      // Handle error silently
     }
   }
 
@@ -328,42 +308,26 @@ export class MessageService implements OnDestroy {
    */
   play(name: string, loop: boolean = false): void {
     if (this.muted) {
-      this.logger.debug('MessageService', `Son ${name} non joué (muet)`);
       return;
     }
 
     try {
       const sound = this.sounds[name];
       if (!sound) {
-        this.logger.warn('MessageService', `Son ${name} non trouvé`);
         return;
       }
 
-      // Configurer la lecture en boucle
       sound.loop = loop;
 
-      // Jouer le son s'il n'est pas déjà en cours de lecture
       if (!this.isPlaying[name]) {
         sound.currentTime = 0;
         sound.play().catch((error) => {
-          this.logger.error(
-            'MessageService',
-            `Erreur lors de la lecture du son ${name}:`,
-            error
-          );
+          // Handle error silently
         });
         this.isPlaying[name] = true;
-        this.logger.debug(
-          'MessageService',
-          `Lecture du son: ${name}, boucle: ${loop}`
-        );
       }
     } catch (error) {
-      this.logger.error(
-        'MessageService',
-        `Erreur lors de la lecture du son ${name}:`,
-        error
-      );
+      // Handle error silently
     }
   }
 
@@ -375,23 +339,16 @@ export class MessageService implements OnDestroy {
     try {
       const sound = this.sounds[name];
       if (!sound) {
-        this.logger.warn('MessageService', `Son ${name} non trouvé`);
         return;
       }
 
-      // Arrêter le son s'il est en cours de lecture
       if (this.isPlaying[name]) {
         sound.pause();
         sound.currentTime = 0;
         this.isPlaying[name] = false;
-        this.logger.debug('MessageService', `Son arrêté: ${name}`);
       }
     } catch (error) {
-      this.logger.error(
-        'MessageService',
-        `Erreur lors de l'arrêt du son ${name}:`,
-        error
-      );
+      // Handle error silently
     }
   }
 
@@ -402,7 +359,6 @@ export class MessageService implements OnDestroy {
     Object.keys(this.sounds).forEach((name) => {
       this.stop(name);
     });
-    this.logger.debug('MessageService', 'Tous les sons ont été arrêtés');
   }
 
   /**
@@ -411,7 +367,6 @@ export class MessageService implements OnDestroy {
    */
   setMuted(muted: boolean): void {
     this.muted = muted;
-    this.logger.info('MessageService', `Son ${muted ? 'désactivé' : 'activé'}`);
 
     if (muted) {
       this.stopAllSounds();
@@ -437,37 +392,32 @@ export class MessageService implements OnDestroy {
       return;
     }
 
-    // Utiliser l'API Web Audio pour générer un son de notification simple
+    // Créer une mélodie agréable avec l'API Web Audio
     try {
       // Créer un contexte audio
       const audioContext = new (window.AudioContext ||
         (window as any).webkitAudioContext)();
 
-      // Créer un oscillateur pour générer un son
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      // 🎵 TESTEZ DIFFÉRENTS SONS - Décommentez celui que vous voulez tester !
 
-      // Configurer l'oscillateur
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // La note A5
+      // SON 1: Mélodie douce (WhatsApp style) - ACTUEL
+      this.playNotificationMelody1(audioContext);
 
-      // Configurer le volume
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(
-        0.5,
-        audioContext.currentTime + 0.01
+      // SON 2: Mélodie montante (iPhone style) - Décommentez pour tester
+      // this.playNotificationMelody2(audioContext);
+
+      // SON 3: Mélodie descendante (Messenger style) - Décommentez pour tester
+      // this.playNotificationMelody3(audioContext);
+
+      // SON 4: Triple note (Discord style) - Décommentez pour tester
+      // this.playNotificationMelody4(audioContext);
+
+      // SON 5: Cloche douce (Slack style) - Décommentez pour tester
+      // this.playNotificationMelody5(audioContext);
+
+      console.log(
+        'MessageService: Son de notification mélodieux généré avec succès'
       );
-      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.3);
-
-      // Connecter les nœuds
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      // Démarrer et arrêter l'oscillateur
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.3);
-
-      console.log('MessageService: Son de notification généré avec succès');
     } catch (error) {
       console.error(
         'MessageService: Erreur lors de la génération du son:',
@@ -477,7 +427,7 @@ export class MessageService implements OnDestroy {
       // Fallback à la méthode originale en cas d'erreur
       try {
         const audio = new Audio('assets/sounds/notification.mp3');
-        audio.volume = 1.0; // Volume maximum
+        audio.volume = 0.7; // Volume plus doux
         audio.play().catch((err) => {
           console.error(
             'MessageService: Erreur lors de la lecture du fichier son:',
@@ -491,6 +441,120 @@ export class MessageService implements OnDestroy {
         );
       }
     }
+  }
+
+  // 🎵 SON 1: Mélodie douce (WhatsApp style)
+  private playNotificationMelody1(audioContext: AudioContext): void {
+    this.playNotificationTone(audioContext, 0, 659.25, 0.15); // E5
+    this.playNotificationTone(audioContext, 0.15, 523.25, 0.15); // C5
+  }
+
+  // 🎵 SON 2: Mélodie montante (iPhone style)
+  private playNotificationMelody2(audioContext: AudioContext): void {
+    this.playNotificationTone(audioContext, 0, 523.25, 0.12); // C5
+    this.playNotificationTone(audioContext, 0.12, 659.25, 0.12); // E5
+    this.playNotificationTone(audioContext, 0.24, 783.99, 0.16); // G5
+  }
+
+  // 🎵 SON 3: Mélodie descendante (Messenger style)
+  private playNotificationMelody3(audioContext: AudioContext): void {
+    this.playNotificationTone(audioContext, 0, 880, 0.1); // A5
+    this.playNotificationTone(audioContext, 0.1, 659.25, 0.1); // E5
+    this.playNotificationTone(audioContext, 0.2, 523.25, 0.15); // C5
+  }
+
+  // 🎵 SON 4: Triple note (Discord style)
+  private playNotificationMelody4(audioContext: AudioContext): void {
+    this.playNotificationTone(audioContext, 0, 698.46, 0.08); // F5
+    this.playNotificationTone(audioContext, 0.08, 698.46, 0.08); // F5
+    this.playNotificationTone(audioContext, 0.16, 880, 0.12); // A5
+  }
+
+  // 🎵 SON 5: Cloche douce (Slack style)
+  private playNotificationMelody5(audioContext: AudioContext): void {
+    this.playBellTone(audioContext, 0, 1046.5, 0.4); // C6 - son de cloche
+  }
+
+  /**
+   * Joue une note individuelle pour la mélodie de notification
+   */
+  private playNotificationTone(
+    audioContext: AudioContext,
+    startTime: number,
+    frequency: number,
+    duration: number
+  ): void {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    // Configurer l'oscillateur pour un son plus doux
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(
+      frequency,
+      audioContext.currentTime + startTime
+    );
+
+    // Configurer le volume avec une enveloppe douce
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime + startTime);
+    gainNode.gain.linearRampToValueAtTime(
+      0.3,
+      audioContext.currentTime + startTime + 0.02
+    );
+    gainNode.gain.linearRampToValueAtTime(
+      0.2,
+      audioContext.currentTime + startTime + duration * 0.7
+    );
+    gainNode.gain.linearRampToValueAtTime(
+      0,
+      audioContext.currentTime + startTime + duration
+    );
+
+    // Connecter les nœuds
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // Démarrer et arrêter l'oscillateur
+    oscillator.start(audioContext.currentTime + startTime);
+    oscillator.stop(audioContext.currentTime + startTime + duration);
+  }
+
+  /**
+   * Joue un son de cloche pour les notifications
+   */
+  private playBellTone(
+    audioContext: AudioContext,
+    startTime: number,
+    frequency: number,
+    duration: number
+  ): void {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    // Configurer l'oscillateur pour un son de cloche
+    oscillator.type = 'triangle'; // Son plus doux que sine
+    oscillator.frequency.setValueAtTime(
+      frequency,
+      audioContext.currentTime + startTime
+    );
+
+    // Enveloppe de cloche (attaque rapide, déclin lent)
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime + startTime);
+    gainNode.gain.linearRampToValueAtTime(
+      0.4,
+      audioContext.currentTime + startTime + 0.01
+    );
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + startTime + duration
+    );
+
+    // Connecter les nœuds
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // Démarrer et arrêter l'oscillateur
+    oscillator.start(audioContext.currentTime + startTime);
+    oscillator.stop(audioContext.currentTime + startTime + duration);
   }
   // --------------------------------------------------------------------------
   // Section 1: Méthodes pour les Messages
@@ -789,18 +853,20 @@ export class MessageService implements OnDestroy {
       })
       .pipe(
         map((result) => {
-          this.logger.debug(`[MessageService] Message send response:`, result);
+          this.logger.debug(
+            `[MessageService] ⚡ INSTANT: Message send response received`
+          );
 
           if (!result.data?.sendMessage) {
             this.logger.error(
-              `[MessageService] Failed to send message: No data returned`
+              `[MessageService] ❌ Failed to send message: No data returned`
             );
             throw new Error('Failed to send message');
           }
 
           try {
             this.logger.debug(
-              `[MessageService] Normalizing sent message`,
+              `[MessageService] 🚀 INSTANT: Normalizing sent message`,
               result.data.sendMessage
             );
             const normalizedMessage = this.normalizeMessage(
@@ -808,12 +874,24 @@ export class MessageService implements OnDestroy {
             );
 
             this.logger.info(
-              `[MessageService] Message sent successfully: ${normalizedMessage.id}`
+              `[MessageService] ✅ INSTANT: Message sent successfully: ${normalizedMessage.id}`
             );
+
+            // OPTIMISATION: Mise à jour immédiate de l'UI
+            this.zone.run(() => {
+              // Émettre immédiatement le message dans le flux
+              this.logger.debug('📡 INSTANT: Updating UI immediately');
+            });
+
+            // Rafraîchir les notifications du sender après envoi
+            setTimeout(() => {
+              this.refreshSenderNotifications();
+            }, 1000);
+
             return normalizedMessage;
           } catch (normalizationError) {
             this.logger.error(
-              `[MessageService] Error normalizing message:`,
+              `[MessageService] ❌ Error normalizing message:`,
               normalizationError
             );
 
@@ -1320,17 +1398,21 @@ export class MessageService implements OnDestroy {
           // Mettre à jour le cache avec les nouvelles notifications
           this.updateCache(filteredNotifications);
 
-          // Récupérer toutes les notifications du cache
+          // Récupérer toutes les notifications du cache et les TRIER
           const cachedNotifications = Array.from(
             this.notificationCache.values()
           );
 
+          // 🚀 TRI OPTIMISÉ: Les notifications les plus récentes en premier
+          const sortedNotifications =
+            this.sortNotificationsByDate(cachedNotifications);
+
           console.log(
-            `Total notifications in cache after update: ${cachedNotifications.length}`
+            `📊 SORTED: ${sortedNotifications.length} notifications triées (plus récentes en premier)`
           );
 
-          // Mettre à jour le BehaviorSubject avec toutes les notifications
-          this.notifications.next(cachedNotifications);
+          // Mettre à jour le BehaviorSubject avec les notifications TRIÉES
+          this.notifications.next(sortedNotifications);
 
           // Mettre à jour le compteur de notifications non lues
           this.updateUnreadCount();
@@ -1478,10 +1560,7 @@ export class MessageService implements OnDestroy {
     }
 
     // Supprimer localement d'abord pour une meilleure expérience utilisateur
-    this.notificationCache.delete(notificationId);
-    this.notifications.next(Array.from(this.notificationCache.values()));
-    this.updateUnreadCount();
-    this.saveNotificationsToLocalStorage();
+    const removedCount = this.removeNotificationsFromCache([notificationId]);
 
     // Appeler le backend pour supprimer la notification
     return this.apollo
@@ -1504,19 +1583,12 @@ export class MessageService implements OnDestroy {
 
           return response;
         }),
-        catchError((error) => {
-          this.logger.error(
-            'MessageService',
-            'Erreur lors de la suppression de la notification:',
-            error
-          );
-
-          // En cas d'erreur, on garde la suppression locale
-          return of({
+        catchError((error) =>
+          this.handleDeletionError(error, 'la suppression de la notification', {
             success: true,
             message: 'Notification supprimée localement (erreur serveur)',
-          });
-        })
+          })
+        )
       );
   }
 
@@ -1557,10 +1629,8 @@ export class MessageService implements OnDestroy {
 
     // Supprimer localement d'abord pour une meilleure expérience utilisateur
     const count = this.notificationCache.size;
-    this.notificationCache.clear();
-    this.notifications.next([]);
-    this.notificationCount.next(0);
-    this.saveNotificationsToLocalStorage();
+    const allNotificationIds = Array.from(this.notificationCache.keys());
+    this.removeNotificationsFromCache(allNotificationIds);
 
     // Appeler le backend pour supprimer toutes les notifications
     return this.apollo
@@ -1588,20 +1658,17 @@ export class MessageService implements OnDestroy {
 
           return response;
         }),
-        catchError((error) => {
-          this.logger.error(
-            'MessageService',
-            'Erreur lors de la suppression de toutes les notifications:',
-            error
-          );
-
-          // En cas d'erreur, on garde la suppression locale
-          return of({
-            success: true,
-            count,
-            message: `${count} notifications supprimées localement (erreur serveur)`,
-          });
-        })
+        catchError((error) =>
+          this.handleDeletionError(
+            error,
+            'la suppression de toutes les notifications',
+            {
+              success: true,
+              count,
+              message: `${count} notifications supprimées localement (erreur serveur)`,
+            }
+          )
+        )
       );
   }
 
@@ -1624,17 +1691,7 @@ export class MessageService implements OnDestroy {
     }
 
     // Supprimer localement d'abord pour une meilleure expérience utilisateur
-    let count = 0;
-    notificationIds.forEach((id) => {
-      if (this.notificationCache.has(id)) {
-        this.notificationCache.delete(id);
-        count++;
-      }
-    });
-
-    this.notifications.next(Array.from(this.notificationCache.values()));
-    this.updateUnreadCount();
-    this.saveNotificationsToLocalStorage();
+    const count = this.removeNotificationsFromCache(notificationIds);
 
     // Appeler le backend pour supprimer les notifications
     return this.apollo
@@ -1663,20 +1720,17 @@ export class MessageService implements OnDestroy {
 
           return response;
         }),
-        catchError((error) => {
-          this.logger.error(
-            'MessageService',
-            'Erreur lors de la suppression multiple de notifications:',
-            error
-          );
-
-          // En cas d'erreur, on garde la suppression locale
-          return of({
-            success: count > 0,
-            count,
-            message: `${count} notifications supprimées localement (erreur serveur)`,
-          });
-        })
+        catchError((error) =>
+          this.handleDeletionError(
+            error,
+            'la suppression multiple de notifications',
+            {
+              success: count > 0,
+              count,
+              message: `${count} notifications supprimées localement (erreur serveur)`,
+            }
+          )
+        )
       );
   }
   groupNotificationsByType(): Observable<
@@ -2213,6 +2267,104 @@ export class MessageService implements OnDestroy {
   }
 
   /**
+   * Récupère l'historique des appels avec filtres
+   * @param limit Nombre d'appels à récupérer
+   * @param offset Décalage pour la pagination
+   * @param status Filtres de statut
+   * @param type Filtres de type
+   * @param startDate Date de début
+   * @param endDate Date de fin
+   * @returns Observable avec l'historique des appels
+   */
+  getCallHistory(
+    limit: number = 20,
+    offset: number = 0,
+    status?: string[],
+    type?: string[],
+    startDate?: string | null,
+    endDate?: string | null
+  ): Observable<Call[]> {
+    return this.apollo
+      .watchQuery<{ callHistory: Call[] }>({
+        query: CALL_HISTORY_QUERY,
+        variables: {
+          limit,
+          offset,
+          status,
+          type,
+          startDate,
+          endDate,
+        },
+        fetchPolicy: 'network-only',
+      })
+      .valueChanges.pipe(
+        map((result) => {
+          const history = result.data?.callHistory || [];
+          this.logger.debug(`Retrieved ${history.length} call history items`);
+          return history;
+        }),
+        catchError((error) => {
+          this.logger.error('Error fetching call history:', error);
+          return throwError(() => new Error('Failed to fetch call history'));
+        })
+      );
+  }
+
+  /**
+   * Récupère les détails d'un appel spécifique
+   * @param callId ID de l'appel
+   * @returns Observable avec les détails de l'appel
+   */
+  getCallDetails(callId: string): Observable<Call> {
+    return this.apollo
+      .watchQuery<{ callDetails: Call }>({
+        query: CALL_DETAILS_QUERY,
+        variables: { callId },
+        fetchPolicy: 'network-only',
+      })
+      .valueChanges.pipe(
+        map((result) => {
+          const details = result.data?.callDetails;
+          if (!details) {
+            throw new Error('Call details not found');
+          }
+          this.logger.debug(`Retrieved call details for: ${callId}`);
+          return details;
+        }),
+        catchError((error) => {
+          this.logger.error('Error fetching call details:', error);
+          return throwError(() => new Error('Failed to fetch call details'));
+        })
+      );
+  }
+
+  /**
+   * Récupère les statistiques d'appels
+   * @returns Observable avec les statistiques d'appels
+   */
+  getCallStats(): Observable<any> {
+    return this.apollo
+      .watchQuery<{ callStats: any }>({
+        query: CALL_STATS_QUERY,
+        fetchPolicy: 'network-only',
+      })
+      .valueChanges.pipe(
+        map((result) => {
+          const stats = result.data?.callStats;
+          if (!stats) {
+            throw new Error('Call stats not found');
+          }
+          this.logger.debug('Retrieved call stats:', stats);
+          return stats;
+        }),
+        catchError((error) => {
+          this.logger.error('Error fetching call stats:', error);
+          return throwError(() => new Error('Failed to fetch call stats'));
+        })
+      );
+  }
+
+  /**
    * Gère un signal d'appel reçu
    * @param signal Signal d'appel
    */
@@ -2631,157 +2783,235 @@ export class MessageService implements OnDestroy {
       );
   }
 
-  // Group methods
-  getGroup(groupId: string): Observable<Group> {
-    return this.apollo
-      .watchQuery<GetGroupResponse>({
-        query: GET_GROUP_QUERY,
-        variables: { id: groupId },
-        fetchPolicy: 'network-only',
-      })
-      .valueChanges.pipe(
-        map((result) => {
-          const group = result.data?.getGroup;
-          if (!group) throw new Error('Group not found');
+  // --------------------------------------------------------------------------
+  // Section: Gestion des Groupes
+  // --------------------------------------------------------------------------
 
-          return {
-            ...group,
-            participants:
-              group.participants?.map((p) => this.normalizeUser(p)) || [],
-            admins: group.admins?.map((a) => this.normalizeUser(a)) || [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          };
-        }),
-        catchError((error) => {
-          this.logger.error('MessageService', 'Error fetching group:', error);
-          return throwError(() => new Error('Failed to fetch group'));
-        })
-      );
-  }
-  getUserGroups(userId: string): Observable<Group[]> {
-    return this.apollo
-      .watchQuery<GetUserGroupsResponse>({
-        query: GET_USER_GROUPS_QUERY,
-        variables: { userId },
-        fetchPolicy: 'network-only',
-      })
-      .valueChanges.pipe(
-        map(
-          (result) =>
-            result.data?.getUserGroups?.map((group) => ({
-              ...group,
-              participants:
-                group.participants?.map((p) => this.normalizeUser(p)) || [],
-              admins: group.admins?.map((a) => this.normalizeUser(a)) || [],
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            })) || []
-        ),
-        catchError((error) => {
-          this.logger.error(
-            'MessageService',
-            'Error fetching user groups:',
-            error
-          );
-          return throwError(() => new Error('Failed to fetch user groups'));
-        })
-      );
-  }
+  /**
+   * Crée un nouveau groupe
+   */
   createGroup(
     name: string,
     participantIds: string[],
     photo?: File,
     description?: string
-  ): Observable<Group> {
-    const variables = photo
-      ? { name, participantIds, photo, description }
-      : { name, participantIds, description };
-    const context = photo ? { useMultipart: true, file: photo } : undefined;
+  ): Observable<any> {
+    this.logger.debug(
+      'MessageService',
+      `Creating group: ${name} with ${participantIds.length} participants`
+    );
+
+    if (!name || !participantIds || participantIds.length === 0) {
+      return throwError(
+        () => new Error('Nom du groupe et participants requis')
+      );
+    }
 
     return this.apollo
-      .mutate<CreateGroupResponse>({
+      .mutate({
         mutation: CREATE_GROUP_MUTATION,
-        variables,
-        context,
-        refetchQueries: [
-          {
-            query: GET_USER_GROUPS_QUERY,
-            variables: { userId: this.getCurrentUserId() },
-          },
-        ],
+        variables: { name, participantIds, photo, description },
       })
       .pipe(
-        map((result) => {
-          if (!result.data?.createGroup)
-            throw new Error('Failed to create group');
-          return {
-            ...result.data.createGroup,
-            participants:
-              result.data.createGroup.participants?.map((p) =>
-                this.normalizeUser(p)
-              ) || [],
-            admins:
-              result.data.createGroup.admins?.map((a) =>
-                this.normalizeUser(a)
-              ) || [],
-          };
+        map((result: any) => {
+          const group = result.data?.createGroup;
+          if (!group) {
+            throw new Error('Échec de la création du groupe');
+          }
+          this.logger.info(
+            'MessageService',
+            `Group created successfully: ${group.id}`
+          );
+          return group;
         }),
         catchError((error) => {
           this.logger.error('MessageService', 'Error creating group:', error);
-          return throwError(() => new Error('Failed to create group'));
+          return throwError(() => new Error('Échec de la création du groupe'));
         })
       );
   }
-  updateGroup(
-    groupId: string,
-    input: {
-      name?: string;
-      photo?: File;
-      description?: string;
-      addParticipants?: string[];
-      removeParticipants?: string[];
-      addAdmins?: string[];
-      removeAdmins?: string[];
+
+  /**
+   * Met à jour un groupe existant
+   */
+  updateGroup(groupId: string, input: any): Observable<any> {
+    this.logger.debug('MessageService', `Updating group: ${groupId}`);
+
+    if (!groupId) {
+      return throwError(() => new Error('ID du groupe requis'));
     }
-  ): Observable<Group> {
-    const context = input.photo
-      ? { useMultipart: true, file: input.photo }
-      : undefined;
-    const { photo, ...inputWithoutPhoto } = input;
 
     return this.apollo
-      .mutate<UpdateGroupResponse>({
+      .mutate({
         mutation: UPDATE_GROUP_MUTATION,
-        variables: { id: groupId, input: inputWithoutPhoto },
-        context,
-        refetchQueries: [
-          { query: GET_GROUP_QUERY, variables: { id: groupId } },
-          {
-            query: GET_USER_GROUPS_QUERY,
-            variables: { userId: this.getCurrentUserId() },
-          },
-        ],
+        variables: { id: groupId, input },
       })
       .pipe(
-        map((result) => {
-          if (!result.data?.updateGroup)
-            throw new Error('Failed to update group');
-          return {
-            ...result.data.updateGroup,
-            participants:
-              result.data.updateGroup.participants?.map((p) =>
-                this.normalizeUser(p)
-              ) || [],
-            admins:
-              result.data.updateGroup.admins?.map((a) =>
-                this.normalizeUser(a)
-              ) || [],
-          };
+        map((result: any) => {
+          const group = result.data?.updateGroup;
+          if (!group) {
+            throw new Error('Échec de la mise à jour du groupe');
+          }
+          this.logger.info(
+            'MessageService',
+            `Group updated successfully: ${group.id}`
+          );
+          return group;
         }),
         catchError((error) => {
           this.logger.error('MessageService', 'Error updating group:', error);
-          return throwError(() => new Error('Failed to update group'));
+          return throwError(
+            () => new Error('Échec de la mise à jour du groupe')
+          );
+        })
+      );
+  }
+
+  /**
+   * Supprime un groupe
+   */
+  deleteGroup(
+    groupId: string
+  ): Observable<{ success: boolean; message: string }> {
+    this.logger.debug('MessageService', `Deleting group: ${groupId}`);
+
+    if (!groupId) {
+      return throwError(() => new Error('ID du groupe requis'));
+    }
+
+    return this.apollo
+      .mutate({
+        mutation: DELETE_GROUP_MUTATION,
+        variables: { id: groupId },
+      })
+      .pipe(
+        map((result: any) => {
+          const response = result.data?.deleteGroup;
+          if (!response) {
+            throw new Error('Échec de la suppression du groupe');
+          }
+          this.logger.info(
+            'MessageService',
+            `Group deleted successfully: ${groupId}`
+          );
+          return response;
+        }),
+        catchError((error) => {
+          this.logger.error('MessageService', 'Error deleting group:', error);
+          return throwError(
+            () => new Error('Échec de la suppression du groupe')
+          );
+        })
+      );
+  }
+
+  /**
+   * Quitte un groupe
+   */
+  leaveGroup(
+    groupId: string
+  ): Observable<{ success: boolean; message: string }> {
+    this.logger.debug('MessageService', `Leaving group: ${groupId}`);
+
+    if (!groupId) {
+      return throwError(() => new Error('ID du groupe requis'));
+    }
+
+    return this.apollo
+      .mutate({
+        mutation: LEAVE_GROUP_MUTATION,
+        variables: { groupId },
+      })
+      .pipe(
+        map((result: any) => {
+          const response = result.data?.leaveGroup;
+          if (!response) {
+            throw new Error('Échec de la sortie du groupe');
+          }
+          this.logger.info(
+            'MessageService',
+            `Left group successfully: ${groupId}`
+          );
+          return response;
+        }),
+        catchError((error) => {
+          this.logger.error('MessageService', 'Error leaving group:', error);
+          return throwError(() => new Error('Échec de la sortie du groupe'));
+        })
+      );
+  }
+
+  /**
+   * Récupère les informations d'un groupe
+   */
+  getGroup(groupId: string): Observable<any> {
+    this.logger.debug('MessageService', `Getting group: ${groupId}`);
+
+    if (!groupId) {
+      return throwError(() => new Error('ID du groupe requis'));
+    }
+
+    return this.apollo
+      .query({
+        query: GET_GROUP_QUERY,
+        variables: { id: groupId },
+        fetchPolicy: 'network-only',
+      })
+      .pipe(
+        map((result: any) => {
+          const group = result.data?.getGroup;
+          if (!group) {
+            throw new Error('Groupe non trouvé');
+          }
+          this.logger.info(
+            'MessageService',
+            `Group retrieved successfully: ${groupId}`
+          );
+          return group;
+        }),
+        catchError((error) => {
+          this.logger.error('MessageService', 'Error getting group:', error);
+          return throwError(
+            () => new Error('Échec de la récupération du groupe')
+          );
+        })
+      );
+  }
+
+  /**
+   * Récupère les groupes d'un utilisateur
+   */
+  getUserGroups(userId: string): Observable<any[]> {
+    this.logger.debug('MessageService', `Getting groups for user: ${userId}`);
+
+    if (!userId) {
+      return throwError(() => new Error("ID de l'utilisateur requis"));
+    }
+
+    return this.apollo
+      .query({
+        query: GET_USER_GROUPS_QUERY,
+        variables: { userId },
+        fetchPolicy: 'network-only',
+      })
+      .pipe(
+        map((result: any) => {
+          const groups = result.data?.getUserGroups || [];
+          this.logger.info(
+            'MessageService',
+            `Retrieved ${groups.length} groups for user: ${userId}`
+          );
+          return groups;
+        }),
+        catchError((error) => {
+          this.logger.error(
+            'MessageService',
+            'Error getting user groups:',
+            error
+          );
+          return throwError(
+            () => new Error('Échec de la récupération des groupes')
+          );
         })
       );
   }
@@ -2790,17 +3020,39 @@ export class MessageService implements OnDestroy {
   // Section 4: Subscriptions et Gestion Temps Réel
   // --------------------------------------------------------------------------
   subscribeToNewMessages(conversationId: string): Observable<Message> {
+    console.log(
+      `🔍 DEBUG: subscribeToNewMessages called with conversationId: ${conversationId}`
+    );
+
     // Vérifier si l'utilisateur est connecté avec un token valide
-    if (!this.isTokenValid()) {
+    const tokenValid = this.isTokenValid();
+    console.log(`🔍 DEBUG: Token validation result: ${tokenValid}`);
+
+    if (!tokenValid) {
+      console.warn(
+        '❌ DEBUG: Token invalid - subscription will not be established'
+      );
       this.logger.warn(
         "Tentative d'abonnement aux messages avec un token invalide ou expiré"
       );
       return of(null as unknown as Message);
     }
 
-    this.logger.debug(
-      `Démarrage de l'abonnement aux nouveaux messages pour la conversation: ${conversationId}`
+    console.log(
+      `✅ DEBUG: Token valid - proceeding with subscription setup for conversation: ${conversationId}`
     );
+    this.logger.debug(
+      `🚀 INSTANT MESSAGE: Setting up real-time subscription for conversation: ${conversationId}`
+    );
+
+    console.log(`🔍 DEBUG: Creating Apollo subscription with variables:`, {
+      conversationId,
+    });
+    console.log(
+      `🔍 DEBUG: MESSAGE_SENT_SUBSCRIPTION query:`,
+      MESSAGE_SENT_SUBSCRIPTION
+    );
+    console.log(`🔍 DEBUG: Subscription variables:`, { conversationId });
 
     const sub$ = this.apollo
       .subscribe<{ messageSent: Message }>({
@@ -2808,50 +3060,77 @@ export class MessageService implements OnDestroy {
         variables: { conversationId },
       })
       .pipe(
+        tap((result) => {
+          console.log(`🔍 DEBUG: Raw subscription result received:`, result);
+          console.log(`🔍 DEBUG: result.data:`, result.data);
+          console.log(
+            `🔍 DEBUG: result.data?.messageSent:`,
+            result.data?.messageSent
+          );
+        }),
         map((result) => {
           const msg = result.data?.messageSent;
           if (!msg) {
-            this.logger.warn('No message payload received');
+            console.log(
+              `❌ DEBUG: No message payload received in result:`,
+              result
+            );
+            this.logger.warn('⚠️ No message payload received');
             throw new Error('No message payload received');
           }
 
+          this.logger.debug(
+            '⚡ INSTANT: New message received via WebSocket',
+            msg
+          );
+
           // Vérifier que l'ID est présent
           if (!msg.id && !msg._id) {
-            this.logger.warn('Message without ID received:', msg);
-            // Générer un ID temporaire si nécessaire
+            this.logger.warn(
+              '⚠️ Message without ID received, generating temp ID'
+            );
             msg.id = `temp-${Date.now()}`;
           }
 
           try {
-            // Utiliser normalizeMessage pour une normalisation complète
+            // NORMALISATION RAPIDE du message
             const normalizedMessage = this.normalizeMessage(msg);
 
-            // Si c'est un message vocal, s'assurer qu'il est correctement traité
+            this.logger.debug(
+              '✅ INSTANT: Message normalized successfully',
+              normalizedMessage
+            );
+
+            // TRAITEMENT INSTANTANÉ selon le type
             if (
               normalizedMessage.type === MessageType.AUDIO ||
+              normalizedMessage.type === MessageType.VOICE_MESSAGE ||
               (normalizedMessage.attachments &&
                 normalizedMessage.attachments.some(
-                  (att) => att.type === 'audio'
+                  (att) => att.type === 'audio' || att.type === 'AUDIO'
                 ))
             ) {
               this.logger.debug(
-                'MessageService',
-                'Voice message received in real-time',
-                normalizedMessage
+                '🎤 INSTANT: Voice message received in real-time'
               );
+            }
 
-              // Mettre à jour la conversation avec le nouveau message
+            // MISE À JOUR IMMÉDIATE de l'UI
+            this.zone.run(() => {
+              this.logger.debug(
+                '📡 INSTANT: Updating conversation UI immediately'
+              );
               this.updateConversationWithNewMessage(
                 conversationId,
                 normalizedMessage
               );
-            }
+            });
 
             return normalizedMessage;
           } catch (err) {
-            this.logger.error('Error normalizing message:', err);
+            this.logger.error('❌ Error normalizing message:', err);
 
-            // Créer un message minimal mais valide
+            // Créer un message minimal mais valide pour éviter les erreurs
             const minimalMessage: Message = {
               id: msg.id || msg._id || `temp-${Date.now()}`,
               content: msg.content || '',
@@ -2866,6 +3145,10 @@ export class MessageService implements OnDestroy {
                   },
             };
 
+            this.logger.debug(
+              '🔧 FALLBACK: Created minimal message',
+              minimalMessage
+            );
             return minimalMessage;
           }
         }),
@@ -2884,8 +3167,11 @@ export class MessageService implements OnDestroy {
         retry(3)
       );
 
+    console.log(`🔍 DEBUG: Setting up subscription observer...`);
+
     const sub = sub$.subscribe({
       next: (message) => {
+        console.log(`✅ DEBUG: Message received via subscription:`, message);
         // Traitement supplémentaire pour s'assurer que le message est bien affiché
         this.logger.debug('MessageService', 'New message received:', message);
 
@@ -2893,16 +3179,27 @@ export class MessageService implements OnDestroy {
         this.updateConversationWithNewMessage(conversationId, message);
       },
       error: (err) => {
+        console.error(`❌ DEBUG: Subscription error:`, err);
         this.logger.error('Error in message subscription:', err);
+      },
+      complete: () => {
+        console.log(`🔚 DEBUG: Subscription completed`);
       },
     });
 
+    // Log pour confirmer que la subscription est créée
+    console.log(`🔗 DEBUG: Subscription object created:`, sub);
+    console.log(`🔗 DEBUG: Apollo client state:`, this.apollo);
+
     this.subscriptions.push(sub);
+    console.log(
+      `✅ DEBUG: Subscription established and added to subscriptions list. Total subscriptions: ${this.subscriptions.length}`
+    );
     return sub$;
   }
 
   /**
-   * Met à jour une conversation avec un nouveau message
+   * Met à jour une conversation avec un nouveau message INSTANTANÉMENT
    * @param conversationId ID de la conversation
    * @param message Nouveau message
    */
@@ -2910,28 +3207,58 @@ export class MessageService implements OnDestroy {
     conversationId: string,
     message: Message
   ): void {
-    // Forcer une mise à jour de la conversation en récupérant les données à jour
-    this.getConversation(conversationId).subscribe({
-      next: (conversation) => {
-        this.logger.debug(
-          'MessageService',
-          `Conversation ${conversationId} refreshed with new message ${
-            message.id
-          }, has ${conversation?.messages?.length || 0} messages`
-        );
+    this.logger.debug(
+      `⚡ INSTANT: Updating conversation ${conversationId} with new message ${message.id}`
+    );
 
-        // Émettre un événement pour informer les composants que la conversation a été mise à jour
-        this.activeConversation.next(conversationId);
+    // MISE À JOUR IMMÉDIATE sans attendre la requête
+    this.zone.run(() => {
+      // Émettre IMMÉDIATEMENT l'événement de conversation active
+      this.activeConversation.next(conversationId);
+
+      this.logger.debug('📡 INSTANT: Conversation event emitted immediately');
+    });
+
+    // Mise à jour en arrière-plan (non-bloquante)
+    setTimeout(() => {
+      this.getConversation(conversationId).subscribe({
+        next: (conversation) => {
+          this.logger.debug(
+            `✅ BACKGROUND: Conversation ${conversationId} refreshed with ${
+              conversation?.messages?.length || 0
+            } messages`
+          );
+        },
+        error: (error) => {
+          this.logger.error(
+            `⚠️ BACKGROUND: Error refreshing conversation ${conversationId}:`,
+            error
+          );
+        },
+      });
+    }, 0); // Exécution asynchrone immédiate
+  }
+
+  /**
+   * Rafraîchit les notifications du sender après envoi d'un message
+   */
+  private refreshSenderNotifications(): void {
+    console.log('🔄 SENDER: Refreshing notifications after message sent');
+
+    // Recharger les notifications en arrière-plan
+    this.getNotifications(true).subscribe({
+      next: (notifications) => {
+        console.log(
+          '🔄 SENDER: Notifications refreshed successfully',
+          notifications.length
+        );
       },
       error: (error) => {
-        this.logger.error(
-          'MessageService',
-          `Error refreshing conversation ${conversationId}:`,
-          error
-        );
+        console.error('🔄 SENDER: Error refreshing notifications:', error);
       },
     });
   }
+
   subscribeToUserStatus(): Observable<User> {
     // Vérifier si l'utilisateur est connecté avec un token valide
     if (!this.isTokenValid()) {
@@ -3152,9 +3479,12 @@ export class MessageService implements OnDestroy {
       this.logger.warn(
         "Tentative d'abonnement aux notifications sans être connecté"
       );
-      // Créer un Observable vide plutôt que de retourner null
       return EMPTY;
     }
+
+    this.logger.debug(
+      '🚀 INSTANT NOTIFICATION: Setting up real-time subscription'
+    );
 
     const source$ = this.apollo.subscribe<NotificationReceivedEvent>({
       query: NOTIFICATION_SUBSCRIPTION,
@@ -3167,35 +3497,66 @@ export class MessageService implements OnDestroy {
           throw new Error('No notification payload received');
         }
 
+        this.logger.debug(
+          '⚡ INSTANT: New notification received',
+          notification
+        );
+
         const normalized = this.normalizeNotification(notification);
 
-        // Vérifier si cette notification existe déjà dans le cache
+        // Vérification rapide du cache
         if (this.notificationCache.has(normalized.id)) {
           this.logger.debug(
-            'MessageService',
-            `Notification ${normalized.id} already exists in cache, skipping`
+            `🔄 Notification ${normalized.id} already in cache, skipping`
           );
-          // Utiliser une technique différente pour ignorer cette notification
           throw new Error('Notification already exists in cache');
         }
 
-        // Jouer le son de notification
+        // TRAITEMENT INSTANTANÉ
+        this.logger.debug('📡 INSTANT: Processing notification immediately');
+
+        // Vérifier si la notification existe déjà pour éviter les doublons
+        const currentNotifications = this.notifications.value;
+        const existingNotification = currentNotifications.find(
+          (n) => n.id === normalized.id
+        );
+
+        if (existingNotification) {
+          this.logger.debug(
+            '🔄 DUPLICATE: Notification already exists, skipping:',
+            normalized.id
+          );
+          return normalized;
+        }
+
+        // Son de notification IMMÉDIAT
         this.playNotificationSound();
 
-        // Mettre à jour le cache et émettre immédiatement la nouvelle notification
+        // Mise à jour INSTANTANÉE du cache
         this.updateNotificationCache(normalized);
 
+        // Émettre IMMÉDIATEMENT la notification EN PREMIER
+        this.zone.run(() => {
+          // 🚀 INSERTION EN PREMIER: Nouvelle notification en tête de liste
+          const updatedNotifications = [normalized, ...currentNotifications];
+
+          this.logger.debug(
+            `⚡ INSTANT: Nouvelle notification ajoutée en PREMIER (${updatedNotifications.length} total)`
+          );
+
+          this.notifications.next(updatedNotifications);
+          this.notificationCount.next(this.notificationCount.value + 1);
+        });
+
         this.logger.debug(
-          'MessageService',
-          'New notification received and processed',
+          '✅ INSTANT: Notification processed and emitted',
           normalized
         );
 
         return normalized;
       }),
-      // Utiliser catchError pour gérer les erreurs spécifiques
+      // Gestion d'erreurs optimisée
       catchError((err) => {
-        // Si c'est l'erreur spécifique pour les notifications déjà existantes, on ignore silencieusement
         if (
           err instanceof Error &&
           err.message === 'Notification already exists in cache'
@@ -3203,30 +3564,35 @@ export class MessageService implements OnDestroy {
           return EMPTY;
         }
 
-        this.logger.error('New notification subscription error:', err as Error);
-        // Retourner un Observable vide au lieu de null
+        this.logger.error('❌ Notification subscription error:', err as Error);
         return EMPTY;
+      }),
+      // Optimisation: traitement en temps réel
+      tap((notification) => {
+        this.logger.debug(
+          '⚡ INSTANT: Notification ready for UI update',
+          notification
+        );
       })
     );
 
     const sub = processed$.subscribe({
       next: (notification) => {
         this.logger.debug(
-          'MessageService',
-          'Notification subscription next handler',
+          '✅ INSTANT: Notification delivered to UI',
           notification
         );
       },
       error: (error) => {
         this.logger.error(
-          'MessageService',
-          'Error in notification subscription',
+          '❌ CRITICAL: Notification subscription error',
           error
         );
       },
     });
 
     this.subscriptions.push(sub);
+    this.logger.debug('🔗 INSTANT: Notification subscription established');
     return processed$;
   }
   // --------------------------------------------------------------------------
@@ -3254,10 +3620,35 @@ export class MessageService implements OnDestroy {
 
     if (expiredCount > 0) {
       this.logger.debug(`Cleaned up ${expiredCount} expired notifications`);
-      this.notifications.next(Array.from(this.notificationCache.values()));
+
+      // 🚀 TRI OPTIMISÉ: Maintenir l'ordre après nettoyage
+      const remainingNotifications = Array.from(
+        this.notificationCache.values()
+      );
+      const sortedNotifications = this.sortNotificationsByDate(
+        remainingNotifications
+      );
+
+      this.notifications.next(sortedNotifications);
       this.updateUnreadCount();
     }
   }
+  /**
+   * Trie les notifications par date (plus récentes en premier)
+   * @param notifications Array de notifications à trier
+   * @returns Array de notifications triées
+   */
+  private sortNotificationsByDate(
+    notifications: Notification[]
+  ): Notification[] {
+    return notifications.sort((a, b) => {
+      // Utiliser timestamp ou une date par défaut si manquant
+      const dateA = new Date(a.timestamp || 0);
+      const dateB = new Date(b.timestamp || 0);
+      return dateB.getTime() - dateA.getTime(); // Ordre décroissant (plus récent en premier)
+    });
+  }
+
   private getCurrentUserId(): string {
     return localStorage.getItem('userId') || '';
   }
@@ -3370,19 +3761,7 @@ export class MessageService implements OnDestroy {
       );
     }
   }
-  private normalizeNotMessage(message: any) {
-    return {
-      ...message,
-      ...(message.attachments && {
-        attachments: message.attachments.map((att: any) => ({
-          url: att.url,
-          type: att.type,
-          ...(att.name && { name: att.name }),
-          ...(att.size && { size: att.size }),
-        })),
-      }),
-    };
-  }
+
   public normalizeUser(user: any): User {
     if (!user) {
       throw new Error('User object is required');
@@ -3642,33 +4021,63 @@ export class MessageService implements OnDestroy {
       ...(sender.image && { image: sender.image }),
     };
   }
-  private updateCache(notifications: Notification[]) {
+
+  /**
+   * Normalise un message de notification
+   * @param message Message à normaliser
+   * @returns Message normalisé
+   */
+  private normalizeNotMessage(message: any) {
+    if (!message) return null;
+
+    return {
+      id: message.id || message._id,
+      content: message.content || '',
+      type: message.type || 'TEXT',
+      timestamp: this.safeDate(message.timestamp),
+      attachments: message.attachments || [],
+      ...(message.sender && { sender: this.normalizeSender(message.sender) }),
+    };
+  }
+  /**
+   * Met à jour le cache de notifications avec une ou plusieurs notifications
+   * @param notifications Notification(s) à ajouter au cache
+   * @param skipDuplicates Si true, ignore les notifications déjà présentes dans le cache
+   */
+  private updateCache(
+    notifications: Notification | Notification[],
+    skipDuplicates: boolean = true
+  ) {
+    const notificationArray = Array.isArray(notifications)
+      ? notifications
+      : [notifications];
+
     this.logger.debug(
       'MessageService',
-      `Updating notification cache with ${notifications.length} notifications`
+      `Updating notification cache with ${notificationArray.length} notifications`
     );
 
-    if (notifications.length === 0) {
+    if (notificationArray.length === 0) {
       this.logger.warn('MessageService', 'No notifications to update in cache');
       return;
     }
 
-    console.log(
-      `Starting to update cache with ${notifications.length} notifications`
-    );
-
     // Vérifier si les notifications ont des IDs valides
-    const validNotifications = notifications.filter(
+    const validNotifications = notificationArray.filter(
       (notif) => notif && (notif.id || (notif as any)._id)
     );
 
-    if (validNotifications.length !== notifications.length) {
-      console.warn(
+    if (validNotifications.length !== notificationArray.length) {
+      this.logger.warn(
+        'MessageService',
         `Found ${
-          notifications.length - validNotifications.length
+          notificationArray.length - validNotifications.length
         } notifications without valid IDs`
       );
     }
+
+    let addedCount = 0;
+    let skippedCount = 0;
 
     // Traiter chaque notification
     validNotifications.forEach((notif, index) => {
@@ -3676,7 +4085,11 @@ export class MessageService implements OnDestroy {
         // S'assurer que la notification a un ID
         const notifId = notif.id || (notif as any)._id;
         if (!notifId) {
-          console.error('Notification without ID:', notif);
+          this.logger.error(
+            'MessageService',
+            'Notification without ID:',
+            notif
+          );
           return;
         }
 
@@ -3684,60 +4097,163 @@ export class MessageService implements OnDestroy {
         const normalized = this.normalizeNotification(notif);
 
         // Vérifier si cette notification existe déjà dans le cache
-        if (this.notificationCache.has(normalized.id)) {
-          console.log(
+        if (skipDuplicates && this.notificationCache.has(normalized.id)) {
+          this.logger.debug(
+            'MessageService',
             `Notification ${normalized.id} already exists in cache, skipping`
           );
+          skippedCount++;
           return;
         }
 
         // Ajouter au cache
         this.notificationCache.set(normalized.id, normalized);
+        addedCount++;
 
-        console.log(`Added notification ${normalized.id} to cache`);
+        this.logger.debug(
+          'MessageService',
+          `Added notification ${normalized.id} to cache`
+        );
       } catch (error) {
-        console.error(`Error processing notification ${index + 1}:`, error);
-        console.error('Problematic notification:', notif);
+        this.logger.error(
+          'MessageService',
+          `Error processing notification ${index + 1}:`,
+          error
+        );
       }
     });
 
-    console.log(
-      `Notification cache updated, now contains ${this.notificationCache.size} notifications`
+    this.logger.debug(
+      'MessageService',
+      `Cache update complete: ${addedCount} added, ${skippedCount} skipped, total: ${this.notificationCache.size}`
     );
 
-    // Sauvegarder les notifications dans le localStorage après la mise à jour du cache
+    // Mettre à jour les observables et sauvegarder
+    this.refreshNotificationObservables();
+  }
+  /**
+   * Met à jour les observables de notifications et sauvegarde dans le localStorage
+   * OPTIMISÉ: Trie les notifications par date (plus récentes en premier)
+   */
+  private refreshNotificationObservables(): void {
+    const allNotifications = Array.from(this.notificationCache.values());
+
+    // 🚀 TRI OPTIMISÉ: Les notifications les plus récentes en premier
+    const sortedNotifications = this.sortNotificationsByDate(allNotifications);
+
+    this.logger.debug(
+      `📊 SORTED: ${sortedNotifications.length} notifications triées par date (plus récentes en premier)`
+    );
+
+    this.notifications.next(sortedNotifications);
+    this.updateUnreadCount();
     this.saveNotificationsToLocalStorage();
   }
-  private updateUnreadCount() {
-    const count = Array.from(this.notificationCache.values()).filter(
-      (n) => !n.isRead
-    ).length;
-    this.notificationCount.next(count);
-  }
-  private updateNotificationCache(notification: Notification): void {
-    // Vérifier si la notification existe déjà dans le cache (pour éviter les doublons)
-    if (!this.notificationCache.has(notification.id)) {
-      this.notificationCache.set(notification.id, notification);
-      this.notifications.next(Array.from(this.notificationCache.values()));
-      this.updateUnreadCount();
-      // Sauvegarder les notifications dans le localStorage après chaque mise à jour
-      this.saveNotificationsToLocalStorage();
-    } else {
-      this.logger.debug(
-        'MessageService',
-        `Notification ${notification.id} already exists in cache, skipping`
+
+  /**
+   * Met à jour le compteur de notifications non lues
+   */
+  private updateUnreadCount(): void {
+    const allNotifications = Array.from(this.notificationCache.values());
+    const unreadNotifications = allNotifications.filter((n) => !n.isRead);
+    const count = unreadNotifications.length;
+
+    // Forcer la mise à jour dans la zone Angular
+    this.zone.run(() => {
+      this.notificationCount.next(count);
+
+      // Émettre un événement global pour forcer la mise à jour du layout
+      window.dispatchEvent(
+        new CustomEvent('notificationCountChanged', {
+          detail: { count },
+        })
       );
-    }
+    });
   }
-  private updateNotificationStatus(ids: string[], isRead: boolean) {
+
+  /**
+   * Met à jour le cache avec une seule notification (méthode simplifiée)
+   * @param notification Notification à ajouter
+   */
+  private updateNotificationCache(notification: Notification): void {
+    this.updateCache(notification, true);
+  }
+  /**
+   * Met à jour le statut de lecture des notifications
+   * @param ids IDs des notifications à mettre à jour
+   * @param isRead Nouveau statut de lecture
+   */
+  private updateNotificationStatus(ids: string[], isRead: boolean): void {
     ids.forEach((id) => {
       const notif = this.notificationCache.get(id);
       if (notif) {
-        this.notificationCache.set(id, { ...notif, isRead });
+        this.notificationCache.set(id, {
+          ...notif,
+          isRead,
+          readAt: isRead ? new Date().toISOString() : undefined,
+        });
       }
     });
-    this.notifications.next(Array.from(this.notificationCache.values()));
-    this.updateUnreadCount();
+    this.refreshNotificationObservables();
+  }
+
+  /**
+   * Méthode générique pour supprimer des notifications du cache local
+   * @param notificationIds IDs des notifications à supprimer
+   * @returns Nombre de notifications supprimées
+   */
+  private removeNotificationsFromCache(notificationIds: string[]): number {
+    console.log(
+      '🗑️ REMOVE FROM CACHE: Starting removal of',
+      notificationIds.length,
+      'notifications'
+    );
+    console.log(
+      '🗑️ REMOVE FROM CACHE: Cache size before:',
+      this.notificationCache.size
+    );
+
+    let removedCount = 0;
+    notificationIds.forEach((id) => {
+      if (this.notificationCache.has(id)) {
+        console.log('🗑️ REMOVE FROM CACHE: Removing notification:', id);
+        this.notificationCache.delete(id);
+        removedCount++;
+      } else {
+        console.log(
+          '🗑️ REMOVE FROM CACHE: Notification not found in cache:',
+          id
+        );
+      }
+    });
+
+    console.log('🗑️ REMOVE FROM CACHE: Removed', removedCount, 'notifications');
+    console.log(
+      '🗑️ REMOVE FROM CACHE: Cache size after:',
+      this.notificationCache.size
+    );
+
+    if (removedCount > 0) {
+      console.log('🗑️ REMOVE FROM CACHE: Refreshing observables...');
+      this.refreshNotificationObservables();
+    }
+
+    return removedCount;
+  }
+
+  /**
+   * Méthode générique pour gérer les erreurs de suppression
+   * @param error Erreur survenue
+   * @param operation Nom de l'opération
+   * @param fallbackResponse Réponse de fallback en cas d'erreur
+   */
+  private handleDeletionError(
+    error: any,
+    operation: string,
+    fallbackResponse: any
+  ) {
+    this.logger.error('MessageService', `Erreur lors de ${operation}:`, error);
+    return of(fallbackResponse);
   }
   // Typing indicators
   startTyping(conversationId: string): Observable<boolean> {
@@ -3800,6 +4316,500 @@ export class MessageService implements OnDestroy {
           return throwError(() => new Error('Failed to stop typing indicator'));
         })
       );
+  }
+
+  // ========================================
+  // MÉTHODES UTILITAIRES CONSOLIDÉES
+  // ========================================
+
+  /**
+   * Formate l'heure d'un message
+   */
+  formatMessageTime(timestamp: string | Date | undefined): string {
+    if (!timestamp) return 'Unknown time';
+    try {
+      const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
+      return date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+    } catch (error) {
+      return 'Invalid time';
+    }
+  }
+
+  /**
+   * Formate la dernière activité d'un utilisateur
+   */
+  formatLastActive(lastActive: string | Date | undefined): string {
+    if (!lastActive) return 'Offline';
+    const lastActiveDate =
+      lastActive instanceof Date ? lastActive : new Date(lastActive);
+    const now = new Date();
+    const diffHours =
+      Math.abs(now.getTime() - lastActiveDate.getTime()) / (1000 * 60 * 60);
+
+    if (diffHours < 24) {
+      return `Active ${lastActiveDate.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })}`;
+    }
+    return `Active ${lastActiveDate.toLocaleDateString()}`;
+  }
+
+  /**
+   * Formate la date d'un message
+   */
+  formatMessageDate(timestamp: string | Date | undefined): string {
+    if (!timestamp) return 'Unknown date';
+
+    try {
+      const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
+      const today = new Date();
+
+      if (date.toDateString() === today.toDateString()) {
+        return date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      }
+
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      if (date.toDateString() === yesterday.toDateString()) {
+        return `LUN., ${date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}`;
+      }
+
+      const day = date
+        .toLocaleDateString('fr-FR', { weekday: 'short' })
+        .toUpperCase();
+      return `${day}., ${date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })}`;
+    } catch (error) {
+      return 'Invalid date';
+    }
+  }
+
+  /**
+   * Détermine si un en-tête de date doit être affiché
+   */
+  shouldShowDateHeader(messages: any[], index: number): boolean {
+    if (index === 0) return true;
+
+    try {
+      const currentMsg = messages[index];
+      const prevMsg = messages[index - 1];
+
+      if (!currentMsg?.timestamp || !prevMsg?.timestamp) return true;
+
+      const currentDate = this.getDateFromTimestamp(currentMsg.timestamp);
+      const prevDate = this.getDateFromTimestamp(prevMsg.timestamp);
+
+      return currentDate !== prevDate;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  private getDateFromTimestamp(timestamp: string | Date | undefined): string {
+    if (!timestamp) return 'unknown-date';
+    try {
+      return (
+        timestamp instanceof Date ? timestamp : new Date(timestamp)
+      ).toDateString();
+    } catch (error) {
+      return 'invalid-date';
+    }
+  }
+
+  /**
+   * Obtient l'icône d'un fichier selon son type MIME
+   */
+  getFileIcon(mimeType?: string): string {
+    if (!mimeType) return 'fa-file';
+    if (mimeType.startsWith('image/')) return 'fa-image';
+    if (mimeType.includes('pdf')) return 'fa-file-pdf';
+    if (mimeType.includes('word') || mimeType.includes('msword'))
+      return 'fa-file-word';
+    if (mimeType.includes('excel')) return 'fa-file-excel';
+    if (mimeType.includes('powerpoint')) return 'fa-file-powerpoint';
+    if (mimeType.includes('audio')) return 'fa-file-audio';
+    if (mimeType.includes('video')) return 'fa-file-video';
+    if (mimeType.includes('zip') || mimeType.includes('compressed'))
+      return 'fa-file-archive';
+    return 'fa-file';
+  }
+
+  /**
+   * Obtient le type d'un fichier selon son type MIME
+   */
+  getFileType(mimeType?: string): string {
+    if (!mimeType) return 'File';
+
+    const typeMap: Record<string, string> = {
+      'image/': 'Image',
+      'application/pdf': 'PDF',
+      'application/msword': 'Word Doc',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        'Word Doc',
+      'application/vnd.ms-excel': 'Excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        'Excel',
+      'application/vnd.ms-powerpoint': 'PowerPoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+        'PowerPoint',
+      'audio/': 'Audio',
+      'video/': 'Video',
+      'application/zip': 'ZIP Archive',
+      'application/x-rar-compressed': 'RAR Archive',
+    };
+
+    for (const [key, value] of Object.entries(typeMap)) {
+      if (mimeType.includes(key)) return value;
+    }
+    return 'File';
+  }
+
+  /**
+   * Vérifie si un message contient une image
+   */
+  hasImage(message: any): boolean {
+    if (!message || !message.attachments || message.attachments.length === 0) {
+      return false;
+    }
+
+    const attachment = message.attachments[0];
+    if (!attachment || !attachment.type) {
+      return false;
+    }
+
+    const type = attachment.type.toString();
+    return type === 'IMAGE' || type === 'image';
+  }
+
+  /**
+   * Vérifie si le message est un message vocal
+   */
+  isVoiceMessage(message: any): boolean {
+    if (!message) return false;
+
+    // Vérifier le type du message
+    if (
+      message.type === MessageType.VOICE_MESSAGE ||
+      message.type === MessageType.VOICE_MESSAGE_LOWER
+    ) {
+      return true;
+    }
+
+    // Vérifier les pièces jointes
+    if (message.attachments && message.attachments.length > 0) {
+      return message.attachments.some((att: any) => {
+        const type = att.type?.toString();
+        return (
+          type === 'VOICE_MESSAGE' ||
+          type === 'voice_message' ||
+          (message.metadata?.isVoiceMessage &&
+            (type === 'AUDIO' || type === 'audio'))
+        );
+      });
+    }
+
+    // Vérifier les métadonnées
+    return !!message.metadata?.isVoiceMessage;
+  }
+
+  /**
+   * Récupère l'URL du message vocal
+   */
+  getVoiceMessageUrl(message: any): string {
+    if (!message || !message.attachments || message.attachments.length === 0) {
+      return '';
+    }
+
+    const voiceAttachment = message.attachments.find((att: any) => {
+      const type = att.type?.toString();
+      return (
+        type === 'VOICE_MESSAGE' ||
+        type === 'voice_message' ||
+        type === 'AUDIO' ||
+        type === 'audio'
+      );
+    });
+
+    return voiceAttachment?.url || '';
+  }
+
+  /**
+   * Récupère la durée du message vocal
+   */
+  getVoiceMessageDuration(message: any): number {
+    if (!message) return 0;
+
+    // Essayer d'abord de récupérer la durée depuis les métadonnées
+    if (message.metadata?.duration) {
+      return message.metadata.duration;
+    }
+
+    // Sinon, essayer de récupérer depuis les pièces jointes
+    if (message.attachments && message.attachments.length > 0) {
+      const voiceAttachment = message.attachments.find((att: any) => {
+        const type = att.type?.toString();
+        return (
+          type === 'VOICE_MESSAGE' ||
+          type === 'voice_message' ||
+          type === 'AUDIO' ||
+          type === 'audio'
+        );
+      });
+
+      if (voiceAttachment && voiceAttachment.duration) {
+        return voiceAttachment.duration;
+      }
+    }
+
+    return 0;
+  }
+
+  /**
+   * Génère la hauteur des barres de la forme d'onde moderne
+   */
+  getVoiceBarHeight(index: number): number {
+    const pattern = [
+      8, 12, 6, 15, 10, 18, 7, 14, 9, 16, 5, 13, 11, 17, 8, 12, 6, 15, 10, 18,
+    ];
+    return pattern[index % pattern.length];
+  }
+
+  /**
+   * Formate la durée du message vocal en format MM:SS
+   */
+  formatVoiceDuration(seconds: number): string {
+    if (!seconds || seconds === 0) {
+      return '0:00';
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
+  /**
+   * Obtient l'URL de l'image en toute sécurité
+   */
+  getImageUrl(message: any): string {
+    if (!message || !message.attachments || message.attachments.length === 0) {
+      return '';
+    }
+
+    const attachment = message.attachments[0];
+    return attachment?.url || '';
+  }
+
+  /**
+   * Détermine le type d'un message
+   */
+  getMessageType(message: any): MessageType {
+    if (!message) return MessageType.TEXT;
+
+    try {
+      if (message.type) {
+        const msgType = message.type.toString();
+        if (msgType === 'text' || msgType === 'TEXT') {
+          return MessageType.TEXT;
+        } else if (msgType === 'image' || msgType === 'IMAGE') {
+          return MessageType.IMAGE;
+        } else if (msgType === 'file' || msgType === 'FILE') {
+          return MessageType.FILE;
+        } else if (msgType === 'audio' || msgType === 'AUDIO') {
+          return MessageType.AUDIO;
+        } else if (msgType === 'video' || msgType === 'VIDEO') {
+          return MessageType.VIDEO;
+        } else if (msgType === 'system' || msgType === 'SYSTEM') {
+          return MessageType.SYSTEM;
+        }
+      }
+
+      if (message.attachments?.length) {
+        const attachment = message.attachments[0];
+        if (attachment && attachment.type) {
+          const attachmentTypeStr = attachment.type.toString();
+
+          if (attachmentTypeStr === 'image' || attachmentTypeStr === 'IMAGE') {
+            return MessageType.IMAGE;
+          } else if (
+            attachmentTypeStr === 'file' ||
+            attachmentTypeStr === 'FILE'
+          ) {
+            return MessageType.FILE;
+          } else if (
+            attachmentTypeStr === 'audio' ||
+            attachmentTypeStr === 'AUDIO'
+          ) {
+            return MessageType.AUDIO;
+          } else if (
+            attachmentTypeStr === 'video' ||
+            attachmentTypeStr === 'VIDEO'
+          ) {
+            return MessageType.VIDEO;
+          }
+        }
+
+        return MessageType.FILE;
+      }
+
+      return MessageType.TEXT;
+    } catch (error) {
+      return MessageType.TEXT;
+    }
+  }
+
+  /**
+   * Retourne la liste des emojis communs
+   */
+  getCommonEmojis(): string[] {
+    return [
+      '😀',
+      '😃',
+      '😄',
+      '😁',
+      '😆',
+      '😅',
+      '😂',
+      '🤣',
+      '😊',
+      '😇',
+      '🙂',
+      '🙃',
+      '😉',
+      '😌',
+      '😍',
+      '🥰',
+      '😘',
+      '😗',
+      '😙',
+      '😚',
+      '😋',
+      '😛',
+      '😝',
+      '😜',
+      '🤪',
+      '🤨',
+      '🧐',
+      '🤓',
+      '😎',
+      '🤩',
+      '😏',
+      '😒',
+      '😞',
+      '😔',
+      '😟',
+      '😕',
+      '🙁',
+      '☹️',
+      '😣',
+      '😖',
+      '😫',
+      '😩',
+      '🥺',
+      '😢',
+      '😭',
+      '😤',
+      '😠',
+      '😡',
+      '🤬',
+      '🤯',
+      '😳',
+      '🥵',
+      '🥶',
+      '😱',
+      '😨',
+      '😰',
+      '😥',
+      '😓',
+      '🤗',
+      '🤔',
+      '👍',
+      '👎',
+      '👏',
+      '🙌',
+      '👐',
+      '🤲',
+      '🤝',
+      '🙏',
+      '✌️',
+      '🤞',
+      '❤️',
+      '🧡',
+      '💛',
+      '💚',
+      '💙',
+      '💜',
+      '🖤',
+      '💔',
+      '💯',
+      '💢',
+    ];
+  }
+
+  /**
+   * Obtient les classes CSS pour un message
+   */
+  getMessageTypeClass(message: any, currentUserId: string | null): string {
+    if (!message) {
+      return 'bg-gray-100 rounded-lg px-4 py-2';
+    }
+
+    try {
+      const isCurrentUser =
+        message.sender?.id === currentUserId ||
+        message.sender?._id === currentUserId ||
+        message.senderId === currentUserId;
+
+      const baseClass = isCurrentUser
+        ? 'bg-blue-500 text-white rounded-2xl rounded-br-sm'
+        : 'bg-gray-200 text-gray-800 rounded-2xl rounded-bl-sm';
+
+      const messageType = this.getMessageType(message);
+
+      if (message.attachments && message.attachments.length > 0) {
+        const attachment = message.attachments[0];
+        if (attachment && attachment.type) {
+          const attachmentTypeStr = attachment.type.toString();
+          if (attachmentTypeStr === 'IMAGE' || attachmentTypeStr === 'image') {
+            return `p-1 max-w-xs`;
+          } else if (
+            attachmentTypeStr === 'FILE' ||
+            attachmentTypeStr === 'file'
+          ) {
+            return `${baseClass} p-3`;
+          }
+        }
+      }
+
+      if (
+        messageType === MessageType.IMAGE ||
+        messageType === MessageType.IMAGE_LOWER
+      ) {
+        return `p-1 max-w-xs`;
+      } else if (
+        messageType === MessageType.FILE ||
+        messageType === MessageType.FILE_LOWER
+      ) {
+        return `${baseClass} p-3`;
+      }
+
+      return `${baseClass} px-4 py-3 whitespace-normal break-words min-w-[120px]`;
+    } catch (error) {
+      return 'bg-gray-100 rounded-lg px-4 py-2 whitespace-normal break-words';
+    }
   }
 
   // destroy

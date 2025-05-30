@@ -35,24 +35,19 @@ export class ListProjectComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('Initialisation du composant ListProjectComponent');
     this.loadProjets();
     this.checkAdminStatus();
   }
 
   loadProjets(): void {
     this.isLoading = true;
-    console.log('Chargement des projets...');
     this.projetService.getProjets().subscribe({
       next: (projets) => {
-        console.log('Projets reçus:', projets);
         this.projets = projets;
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error loading projects', err);
         this.isLoading = false;
-        // Afficher un message d'erreur à l'utilisateur
         alert(
           'Erreur lors du chargement des projets: ' +
             (err.error?.message || err.message || 'Erreur inconnue')
@@ -68,43 +63,34 @@ export class ListProjectComponent implements OnInit {
 
   checkAdminStatus(): void {
     this.isAdmin = this.authService.isAdmin();
-    console.log('Statut admin:', this.isAdmin);
   }
 
   editProjet(projetId: string | undefined): void {
     if (!projetId) {
-      console.error('ID du projet non défini');
       return;
     }
-    console.log('Édition du projet:', projetId);
     this.router.navigate(['/admin/projects/edit', projetId]);
   }
 
   viewProjetDetails(projetId: string | undefined): void {
     if (!projetId) {
-      console.error('ID du projet non défini');
       return;
     }
-    console.log('Affichage des détails du projet:', projetId);
     this.router.navigate(['/admin/projects/detail', projetId]);
   }
 
   deleteProjet(projetId: string | undefined): void {
     if (!projetId) {
-      console.error('ID du projet non défini');
       return;
     }
 
     if (confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
-      console.log('Suppression du projet confirmée:', projetId);
       this.projetService.deleteProjet(projetId).subscribe({
         next: () => {
-          console.log('Projet supprimé avec succès');
           alert('Projet supprimé avec succès');
-          this.loadProjets(); // Reload the projects after deletion
+          this.loadProjets();
         },
         error: (err) => {
-          console.error('Error deleting project', err);
           alert(
             'Erreur lors de la suppression du projet: ' +
               (err.error?.message || err.message || 'Erreur inconnue')
@@ -116,29 +102,21 @@ export class ListProjectComponent implements OnInit {
 
   openDeleteDialog(id: string): void {
     if (!id) {
-      console.error('ID du projet non défini');
       return;
     }
-    console.log(
-      'Ouverture de la boîte de dialogue de confirmation pour la suppression du projet:',
-      id
-    );
-    this.showDeleteDialog = true; // Show confirmation dialog
-    this.projectIdToDelete = id; // Store the ID of the project to be deleted
+    this.showDeleteDialog = true;
+    this.projectIdToDelete = id;
   }
 
   onDeleteConfirm(): void {
     if (this.projectIdToDelete) {
-      console.log('Suppression du projet confirmée:', this.projectIdToDelete);
       this.projetService.deleteProjet(this.projectIdToDelete).subscribe({
         next: () => {
-          console.log('Projet supprimé avec succès');
           alert('Projet supprimé avec succès');
-          this.loadProjets(); // Reload the projects after deletion
-          this.showDeleteDialog = false; // Close the confirmation dialog
+          this.loadProjets();
+          this.showDeleteDialog = false;
         },
         error: (err) => {
-          console.error('Error deleting project', err);
           alert(
             'Erreur lors de la suppression du projet: ' +
               (err.error?.message || err.message || 'Erreur inconnue')
@@ -150,8 +128,7 @@ export class ListProjectComponent implements OnInit {
   }
 
   onDeleteCancel(): void {
-    console.log('Suppression du projet annulée');
-    this.showDeleteDialog = false; // Close the confirmation dialog without deleting
+    this.showDeleteDialog = false;
   }
 
   getFileUrl(filePath: string): string {

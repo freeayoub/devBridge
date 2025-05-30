@@ -92,6 +92,7 @@ export interface Reaction {
   user: Partial<User>;
   emoji: string;
   createdAt: Date | string;
+  count?: number; // Nombre d'utilisateurs ayant réagi avec cet emoji
 }
 export interface Message {
   id?: string;
@@ -116,6 +117,7 @@ export interface Message {
   pinnedAt?: Date | string;
   pinnedBy?: Partial<User>;
   forwardedFrom?: Partial<Message>;
+  forwarded?: boolean; // Indique si le message a été transféré
   replyTo?: Partial<Message>;
   reactions?: Reaction[];
   metadata?: any;
@@ -447,4 +449,20 @@ export interface CallFeedback {
 export interface CallSuccess {
   success: boolean;
   message?: string;
+}
+
+/**
+ * Interface pour l'état d'un appel en cours
+ */
+export interface CallState {
+  isActive: boolean;
+  isIncoming: boolean;
+  isOutgoing: boolean;
+  isConnected: boolean;
+  isMuted: boolean;
+  isVideoEnabled: boolean;
+  duration: number;
+  call?: Call;
+  localStream?: MediaStream;
+  remoteStream?: MediaStream;
 }

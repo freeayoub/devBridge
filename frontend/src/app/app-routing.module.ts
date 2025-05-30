@@ -176,7 +176,7 @@ const routes: Routes = [
           ),
       },
       {
-           path: 'equipes',
+        path: 'equipes',
         loadChildren: () =>
           import('./views/admin/equipes/equipes.module').then(
             (m) => m.EquipesModule

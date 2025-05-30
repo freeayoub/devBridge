@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { MessageService } from '@app/services/message.service';
 import { LoggerService } from '@app/services/logger.service';
@@ -10,9 +10,6 @@ import { LoggerService } from '@app/services/logger.service';
   // schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MessageLayoutComponent implements OnInit, OnDestroy {
-  private _sidebarVisible = new BehaviorSubject<boolean>(true);
-  isMobileView$: any;
-  sidebarVisible$ = this._sidebarVisible.asObservable();
   private subscriptions: Subscription[] = [];
   context: string = 'messages';
   conversationId: any;
@@ -61,15 +58,6 @@ export class MessageLayoutComponent implements OnInit, OnDestroy {
     // Ajoutez ici la logique spécifique aux notifications si nécessaire
   }
 
-  toggleSidebar() {
-    this._sidebarVisible.next(!this._sidebarVisible.value);
-  }
-  hideSidebar() {
-    this._sidebarVisible.next(false);
-  }
-  showSidebar() {
-    this._sidebarVisible.next(true);
-  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }

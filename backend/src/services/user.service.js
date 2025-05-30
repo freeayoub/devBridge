@@ -120,7 +120,7 @@ class UserService {
       }
 
       // Add online status filter if specified
-      if (isOnline !== undefined) {
+      if (isOnline !== undefined && isOnline !== null) {
         filter.isOnline = isOnline;
       }
 

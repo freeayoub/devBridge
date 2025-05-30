@@ -3,6 +3,7 @@ import { ReunionService }  from 'src/app/services/reunion.service';
 import { Reunion } from 'src/app/models/reunion.model';
 import { AuthuserService } from 'src/app/services/authuser.service';
 import {Router} from "@angular/router";
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-reunion-list',
@@ -17,7 +18,8 @@ export class ReunionListComponent implements OnInit {
   constructor(
     private reunionService: ReunionService,
     private router:Router,
-    private authService: AuthuserService
+    private authService: AuthuserService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -35,7 +37,9 @@ export class ReunionListComponent implements OnInit {
         this.loading = false;
       },
       error: (error:any) => {
-        this.error = error;
+        // Afficher plus de détails sur l'erreur pour le débogage
+        console.error('Erreur détaillée:', JSON.stringify(error));
+        this.error = `Erreur lors du chargement des réunions: ${error.message || error.statusText || 'Erreur inconnue'}`;
         this.loading = false;
       }
     });
@@ -57,5 +61,18 @@ export class ReunionListComponent implements OnInit {
       this.router.navigate(['/reunions/modifier', id]);
 
   }
+  }
+
+  formatDescription(description: string): SafeHtml {
+    if (!description) return this.sanitizer.bypassSecurityTrustHtml('');
+
+    // Recherche la chaîne "(presence obligatoire)" (insensible à la casse) et la remplace par une version en rouge
+    const formattedText = description.replace(
+      /\(presence obligatoire\)/gi,
+      '<span class="text-red-600 font-semibold">(presence obligatoire)</span>'
+    );
+
+    // Sanitize le HTML pour éviter les problèmes de sécurité
+    return this.sanitizer.bypassSecurityTrustHtml(formattedText);
   }
 }

@@ -57,45 +57,27 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   }
 
   loadConversations(): void {
-    this.logger.info('MessagesList', `Loading conversations`);
     this.loading = true;
     this.error = null;
 
     const sub = this.MessageService.getConversations().subscribe({
       next: (conversations) => {
-        this.logger.info(
-          'MessagesList',
-          `Received ${conversations.length} conversations from service`
-        );
         this.conversations = Array.isArray(conversations)
           ? [...conversations]
           : [];
 
-        this.logger.debug('MessagesList', `Filtering conversations`);
         this.filterConversations();
-
-        this.logger.debug('MessagesList', `Updating unread count`);
         this.updateUnreadCount();
-
-        this.logger.debug('MessagesList', `Sorting conversations`);
         this.sortConversations();
-
         this.loading = false;
-        this.logger.info('MessagesList', `Conversations loaded successfully`);
       },
       error: (error) => {
-        this.logger.error(
-          'MessagesList',
-          `Error loading conversations:`,
-          error
-        );
         this.error = error;
         this.loading = false;
         this.toastService.showError('Failed to load conversations');
       },
     });
     this.subscriptions.push(sub);
-    this.logger.debug('MessagesList', `Conversation subscription added`);
   }
 
   filterConversations(): void {
@@ -178,11 +160,6 @@ export class MessagesListComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          this.logger.error(
-            'MessagesList',
-            'Error in status subscription:',
-            error
-          );
           this.toastService.showError('Connection to status updates lost');
         },
       });
@@ -205,7 +182,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
         this.sortConversations();
       },
       error: (error) => {
-        this.logger.error('MessagesList', 'Conversation update error:', error);
+        // Handle error silently
       },
     });
     this.subscriptions.push(sub);
@@ -234,70 +211,25 @@ export class MessagesListComponent implements OnInit, OnDestroy {
 
   openConversation(conversationId: string | undefined): void {
     if (!conversationId) {
-      this.logger.error(
-        'MessagesList',
-        'Cannot open conversation: conversationId is undefined'
-      );
       return;
     }
 
-    this.logger.info('MessagesList', `Opening conversation: ${conversationId}`);
     this.selectedConversationId = conversationId;
-
-    // Trouver la conversation pour les logs
-    const conversation = this.conversations.find(
-      (c) => c.id === conversationId
-    );
-    if (conversation) {
-      const otherParticipant = conversation.participants
-        ? this.getOtherParticipant(conversation.participants)
-        : undefined;
-      this.logger.debug(
-        'MessagesList',
-        `Conversation with: ${otherParticipant?.username || 'Unknown'}`
-      );
-      this.logger.debug(
-        'MessagesList',
-        `Unread messages: ${conversation.unreadCount || 0}`
-      );
-    }
-
-    this.logger.debug(
-      'MessagesList',
-      `Navigating to chat route with conversationId: ${conversationId}`
-    );
     this.router.navigate(['chat', conversationId], { relativeTo: this.route });
   }
 
   startNewConversation(): void {
-    this.logger.info(
-      'MessagesList',
-      'Starting new conversation, navigating to users list'
-    );
     this.router.navigate(['/messages/users']);
   }
 
   formatLastActive(lastActive: string): string {
-    if (!lastActive) return 'Offline';
-    const lastActiveDate = new Date(lastActive);
-    const now = new Date();
-    const diffHours =
-      Math.abs(now.getTime() - lastActiveDate.getTime()) / (1000 * 60 * 60);
-
-    if (diffHours < 24) {
-      return `Active ${lastActiveDate.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      })}`;
-    } else {
-      return `Active ${lastActiveDate.toLocaleDateString()}`;
-    }
+    return this.MessageService.formatLastActive(lastActive);
   }
 
   private handleError(message: string, error?: any): void {
+    this.logger.error('MessagesListComponent', message, error);
     this.error = message;
     this.loading = false;
-    this.logger.error('MessagesList', message, error);
     this.toastService.showError(message);
   }
 

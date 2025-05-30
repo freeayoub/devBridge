@@ -37,7 +37,7 @@
                             {{ planning.titre }}
                         </a>
                     </h3>
-                    <p class="text-sm text-gray-600 mt-1">{{ planning.description || 'Aucune description' }}</p>
+                    <p class="text-sm text-gray-600 mt-1" [innerHTML]="(planning.description || 'Aucune description') | highlightPresence"></p>
                 </div>
                 <button (click)="deletePlanning(planning._id)" class="text-red-500 hover:text-red-700">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

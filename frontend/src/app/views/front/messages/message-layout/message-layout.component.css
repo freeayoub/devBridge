@@ -1,3 +1,4 @@
+/* Layout optimisé sans sidebar */
 .layout-container {
   display: flex;
   height: 100vh;
@@ -6,40 +7,8 @@
 }
 
 .main-content {
-  flex-grow: 1;
-  transition: margin-left 0.3s ease;
+  flex: 1;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-}
-
-.sidebar-hidden {
-  margin-left: 0;
-}
-
-/* Styles futuristes pour la mise en page */
-.futuristic-layout {
-  background-color: var(--dark-bg);
-  color: var(--text-light);
-}
-
-.futuristic-main-content {
-  background-color: var(--dark-bg);
-  position: relative;
-}
-
-/* Effet de grille en arrière-plan */
-.futuristic-layout::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: linear-gradient(
-      rgba(0, 247, 255, 0.03) 1px,
-      transparent 1px
-    ),
-    linear-gradient(90deg, rgba(0, 247, 255, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-  pointer-events: none;
-  z-index: 0;
 }

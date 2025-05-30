@@ -1,91 +1,66 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ReunionService } from '../../../../services/reunion.service';
-
-interface Participant {
-  _id: string;
-  username: string;
-  image?: string;
-}
-
-interface Planning {
-  _id: string;
-  titre: string;
-}
-
-interface Reunion {
-  _id: string;
-  titre: string;
-  description: string;
-  dateDebut: Date;
-  dateFin: Date;
-  lieu?: string;
-  lienVisio?: string;
-  planningId?: Planning;
-  participants?: Participant[];
-}
+import { ActivatedRoute, Router } from '@angular/router';
+import { ReunionService } from '@app/services/reunion.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-reunion-detail',
   templateUrl: './reunion-detail.component.html',
-  styleUrls: ['./reunion-detail.component.css'],
+  styleUrls: ['./reunion-detail.component.css']
 })
 export class ReunionDetailComponent implements OnInit {
-  reunion: Reunion | null = null;
+  reunion: any = null;
   loading = true;
   error: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
-    private reunionService: ReunionService
+    public router: Router,
+    private reunionService: ReunionService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
-    this.loadReunion();
+    this.loadReunionDetails();
   }
 
-  loadReunion(): void {
-    this.loading = true;
-    this.error = null;
-
+  loadReunionDetails(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      this.error = 'ID de réunion manquant';
+      this.error = 'ID de réunion non fourni';
       this.loading = false;
       return;
     }
 
-    // Simulation de chargement (à remplacer par un appel au service)
-    setTimeout(() => {
-      // Données fictives pour la démonstration
-      this.reunion = {
-        _id: id,
-        titre: 'Réunion de projet',
-        description:
-          "Discussion sur l'avancement du projet et les prochaines étapes",
-        dateDebut: new Date('2023-06-15T10:00:00'),
-        dateFin: new Date('2023-06-15T11:30:00'),
-        lieu: 'Salle de conférence A',
-        lienVisio: 'https://meet.google.com/abc-defg-hij',
-        planningId: {
-          _id: 'planning123',
-          titre: 'Planning du projet X',
-        },
-        participants: [
-          {
-            _id: 'user1',
-            username: 'Jean Dupont',
-            image: 'assets/images/default-avatar.png',
-          },
-          {
-            _id: 'user2',
-            username: 'Marie Martin',
-            image: 'assets/images/default-avatar.png',
-          },
-        ],
-      };
+    this.reunionService.getReunionById(id).subscribe({
+      next: (response: any) => {
+        this.reunion = response.reunion;
+        this.loading = false;
+      },
+      error: (err: any) => {
+        this.error = err.error?.message || 'Erreur lors du chargement';
+        this.loading = false;
+        console.error('Erreur:', err);
+      }
+    });
+  }
 
-      this.loading = false;
-    }, 1000);
+  formatDescription(description: string): SafeHtml {
+    if (!description) return this.sanitizer.bypassSecurityTrustHtml('');
+
+    // Recherche la chaîne "(presence obligatoire)" (insensible à la casse) et la remplace par une version en rouge
+    const formattedText = description.replace(
+      /\(presence obligatoire\)/gi,
+      '<span class="text-red-600 font-semibold">(presence obligatoire)</span>'
+    );
+
+    // Sanitize le HTML pour éviter les problèmes de sécurité
+    return this.sanitizer.bypassSecurityTrustHtml(formattedText);
+  }
+
+  editReunion(): void {
+    if (this.reunion) {
+      this.router.navigate(['/reunions/edit', this.reunion._id]);
+    }
   }
 }

@@ -20,68 +20,69 @@
 
   <!-- Détails du planning -->
   <div *ngIf="!loading && planning" class="bg-white rounded-lg shadow-md p-6">
-    <div class="flex justify-between items-start mb-4">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-800">{{ planning.titre }}</h1>
-        <p class="text-gray-600 mt-1">{{ planning.description || 'Aucune description' }}</p>
-      </div>
+    <!-- Titre du planning -->
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ planning.titre }}</h1>
+    <p class="text-gray-600 mb-4" [innerHTML]="planning.description | highlightPresence"></p>
 
-      <div *ngIf="isCreator" class="flex space-x-2">
-        <button (click)="editPlanning()" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-          Modifier
-        </button>
-        <button (click)="deletePlanning()" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-          Supprimer
-        </button>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Section Informations -->
-      <div>
-        <h2 class="text-lg font-semibold mb-3 text-gray-800">Informations</h2>
-        <div class="space-y-3">
-          <div class="flex items-center">
-            <svg class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span class="text-gray-700">
-              Du <strong>{{ planning.dateDebut | date:'mediumDate' }}</strong>
-              au <strong>{{ planning.dateFin | date:'mediumDate' }}</strong>
-            </span>
-          </div>
-
-          <div *ngIf="planning.lieu" class="flex items-center">
-            <svg class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span class="text-gray-700">{{ planning.lieu }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section Participants -->
-      <div>
-        <h2 class="text-lg font-semibold mb-3 text-gray-800">Participants</h2>
-        <div class="flex flex-wrap gap-2">
-          <div *ngFor="let participant of planning.participants" class="flex items-center bg-gray-100 rounded-full px-3 py-1">
-            <span class="text-gray-700">{{ participant.username }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <!-- Informations -->
     <div class="mb-6">
-      <h2 class="text-lg font-semibold mb-3 text-gray-800">Réunions associées</h2>
-
-      <div class="calendar-container">
-        <mwl-calendar-month-view
-          [viewDate]="viewDate"
-          [events]="events"
-          (dayClicked)="handleDayClick($event.day)">
-        </mwl-calendar-month-view>
+      <h2 class="text-lg font-semibold mb-3 text-gray-800">Informations</h2>
+      <div class="flex items-center mb-2">
+        <svg class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span class="text-gray-700">
+          Du <strong>{{ planning.dateDebut | date:'mediumDate' }}</strong>
+          au <strong>{{ planning.dateFin | date:'mediumDate' }}</strong>
+        </span>
       </div>
+
+      <div *ngIf="planning.lieu" class="flex items-center">
+        <svg class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span class="text-gray-700">{{ planning.lieu }}</span>
+      </div>
+    </div>
+
+    <!-- Participants -->
+    <div class="mb-6">
+      <h2 class="text-lg font-semibold mb-3 text-gray-800">Participants</h2>
+      <div class="flex flex-wrap gap-2">
+        <div *ngFor="let participant of planning.participants" class="flex items-center bg-gray-100 rounded-full px-3 py-1">
+          <span class="text-gray-700">{{ participant.username }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Réunions associées -->
+    <div>
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-lg font-semibold text-gray-800">Réunions associées</h2>
+        <button (click)="nouvelleReunion()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors">
+          Nouvelle Réunion
+        </button>
+      </div>
+
+      <!-- Boutons Modifier et Supprimer -->
+      <div class="flex justify-end space-x-2 mb-3">
+        <button (click)="editPlanning()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+          Modifier Planning
+        </button>
+        <button (click)="deletePlanning()" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
+          Supprimer Planning
+        </button>
+      </div>
+
+      <!-- Calendrier -->
+      <mwl-calendar-month-view
+        [viewDate]="viewDate"
+        [events]="events"
+        (dayClicked)="handleDayClick($event.day)">
+      </mwl-calendar-month-view>
+
+      <!-- Détails des réunions du jour sélectionné -->
       <div class="mt-4" *ngIf="selectedDayEvents.length > 0">
         <hr class="my-2 border-gray-300" />
         <h3 class="text-md font-medium text-gray-700 mb-2">
@@ -89,14 +90,13 @@
         </h3>
         <ul class="space-y-2">
           <li *ngFor="let event of selectedDayEvents" class="p-2 border rounded bg-gray-50">
-            <div><strong>{{ event.title }}</strong></div>
+            <div><strong [innerHTML]="event.title | highlightPresence"></strong></div>
             <div>
               {{ event.start | date: 'shortTime' }} - {{ event.end | date: 'shortTime' }}
             </div>
           </li>
         </ul>
       </div>
-
     </div>
   </div>
 </div>

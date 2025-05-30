@@ -7,6 +7,7 @@ import {
   CalendarEvent, CalendarMonthViewDay,
   CalendarView,
 } from 'angular-calendar';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 
 @Component({
@@ -33,7 +34,8 @@ export class PlanningDetailComponent implements OnInit {
     public router: Router,
     private planningService: PlanningService,
     public authService: AuthuserService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -95,5 +97,25 @@ export class PlanningDetailComponent implements OnInit {
         error: (err) => this.error = err.error?.message || 'Erreur lors de la suppression'
       });
     }
+  }
+
+  nouvelleReunion(): void {
+    if (this.planning) {
+      // Rediriger vers le formulaire de création de réunion avec l'ID du planning préselectionné
+      this.router.navigate(['/reunions/nouvelleReunion'], {
+        queryParams: { planningId: this.planning._id }
+      });
+    }
+  }
+
+  formatDescription(description: string): SafeHtml {
+    // Recherche la chaîne "(presence obligatoire)" (insensible à la casse) et la remplace par une version en rouge
+    const formattedText = description.replace(
+      /\(presence obligatoire\)/gi,
+      '<span class="text-red-600 font-semibold">(presence obligatoire)</span>'
+    );
+
+    // Sanitize le HTML pour éviter les problèmes de sécurité
+    return this.sanitizer.bypassSecurityTrustHtml(formattedText);
   }
 }

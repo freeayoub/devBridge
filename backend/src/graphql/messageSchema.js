@@ -257,6 +257,21 @@ const typeDefs = gql`
     isTyping: Boolean!
   }
 
+  # ✅ Nouveau type pour la pagination des messages
+  type MessagePagination {
+    hasMore: Boolean!
+    limit: Int!
+    offset: Int!
+    firstCursor: ID
+    lastCursor: ID
+    total: Int!
+  }
+
+  type ConversationMessagesResponse {
+    messages: [Message!]!
+    pagination: MessagePagination!
+  }
+
   enum NotificationType {
     NEW_MESSAGE
     FRIEND_REQUEST
@@ -390,6 +405,14 @@ const typeDefs = gql`
       limit: Int
       offset: Int
     ): [Conversation!]!
+
+    # ✅ Nouvelle query optimisée pour récupérer les messages avec pagination
+    getConversationMessages(
+      conversationId: ID!
+      limit: Int = 50
+      before: ID
+      after: ID
+    ): ConversationMessagesResponse!
 
     getAllUsers(
       search: String

@@ -173,6 +173,8 @@
   font-size: 1.25rem;
   font-weight: 600;
   color: #4f5fad;
+  display: flex;
+  align-items: center;
 }
 
 /* Titre - Mode sombre */
@@ -180,218 +182,46 @@
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--accent-color);
+  display: flex;
+  align-items: center;
 }
 
-/* Boutons d'action - Mode clair */
-:host-context(:not(.dark)) .futuristic-action-button {
-  width: 36px;
-  height: 36px;
+/* Alignement de l'icône de notification avec les cases à cocher */
+.futuristic-title i {
+  margin-right: 0.5rem;
+  /* Alignement vertical parfait avec les cases à cocher des notifications */
+  position: relative;
+  top: 0px; /* Ajustement fin pour l'alignement parfait */
+  /* Même taille que les cases à cocher individuelles (22px) pour un alignement visuel cohérent */
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(79, 95, 173, 0.1);
+  /* Même style que les cases à cocher pour la cohérence visuelle */
+  border-radius: 50%;
+  background: rgba(0, 247, 255, 0.1);
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  box-shadow: 0 0 8px rgba(0, 247, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* Mode clair pour l'icône */
+:host-context(:not(.dark)) .futuristic-title i {
+  background: rgba(79, 95, 173, 0.1);
+  border: 1px solid rgba(79, 95, 173, 0.3);
+  box-shadow: 0 0 8px rgba(79, 95, 173, 0.3);
   color: #4f5fad;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all var(--transition-fast);
 }
 
-:host-context(:not(.dark)) .futuristic-action-button:hover {
-  background-color: rgba(79, 95, 173, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 0 15px rgba(79, 95, 173, 0.4);
+/* Effet de survol pour l'icône */
+.futuristic-title:hover i {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(0, 247, 255, 0.5);
 }
 
-:host-context(:not(.dark)) .futuristic-primary-button {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #4f5fad, #7826b5);
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border: none;
-  border-radius: var(--border-radius-md);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(79, 95, 173, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-:host-context(:not(.dark)) .futuristic-primary-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: all 0.5s;
-}
-
-:host-context(:not(.dark)) .futuristic-primary-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 15px rgba(79, 95, 173, 0.6);
-}
-
-:host-context(:not(.dark)) .futuristic-primary-button:hover::before {
-  left: 100%;
-}
-
-/* Bouton danger - Mode clair */
-:host-context(:not(.dark)) .futuristic-danger-button {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #ff5e62, #ff9d00);
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border: none;
-  border-radius: var(--border-radius-md);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(255, 94, 98, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-:host-context(:not(.dark)) .futuristic-danger-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: all 0.5s;
-}
-
-:host-context(:not(.dark)) .futuristic-danger-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 15px rgba(255, 94, 98, 0.6);
-}
-
-:host-context(:not(.dark)) .futuristic-danger-button:hover::before {
-  left: 100%;
-}
-
-/* Boutons d'action - Mode sombre */
-:host-context(.dark) .futuristic-action-button {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 247, 255, 0.1);
-  color: #00f7ff;
-  border: 1px solid rgba(0, 247, 255, 0.2);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-:host-context(.dark) .futuristic-action-button:hover {
-  background-color: rgba(0, 247, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
-}
-
-:host-context(.dark) .futuristic-primary-button {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #00f7ff, #0066ff);
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border: none;
-  border-radius: var(--border-radius-md);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-:host-context(.dark) .futuristic-primary-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: all 0.5s;
-}
-
-:host-context(.dark) .futuristic-primary-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(0, 247, 255, 0.6);
-}
-
-:host-context(.dark) .futuristic-primary-button:hover::before {
-  left: 100%;
-}
-
-/* Bouton danger - Mode sombre */
-:host-context(.dark) .futuristic-danger-button {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #ff0076, #ff6b69);
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border: none;
-  border-radius: var(--border-radius-md);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 15px rgba(255, 0, 118, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-:host-context(.dark) .futuristic-danger-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: all 0.5s;
-}
-
-:host-context(.dark) .futuristic-danger-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(255, 0, 118, 0.6);
-}
-
-:host-context(.dark) .futuristic-danger-button:hover::before {
-  left: 100%;
+:host-context(:not(.dark)) .futuristic-title:hover i {
+  box-shadow: 0 0 12px rgba(79, 95, 173, 0.5);
 }
 
 /* État de chargement futuriste */
@@ -711,237 +541,6 @@
   overflow: hidden;
 }
 
-/* Effet de flamme animée */
-.futuristic-notification-unread::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 5px;
-  height: 100%;
-  z-index: 1;
-  animation: flameBorder 3s ease-in-out infinite alternate;
-}
-
-/* Effet de lueur supplémentaire */
-.futuristic-notification-unread::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 15px;
-  height: 100%;
-  background: radial-gradient(
-    ellipse at left,
-    rgba(255, 255, 255, 0.2) 0%,
-    transparent 70%
-  );
-  opacity: 0;
-  z-index: 0;
-  animation: candleGlow 2s ease-in-out infinite;
-}
-
-/* Notification non lue - Mode clair */
-:host-context(:not(.dark)) .futuristic-notification-unread {
-  background-color: rgba(79, 95, 173, 0.05);
-  border-left: 5px solid transparent;
-  position: relative;
-}
-
-:host-context(:not(.dark)) .futuristic-notification-unread::before {
-  background: linear-gradient(
-    to bottom,
-    #ff9d00,
-    #ff5e62,
-    #ff9d00,
-    #ff5e62,
-    #ff9d00
-  );
-  background-size: 200% 200%;
-  box-shadow: 0 0 15px rgba(255, 157, 0, 0.7), 0 0 30px rgba(255, 94, 98, 0.3);
-  animation: flameBorder 3s ease-in-out infinite alternate,
-    colorShift 8s linear infinite;
-}
-
-:host-context(:not(.dark)) .futuristic-notification-unread::after {
-  background: radial-gradient(
-    ellipse at left,
-    rgba(255, 157, 0, 0.2) 0%,
-    rgba(255, 94, 98, 0.1) 40%,
-    transparent 70%
-  );
-}
-
-:host-context(:not(.dark)) .futuristic-notification-unread:hover {
-  background-color: rgba(79, 95, 173, 0.1);
-}
-
-:host-context(:not(.dark)) .futuristic-notification-unread:hover::before {
-  animation: flameBorder 1.5s ease-in-out infinite alternate,
-    colorShift 4s linear infinite;
-  box-shadow: 0 0 20px rgba(255, 157, 0, 0.8), 0 0 40px rgba(255, 94, 98, 0.4);
-}
-
-/* Sparkles pour mode clair */
-:host-context(:not(.dark)) .futuristic-notification-unread::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 15px;
-  height: 100%;
-  background-image: radial-gradient(
-      circle at 30% 20%,
-      rgba(255, 255, 255, 0.8) 0%,
-      rgba(255, 255, 255, 0) 3%
-    ),
-    radial-gradient(
-      circle at 40% 40%,
-      rgba(255, 255, 255, 0.8) 0%,
-      rgba(255, 255, 255, 0) 4%
-    ),
-    radial-gradient(
-      circle at 20% 60%,
-      rgba(255, 255, 255, 0.8) 0%,
-      rgba(255, 255, 255, 0) 3%
-    ),
-    radial-gradient(
-      circle at 40% 80%,
-      rgba(255, 255, 255, 0.8) 0%,
-      rgba(255, 255, 255, 0) 4%
-    ),
-    radial-gradient(
-      circle at 10% 30%,
-      rgba(255, 255, 255, 0.8) 0%,
-      rgba(255, 255, 255, 0) 3%
-    );
-  opacity: 0;
-  z-index: 2;
-  animation: sparkle 4s ease-in-out infinite;
-}
-
-/* Notification non lue - Mode sombre */
-:host-context(.dark) .futuristic-notification-unread {
-  background-color: rgba(0, 247, 255, 0.05);
-  border-left: 5px solid transparent;
-  position: relative;
-}
-
-:host-context(.dark) .futuristic-notification-unread::before {
-  background: linear-gradient(
-    to bottom,
-    #00f7ff,
-    #0066ff,
-    #00f7ff,
-    #0066ff,
-    #00f7ff
-  );
-  background-size: 200% 200%;
-  box-shadow: 0 0 15px rgba(0, 247, 255, 0.8), 0 0 30px rgba(0, 102, 255, 0.4);
-  animation: flameBorder 3s ease-in-out infinite alternate,
-    neonPulse 4s linear infinite;
-}
-
-:host-context(.dark) .futuristic-notification-unread::after {
-  background: radial-gradient(
-    ellipse at left,
-    rgba(0, 247, 255, 0.3) 0%,
-    rgba(0, 102, 255, 0.1) 40%,
-    transparent 70%
-  );
-}
-
-:host-context(.dark) .futuristic-notification-unread:hover {
-  background-color: rgba(0, 247, 255, 0.1);
-}
-
-:host-context(.dark) .futuristic-notification-unread:hover::before {
-  animation: flameBorder 1.5s ease-in-out infinite alternate,
-    neonPulse 2s linear infinite;
-  box-shadow: 0 0 20px rgba(0, 247, 255, 0.9), 0 0 40px rgba(0, 102, 255, 0.5);
-}
-
-/* Sparkles pour mode sombre */
-:host-context(.dark) .futuristic-notification-unread::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 15px;
-  height: 100%;
-  background-image: radial-gradient(
-      circle at 30% 20%,
-      rgba(0, 247, 255, 0.9) 0%,
-      rgba(0, 247, 255, 0) 3%
-    ),
-    radial-gradient(
-      circle at 40% 40%,
-      rgba(0, 247, 255, 0.9) 0%,
-      rgba(0, 247, 255, 0) 4%
-    ),
-    radial-gradient(
-      circle at 20% 60%,
-      rgba(0, 247, 255, 0.9) 0%,
-      rgba(0, 247, 255, 0) 3%
-    ),
-    radial-gradient(
-      circle at 40% 80%,
-      rgba(0, 247, 255, 0.9) 0%,
-      rgba(0, 247, 255, 0) 4%
-    ),
-    radial-gradient(
-      circle at 10% 30%,
-      rgba(0, 247, 255, 0.9) 0%,
-      rgba(0, 247, 255, 0) 3%
-    );
-  opacity: 0;
-  z-index: 2;
-  animation: sparkle 4s ease-in-out infinite;
-}
-
-/* Animation de flamme */
-@keyframes flameBorder {
-  0% {
-    background-position: 0% 0%;
-    filter: brightness(1) blur(0px);
-    transform: scaleY(0.95);
-  }
-  25% {
-    filter: brightness(1.1) blur(0.5px);
-    transform: scaleY(1.05);
-  }
-  50% {
-    background-position: 100% 100%;
-    filter: brightness(1.2) blur(1px);
-    transform: scaleY(1);
-  }
-  75% {
-    filter: brightness(1.1) blur(0.5px);
-    transform: scaleY(0.98);
-  }
-  100% {
-    background-position: 0% 0%;
-    filter: brightness(1) blur(0px);
-    transform: scaleY(0.95);
-  }
-}
-
-/* Animation de lueur de bougie */
-@keyframes candleGlow {
-  0% {
-    opacity: 0.3;
-    transform: translateX(-5px) scaleX(0.9);
-  }
-  50% {
-    opacity: 0.7;
-    transform: translateX(-3px) scaleX(1.1);
-  }
-  100% {
-    opacity: 0.3;
-    transform: translateX(-5px) scaleX(0.9);
-  }
-}
-
 /* Animations pour le modal */
 @keyframes fadeIn {
   from {
@@ -1075,27 +674,6 @@
     opacity: 1;
     transform: scale(1) translateY(0);
   }
-}
-
-:host-context(.dark) .futuristic-modal-container::before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(
-    45deg,
-    rgba(0, 247, 255, 0.3),
-    rgba(157, 78, 221, 0.3),
-    rgba(0, 247, 255, 0.3)
-  );
-  background-size: 400% 400%;
-  border-radius: 18px;
-  z-index: -1;
-  opacity: 0.5;
-  animation: gradientBorderDark 6s linear infinite;
-  pointer-events: none;
 }
 
 :host-context(.dark) .futuristic-modal-container::after {
@@ -1457,87 +1035,6 @@
   }
 }
 
-/* Animation de changement de couleur pour mode clair */
-@keyframes colorShift {
-  0% {
-    background-position: 0% 0%;
-    filter: hue-rotate(0deg);
-  }
-  25% {
-    filter: hue-rotate(5deg) saturate(1.2);
-  }
-  50% {
-    background-position: 100% 100%;
-    filter: hue-rotate(0deg) saturate(1);
-  }
-  75% {
-    filter: hue-rotate(-5deg) saturate(1.2);
-  }
-  100% {
-    background-position: 0% 0%;
-    filter: hue-rotate(0deg);
-  }
-}
-
-/* Animation de pulsation néon pour mode sombre */
-@keyframes neonPulse {
-  0% {
-    filter: brightness(1) saturate(1);
-  }
-  25% {
-    filter: brightness(1.2) saturate(1.2);
-  }
-  50% {
-    filter: brightness(1.4) saturate(1.4);
-  }
-  75% {
-    filter: brightness(1.2) saturate(1.2);
-  }
-  100% {
-    filter: brightness(1) saturate(1);
-  }
-}
-
-/* Animation d'étincelles */
-@keyframes sparkle {
-  0% {
-    opacity: 0;
-    transform: translateX(0);
-  }
-  20% {
-    opacity: 0.7;
-    transform: translateX(1px);
-  }
-  40% {
-    opacity: 0;
-    transform: translateX(0);
-  }
-  60% {
-    opacity: 0.5;
-    transform: translateX(2px);
-  }
-  80% {
-    opacity: 0.8;
-    transform: translateX(1px);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(0);
-  }
-}
-
-@keyframes gradientBorderDark {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
-}
-
 /* Avatar simplifié */
 .notification-avatar {
   width: 40px;
@@ -1638,78 +1135,6 @@
   color: #cccccc; /* Texte gris clair pour les notifications non sélectionnées (fond noir) */
 }
 
-/* Heure de la notification */
-.notification-time {
-  font-size: 0.75rem;
-  color: #999;
-  white-space: nowrap;
-  margin-left: auto;
-  padding-left: 8px;
-}
-
-:host-context(.dark) .notification-time {
-  color: #aaaaaa; /* Texte gris pour les notifications non sélectionnées (fond noir) */
-}
-
-/* Indicateur de non-lu (petit point bleu) */
-.unread-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  animation: pulse 2s infinite;
-}
-
-:host-context(:not(.dark)) .unread-indicator {
-  background-color: #4f5fad;
-  box-shadow: 0 0 8px rgba(79, 95, 173, 0.7);
-}
-
-:host-context(.dark) .unread-indicator {
-  width: 12px;
-  height: 12px;
-  background-color: #00f7ff;
-  box-shadow: 0 0 15px rgba(0, 247, 255, 0.8);
-}
-
-@keyframes pulse {
-  0% {
-    transform: translateY(-50%) scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 247, 255, 0.7);
-  }
-  70% {
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 0 0 10px rgba(0, 247, 255, 0);
-  }
-  100% {
-    transform: translateY(-50%) scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 247, 255, 0);
-  }
-}
-
-/* Conteneur principal du contenu de la notification */
-.notification-main-content {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-  position: relative;
-  padding-right: 200px; /* Espace augmenté pour les boutons d'action plus grands et plus espacés */
-}
-
-/* Conteneur des actions de notification */
-.notification-actions {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  gap: 16px; /* Augmentation de l'espacement entre les boutons */
-  z-index: 10;
-}
-
 /* Indicateur de pièces jointes */
 .notification-attachments-indicator {
   font-size: 0.75rem;
@@ -1727,1087 +1152,404 @@
   margin-right: 0.25rem;
 }
 
-/* Style commun pour les boutons d'action */
-.notification-action-button,
-.mark-as-read-button {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-}
+/* 🚀 STYLES UNIQUES POUR CHAQUE BOUTON - ÉVITER LA CONFUSION */
 
-/* Bouton marquer comme lu */
-.mark-as-read-button {
-  position: relative;
-}
-
-/* Bouton d'action - Mode clair */
-:host-context(:not(.dark)) .notification-action-button {
-  background-color: #6d6870;
-  color: white;
-  border: none;
-  box-shadow: 0 0 8px rgba(109, 104, 112, 0.4);
-  transition: all 0.3s ease;
-}
-
-:host-context(:not(.dark)) .notification-action-button:hover {
-  transform: translateY(-2px) scale(1.1);
-  box-shadow: 0 0 12px rgba(109, 104, 112, 0.6);
-}
-
-/* Bouton des pièces jointes - Mode clair */
-:host-context(:not(.dark)) .notification-action-button:first-child {
-  background-color: #ff8c00;
-  color: white;
-  box-shadow: 0 0 8px rgba(255, 140, 0, 0.6);
-}
-
-:host-context(:not(.dark)) .notification-action-button:first-child:hover {
-  transform: translateY(-2px) scale(1.1);
-  box-shadow: 0 0 15px rgba(255, 140, 0, 0.8);
-}
-
-/* Animations pour le bouton rejoindre */
-@keyframes pulse-light {
-  0% {
-    opacity: 0.7;
-  }
-  50% {
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0.7;
-  }
-}
-
-@keyframes pulse-dark {
-  0% {
-    opacity: 0.7;
-  }
-  50% {
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0.7;
-  }
-}
-
-@keyframes rocket-shake {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateY(-1px) rotate(-2deg);
-  }
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateY(1px) rotate(2deg);
-  }
-}
-
-/* Bouton rejoindre - Mode clair */
-:host-context(:not(.dark)) .notification-join-button {
-  background: linear-gradient(135deg, #4f5fad, #3d4a85);
-  color: white;
-  box-shadow: 0 0 8px rgba(79, 95, 173, 0.6);
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-:host-context(:not(.dark)) .notification-join-button::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.3) 0%,
-    rgba(255, 255, 255, 0) 60%
-  );
-  opacity: 0;
-  transform: scale(0.5);
-  transition: all 0.3s ease;
-  z-index: -1;
-}
-
-:host-context(:not(.dark)) .notification-join-button:hover {
-  transform: translateY(-2px) scale(1.1);
-  box-shadow: 0 0 15px rgba(79, 95, 173, 0.8);
-}
-
-:host-context(:not(.dark)) .notification-join-button:hover::before {
-  opacity: 1;
-  transform: scale(1);
-  animation: pulse-light 1.5s infinite;
-}
-
-:host-context(:not(.dark)) .notification-join-button i {
-  position: relative;
-  z-index: 2;
-}
-
-/* Bouton rejoindre - Mode sombre */
-:host-context(.dark) .notification-join-button {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 247, 255, 0.2),
-    rgba(0, 195, 255, 0.3)
-  );
-  color: #00f7ff;
-  border: 1px solid rgba(0, 247, 255, 0.4);
-  box-shadow: 0 0 8px rgba(0, 247, 255, 0.4);
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-:host-context(.dark) .notification-join-button::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    circle,
-    rgba(0, 247, 255, 0.4) 0%,
-    rgba(0, 195, 255, 0.1) 60%
-  );
-  opacity: 0;
-  transform: scale(0.5);
-  transition: all 0.3s ease;
-  z-index: -1;
-}
-
-:host-context(.dark) .notification-join-button:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 247, 255, 0.3),
-    rgba(0, 195, 255, 0.4)
-  );
-  transform: scale(1.1);
-  box-shadow: 0 0 15px rgba(0, 247, 255, 0.6);
-}
-
-:host-context(.dark) .notification-join-button:hover::before {
-  opacity: 1;
-  transform: scale(1);
-  animation: pulse-dark 1.5s infinite;
-}
-
-:host-context(.dark) .notification-join-button i {
-  position: relative;
-  z-index: 2;
-}
-
-:host-context(:not(.dark)) .notification-action-button:hover {
-  background-color: #4f5fad;
-  transform: scale(1.1);
-  box-shadow: 0 0 12px rgba(79, 95, 173, 0.6);
-}
-
-:host-context(:not(.dark)) .notification-action-button::after {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 50%;
-  border: 1px solid rgba(79, 95, 173, 0.2);
-  animation: ripple 2s infinite;
-  opacity: 0;
-}
-
-:host-context(:not(.dark)) .notification-action-button:hover::after {
-  opacity: 1;
-}
-
-/* Bouton marquer comme lu - Mode clair */
-:host-context(:not(.dark)) .mark-as-read-button {
-  background: linear-gradient(135deg, #4f5fad, #7826b5);
-  color: white;
-  border: none;
-  box-shadow: 0 0 10px rgba(79, 95, 173, 0.5);
-}
-
-:host-context(:not(.dark)) .mark-as-read-button:hover {
-  background: linear-gradient(135deg, #5a6ac8, #8f2dd6);
-  transform: scale(1.1);
-  box-shadow: 0 0 15px rgba(79, 95, 173, 0.7);
-}
-
-:host-context(:not(.dark)) .mark-as-read-button::after {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 50%;
-  border: 1px solid rgba(79, 95, 173, 0.3);
-  animation: ripple 2s infinite;
-}
-
-/* Bouton d'action - Mode sombre */
-:host-context(.dark) .notification-action-button {
-  background-color: rgba(0, 247, 255, 0.1);
-  color: #00f7ff;
-  border: 1px solid rgba(0, 247, 255, 0.3);
-  box-shadow: 0 0 8px rgba(0, 247, 255, 0.2);
-}
-
-/* Bouton des pièces jointes - Mode sombre */
-:host-context(.dark) .notification-action-button:first-child {
-  background-color: rgba(255, 107, 0, 0.2);
-  color: #ff8c00;
-  border: 1px solid rgba(255, 107, 0, 0.3);
-  box-shadow: 0 0 8px rgba(255, 107, 0, 0.4);
-}
-
-:host-context(.dark) .notification-action-button:hover {
-  background-color: rgba(0, 247, 255, 0.2);
-  transform: scale(1.1);
-  box-shadow: 0 0 12px rgba(0, 247, 255, 0.4);
-}
-
-/* Effet de survol pour le bouton des pièces jointes - Mode sombre */
-:host-context(.dark) .notification-action-button:first-child:hover {
-  background-color: rgba(255, 107, 0, 0.3);
-  transform: scale(1.1);
-  box-shadow: 0 0 15px rgba(255, 107, 0, 0.6);
-}
-
-:host-context(.dark) .notification-action-button::after {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 247, 255, 0.2);
-  animation: ripple 2s infinite;
-  opacity: 0;
-}
-
-:host-context(.dark) .notification-action-button:hover::after {
-  opacity: 1;
-}
-
-/* Bouton marquer comme lu - Mode sombre */
-:host-context(.dark) .mark-as-read-button {
-  background: rgba(0, 247, 255, 0.2);
-  color: #00f7ff;
-  border: 1px solid rgba(0, 247, 255, 0.4);
-  box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
-}
-
-:host-context(.dark) .mark-as-read-button:hover {
-  background: rgba(0, 247, 255, 0.3);
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(0, 247, 255, 0.6);
-}
-
-:host-context(.dark) .mark-as-read-button::after {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 247, 255, 0.3);
-  animation: ripple 2s infinite;
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
-}
-
-@keyframes gradientBorder {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
-}
-
-:host-context(:not(.dark)) .futuristic-notification-badge {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-}
-
-:host-context(:not(.dark)) .futuristic-notification-indicator {
-  display: block;
-  width: 10px;
-  height: 10px;
-  background: linear-gradient(135deg, #7f7fd5, #91eae4);
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(127, 127, 213, 0.5),
-    0 0 20px rgba(127, 127, 213, 0.2);
-  animation: pulse-gentle 3s infinite, colorChangeGentle 8s infinite alternate;
-  position: relative;
-}
-
-:host-context(:not(.dark)) .futuristic-notification-indicator::after {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 50%;
-  background: transparent;
-  border: 1px solid rgba(127, 127, 213, 0.3);
-  animation: rippleGentle 3s infinite;
-}
-
-@keyframes pulse-gentle {
-  0% {
-    box-shadow: 0 0 0 0 rgba(127, 127, 213, 0.5),
-      0 0 0 0 rgba(145, 234, 228, 0.5);
-    transform: scale(0.95);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  70% {
-    box-shadow: 0 0 0 8px rgba(127, 127, 213, 0),
-      0 0 0 4px rgba(145, 234, 228, 0);
-    transform: scale(1);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(127, 127, 213, 0), 0 0 0 0 rgba(145, 234, 228, 0);
-    transform: scale(0.95);
-  }
-}
-
-@keyframes colorChangeGentle {
-  0% {
-    background: linear-gradient(135deg, #7f7fd5, #91eae4);
-  }
-  33% {
-    background: linear-gradient(135deg, #91eae4, #86a8e7);
-  }
-  66% {
-    background: linear-gradient(135deg, #86a8e7, #d8b5ff);
-  }
-  100% {
-    background: linear-gradient(135deg, #7f7fd5, #91eae4);
-  }
-}
-
-@keyframes rippleGentle {
-  0% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1.3);
-    opacity: 0;
-  }
-}
-
-/* Styles pour les effets de brillance des notifications */
-
-/* Avatar - Mode clair */
-:host-context(:not(.dark)) .futuristic-avatar {
-  position: relative;
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-}
-
-:host-context(:not(.dark)) .futuristic-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid rgba(79, 95, 173, 0.3);
-  transition: all var(--transition-fast);
-}
-
-:host-context(:not(.dark))
-  .futuristic-notification-card:hover
-  .futuristic-avatar
-  img {
-  border-color: #4f5fad;
-  box-shadow: 0 0 15px rgba(79, 95, 173, 0.5);
-}
-
-:host-context(:not(.dark)) .futuristic-avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(79, 95, 173, 0.1);
-  color: #4f5fad;
-  border-radius: 50%;
-  border: 2px solid rgba(79, 95, 173, 0.3);
-}
-
-:host-context(:not(.dark)) .futuristic-notification-type-icon {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 18px;
-  height: 18px;
-  background: linear-gradient(135deg, #4f5fad, #7826b5);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.625rem;
-  box-shadow: 0 0 8px rgba(79, 95, 173, 0.5);
-}
-
-/* Avatar - Mode sombre */
-:host-context(.dark) .futuristic-avatar {
-  position: relative;
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-}
-
-:host-context(.dark) .futuristic-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid rgba(0, 247, 255, 0.3);
-  transition: all var(--transition-fast);
-}
-
-:host-context(.dark)
-  .futuristic-notification-card:hover
-  .futuristic-avatar
-  img {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
-}
-
-:host-context(.dark) .futuristic-avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 247, 255, 0.1);
-  color: var(--accent-color);
-  border-radius: 50%;
-  border: 2px solid rgba(0, 247, 255, 0.3);
-}
-
-:host-context(.dark) .futuristic-notification-type-icon {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 18px;
-  height: 18px;
-  background: linear-gradient(
-    135deg,
-    var(--accent-color),
-    var(--secondary-color)
-  );
-  color: var(--text-light);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.625rem;
-  box-shadow: 0 0 8px rgba(0, 247, 255, 0.5);
-}
-
-/* Contenu des notifications - Mode clair */
-:host-context(:not(.dark)) .futuristic-notification-content {
-  flex: 1;
-  min-width: 0;
-}
-
-:host-context(:not(.dark)) .futuristic-notification-text {
-  color: #6d6870;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-}
-
-:host-context(:not(.dark)) .futuristic-notification-sender {
-  font-weight: 600;
-  color: #4f5fad;
-  margin-right: 0.25rem;
-}
-
-:host-context(:not(.dark)) .futuristic-notification-time {
-  color: #6d6870;
-  font-size: 0.75rem;
-}
-
-:host-context(:not(.dark)) .futuristic-message-preview {
-  background-color: rgba(79, 95, 173, 0.05);
-  border-radius: var(--border-radius-sm);
-  padding: 0.75rem;
-  margin-top: 0.5rem;
-  color: #6d6870;
-  font-size: 0.875rem;
-  border-left: 2px solid rgba(79, 95, 173, 0.3);
-}
-
-:host-context(:not(.dark)) .futuristic-notification-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-:host-context(:not(.dark)) .futuristic-read-button {
-  padding: 0.35rem 0.85rem;
-  background: linear-gradient(
-    135deg,
-    rgba(127, 127, 213, 0.2),
-    rgba(145, 234, 228, 0.2)
-  );
-  color: #4f5fad;
-  border: 1px solid rgba(127, 127, 213, 0.4);
-  border-radius: var(--border-radius-sm);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-:host-context(:not(.dark)) .futuristic-read-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(127, 127, 213, 0.2),
-    transparent
-  );
-  transition: all 0.5s;
-}
-
-:host-context(:not(.dark)) .futuristic-read-button:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(127, 127, 213, 0.3),
-    rgba(145, 234, 228, 0.3)
-  );
-  box-shadow: 0 0 15px rgba(127, 127, 213, 0.5);
-  transform: translateY(-2px);
-}
-
-:host-context(:not(.dark)) .futuristic-read-button:hover::before {
-  left: 100%;
-}
-
-:host-context(:not(.dark)) .futuristic-accept-button {
-  padding: 0.25rem 0.75rem;
-  background-color: rgba(0, 128, 0, 0.1);
-  color: #2a5a03;
-  border: 1px solid rgba(0, 128, 0, 0.3);
-  border-radius: var(--border-radius-sm);
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-:host-context(:not(.dark)) .futuristic-accept-button:hover {
-  background-color: rgba(0, 128, 0, 0.2);
-  box-shadow: 0 0 10px rgba(0, 128, 0, 0.3);
-}
-
-/* Contenu des notifications - Mode sombre */
-:host-context(.dark) .futuristic-notification-content {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Contenu principal de la notification */
-.notification-main-content {
-  flex: 1;
-  margin: 0 15px 0 15px; /* Espacement horizontal */
-  overflow: hidden; /* Évite le débordement du contenu */
-  padding-right: 20px; /* Espace supplémentaire à droite pour éloigner des boutons */
-}
-
-/* Style pour l'en-tête de notification */
-.notification-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-/* Style pour le conteneur de texte de notification */
-.notification-text-container {
-  margin-bottom: 0.75rem;
-  padding-right: 20px; /* Espace à droite pour éloigner des boutons */
-}
-
-:host-context(.dark) .futuristic-notification-text {
-  color: rgba(
-    0,
-    0,
-    0,
-    0.8
-  ); /* Texte noir légèrement plus clair comme dans la page des messages/utilisateurs */
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  font-weight: 400; /* Police normale comme dans la page des messages/utilisateurs */
-}
-
-:host-context(.dark) .futuristic-notification-sender {
-  font-weight: 600;
-  color: #ff8c00; /* Orange vif comme dans la page des messages/utilisateurs */
-  margin-right: 0.25rem;
-}
-
-:host-context(.dark) .futuristic-notification-time {
-  color: rgba(
-    0,
-    0,
-    0,
-    0.5
-  ); /* Gris plus clair comme dans la page des messages/utilisateurs */
-  font-size: 0.75rem;
-  font-weight: 300; /* Police plus légère comme dans la page des messages/utilisateurs */
-}
-
-:host-context(.dark) .futuristic-message-preview {
-  background-color: rgba(
-    240,
-    240,
-    240,
-    0.5
-  ); /* Fond gris clair pour les notifications non sélectionnées (fond blanc) */
-  border-radius: var(--border-radius-sm);
-  padding: 0.75rem;
-  margin-top: 0.5rem;
-  color: rgba(
-    0,
-    0,
-    0,
-    0.7
-  ); /* Texte noir pour les notifications non sélectionnées (fond blanc) */
-  font-size: 0.875rem;
-  border-left: 2px solid rgba(255, 140, 0, 0.5); /* Bordure orange comme dans la page des messages/utilisateurs */
-}
-
-:host-context(.dark) .futuristic-notification-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-:host-context(.dark) .futuristic-read-button {
-  padding: 0.35rem 0.85rem;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 140, 0, 0.2),
-    rgba(255, 94, 98, 0.2)
-  );
-  color: #ff8c00; /* Orange vif comme dans la page des messages/utilisateurs */
-  border: 1px solid rgba(255, 140, 0, 0.4);
-  border-radius: var(--border-radius-sm);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-:host-context(.dark) .futuristic-read-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 140, 0, 0.2),
-    transparent
-  );
-  transition: all 0.5s;
-}
-
-:host-context(.dark) .futuristic-read-button:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 140, 0, 0.3),
-    rgba(255, 94, 98, 0.3)
-  );
-  box-shadow: 0 0 15px rgba(255, 140, 0, 0.5);
-  transform: translateY(-2px);
-}
-
-:host-context(.dark) .futuristic-read-button:hover::before {
-  left: 100%;
-}
-
-:host-context(.dark) .futuristic-accept-button {
-  padding: 0.25rem 0.75rem;
-  background-color: rgba(0, 255, 128, 0.2);
-  color: rgba(0, 255, 128, 0.9);
-  border: 1px solid rgba(0, 255, 128, 0.4);
-  border-radius: var(--border-radius-sm);
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-:host-context(.dark) .futuristic-accept-button:hover {
-  background-color: rgba(0, 255, 128, 0.3);
-  box-shadow: 0 0 10px rgba(0, 255, 128, 0.5);
-}
-
-/* Styles pour le chargement des anciennes notifications */
-.futuristic-loading-more {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  margin-top: 0.5rem;
-}
-
-.futuristic-loading-circle-small {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  border-top-color: #4f5fad;
-  border-bottom-color: #4f5fad;
-  animation: futuristic-spin 1.2s linear infinite;
-}
-
-:host-context(.dark) .futuristic-loading-circle-small {
-  border-top-color: #00f7ff;
-  border-bottom-color: #00f7ff;
-}
-
-.futuristic-loading-text-small {
-  margin-top: 0.5rem;
-  color: #6d6870;
-  font-size: 0.75rem;
-  text-align: center;
-}
-
-:host-context(.dark) .futuristic-loading-text-small {
-  color: #aaa;
-}
-
-/* Conteneur des actions de notification */
-.notification-actions {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-left: auto;
-}
-
-/* Style pour l'heure de la notification */
-.notification-time {
-  font-size: 0.75rem;
-  color: rgba(0, 247, 255, 0.8); /* Couleur cyan comme la case à cocher */
-  font-weight: 500;
-  padding: 2px 8px; /* Padding pour créer un effet de badge */
-  border-radius: 12px; /* Coins arrondis pour un effet de badge */
-  background-color: rgba(0, 247, 255, 0.1); /* Fond légèrement coloré */
-  border: 1px solid rgba(0, 247, 255, 0.2); /* Bordure subtile */
-  display: inline-block; /* Pour que le padding fonctionne correctement */
-  margin-left: 8px; /* Espace à gauche pour séparer du nom d'utilisateur */
-}
-
-/* Style pour l'heure de la notification en mode sombre */
-:host-context(.dark) .notification-time {
-  color: rgba(0, 247, 255, 0.9); /* Couleur cyan plus vive en mode sombre */
-  background-color: rgba(0, 247, 255, 0.15); /* Fond légèrement plus visible */
-  border: 1px solid rgba(0, 247, 255, 0.3); /* Bordure plus visible */
-  text-shadow: 0 0 5px rgba(0, 247, 255, 0.4); /* Effet de lueur cyan */
-  box-shadow: 0 0 8px rgba(0, 247, 255, 0.2); /* Légère lueur autour du badge */
-  transition: all 0.3s ease; /* Transition fluide pour les effets de survol */
-}
-
-/* Effet de survol pour l'heure en mode clair */
-.notification-time:hover {
-  background-color: rgba(0, 247, 255, 0.2); /* Fond plus visible au survol */
-  box-shadow: 0 0 10px rgba(0, 247, 255, 0.3); /* Lueur plus prononcée au survol */
-  transform: translateY(-1px); /* Léger effet de flottement */
-}
-
-/* Effet de survol pour l'heure en mode sombre */
-:host-context(.dark) .notification-time:hover {
-  background-color: rgba(0, 247, 255, 0.25); /* Fond plus visible au survol */
-  box-shadow: 0 0 12px rgba(0, 247, 255, 0.4); /* Lueur plus prononcée au survol */
-  transform: translateY(-1px); /* Léger effet de flottement */
-}
-
-/* Style pour le texte de la notification */
-.notification-text {
-  font-size: 0.9rem;
-  color: var(--text-light);
-  line-height: 1.4;
-  display: block;
-  width: 100%;
-}
-
-/* Styles communs pour les boutons d'action */
+/* Style de base commun */
 .notification-action-button {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  padding: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 50%;
-  width: 36px; /* Taille augmentée */
-  height: 36px; /* Taille augmentée */
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  margin: 6px; /* Marge augmentée pour plus d'espace entre les boutons */
+  border: none;
   position: relative;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-/* Bouton pour rejoindre la conversation */
+/* 📅 STYLE POUR L'HEURE - ALIGNÉE AVEC LA CASE À COCHER */
+.notification-time {
+  position: absolute;
+  top: 10px; /* Même hauteur que la case à cocher */
+  right: 10px; /* Même distance du bord que la case à cocher */
+  font-size: 0.75rem; /* Taille légèrement augmentée pour meilleure lisibilité */
+  color: rgba(0, 247, 255, 0.9);
+  font-weight: 600;
+  padding: 5px 10px; /* Padding légèrement augmenté */
+  border-radius: 8px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 247, 255, 0.15),
+    rgba(0, 200, 255, 0.1)
+  );
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 247, 255, 0.2);
+  z-index: 15;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  /* Amélioration de la lisibilité */
+  letter-spacing: 0.5px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 🌙 MODE SOMBRE - DATE COIN DROIT HAUT - FLUO ULTRA VISIBLE */
+:host-context(.dark) .notification-time {
+  /* Couleur fluorescente ultra-vive */
+  color: #00ffff !important; /* Cyan pur fluorescent */
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 255, 0.4),
+    rgba(0, 255, 200, 0.35),
+    rgba(0, 200, 255, 0.3)
+  );
+  border: 1px solid rgba(0, 255, 255, 0.8);
+  /* Effet de lueur fluorescente intense */
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.8), 0 0 10px rgba(0, 255, 255, 0.6),
+    0 0 15px rgba(0, 255, 255, 0.4);
+  box-shadow: 0 2px 10px rgba(0, 255, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.3),
+    inset 0 0 10px rgba(0, 255, 255, 0.2);
+  backdrop-filter: none; /* Suppression du flou pour éviter le texte flou */
+  /* Animation de pulsation fluorescente */
+  animation: fluoro-pulse 2s ease-in-out infinite alternate;
+}
+
+/* ☀️ MODE CLAIR - DATE COIN DROIT HAUT */
+:host-context(:not(.dark)) .notification-time {
+  color: #4f5fad;
+  background: linear-gradient(
+    135deg,
+    rgba(79, 95, 173, 0.1),
+    rgba(79, 95, 173, 0.05)
+  );
+  border: 1px solid rgba(79, 95, 173, 0.2);
+  box-shadow: 0 2px 8px rgba(79, 95, 173, 0.15);
+}
+
+/* ✨ EFFETS DE SURVOL */
+.notification-time:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 247, 255, 0.4);
+}
+
+:host-context(.dark) .notification-time:hover {
+  /* Effet de survol ultra-fluorescent */
+  color: #ffffff !important; /* Blanc pur au survol */
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 255, 0.6),
+    rgba(0, 255, 200, 0.5),
+    rgba(0, 200, 255, 0.45)
+  );
+  border-color: rgba(0, 255, 255, 1); /* Bordure cyan pure */
+  /* Lueur intense au survol */
+  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 15px rgba(0, 255, 255, 0.9),
+    0 0 25px rgba(0, 255, 255, 0.7);
+  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.5),
+    inset 0 0 15px rgba(0, 255, 255, 0.3);
+  /* Animation plus intense au survol */
+  animation: fluoro-pulse-intense 1s ease-in-out infinite alternate;
+}
+
+:host-context(:not(.dark)) .notification-time:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(79, 95, 173, 0.15),
+    rgba(79, 95, 173, 0.1)
+  );
+  box-shadow: 0 4px 15px rgba(79, 95, 173, 0.25);
+}
+
+/* 🎯 BOUTON REJOINDRE - FORME HEXAGONALE VERTE */
 .notification-join-button {
-  background-color: rgba(0, 200, 83, 0.1); /* Vert */
-  color: #00c853;
-  border: 1px solid rgba(0, 200, 83, 0.3);
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #00c853, #00a843);
+  color: white;
+  border: 2px solid #00c853;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  position: relative;
 }
 
 .notification-join-button:hover {
-  background-color: rgba(0, 200, 83, 0.2);
-  color: #00c853;
-  transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(0, 200, 83, 0.4);
+  background: linear-gradient(135deg, #00e676, #00c853);
+  transform: scale(1.15) rotate(5deg);
+  box-shadow: 0 0 15px rgba(0, 200, 83, 0.6);
+  border-color: #00e676;
 }
 
-/* Bouton pour marquer comme lu */
-.notification-read-button {
-  background-color: rgba(
-    255,
-    193,
-    7,
-    0.1
-  ); /* Jaune comme dans messages/users */
-  color: #ffc107;
-  border: 1px solid rgba(255, 193, 7, 0.3);
+.notification-join-button::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #00c853, #00e676);
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.notification-read-button:hover {
-  background-color: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-  transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+.notification-join-button:hover::before {
+  opacity: 1;
 }
 
-/* Bouton pour supprimer */
-.notification-delete-button {
-  background-color: rgba(255, 0, 0, 0.1); /* Rouge */
-  color: #ff5252;
-  border: 1px solid rgba(255, 0, 0, 0.3);
-}
-
-.notification-delete-button:hover {
-  background-color: rgba(255, 0, 0, 0.2);
-  color: #ff5252;
-  transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
-}
-
-/* Bouton pour voir les détails */
+/* 📖 BOUTON DÉTAILS - FORME CARRÉE BLEUE */
 .notification-details-button {
-  background-color: rgba(255, 193, 7, 0.1); /* Jaune */
-  color: #ffc107;
-  border: 1px solid rgba(255, 193, 7, 0.3);
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  color: white;
+  border: 2px solid #2196f3;
+  border-radius: 8px;
+  position: relative;
 }
 
 .notification-details-button:hover {
-  background-color: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-  transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+  background: linear-gradient(135deg, #42a5f5, #2196f3);
+  transform: scale(1.1) rotateY(15deg);
+  box-shadow: 0 0 15px rgba(33, 150, 243, 0.6);
+  border-color: #42a5f5;
 }
 
-/* Bouton pour voir les pièces jointes */
+.notification-details-button::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.notification-details-button:hover::after {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ✅ BOUTON MARQUER COMME LU - FORME DIAMANT JAUNE */
+.notification-read-button {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  color: white;
+  border: 2px solid #ffc107;
+  border-radius: 50%;
+  transform: rotate(45deg);
+  position: relative;
+}
+
+.notification-read-button i {
+  transform: rotate(-45deg);
+}
+
+.notification-read-button:hover {
+  background: linear-gradient(135deg, #ffca28, #ffc107);
+  transform: rotate(45deg) scale(1.15);
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.6);
+  border-color: #ffca28;
+}
+
+.notification-read-button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  animation: pulse 2s infinite;
+}
+
+/* 🗑️ BOUTON SUPPRIMER - FORME TRIANGULAIRE ROUGE */
+.notification-delete-button {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+  border: 2px solid #f44336;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  position: relative;
+}
+
+.notification-delete-button:hover {
+  background: linear-gradient(135deg, #ef5350, #f44336);
+  transform: scale(1.15) rotate(-5deg);
+  box-shadow: 0 0 15px rgba(244, 67, 54, 0.6);
+  border-color: #ef5350;
+}
+
+.notification-delete-button::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #f44336, #ef5350);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.notification-delete-button:hover::before {
+  opacity: 1;
+}
+
+/* 📎 BOUTON PIÈCES JOINTES - FORME OCTOGONALE VIOLETTE */
 .notification-attachment-button {
-  background-color: rgba(156, 39, 176, 0.1); /* Violet */
-  color: #9c27b0;
-  border: 1px solid rgba(156, 39, 176, 0.3);
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  color: white;
+  border: 2px solid #9c27b0;
+  clip-path: polygon(
+    30% 0%,
+    70% 0%,
+    100% 30%,
+    100% 70%,
+    70% 100%,
+    30% 100%,
+    0% 70%,
+    0% 30%
+  );
+  position: relative;
 }
 
 .notification-attachment-button:hover {
-  background-color: rgba(156, 39, 176, 0.2);
-  color: #9c27b0;
-  transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(156, 39, 176, 0.4);
+  background: linear-gradient(135deg, #ab47bc, #9c27b0);
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 0 15px rgba(156, 39, 176, 0.6);
+  border-color: #ab47bc;
 }
 
-/* Styles pour le mode sombre */
+.notification-attachment-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: bounce 1.5s infinite;
+}
+
+/* 🌙 ADAPTATIONS POUR LE MODE SOMBRE */
 :host-context(.dark) .notification-join-button {
-  background-color: rgba(0, 200, 83, 0.2); /* Vert plus foncé */
-  color: #00e676;
-  border: 1px solid rgba(0, 200, 83, 0.4);
-  box-shadow: 0 0 8px rgba(0, 200, 83, 0.3);
-}
-
-:host-context(.dark) .notification-join-button:hover {
-  background-color: rgba(0, 200, 83, 0.3);
-  box-shadow: 0 0 12px rgba(0, 200, 83, 0.5);
-}
-
-:host-context(.dark) .notification-read-button {
-  background-color: rgba(
-    255,
-    193,
-    7,
-    0.2
-  ); /* Jaune comme dans messages/users */
-  color: #ffc107;
-  border: 1px solid rgba(255, 193, 7, 0.4);
-  box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
-}
-
-:host-context(.dark) .notification-read-button:hover {
-  background-color: rgba(255, 193, 7, 0.3);
-  box-shadow: 0 0 12px rgba(255, 193, 7, 0.5);
-}
-
-:host-context(.dark) .notification-delete-button {
-  background-color: rgba(255, 0, 0, 0.2); /* Rouge plus foncé */
-  color: #ff7070;
-  border: 1px solid rgba(255, 0, 0, 0.4);
-  box-shadow: 0 0 8px rgba(255, 0, 0, 0.3);
-}
-
-:host-context(.dark) .notification-delete-button:hover {
-  background-color: rgba(255, 0, 0, 0.3);
-  box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
+  background: linear-gradient(135deg, #00c853, #00a843);
+  border-color: #00e676;
+  box-shadow: 0 0 10px rgba(0, 200, 83, 0.4);
 }
 
 :host-context(.dark) .notification-details-button {
-  background-color: rgba(255, 193, 7, 0.2); /* Jaune plus foncé */
-  color: #ffca28;
-  border: 1px solid rgba(255, 193, 7, 0.4);
-  box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  border-color: #42a5f5;
+  box-shadow: 0 0 10px rgba(33, 150, 243, 0.4);
 }
 
-:host-context(.dark) .notification-details-button:hover {
-  background-color: rgba(255, 193, 7, 0.3);
-  box-shadow: 0 0 12px rgba(255, 193, 7, 0.5);
+:host-context(.dark) .notification-read-button {
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  border-color: #ffca28;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+}
+
+:host-context(.dark) .notification-delete-button {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  border-color: #ef5350;
+  box-shadow: 0 0 10px rgba(244, 67, 54, 0.4);
 }
 
 :host-context(.dark) .notification-attachment-button {
-  background-color: rgba(156, 39, 176, 0.2); /* Violet plus foncé */
-  color: #ce93d8;
-  border: 1px solid rgba(156, 39, 176, 0.4);
-  box-shadow: 0 0 8px rgba(156, 39, 176, 0.3);
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  border-color: #ab47bc;
+  box-shadow: 0 0 10px rgba(156, 39, 176, 0.4);
 }
 
-:host-context(.dark) .notification-attachment-button:hover {
-  background-color: rgba(156, 39, 176, 0.3);
-  box-shadow: 0 0 12px rgba(156, 39, 176, 0.5);
-}
-
-.notification-details-button .gradient-icon {
-  background: linear-gradient(135deg, #4f5fad, #7826b5);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-:host-context(:not(.dark)) .notification-details-button:hover {
-  background-color: rgba(0, 247, 255, 0.1);
-  box-shadow: 0 0 8px rgba(0, 247, 255, 0.3);
-}
-
-:host-context(:not(.dark)) .notification-details-button:hover .gradient-icon {
-  background: #00f7ff;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-:host-context(.dark) .notification-details-button:hover {
-  background-color: rgba(0, 247, 255, 0.1);
-  box-shadow: 0 0 8px rgba(0, 247, 255, 0.4);
-}
-
-:host-context(.dark) .notification-details-button:hover .gradient-icon {
-  background: #00f7ff;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.notification-delete-button {
-  color: #ff5e62; /* Rouge initial */
-}
-
-:host-context(:not(.dark)) .notification-delete-button:hover {
-  background-color: rgba(255, 140, 0, 0.1);
-  color: #ff8c00; /* Orange au survol */
-  box-shadow: 0 0 8px rgba(255, 140, 0, 0.3);
-}
-
-:host-context(.dark) .notification-delete-button:hover {
-  background-color: rgba(255, 140, 0, 0.1);
-  color: #ff8c00; /* Orange au survol */
-  box-shadow: 0 0 8px rgba(255, 140, 0, 0.4);
-}
-
-/* Animation de brillance pour les boutons */
-@keyframes shine {
-  0% {
-    background-position: -100% 0;
-  }
+/* 🌙 ANIMATIONS ET EFFETS SPÉCIAUX */
+@keyframes pulse {
+  0%,
   100% {
-    background-position: 200% 0;
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-45deg) scale(1);
   }
+  50% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) rotate(-45deg) scale(1.2);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+}
+
+/* 🎯 INDICATEURS VISUELS POUR ÉVITER LA CONFUSION */
+.notification-join-button:hover::after {
+  content: "💬";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.notification-details-button:hover::after {
+  content: "ℹ️";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.notification-delete-button:hover::after {
+  content: "🗑️";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  z-index: 10;
 }
 
 /* Styles pour les cases à cocher futuristes */
@@ -3402,4 +2144,280 @@
   background-color: rgba(100, 100, 100, 0.2);
   color: #e0e0e0;
   box-shadow: 0 0 8px rgba(100, 100, 100, 0.2);
+}
+
+/* ========================================
+   STYLES POUR LE MODAL DE DÉTAILS DE NOTIFICATION
+   ======================================== */
+
+/* Sections du modal de détails */
+.notification-detail-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:host-context(.dark) .notification-detail-section {
+  background: rgba(0, 247, 255, 0.05);
+  border: 1px solid rgba(0, 247, 255, 0.1);
+}
+
+.notification-detail-title {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4f5fad;
+  margin-bottom: 0.75rem;
+}
+
+:host-context(.dark) .notification-detail-title {
+  color: #00f7ff;
+  text-shadow: 0 0 6px rgba(0, 247, 255, 0.3);
+}
+
+/* Informations de l'expéditeur */
+.notification-sender-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.notification-sender-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(79, 95, 173, 0.3);
+}
+
+:host-context(.dark) .notification-sender-avatar {
+  border: 2px solid rgba(0, 247, 255, 0.3);
+}
+
+.notification-sender-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-sender-name {
+  font-weight: 600;
+  color: #4f5fad;
+  font-size: 1rem;
+}
+
+:host-context(.dark) .notification-sender-name {
+  color: #00f7ff;
+}
+
+.notification-timestamp {
+  font-size: 0.8rem;
+  color: #a0a0a0;
+}
+
+/* Contenu de la notification */
+.notification-content-detail {
+  background: rgba(79, 95, 173, 0.1);
+  padding: 0.75rem;
+  border-radius: 8px;
+  color: #333;
+  line-height: 1.5;
+  border-left: 3px solid #4f5fad;
+}
+
+:host-context(.dark) .notification-content-detail {
+  background: rgba(0, 0, 0, 0.2);
+  color: #e0e0e0;
+  border-left: 3px solid #00f7ff;
+}
+
+.notification-message-detail {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(79, 95, 173, 0.05);
+  border-radius: 8px;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+:host-context(.dark) .notification-message-detail {
+  background: rgba(0, 247, 255, 0.1);
+  color: #e0e0e0;
+}
+
+/* Grille d'informations */
+.notification-info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.notification-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: rgba(79, 95, 173, 0.05);
+  border-radius: 6px;
+}
+
+:host-context(.dark) .notification-info-item {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.notification-info-label {
+  font-weight: 500;
+  color: #666;
+}
+
+:host-context(.dark) .notification-info-label {
+  color: #a0a0a0;
+}
+
+.notification-info-value {
+  font-weight: 600;
+  color: #333;
+}
+
+:host-context(.dark) .notification-info-value {
+  color: #e0e0e0;
+}
+
+/* Grille des pièces jointes */
+.notification-attachments-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.notification-attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(79, 95, 173, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(79, 95, 173, 0.1);
+  transition: all 0.3s ease;
+}
+
+:host-context(.dark) .notification-attachment-item {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.notification-attachment-item:hover {
+  background: rgba(79, 95, 173, 0.1);
+  border-color: rgba(79, 95, 173, 0.3);
+}
+
+:host-context(.dark) .notification-attachment-item:hover {
+  background: rgba(0, 247, 255, 0.1);
+  border-color: rgba(0, 247, 255, 0.3);
+}
+
+.notification-attachment-preview img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.notification-attachment-preview img:hover {
+  transform: scale(1.1);
+}
+
+.notification-attachment-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(79, 95, 173, 0.2);
+  border-radius: 6px;
+  font-size: 1.5rem;
+  color: #4f5fad;
+}
+
+:host-context(.dark) .notification-attachment-icon {
+  background: rgba(0, 247, 255, 0.2);
+  color: #00f7ff;
+}
+
+.notification-attachment-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-attachment-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:host-context(.dark) .notification-attachment-name {
+  color: #e0e0e0;
+}
+
+.notification-attachment-meta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+:host-context(.dark) .notification-attachment-meta {
+  color: #a0a0a0;
+}
+
+.notification-attachment-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* ========================================
+   ANIMATIONS FLUORESCENTES POUR L'HEURE
+   ======================================== */
+
+/* Animation de pulsation fluorescente normale */
+@keyframes fluoro-pulse {
+  0% {
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.8), 0 0 10px rgba(0, 255, 255, 0.6),
+      0 0 15px rgba(0, 255, 255, 0.4);
+    box-shadow: 0 2px 10px rgba(0, 255, 255, 0.6),
+      0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 10px rgba(0, 255, 255, 0.2);
+    border-color: rgba(0, 255, 255, 0.8);
+  }
+  100% {
+    text-shadow: 0 0 8px rgba(0, 255, 255, 1), 0 0 15px rgba(0, 255, 255, 0.8),
+      0 0 25px rgba(0, 255, 255, 0.6);
+    box-shadow: 0 2px 15px rgba(0, 255, 255, 0.8),
+      0 0 30px rgba(0, 255, 255, 0.5), inset 0 0 15px rgba(0, 255, 255, 0.3);
+    border-color: rgba(0, 255, 255, 1);
+  }
+}
+
+/* Animation de pulsation fluorescente intense pour le survol */
+@keyframes fluoro-pulse-intense {
+  0% {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 15px rgba(0, 255, 255, 0.9),
+      0 0 25px rgba(0, 255, 255, 0.7);
+    box-shadow: 0 4px 20px rgba(0, 255, 255, 0.8),
+      0 0 30px rgba(0, 255, 255, 0.5), inset 0 0 15px rgba(0, 255, 255, 0.3);
+    transform: translateY(-2px) scale(1.05);
+  }
+  100% {
+    text-shadow: 0 0 12px rgba(255, 255, 255, 1), 0 0 20px rgba(0, 255, 255, 1),
+      0 0 35px rgba(0, 255, 255, 0.9);
+    box-shadow: 0 6px 25px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.7),
+      inset 0 0 20px rgba(0, 255, 255, 0.4);
+    transform: translateY(-3px) scale(1.08);
+  }
 }

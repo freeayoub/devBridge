@@ -9,7 +9,8 @@ import { MessageChatComponent } from './message-chat/message-chat.component';
 import { MessagesListComponent } from './messages-list/messages-list.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { MessageLayoutComponent } from './message-layout/message-layout.component';
-import { MessagesSidebarComponent } from './messages-sidebar/messages-sidebar.component';
+import { CallInterfaceComponent } from './call-interface/call-interface.component';
+
 import { UserStatusService } from 'src/app/services/user-status.service';
 import { MessageService } from 'src/app/services/message.service';
 import { VoiceMessageModule } from 'src/app/components/voice-message/voice-message.module';
@@ -20,7 +21,7 @@ import { VoiceMessageModule } from 'src/app/components/voice-message/voice-messa
     MessagesListComponent,
     UserListComponent,
     MessageLayoutComponent,
-    MessagesSidebarComponent,
+    CallInterfaceComponent,
   ],
   imports: [
     CommonModule,

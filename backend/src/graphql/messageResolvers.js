@@ -540,6 +540,52 @@ const resolvers = {
       }
     },
 
+    // ✅ Nouveau resolver optimisé pour récupérer les messages avec pagination
+    getConversationMessages: async (
+      _,
+      { conversationId, limit = 50, before, after },
+      context
+    ) => {
+      console.log(
+        `[GraphQL] getConversationMessages resolver called: conversationId=${conversationId}, userId=${context.userId}, limit=${limit}, before=${before}, after=${after}`
+      );
+
+      if (!context.userId) {
+        console.error(
+          `[GraphQL] Unauthorized attempt to get messages without userId`
+        );
+        throw new AuthenticationError("Unauthorized");
+      }
+
+      try {
+        console.log(`[GraphQL] Calling MessageService.getMessages`);
+        const result = await MessageService.getMessages(
+          conversationId,
+          context.userId,
+          { limit, before, after }
+        );
+
+        console.log(
+          `[GraphQL] Retrieved ${result.messages.length} messages with pagination info`
+        );
+
+        return result;
+      } catch (error) {
+        console.error("Error fetching conversation messages:", error);
+        console.error("Error details:", {
+          message: error.message,
+          stack: error.stack,
+          conversationId,
+          userId: context.userId,
+        });
+        throw new ApolloError(
+          "Failed to fetch conversation messages",
+          "MESSAGES_FETCH_FAILED",
+          { originalError: error }
+        );
+      }
+    },
+
     getAllUsers: async (
       _,
       { search, page, limit, sortBy, sortOrder, isOnline },
@@ -593,7 +639,8 @@ const resolvers = {
             id: notification._id.toString(),
             type: notification.type,
             content: notification.content,
-            timestamp: notification.createdAt,
+            timestamp:
+              notification.createdAt || notification.timestamp || new Date(),
             isRead: notification.isRead,
             readAt: notification.readAt,
             senderId: notification.senderId,
@@ -969,6 +1016,469 @@ const resolvers = {
       return MessageService.stopTyping({ userId, conversationId, pubsub });
     },
 
+    // === RESOLVERS D'APPEL WEBRTC ===
+
+    initiateCall: async (
+      _,
+      { recipientId, callType, callId, offer, conversationId, options },
+      { userId, pubsub }
+    ) => {
+      console.log(
+        `[GraphQL] initiateCall mutation called: recipientId=${recipientId}, callType=${callType}, callId=${callId}`
+      );
+
+      if (!userId) {
+        console.error(`[GraphQL] Unauthorized attempt to initiate call`);
+        throw new AuthenticationError("Unauthorized");
+      }
+
+      try {
+        // Récupérer les informations des utilisateurs avec tous les champs requis
+        const caller = await User.findById(userId).select(
+          "username image email isOnline isActive lastActive role createdAt updatedAt"
+        );
+        const recipient = await User.findById(recipientId).select(
+          "username image email isOnline isActive lastActive role createdAt updatedAt"
+        );
+
+        if (!caller || !recipient) {
+          console.error(
+            `[GraphQL] User not found: caller=${!!caller}, recipient=${!!recipient}`
+          );
+          throw new ApolloError("User not found", "USER_NOT_FOUND");
+        }
+
+        console.log(
+          `[GraphQL] Found users: caller=${caller.username}, recipient=${recipient.username}`
+        );
+
+        // Créer l'objet Call avec les vraies informations selon le schéma GraphQL
+        const call = {
+          id: callId,
+          caller: {
+            id: caller._id.toString(),
+            username: caller.username || "Unknown",
+            email: caller.email || "unknown@example.com",
+            image: caller.image || null,
+            isOnline: caller.isOnline || false,
+            isActive: caller.isActive || true,
+            lastActive: caller.lastActive
+              ? caller.lastActive.toISOString()
+              : null,
+            role: caller.role || "user",
+            notificationCount: 0,
+            lastNotification: null,
+            createdAt: caller.createdAt
+              ? caller.createdAt.toISOString()
+              : new Date().toISOString(),
+            updatedAt: caller.updatedAt
+              ? caller.updatedAt.toISOString()
+              : new Date().toISOString(),
+            notifications: [],
+          },
+          recipient: {
+            id: recipient._id.toString(),
+            username: recipient.username || "Unknown",
+            email: recipient.email || "unknown@example.com",
+            image: recipient.image || null,
+            isOnline: recipient.isOnline || false,
+            isActive: recipient.isActive || true,
+            lastActive: recipient.lastActive
+              ? recipient.lastActive.toISOString()
+              : null,
+            role: recipient.role || "user",
+            notificationCount: 0,
+            lastNotification: null,
+            createdAt: recipient.createdAt
+              ? recipient.createdAt.toISOString()
+              : new Date().toISOString(),
+            updatedAt: recipient.updatedAt
+              ? recipient.updatedAt.toISOString()
+              : new Date().toISOString(),
+            notifications: [],
+          },
+          type: callType,
+          status: "RINGING",
+          startTime: new Date().toISOString(),
+          endTime: null,
+          duration: null,
+          conversationId: conversationId,
+          metadata: options || {},
+        };
+
+        console.log(`[GraphQL] Created call object:`, call);
+
+        // Publier l'appel entrant au destinataire
+        const incomingCall = {
+          id: callId,
+          caller: {
+            id: caller._id.toString(),
+            username: caller.username,
+            image: caller.image,
+          },
+          type: callType,
+          status: "ringing",
+          conversationId: conversationId,
+        };
+
+        console.log(
+          `[GraphQL] Publishing incoming call to user ${recipientId}`
+        );
+        pubsub.publish(`INCOMING_CALL_${recipientId}`, {
+          incomingCall: incomingCall,
+        });
+
+        console.log(`[GraphQL] Call initiated successfully:`, call);
+        return call;
+      } catch (error) {
+        console.error("Error initiating call:", error);
+        throw new ApolloError(
+          "Failed to initiate call",
+          "CALL_INITIATION_FAILED",
+          { originalError: error }
+        );
+      }
+    },
+
+    acceptCall: async (_, { callId, answer }, { userId, pubsub }) => {
+      console.log(`[GraphQL] acceptCall mutation called: callId=${callId}`);
+
+      if (!userId) {
+        console.error(`[GraphQL] Unauthorized attempt to accept call`);
+        throw new AuthenticationError("Unauthorized");
+      }
+
+      try {
+        // Récupérer les informations de l'utilisateur
+        const user = await User.findById(userId).select(
+          "username image email isOnline isActive lastActive role createdAt updatedAt"
+        );
+
+        if (!user) {
+          console.error(`[GraphQL] User not found: ${userId}`);
+          throw new ApolloError("User not found", "USER_NOT_FOUND");
+        }
+
+        // Créer l'objet Call accepté selon le schéma GraphQL
+        const call = {
+          id: callId,
+          caller: {
+            id: "unknown",
+            username: "Unknown",
+            image: null,
+            email: "unknown@example.com",
+            isOnline: false,
+            isActive: false,
+            lastActive: new Date().toISOString(),
+            role: "user",
+            notificationCount: 0,
+            lastNotification: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            notifications: [],
+          },
+          recipient: {
+            id: user._id.toString(),
+            username: user.username || "Unknown",
+            email: user.email || "unknown@example.com",
+            image: user.image || null,
+            isOnline: user.isOnline || false,
+            isActive: user.isActive || true,
+            lastActive: user.lastActive ? user.lastActive.toISOString() : null,
+            role: user.role || "user",
+            notificationCount: 0,
+            lastNotification: null,
+            createdAt: user.createdAt
+              ? user.createdAt.toISOString()
+              : new Date().toISOString(),
+            updatedAt: user.updatedAt
+              ? user.updatedAt.toISOString()
+              : new Date().toISOString(),
+            notifications: [],
+          },
+          type: "VIDEO", // TODO: récupérer le vrai type depuis le cache/DB
+          status: "CONNECTED",
+          startTime: new Date().toISOString(),
+          endTime: null,
+          duration: null,
+          conversationId: null,
+          metadata: { answer: answer },
+        };
+
+        console.log(`[GraphQL] Call accepted:`, call);
+
+        // Publier le signal d'acceptation
+        pubsub.publish(`CALL_SIGNAL_${callId}`, {
+          callSignal: {
+            callId: callId,
+            signalType: "answer",
+            signalData: answer,
+            from: userId,
+            timestamp: new Date().toISOString(),
+          },
+        });
+
+        return call;
+      } catch (error) {
+        console.error("Error accepting call:", error);
+        throw new ApolloError(
+          "Failed to accept call",
+          "CALL_ACCEPTANCE_FAILED",
+          { originalError: error }
+        );
+      }
+    },
+
+    rejectCall: async (_, { callId, reason }, { userId, pubsub }) => {
+      console.log(`[GraphQL] rejectCall mutation called: callId=${callId}`);
+
+      if (!userId) {
+        console.error(`[GraphQL] Unauthorized attempt to reject call`);
+        throw new AuthenticationError("Unauthorized");
+      }
+
+      try {
+        // Récupérer les informations de l'utilisateur
+        const user = await User.findById(userId).select(
+          "username image email isOnline isActive lastActive role createdAt updatedAt"
+        );
+
+        if (!user) {
+          console.error(`[GraphQL] User not found: ${userId}`);
+          throw new ApolloError("User not found", "USER_NOT_FOUND");
+        }
+
+        // Créer l'objet Call rejeté selon le schéma GraphQL
+        const call = {
+          id: callId,
+          caller: {
+            id: "unknown",
+            username: "Unknown",
+            image: null,
+            email: "unknown@example.com",
+            isOnline: false,
+            isActive: false,
+            lastActive: new Date().toISOString(),
+            role: "user",
+            notificationCount: 0,
+            lastNotification: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            notifications: [],
+          },
+          recipient: {
+            id: user._id.toString(),
+            username: user.username || "Unknown",
+            email: user.email || "unknown@example.com",
+            image: user.image || null,
+            isOnline: user.isOnline || false,
+            isActive: user.isActive || true,
+            lastActive: user.lastActive ? user.lastActive.toISOString() : null,
+            role: user.role || "user",
+            notificationCount: 0,
+            lastNotification: null,
+            createdAt: user.createdAt
+              ? user.createdAt.toISOString()
+              : new Date().toISOString(),
+            updatedAt: user.updatedAt
+              ? user.updatedAt.toISOString()
+              : new Date().toISOString(),
+            notifications: [],
+          },
+          type: "VIDEO",
+          status: "REJECTED",
+          startTime: new Date().toISOString(),
+          endTime: new Date().toISOString(),
+          duration: 0,
+          conversationId: null,
+          metadata: { reason: reason },
+        };
+
+        console.log(`[GraphQL] Call rejected:`, call);
+
+        // Publier le statut de rejet
+        pubsub.publish(`CALL_STATUS_${callId}`, {
+          callStatusChanged: {
+            callId: callId,
+            status: "rejected",
+            reason: reason,
+            timestamp: new Date().toISOString(),
+          },
+        });
+
+        return call;
+      } catch (error) {
+        console.error("Error rejecting call:", error);
+        throw new ApolloError(
+          "Failed to reject call",
+          "CALL_REJECTION_FAILED",
+          { originalError: error }
+        );
+      }
+    },
+
+    endCall: async (_, { callId, feedback }, { userId, pubsub }) => {
+      console.log(`[GraphQL] endCall mutation called: callId=${callId}`);
+
+      if (!userId) {
+        console.error(`[GraphQL] Unauthorized attempt to end call`);
+        throw new AuthenticationError("Unauthorized");
+      }
+
+      try {
+        // Récupérer les informations de l'utilisateur
+        const user = await User.findById(userId).select(
+          "username image email isOnline isActive lastActive role createdAt updatedAt"
+        );
+
+        if (!user) {
+          console.error(`[GraphQL] User not found: ${userId}`);
+          throw new ApolloError("User not found", "USER_NOT_FOUND");
+        }
+
+        // Créer l'objet Call terminé selon le schéma GraphQL
+        const call = {
+          id: callId,
+          caller: {
+            id: user._id.toString(),
+            username: user.username || "Unknown",
+            email: user.email || "unknown@example.com",
+            image: user.image || null,
+            isOnline: user.isOnline || false,
+            isActive: user.isActive || true,
+            lastActive: user.lastActive ? user.lastActive.toISOString() : null,
+            role: user.role || "user",
+            notificationCount: 0,
+            lastNotification: null,
+            createdAt: user.createdAt
+              ? user.createdAt.toISOString()
+              : new Date().toISOString(),
+            updatedAt: user.updatedAt
+              ? user.updatedAt.toISOString()
+              : new Date().toISOString(),
+            notifications: [],
+          },
+          recipient: {
+            id: "unknown",
+            username: "Unknown",
+            image: null,
+            email: "unknown@example.com",
+            isOnline: false,
+            isActive: false,
+            lastActive: new Date().toISOString(),
+            role: "user",
+            notificationCount: 0,
+            lastNotification: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            notifications: [],
+          },
+          type: "VIDEO",
+          status: "ENDED",
+          startTime: new Date(Date.now() - 60000).toISOString(), // 1 minute ago
+          endTime: new Date().toISOString(),
+          duration: 60, // 60 seconds
+          conversationId: null,
+          metadata: feedback || {},
+        };
+
+        console.log(`[GraphQL] Call ended:`, call);
+
+        // Publier le statut de fin d'appel
+        pubsub.publish(`CALL_STATUS_${callId}`, {
+          callStatusChanged: {
+            callId: callId,
+            status: "ended",
+            endedBy: userId,
+            timestamp: new Date().toISOString(),
+          },
+        });
+
+        return call;
+      } catch (error) {
+        console.error("Error ending call:", error);
+        throw new ApolloError("Failed to end call", "CALL_END_FAILED", {
+          originalError: error,
+        });
+      }
+    },
+
+    sendCallSignal: async (
+      _,
+      { callId, signalType, signalData },
+      { userId, pubsub }
+    ) => {
+      console.log(
+        `[GraphQL] sendCallSignal mutation called: callId=${callId}, signalType=${signalType}`
+      );
+
+      if (!userId) {
+        console.error(`[GraphQL] Unauthorized attempt to send call signal`);
+        throw new AuthenticationError("Unauthorized");
+      }
+
+      try {
+        // Publier le signal
+        pubsub.publish(`CALL_SIGNAL_${callId}`, {
+          callSignal: {
+            callId: callId,
+            signalType: signalType,
+            signalData: signalData,
+            from: userId,
+            timestamp: new Date().toISOString(),
+          },
+        });
+
+        console.log(`[GraphQL] Call signal sent successfully`);
+        return { success: true, message: "Signal sent successfully" };
+      } catch (error) {
+        console.error("Error sending call signal:", error);
+        throw new ApolloError(
+          "Failed to send call signal",
+          "CALL_SIGNAL_FAILED",
+          { originalError: error }
+        );
+      }
+    },
+
+    toggleCallMedia: async (
+      _,
+      { callId, video, audio },
+      { userId, pubsub }
+    ) => {
+      console.log(
+        `[GraphQL] toggleCallMedia mutation called: callId=${callId}, video=${video}, audio=${audio}`
+      );
+
+      if (!userId) {
+        console.error(`[GraphQL] Unauthorized attempt to toggle call media`);
+        throw new AuthenticationError("Unauthorized");
+      }
+
+      try {
+        // Publier le changement de média
+        pubsub.publish(`CALL_SIGNAL_${callId}`, {
+          callSignal: {
+            callId: callId,
+            signalType: "media-toggle",
+            signalData: JSON.stringify({ video, audio }),
+            from: userId,
+            timestamp: new Date().toISOString(),
+          },
+        });
+
+        console.log(`[GraphQL] Call media toggled successfully`);
+        return { success: true, message: "Media toggled successfully" };
+      } catch (error) {
+        console.error("Error toggling call media:", error);
+        throw new ApolloError(
+          "Failed to toggle call media",
+          "CALL_MEDIA_TOGGLE_FAILED",
+          { originalError: error }
+        );
+      }
+    },
+
     updateGroup: async (_, { id, input }, { userId }) => {
       if (!userId) throw new GraphQLError("Unauthorized");
       return MessageService.updateGroup({ groupId: id, input, userId });
@@ -1288,10 +1798,101 @@ const resolvers = {
     },
   },
 
+  Notification: {
+    timestamp: (parent) => {
+      // Gestion robuste du timestamp pour les notifications
+      if (!parent.timestamp && !parent.createdAt) {
+        console.warn(
+          "Notification without timestamp, using current date:",
+          parent.id
+        );
+        return new Date().toISOString();
+      }
+
+      try {
+        const date = parent.timestamp || parent.createdAt;
+        const dateObj = date instanceof Date ? date : new Date(date);
+        return dateObj.toISOString();
+      } catch (error) {
+        console.error(
+          "Invalid notification timestamp:",
+          parent.timestamp,
+          error
+        );
+        return new Date().toISOString();
+      }
+    },
+    readAt: (parent) => {
+      if (!parent.readAt) return null;
+      try {
+        return parent.readAt instanceof Date
+          ? parent.readAt.toISOString()
+          : new Date(parent.readAt).toISOString();
+      } catch (error) {
+        console.error("Error formatting notification readAt date:", error);
+        return null;
+      }
+    },
+  },
+
+  Attachment: {
+    url: (parent) => {
+      // S'assurer que l'URL n'est jamais null
+      if (!parent.url) {
+        console.warn("Attachment without URL, using placeholder:", parent);
+        return ""; // Retourner une chaîne vide au lieu de null
+      }
+      return parent.url;
+    },
+    type: (parent) => {
+      // Normaliser le type d'attachment
+      if (!parent.type) {
+        console.warn("Attachment without type, using FILE as default:", parent);
+        return "FILE";
+      }
+      return parent.type.toUpperCase();
+    },
+    name: (parent) => {
+      // S'assurer que le nom n'est jamais null
+      if (!parent.name) {
+        console.warn("Attachment without name, using default:", parent);
+        return "attachment";
+      }
+      return parent.name;
+    },
+    size: (parent) => {
+      // S'assurer que la taille est un nombre valide
+      if (typeof parent.size !== "number" || parent.size < 0) {
+        console.warn("Invalid attachment size, using 0:", parent.size);
+        return 0;
+      }
+      return parent.size;
+    },
+    mimeType: (parent) => {
+      // Le mimeType peut être null (champ nullable)
+      return parent.mimeType || null;
+    },
+    thumbnailUrl: (parent) => {
+      // Le thumbnailUrl peut être null (champ nullable)
+      return parent.thumbnailUrl || null;
+    },
+    duration: (parent) => {
+      // La durée peut être null (champ nullable)
+      return parent.duration || null;
+    },
+  },
+
   Subscription: {
     messageSent: {
       subscribe: (_, { senderId, receiverId, conversationId }, { pubsub }) => {
+        console.log(
+          `[GraphQL] Setting up messageSent subscription: conversationId=${conversationId}, senderId=${senderId}, receiverId=${receiverId}`
+        );
+
         if (conversationId) {
+          console.log(
+            `[GraphQL] Subscribing to channel: MESSAGE_SENT_${conversationId}`
+          );
           return pubsub.asyncIterator(`MESSAGE_SENT_${conversationId}`);
         }
         if (!senderId || !receiverId) {
@@ -1301,10 +1902,25 @@ const resolvers = {
           `MESSAGE_SENT_${senderId}_${receiverId}`,
           `MESSAGE_SENT_${receiverId}_${senderId}`,
         ];
+        console.log(`[GraphQL] Subscribing to channels:`, channels);
         return pubsub.asyncIterator(channels);
       },
       resolve: (payload) => {
         const message = payload.messageSent;
+
+        // Formater les attachments pour s'assurer qu'ils sont valides
+        const formattedAttachments = (message.attachments || []).map(
+          (attachment) => ({
+            url: attachment.url || "",
+            type: (attachment.type || "FILE").toUpperCase(),
+            name: attachment.name || "attachment",
+            size: typeof attachment.size === "number" ? attachment.size : 0,
+            mimeType: attachment.mimeType || null,
+            thumbnailUrl: attachment.thumbnailUrl || null,
+            duration: attachment.duration || null,
+          })
+        );
+
         return {
           ...message,
           sender: {
@@ -1319,6 +1935,7 @@ const resolvers = {
                 image: message.receiver?.image || null,
               }
             : null,
+          attachments: formattedAttachments,
         };
       },
     },
