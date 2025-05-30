@@ -41,7 +41,6 @@ const userSchema = new mongoose.Schema(
       sparse: true, // Permet les valeurs null/undefined tout en gardant l'unicité
       trim: true,
       lowercase: true,
-      index: true,
     },
     password: {
       type: String,
@@ -62,8 +61,7 @@ const userSchema = new mongoose.Schema(
       },
     },
     group: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Group",
+      type: mongoose.Schema.Types.Mixed, // Permet ObjectId ou String
       default: null,
     },
     profileImage: {

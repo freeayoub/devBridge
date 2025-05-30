@@ -10,6 +10,7 @@ const {
   addUserToGroup,
   removeUserFromGroup,
   getGroupUsers,
+  createDefaultGroups,
 } = require("../controllers/groupController");
 
 // Create a new group (teachers and admins only)
@@ -17,6 +18,9 @@ router.post("/", auth, authorizeRoles("teacher", "admin"), createGroup);
 
 // Get all groups
 router.get("/", auth, getAllGroups);
+
+// Create default groups (development route)
+router.post("/create-defaults", createDefaultGroups);
 
 // Get a specific group
 router.get("/:id", auth, getGroupById);

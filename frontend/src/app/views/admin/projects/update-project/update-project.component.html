@@ -1,29 +1,175 @@
-<div class="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-xl">
-    <h2 class="text-2xl font-bold text-[#4f5fad] mb-4">Modifier le projet</h2>
-    <form [formGroup]="updateForm" (ngSubmit)="onSubmit()">
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Titre</label>
-        <input formControlName="titre" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+<!-- Begin Page Content -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-dark-bg-primary dark:via-dark-bg-secondary dark:to-dark-bg-tertiary">
+  <div class="container mx-auto px-4 py-8">
+
+    <!-- Header moderne avec breadcrumb -->
+    <div class="mb-8">
+      <nav class="flex items-center space-x-2 text-sm text-text dark:text-dark-text-secondary mb-4">
+        <a routerLink="/admin/projects/list-project" class="hover:text-primary dark:hover:text-dark-accent-primary transition-colors">Projets</a>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <a [routerLink]="['/admin/projects/details', projetId]" class="hover:text-primary dark:hover:text-dark-accent-primary transition-colors">Détails</a>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <span class="text-primary dark:text-dark-accent-primary font-medium">Modifier</span>
+      </nav>
+
+      <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50">
+        <div class="flex items-center space-x-4">
+          <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-secondary to-primary dark:from-dark-accent-secondary dark:to-dark-accent-primary flex items-center justify-center shadow-lg">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-text-dark dark:text-dark-text-primary">
+              Modifier le projet
+            </h1>
+            <p class="text-text dark:text-dark-text-secondary">
+              Mettez à jour les informations du projet
+            </p>
+          </div>
+        </div>
       </div>
-  
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Groupe</label>
-        <input formControlName="groupe" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+    </div>
+
+    <!-- Formulaire moderne -->
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50 overflow-hidden">
+
+        <!-- Contenu du formulaire -->
+        <div class="p-8">
+          <form [formGroup]="updateForm" (ngSubmit)="onSubmit()" class="space-y-8">
+
+            <!-- Section informations générales -->
+            <div class="space-y-6">
+              <div class="flex items-center space-x-3 mb-6">
+                <div class="bg-primary/10 dark:bg-dark-accent-primary/20 p-2 rounded-lg">
+                  <svg class="w-5 h-5 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-text-dark dark:text-dark-text-primary">Informations du projet</h3>
+              </div>
+
+              <!-- Titre -->
+              <div class="space-y-2">
+                <label for="titre" class="flex items-center space-x-2 text-sm font-semibold text-text-dark dark:text-dark-text-primary">
+                  <svg class="w-4 h-4 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a1.994 1.994 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                  <span>Titre du projet</span>
+                  <span class="text-danger dark:text-danger-dark">*</span>
+                </label>
+                <div class="relative">
+                  <input type="text" id="titre" formControlName="titre" placeholder="Ex: Développement d'une application web"
+                         class="w-full px-4 py-3 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-secondary">
+                </div>
+                <div *ngIf="updateForm.get('titre')?.invalid && updateForm.get('titre')?.touched"
+                     class="flex items-center space-x-2 text-danger dark:text-danger-dark text-sm">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span>Le titre est requis</span>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="space-y-2">
+                <label for="description" class="flex items-center space-x-2 text-sm font-semibold text-text-dark dark:text-dark-text-primary">
+                  <svg class="w-4 h-4 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                  </svg>
+                  <span>Description</span>
+                  <span class="text-danger dark:text-danger-dark">*</span>
+                </label>
+                <div class="relative">
+                  <textarea id="description" formControlName="description" rows="4" placeholder="Décrivez les objectifs, les livrables attendus et les critères d'évaluation..."
+                            class="w-full px-4 py-3 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-secondary resize-none"></textarea>
+                </div>
+                <div *ngIf="updateForm.get('description')?.invalid && updateForm.get('description')?.touched"
+                     class="flex items-center space-x-2 text-danger dark:text-danger-dark text-sm">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span>La description est requise</span>
+                </div>
+              </div>
+
+              <!-- Grille pour date et groupe -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Date limite -->
+                <div class="space-y-2">
+                  <label for="dateLimite" class="flex items-center space-x-2 text-sm font-semibold text-text-dark dark:text-dark-text-primary">
+                    <svg class="w-4 h-4 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Date limite</span>
+                    <span class="text-danger dark:text-danger-dark">*</span>
+                  </label>
+                  <div class="relative">
+                    <input type="date" id="dateLimite" formControlName="dateLimite"
+                           class="w-full px-4 py-3 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary">
+                  </div>
+                  <div *ngIf="updateForm.get('dateLimite')?.invalid && updateForm.get('dateLimite')?.touched"
+                       class="flex items-center space-x-2 text-danger dark:text-danger-dark text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>La date limite est requise</span>
+                  </div>
+                </div>
+
+                <!-- Groupe -->
+                <div class="space-y-2">
+                  <label for="groupe" class="flex items-center space-x-2 text-sm font-semibold text-text-dark dark:text-dark-text-primary">
+                    <svg class="w-4 h-4 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span>Groupe cible</span>
+                    <span class="text-danger dark:text-danger-dark">*</span>
+                  </label>
+                  <div class="relative">
+                    <input type="text" id="groupe" formControlName="groupe" placeholder="Ex: 2cinfo1"
+                           class="w-full px-4 py-3 bg-white dark:bg-dark-bg-secondary border-2 border-gray-200 dark:border-dark-bg-tertiary rounded-xl focus:outline-none focus:border-primary dark:focus:border-dark-accent-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-dark-accent-primary/20 transition-all duration-200 text-text-dark dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-secondary">
+                  </div>
+                  <div *ngIf="updateForm.get('groupe')?.invalid && updateForm.get('groupe')?.touched"
+                       class="flex items-center space-x-2 text-danger dark:text-danger-dark text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Le groupe est requis</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-dark-bg-tertiary/50">
+              <button type="button" [routerLink]="['/admin/projects/details', projetId]"
+                      class="flex-1 px-6 py-3 bg-gray-100 dark:bg-dark-bg-tertiary text-text-dark dark:text-dark-text-primary hover:bg-gray-200 dark:hover:bg-dark-bg-tertiary/80 rounded-xl transition-all duration-200 font-medium">
+                <div class="flex items-center justify-center space-x-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  <span>Annuler</span>
+                </div>
+              </button>
+              <button type="submit" [disabled]="!updateForm.valid"
+                      class="flex-1 px-6 py-3 bg-gradient-to-r from-secondary to-primary dark:from-dark-accent-secondary dark:to-dark-accent-primary text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none">
+                <div class="flex items-center justify-center space-x-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span>Mettre à jour le projet</span>
+                </div>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-  
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Date limite</label>
-        <input type="date" formControlName="dateLimite" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
-      </div>
-  
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Description</label>
-        <textarea formControlName="description" class="mt-1 block w-full border border-gray-300 rounded-md p-2"></textarea>
-      </div>
-  
-      <button type="submit" [disabled]="!updateForm.valid" class="bg-[#7826b5] text-white px-4 py-2 rounded hover:bg-[#5f1d8f]">
-        Mettre à jour
-      </button>
-    </form>
+    </div>
   </div>
-  
+</div>

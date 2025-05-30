@@ -158,4 +158,93 @@ export class ListProjectComponent implements OnInit {
 
     return filePath;
   }
+
+  getActiveProjectsCount(): number {
+    if (!this.projets) return 0;
+
+    const now = new Date();
+    return this.projets.filter(projet => {
+      if (!projet.dateLimite) return true; // Considérer comme actif si pas de date limite
+      const dateLimit = new Date(projet.dateLimite);
+      return dateLimit >= now; // Actif si la date limite n'est pas dépassée
+    }).length;
+  }
+
+  getExpiredProjectsCount(): number {
+    if (!this.projets) return 0;
+
+    const now = new Date();
+    return this.projets.filter(projet => {
+      if (!projet.dateLimite) return false; // Pas expiré si pas de date limite
+      const dateLimit = new Date(projet.dateLimite);
+      return dateLimit < now; // Expiré si la date limite est dépassée
+    }).length;
+  }
+
+  getUniqueGroupsCount(): number {
+    if (!this.projets) return 0;
+
+    const uniqueGroups = new Set(
+      this.projets
+        .map(projet => projet.groupe)
+        .filter(groupe => groupe && groupe.trim() !== '')
+    );
+
+    return uniqueGroups.size;
+  }
+
+  getCompletionPercentage(): number {
+    if (!this.projets || this.projets.length === 0) return 0;
+
+    const expiredCount = this.getExpiredProjectsCount();
+    const totalCount = this.projets.length;
+
+    return Math.round((expiredCount / totalCount) * 100);
+  }
+
+  getProjectsByGroup(): { [key: string]: number } {
+    if (!this.projets) return {};
+
+    const groupCounts: { [key: string]: number } = {};
+
+    this.projets.forEach(projet => {
+      const groupe = projet.groupe || 'Non spécifié';
+      groupCounts[groupe] = (groupCounts[groupe] || 0) + 1;
+    });
+
+    return groupCounts;
+  }
+
+  getRecentProjects(): Projet[] {
+    if (!this.projets) return [];
+
+    // Comme nous n'avons pas de dateCreation, on retourne les projets récents basés sur la date limite
+    const now = new Date();
+    const oneMonthFromNow = new Date();
+    oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
+
+    return this.projets.filter(projet => {
+      if (!projet.dateLimite) return false;
+      const deadline = new Date(projet.dateLimite);
+      return deadline >= now && deadline <= oneMonthFromNow;
+    });
+  }
+
+  getUpcomingDeadlines(): Projet[] {
+    if (!this.projets) return [];
+
+    const now = new Date();
+    const oneWeekFromNow = new Date();
+    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+
+    return this.projets.filter(projet => {
+      if (!projet.dateLimite) return false;
+      const deadline = new Date(projet.dateLimite);
+      return deadline >= now && deadline <= oneWeekFromNow;
+    }).sort((a, b) => {
+      const dateA = new Date(a.dateLimite!);
+      const dateB = new Date(b.dateLimite!);
+      return dateA.getTime() - dateB.getTime();
+    });
+  }
 }

@@ -92,7 +92,6 @@ const routes: Routes = [
           import('./views/front/reset-password/reset-password.module').then(
             (m) => m.ResetPasswordModule
           ),
-        canActivateChild: [guarduserGuard],
       },
       {
         path: 'forgot-password',

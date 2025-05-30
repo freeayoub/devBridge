@@ -537,21 +537,21 @@
               </td>
               <td class="px-2 py-3 whitespace-nowrap text-center">
                 <span
-                  class="px-2 py-1 text-xs rounded-lg inline-flex items-center justify-center"
+                  class="px-3 py-1.5 text-xs rounded-full inline-flex items-center justify-center font-semibold transition-all duration-300"
                   [ngClass]="
                     user.isActive !== false
-                      ? 'bg-[#afcf75]/10 dark:bg-[#afcf75]/5 text-[#2a5a03] dark:text-[#afcf75]'
-                      : 'bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 text-[#ff6b69] dark:text-[#ff8785]'
+                      ? 'bg-[#afcf75]/15 dark:bg-[#afcf75]/10 text-[#2a5a03] dark:text-[#afcf75] border border-[#afcf75]/30 shadow-sm'
+                      : 'bg-[#ff6b69]/15 dark:bg-[#ff6b69]/10 text-[#ff6b69] dark:text-[#ff8785] border border-[#ff6b69]/30 shadow-sm'
                   "
                 >
                   <i
                     [class]="
                       user.isActive !== false
-                        ? 'fas fa-circle mr-1.5 text-[8px]'
-                        : 'fas fa-circle mr-1.5 text-[8px]'
+                        ? 'fas fa-check-circle mr-1.5 text-[10px]'
+                        : 'fas fa-times-circle mr-1.5 text-[10px]'
                     "
                   ></i>
-                  {{ user.isActive !== false ? "Active" : "Inactive" }}
+                  {{ user.isActive !== false ? "Active" : "Deactivated" }}
                 </span>
               </td>
               <td class="px-2 py-3 whitespace-nowrap text-center">
@@ -574,29 +574,41 @@
               </td>
               <td class="px-2 py-3 whitespace-nowrap text-center">
                 <button
-                  class="px-2 py-1.5 text-xs rounded-lg font-medium flex items-center justify-center mx-auto transition-all w-full relative overflow-hidden group"
+                  class="px-3 py-2 text-xs rounded-lg font-semibold flex items-center justify-center mx-auto transition-all duration-300 w-full relative overflow-hidden group border shadow-sm hover:shadow-md transform hover:scale-105"
                   [ngClass]="
                     user.isActive !== false
-                      ? 'bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 text-[#ff6b69] dark:text-[#ff8785] hover:bg-[#ff6b69]/20 dark:hover:bg-[#ff6b69]/10'
-                      : 'bg-[#afcf75]/10 dark:bg-[#afcf75]/5 text-[#2a5a03] dark:text-[#afcf75] hover:bg-[#afcf75]/20 dark:hover:bg-[#afcf75]/10'
+                      ? 'bg-[#ff6b69]/10 dark:bg-[#ff6b69]/5 text-[#ff6b69] dark:text-[#ff8785] hover:bg-[#ff6b69]/20 dark:hover:bg-[#ff6b69]/10 border-[#ff6b69]/30 hover:border-[#ff6b69]/50'
+                      : 'bg-[#afcf75]/10 dark:bg-[#afcf75]/5 text-[#2a5a03] dark:text-[#afcf75] hover:bg-[#afcf75]/20 dark:hover:bg-[#afcf75]/10 border-[#afcf75]/30 hover:border-[#afcf75]/50'
                   "
                   (click)="
                     toggleUserActivation(user._id, user.isActive !== false)
                   "
                   [title]="
                     user.isActive !== false
-                      ? 'Désactiver le compte utilisateur'
-                      : 'Activer le compte utilisateur'
+                      ? 'Click to deactivate this user account'
+                      : 'Click to activate this user account'
                   "
                 >
+                  <!-- Background animation -->
+                  <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                       [ngClass]="
+                         user.isActive !== false
+                           ? 'bg-gradient-to-r from-[#ff6b69]/5 to-[#ff6b69]/10'
+                           : 'bg-gradient-to-r from-[#afcf75]/5 to-[#afcf75]/10'
+                       ">
+                  </div>
+
                   <i
+                    class="relative z-10 mr-2 transition-transform duration-300 group-hover:scale-110"
                     [class]="
                       user.isActive !== false
-                        ? 'fas fa-ban mr-1.5'
-                        : 'fas fa-check-circle mr-1.5'
+                        ? 'fas fa-user-slash'
+                        : 'fas fa-user-check'
                     "
                   ></i>
-                  {{ user.isActive !== false ? "Deactivate" : "Activate" }}
+                  <span class="relative z-10">
+                    {{ user.isActive !== false ? "Deactivate" : "Activate" }}
+                  </span>
                 </button>
               </td>
               <td class="px-2 py-3 whitespace-nowrap text-center">

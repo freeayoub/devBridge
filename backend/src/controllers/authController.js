@@ -2,7 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const generateCode = require("../utils/generateCode");
-const { sendVerificationEmail } = require("../utils/sendEmail");
+const { sendVerificationEmail, sendPasswordResetEmail, sendWelcomeEmail } = require("../utils/sendEmail");
 
 exports.signup = async (req, res) => {
   const { fullName, email, password, role } = req.body;
@@ -239,6 +239,15 @@ exports.verifyEmail = async (req, res) => {
       user.isActive = true; // Définir explicitement isActive
       user.verificationCode = null;
       await user.save();
+
+      // Send welcome email after successful verification
+      try {
+        await sendWelcomeEmail(email, user.fullName || user.firstName || 'User');
+      } catch (emailError) {
+        console.error("Failed to send welcome email:", emailError);
+        // Don't fail the verification if welcome email fails
+      }
+
       res.json({ message: "Email verified successfully" });
     } else {
       res.status(400).json({ message: "Invalid verification code" });
@@ -258,9 +267,9 @@ exports.forgotPassword = async (req, res) => {
 
     user.resetCode = code;
     await user.save();
-    await sendVerificationEmail(email, code); // reuse the email function
+    await sendPasswordResetEmail(email, code); // use the dedicated password reset email
 
-    res.json({ message: "Reset code sent to email" });
+    res.json({ message: "Password reset code sent to your email" });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }

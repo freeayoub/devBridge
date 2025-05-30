@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const renduController = require("../controllers/renduController");
 const evaluationController = require("../controllers/evaluationController");
-const upload = require('../uploads/upload');
+const { uploadProjectFiles } = require('../middlewares/upload');
 const { body, validationResult } = require("express-validator");
 const Projet = require("../models/project.schema");
 const User = require("../models/User");
@@ -28,7 +28,7 @@ const renduValidationRules = [
 ];
 
 // CREATE rendu (with file upload)
-router.post("/submit", upload.array('fichiers'), renduValidationRules, renduController.createRendu);
+router.post("/submit", uploadProjectFiles.array('fichiers'), renduValidationRules, renduController.createRendu);
 
 // Vérifier si un étudiant a déjà soumis un rendu pour un projet
 router.get("/check/:projetId/:etudiantId", renduController.checkRenduExists);
@@ -46,7 +46,7 @@ router.get("/projet/:projetId", renduController.getRendusByProjet);
 router.get("/etudiant/:etudiantId", renduController.getRendusByEtudiant);
 
 // UPDATE rendu
-router.put("/:id", upload.array('fichiers'), renduValidationRules, renduController.updateRendu);
+router.put("/:id", uploadProjectFiles.array('fichiers'), renduValidationRules, renduController.updateRendu);
 
 // DELETE rendu
 router.delete("/:id", renduController.deleteRendu);

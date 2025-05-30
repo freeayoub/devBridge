@@ -1,389 +1,334 @@
 <!-- Begin Page Content -->
-<div class="container-fluid p-4 md:p-6 bg-[#edf1f4] min-h-screen">
-  <!-- Page Heading -->
-  <div
-    class="flex flex-col md:flex-row md:items-center md:justify-between mb-6"
-  >
-    <div>
-      <h1 class="text-2xl font-bold text-[#4f5fad] mb-2 md:mb-0">
-        Gestion des Projets
-      </h1>
-      <p class="text-[#6d6870] text-sm">
-        Créez, gérez et suivez vos projets académiques
-      </p>
-    </div>
-    <a
-      routerLink="/admin/projects/new"
-      class="inline-flex items-center bg-[#7826b5] hover:bg-[#5f1d8f] text-white px-4 py-2 rounded-lg shadow transition-all mt-4 md:mt-0"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4 mr-2"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-          clip-rule="evenodd"
-        />
-      </svg>
-      Ajouter un projet
-    </a>
-  </div>
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-dark-bg-primary dark:via-dark-bg-secondary dark:to-dark-bg-tertiary">
+  <div class="container mx-auto px-4 py-8">
 
-  <!-- Projects Grid -->
-  <div
-    *ngIf="!isLoading && projets && projets.length > 0"
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
-  >
-    <!-- Project Card -->
-    <div
-      *ngFor="let projet of projets"
-      class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group"
-    >
-      <!-- Project Header with border -->
-      <div class="border-t-4 border-[#4f5fad] p-5 relative">
-        <div class="flex justify-between items-start">
-          <h3 class="text-xl font-bold text-[#4f5fad] truncate pr-16">
-            {{ projet.titre }}
-          </h3>
-          <div
-            class="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <!-- Edit Button -->
-            <a
-              [routerLink]="['/admin/projects/editProjet', projet._id]"
-              class="bg-[#edf1f4] hover:bg-[#dce4ec] p-1.5 rounded-lg text-[#4f5fad] transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
-                />
+    <!-- Header moderne avec gradient -->
+    <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl p-8 mb-8 shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div class="mb-6 lg:mb-0">
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary-dark dark:from-dark-accent-primary dark:to-dark-accent-secondary flex items-center justify-center shadow-lg">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H3a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"></path>
               </svg>
-            </a>
-
-            <!-- Delete Button -->
-            <a
-              (click)="projet._id && openDeleteDialog(projet._id)"
-              class="bg-[#edf1f4] hover:bg-[#dce4ec] p-1.5 rounded-lg text-[#ff6b69] transition-colors cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v6a1 1 0 11-2 0V8z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </a>
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold text-text-dark dark:text-dark-text-primary">
+                Gestion des Projets
+              </h1>
+              <p class="text-text dark:text-dark-text-secondary">
+                Créez, gérez et suivez vos projets académiques
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="flex items-center mt-3 text-sm">
-          <span
-            class="bg-[#4f5fad]/10 px-2.5 py-1 rounded-full text-xs font-medium text-[#4f5fad]"
-            >{{ projet.groupe || "Tous" }}</span
-          >
-          <span class="mx-2 text-[#bdc6cc]">•</span>
-          <span class="text-[#6d6870] text-xs">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-3.5 w-3.5 inline mr-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            {{ projet.dateLimite | date : "dd/MM/yyyy" }}
-          </span>
-        </div>
-      </div>
 
-      <!-- Project Content -->
-      <div class="p-5 border-t border-[#edf1f4]">
-        <!-- Description -->
-        <div class="mb-5">
-          <h4
-            class="text-xs font-semibold text-[#6d6870] uppercase tracking-wider mb-2 flex items-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 mr-1 text-[#4f5fad]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            Description
-          </h4>
-          <p class="text-[#6d6870] text-sm line-clamp-3">
-            {{ projet.description || "Aucune description fournie" }}
-          </p>
-        </div>
-
-        <!-- Files Section -->
-        <div *ngIf="projet.fichiers && projet.fichiers.length > 0" class="mb-5">
-          <h4
-            class="text-xs font-semibold text-[#6d6870] uppercase tracking-wider mb-2 flex items-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 mr-1 text-[#4f5fad]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            Fichiers ({{ projet.fichiers.length }})
-          </h4>
-          <div class="space-y-2 bg-[#edf1f4] rounded-lg p-3">
-            <div
-              *ngFor="let file of projet.fichiers"
-              class="flex items-center justify-between text-sm"
-            >
-              <div class="flex items-center truncate max-w-[70%]">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4 text-[#7826b5] mr-2 flex-shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                  />
-                </svg>
-                <span class="truncate text-[#6d6870]">{{
-                  getFileName(file)
-                }}</span>
+          <!-- Statistiques avancées -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Total projets -->
+            <div class="bg-gradient-to-br from-primary/10 to-primary/5 dark:from-dark-accent-primary/20 dark:to-dark-accent-primary/10 rounded-xl p-4 border border-primary/20 dark:border-dark-accent-primary/30">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-medium text-primary dark:text-dark-accent-primary uppercase tracking-wider">Total</p>
+                  <p class="text-2xl font-bold text-primary dark:text-dark-accent-primary">{{ projets.length || 0 }}</p>
+                  <p class="text-xs text-text dark:text-dark-text-secondary mt-1">Projets créés</p>
+                </div>
+                <div class="bg-primary/20 dark:bg-dark-accent-primary/30 p-3 rounded-xl">
+                  <svg class="w-6 h-6 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H3a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"></path>
+                  </svg>
+                </div>
               </div>
-              <a
-                [href]="getFileUrl(file)"
-                [download]="getFileName(file)"
-                class="text-[#4f5fad] hover:text-[#7826b5] flex items-center"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  />
-                </svg>
-                Télécharger
-              </a>
+            </div>
+
+            <!-- Projets actifs -->
+            <div class="bg-gradient-to-br from-success/10 to-success/5 dark:from-dark-accent-secondary/20 dark:to-dark-accent-secondary/10 rounded-xl p-4 border border-success/20 dark:border-dark-accent-secondary/30">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-medium text-success dark:text-dark-accent-secondary uppercase tracking-wider">Actifs</p>
+                  <p class="text-2xl font-bold text-success dark:text-dark-accent-secondary">{{ getActiveProjectsCount() }}</p>
+                  <p class="text-xs text-text dark:text-dark-text-secondary mt-1">En cours</p>
+                </div>
+                <div class="bg-success/20 dark:bg-dark-accent-secondary/30 p-3 rounded-xl">
+                  <svg class="w-6 h-6 text-success dark:text-dark-accent-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Projets expirés -->
+            <div class="bg-gradient-to-br from-warning/10 to-warning/5 dark:from-warning/20 dark:to-warning/10 rounded-xl p-4 border border-warning/20 dark:border-warning/30">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-medium text-warning dark:text-warning uppercase tracking-wider">Expirés</p>
+                  <p class="text-2xl font-bold text-warning dark:text-warning">{{ getExpiredProjectsCount() }}</p>
+                  <p class="text-xs text-text dark:text-dark-text-secondary mt-1">Date dépassée</p>
+                </div>
+                <div class="bg-warning/20 dark:bg-warning/30 p-3 rounded-xl">
+                  <svg class="w-6 h-6 text-warning dark:text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Groupes uniques -->
+            <div class="bg-gradient-to-br from-info/10 to-info/5 dark:from-dark-accent-primary/20 dark:to-dark-accent-primary/10 rounded-xl p-4 border border-info/20 dark:border-dark-accent-primary/30">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-medium text-info dark:text-dark-accent-primary uppercase tracking-wider">Groupes</p>
+                  <p class="text-2xl font-bold text-info dark:text-dark-accent-primary">{{ getUniqueGroupsCount() }}</p>
+                  <p class="text-xs text-text dark:text-dark-text-secondary mt-1">Différents</p>
+                </div>
+                <div class="bg-info/20 dark:bg-dark-accent-primary/30 p-3 rounded-xl">
+                  <svg class="w-6 h-6 text-info dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Barre de progression globale -->
+          <div class="mt-6 bg-gray-50 dark:bg-dark-bg-tertiary/50 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-sm font-semibold text-text-dark dark:text-dark-text-primary">Progression des projets</h4>
+              <span class="text-xs text-text dark:text-dark-text-secondary">{{ getCompletionPercentage() }}% complétés</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-dark-bg-tertiary rounded-full h-2">
+              <div class="bg-gradient-to-r from-success to-primary dark:from-dark-accent-secondary dark:to-dark-accent-primary h-2 rounded-full transition-all duration-500"
+                   [style.width.%]="getCompletionPercentage()"></div>
+            </div>
+            <div class="flex justify-between text-xs text-text dark:text-dark-text-secondary mt-2">
+              <span>{{ getActiveProjectsCount() }} actifs</span>
+              <span>{{ getExpiredProjectsCount() }} expirés</span>
             </div>
           </div>
         </div>
 
-        <!-- No Files Message -->
-        <div
-          *ngIf="!projet.fichiers || projet.fichiers.length === 0"
-          class="mb-5"
-        >
-          <h4
-            class="text-xs font-semibold text-[#6d6870] uppercase tracking-wider mb-2 flex items-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 mr-1 text-[#4f5fad]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            Fichiers
-          </h4>
-          <div
-            class="bg-[#edf1f4] rounded-lg p-3 text-sm text-[#6d6870] flex items-center justify-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 mr-1 text-[#bdc6cc]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            Aucun fichier joint
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="mt-6 flex space-x-3">
-          <a
-            [routerLink]="['/admin/projects/details', projet._id]"
-            class="flex-1 bg-[#edf1f4] hover:bg-[#dce4ec] text-[#4f5fad] py-2 px-4 rounded-lg text-sm font-medium text-center flex items-center justify-center transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 mr-1.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            Détails
-          </a>
-          <a
-            [routerLink]="['/admin/projects/rendus']"
-            [queryParams]="{ projetId: projet._id }"
-            class="flex-1 bg-[#7826b5] hover:bg-[#5f1d8f] text-white py-2 px-4 rounded-lg text-sm font-medium text-center flex items-center justify-center transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 mr-1.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            Rendus
+        <!-- Bouton d'ajout moderne -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a routerLink="/admin/projects/new"
+             class="group px-6 py-3 bg-gradient-to-r from-primary to-primary-dark dark:from-dark-accent-primary dark:to-dark-accent-secondary text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium">
+            <div class="flex items-center justify-center space-x-2">
+              <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              <span>Nouveau projet</span>
+            </div>
           </a>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="text-center py-16">
-    <div
-      class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#4f5fad] mx-auto"
-    ></div>
-    <p class="mt-4 text-[#6d6870] font-medium">Chargement des projets...</p>
-  </div>
+    <!-- Liste des projets en cartes modernes -->
+    <div *ngIf="!isLoading && projets && projets.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Carte de projet moderne -->
+      <div *ngFor="let projet of projets" class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50 hover:shadow-xl transition-all duration-300 group overflow-hidden">
 
-  <!-- Empty State -->
-  <div
-    *ngIf="!isLoading && (!projets || projets.length === 0)"
-    class="bg-white rounded-xl shadow-md p-8 text-center mb-8"
-  >
-    <div
-      class="w-20 h-20 mx-auto mb-6 bg-[#f0e6ff] rounded-full flex items-center justify-center"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-10 w-10 text-[#7826b5]"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="1.5"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-        />
-      </svg>
+        <!-- Header du projet avec gradient -->
+        <div class="relative p-6 bg-gradient-to-r from-primary/5 to-secondary/5 dark:from-dark-accent-primary/10 dark:to-dark-accent-secondary/10">
+          <div class="flex items-start justify-between">
+            <div class="flex-1 pr-4">
+              <h3 class="text-xl font-bold text-text-dark dark:text-dark-text-primary mb-2 line-clamp-2">
+                {{ projet.titre }}
+              </h3>
+              <div class="flex items-center space-x-4">
+                <!-- Badge groupe -->
+                <div class="flex items-center space-x-1">
+                  <svg class="w-4 h-4 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                  <span class="text-sm font-medium text-primary dark:text-dark-accent-primary">
+                    {{ projet.groupe || "Tous" }}
+                  </span>
+                </div>
+                <!-- Date limite -->
+                <div class="flex items-center space-x-1">
+                  <svg class="w-4 h-4 text-warning dark:text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span class="text-sm text-text dark:text-dark-text-secondary">
+                    {{ projet.dateLimite | date : "dd/MM/yyyy" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions flottantes -->
+            <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+              <a [routerLink]="['/admin/projects/editProjet', projet._id]"
+                 class="p-2 bg-white/80 dark:bg-dark-bg-tertiary/80 backdrop-blur-sm rounded-lg text-primary dark:text-dark-accent-primary hover:bg-primary hover:text-white dark:hover:bg-dark-accent-primary transition-all duration-200 shadow-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </a>
+              <button (click)="projet._id && openDeleteDialog(projet._id)"
+                      class="p-2 bg-white/80 dark:bg-dark-bg-tertiary/80 backdrop-blur-sm rounded-lg text-danger dark:text-danger-dark hover:bg-danger hover:text-white dark:hover:bg-danger-dark transition-all duration-200 shadow-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contenu du projet -->
+        <div class="p-6">
+          <!-- Description -->
+          <div class="mb-6">
+            <div class="flex items-center space-x-2 mb-3">
+              <svg class="w-4 h-4 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <h4 class="text-sm font-semibold text-text-dark dark:text-dark-text-primary uppercase tracking-wider">
+                Description
+              </h4>
+            </div>
+            <p class="text-text dark:text-dark-text-secondary text-sm line-clamp-3 leading-relaxed">
+              {{ projet.description || "Aucune description fournie" }}
+            </p>
+          </div>
+
+          <!-- Section fichiers -->
+          <div *ngIf="projet.fichiers && projet.fichiers.length > 0" class="mb-6">
+            <div class="flex items-center space-x-2 mb-3">
+              <svg class="w-4 h-4 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <h4 class="text-sm font-semibold text-text-dark dark:text-dark-text-primary uppercase tracking-wider">
+                Fichiers ({{ projet.fichiers.length }})
+              </h4>
+            </div>
+            <div class="space-y-2 bg-gray-50 dark:bg-dark-bg-tertiary/50 rounded-xl p-4">
+              <div *ngFor="let file of projet.fichiers" class="flex items-center justify-between p-2 bg-white dark:bg-dark-bg-secondary rounded-lg shadow-sm">
+                <div class="flex items-center space-x-2 flex-1 min-w-0">
+                  <div class="bg-primary/10 dark:bg-dark-accent-primary/20 p-1.5 rounded-lg">
+                    <svg class="w-4 h-4 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                  <span class="text-sm text-text-dark dark:text-dark-text-primary truncate">
+                    {{ getFileName(file) }}
+                  </span>
+                </div>
+                <a [href]="getFileUrl(file)" [download]="getFileName(file)"
+                   class="ml-2 px-3 py-1.5 bg-primary/10 dark:bg-dark-accent-primary/20 text-primary dark:text-dark-accent-primary hover:bg-primary hover:text-white dark:hover:bg-dark-accent-primary rounded-lg transition-all duration-200 text-xs font-medium">
+                  <div class="flex items-center space-x-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    <span>Télécharger</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Message aucun fichier -->
+          <div *ngIf="!projet.fichiers || projet.fichiers.length === 0" class="mb-6">
+            <div class="flex items-center space-x-2 mb-3">
+              <svg class="w-4 h-4 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <h4 class="text-sm font-semibold text-text-dark dark:text-dark-text-primary uppercase tracking-wider">
+                Fichiers
+              </h4>
+            </div>
+            <div class="bg-gray-50 dark:bg-dark-bg-tertiary/50 rounded-xl p-4 text-center">
+              <div class="bg-gray-200 dark:bg-dark-bg-tertiary p-3 rounded-lg inline-flex items-center justify-center mb-2">
+                <svg class="w-5 h-5 text-gray-400 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <p class="text-sm text-text dark:text-dark-text-secondary">Aucun fichier joint</p>
+            </div>
+          </div>
+
+          <!-- Actions principales -->
+          <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100 dark:border-dark-bg-tertiary/50">
+            <a [routerLink]="['/admin/projects/details', projet._id]"
+               class="flex-1 group px-4 py-3 bg-gray-50 dark:bg-dark-bg-tertiary/50 text-text-dark dark:text-dark-text-primary hover:bg-primary hover:text-white dark:hover:bg-dark-accent-primary rounded-xl transition-all duration-200 font-medium">
+              <div class="flex items-center justify-center space-x-2">
+                <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>Voir détails</span>
+              </div>
+            </a>
+            <a [routerLink]="['/admin/projects/rendus']" [queryParams]="{ projetId: projet._id }"
+               class="flex-1 group px-4 py-3 bg-gradient-to-r from-primary to-primary-dark dark:from-dark-accent-primary dark:to-dark-accent-secondary text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium">
+              <div class="flex items-center justify-center space-x-2">
+                <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <span>Voir rendus</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-    <h3 class="text-xl font-bold text-[#4f5fad] mb-2">
-      Aucun projet disponible
-    </h3>
-    <p class="text-[#6d6870] mb-6 max-w-md mx-auto">
-      Commencez par créer votre premier projet en cliquant sur le bouton
-      ci-dessous
-    </p>
-    <a
-      routerLink="/admin/projects/new"
-      class="inline-flex items-center px-4 py-2 bg-[#7826b5] hover:bg-[#5f1d8f] text-white rounded-lg shadow transition-all"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5 mr-2"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path
-          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-        />
-      </svg>
-      Ajouter un projet
-    </a>
-  </div>
 
-  <!-- Confirmation Dialog -->
-  <div
-    *ngIf="showDeleteDialog"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-  >
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-      <h2 class="text-xl font-bold text-[#4f5fad] mb-4">
-        {{ dialogData.title }}
-      </h2>
-      <p class="text-[#6d6870] mb-6">{{ dialogData.message }}</p>
-      <div class="flex justify-end space-x-4">
-        <button
-          class="px-4 py-2 bg-[#edf1f4] text-[#4f5fad] hover:bg-[#dce4ec] rounded-lg"
-          (click)="onDeleteCancel()"
-        >
-          Annuler
-        </button>
-        <button
-          class="px-4 py-2 bg-[#7826b5] hover:bg-[#5f1d8f] text-white rounded-lg"
-          (click)="onDeleteConfirm()"
-        >
-          Supprimer
-        </button>
+    <!-- État de chargement moderne -->
+    <div *ngIf="isLoading" class="text-center py-16">
+      <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl p-12 shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50 max-w-md mx-auto">
+        <div class="relative">
+          <div class="animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary dark:border-dark-accent-primary/20 dark:border-t-dark-accent-primary mx-auto"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark dark:from-dark-accent-primary dark:to-dark-accent-secondary rounded-full animate-pulse"></div>
+          </div>
+        </div>
+        <p class="mt-6 text-text-dark dark:text-dark-text-primary font-medium">Chargement des projets...</p>
+        <p class="mt-2 text-sm text-text dark:text-dark-text-secondary">Veuillez patienter</p>
+      </div>
+    </div>
+
+    <!-- État vide moderne -->
+    <div *ngIf="!isLoading && (!projets || projets.length === 0)" class="text-center py-16">
+      <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl p-12 shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50 max-w-md mx-auto">
+        <div class="bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-dark-accent-primary/20 dark:to-dark-accent-secondary/20 rounded-2xl p-6 mb-6">
+          <svg class="h-16 w-16 mx-auto text-primary dark:text-dark-accent-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14-7H3a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-text-dark dark:text-dark-text-primary mb-2">Aucun projet disponible</h3>
+        <p class="text-text dark:text-dark-text-secondary mb-6">Commencez par créer votre premier projet pour organiser vos cours</p>
+        <a routerLink="/admin/projects/new"
+           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-primary-dark dark:from-dark-accent-primary dark:to-dark-accent-secondary text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Créer un projet
+        </a>
+      </div>
+    </div>
+
+    <!-- Boîte de dialogue de confirmation moderne -->
+    <div *ngIf="showDeleteDialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div class="bg-white/95 dark:bg-dark-bg-secondary/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-md p-8 border border-gray-200/50 dark:border-dark-bg-tertiary/50 mx-4">
+        <div class="text-center mb-6">
+          <div class="bg-danger/10 dark:bg-danger-dark/20 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+            <svg class="w-8 h-8 text-danger dark:text-danger-dark mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+          </div>
+          <h2 class="text-xl font-bold text-text-dark dark:text-dark-text-primary mb-2">
+            {{ dialogData.title }}
+          </h2>
+          <p class="text-text dark:text-dark-text-secondary">{{ dialogData.message }}</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button (click)="onDeleteCancel()"
+                  class="flex-1 px-6 py-3 bg-gray-100 dark:bg-dark-bg-tertiary text-text-dark dark:text-dark-text-primary hover:bg-gray-200 dark:hover:bg-dark-bg-tertiary/80 rounded-xl transition-all duration-200 font-medium">
+            Annuler
+          </button>
+          <button (click)="onDeleteConfirm()"
+                  class="flex-1 px-6 py-3 bg-gradient-to-r from-danger to-danger-dark dark:from-danger-dark dark:to-danger text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium">
+            Supprimer
+          </button>
+        </div>
       </div>
     </div>
   </div>

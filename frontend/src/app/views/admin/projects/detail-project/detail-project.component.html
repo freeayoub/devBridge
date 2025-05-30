@@ -1,122 +1,328 @@
-<div class="max-w-6xl mx-auto my-8 space-y-6">
-  <!-- Header avec stats -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <!-- Carte principale -->
-    <div class="md:col-span-2 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-[#e4e7ec]">
-      <div class="bg-gradient-to-r from-[#6C63FF] to-[#C77DFF] p-6 text-white rounded-t-2xl">
-        <div class="flex justify-between items-start">
-          <div>
-            <h3 class="text-2xl font-bold">{{ projet?.titre }}</h3>
-            <p class="mt-1 text-sm text-[#e4dbf8]">
-              Groupe: {{ projet?.groupe }} • Date limite: {{ projet?.dateLimite ? formatDate(projet?.dateLimite) : '' }}
-            </p>
-          </div>
-          <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">
-            {{ projet?.statut || 'En cours' }}
-          </span>
-        </div>
-      </div>
-      <div class="p-6 space-y-6">
-        <div>
-          <h4 class="text-sm font-semibold text-gray-600 mb-2">Description</h4>
-          <p class="text-gray-700">{{ projet?.description || 'Aucune description fournie' }}</p>
-        </div>
+<!-- Begin Page Content -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-dark-bg-primary dark:via-dark-bg-secondary dark:to-dark-bg-tertiary">
+  <div class="container mx-auto px-4 py-8">
 
-        <div *ngIf="projet?.fichiers?.length > 0">
-          <h4 class="text-sm font-semibold text-gray-600 mb-3">Fichiers joints</h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div *ngFor="let file of projet.fichiers" class="flex items-center">
-              <a [href]="getFileUrl(file)" download
-                class="flex-1 text-center text-sm text-white bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] hover:from-[#7c22d2] hover:to-[#3f00cc] rounded-lg py-2 px-4 transition-all hover:scale-[1.02] flex items-center justify-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                <span>Télécharger</span>
-              </a>
+    <!-- Header moderne avec breadcrumb -->
+    <div class="mb-8">
+      <nav class="flex items-center space-x-2 text-sm text-text dark:text-dark-text-secondary mb-4">
+        <a routerLink="/admin/projects/list-project" class="hover:text-primary dark:hover:text-dark-accent-primary transition-colors">Projets</a>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <span class="text-primary dark:text-dark-accent-primary font-medium">{{ projet?.titre || 'Détails du projet' }}</span>
+      </nav>
+
+      <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+          <div class="flex items-center space-x-4 mb-6 lg:mb-0">
+            <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary-dark dark:from-dark-accent-primary dark:to-dark-accent-secondary flex items-center justify-center shadow-lg">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H3a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"></path>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold text-text-dark dark:text-dark-text-primary">
+                {{ projet?.titre || 'Chargement...' }}
+              </h1>
+              <div class="flex items-center space-x-4 mt-2">
+                <div class="flex items-center space-x-1">
+                  <svg class="w-4 h-4 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                  <span class="text-sm font-medium text-text-dark dark:text-dark-text-primary">{{ projet?.groupe || 'Tous les groupes' }}</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <svg class="w-4 h-4 text-warning dark:text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span class="text-sm text-text dark:text-dark-text-secondary">{{ projet?.dateLimite ? formatDate(projet?.dateLimite) : 'Pas de date limite' }}</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div *ngIf="!projet?.fichiers || projet.fichiers.length === 0" class="text-sm text-gray-500 italic">
-          Aucun fichier joint
-        </div>
-        
-        <!-- Boutons d'action -->
-        <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-100">
-          <a [routerLink]="['/admin/projects/editProjet', projet?._id]" 
-             class="flex-1 bg-gradient-to-r from-[#3CAEA3] to-[#20BF55] hover:from-[#2d9b91] hover:to-[#18a046] text-white py-2.5 px-4 rounded-lg font-medium text-sm text-center shadow-sm hover:shadow-md transition-all flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            Modifier
-          </a>
-          
-          <button (click)="deleteProjet(projet?._id)" 
-                  class="flex-1 bg-gradient-to-r from-[#F5576C] to-[#F093FB] hover:from-[#e04054] hover:to-[#d87fe0] text-white py-2.5 px-4 rounded-lg font-medium text-sm text-center shadow-sm hover:shadow-md transition-all flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-            Supprimer
-          </button>
-          
-          <a [routerLink]="['/admin/projects/rendus']" [queryParams]="{projetId: projet?._id}"
-             class="flex-1 bg-gradient-to-r from-[#6C63FF] to-[#8E2DE2] hover:from-[#5046e5] hover:to-[#7816c7] text-white py-2.5 px-4 rounded-lg font-medium text-sm text-center shadow-sm hover:shadow-md transition-all flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            Voir les rendus
-          </a>
+          <!-- Badge de statut -->
+          <div class="flex items-center space-x-3">
+            <span [ngClass]="getStatusClass()" class="px-4 py-2 rounded-xl text-sm font-medium">
+              {{ getProjectStatus() }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Dashboard de rendu -->
-    <div class="bg-white rounded-2xl shadow-md border border-[#e4e7ec] overflow-hidden">
-      <div class="bg-gradient-to-r from-[#6C63FF] to-[#C77DFF] p-4 text-white">
-        <h3 class="font-semibold">Statistiques de rendu</h3>
+    <!-- Contenu principal -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Carte principale du projet -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- Description du projet -->
+        <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="bg-primary/10 dark:bg-dark-accent-primary/20 p-2 rounded-lg">
+              <svg class="w-5 h-5 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-text-dark dark:text-dark-text-primary">Description du projet</h3>
+          </div>
+          <div class="prose prose-gray dark:prose-invert max-w-none">
+            <p class="text-text dark:text-dark-text-secondary leading-relaxed">
+              {{ projet?.description || 'Aucune description fournie pour ce projet.' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Fichiers du projet -->
+        <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="bg-secondary/10 dark:bg-dark-accent-secondary/20 p-2 rounded-lg">
+              <svg class="w-5 h-5 text-secondary dark:text-dark-accent-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-text-dark dark:text-dark-text-primary">
+              Fichiers joints
+              <span class="text-sm font-normal text-text dark:text-dark-text-secondary ml-2">
+                ({{ projet?.fichiers?.length || 0 }} fichier{{ (projet?.fichiers?.length || 0) > 1 ? 's' : '' }})
+              </span>
+            </h3>
+          </div>
+
+          <div *ngIf="projet?.fichiers?.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div *ngFor="let file of projet.fichiers" class="group">
+              <div class="bg-gray-50 dark:bg-dark-bg-tertiary/50 rounded-xl p-4 border border-gray-200 dark:border-dark-bg-tertiary hover:border-primary dark:hover:border-dark-accent-primary transition-all duration-200">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-3 flex-1 min-w-0">
+                    <div class="bg-primary/10 dark:bg-dark-accent-primary/20 p-2 rounded-lg">
+                      <svg class="w-5 h-5 text-primary dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                      </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-text-dark dark:text-dark-text-primary truncate">
+                        {{ getFileName(file) }}
+                      </p>
+                      <p class="text-xs text-text dark:text-dark-text-secondary">Document</p>
+                    </div>
+                  </div>
+                  <a [href]="getFileUrl(file)" download
+                     class="ml-3 px-3 py-2 bg-primary/10 dark:bg-dark-accent-primary/20 text-primary dark:text-dark-accent-primary hover:bg-primary hover:text-white dark:hover:bg-dark-accent-primary rounded-lg transition-all duration-200 text-xs font-medium">
+                    <div class="flex items-center space-x-1">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                      </svg>
+                      <span>Télécharger</span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!projet?.fichiers || projet.fichiers.length === 0" class="text-center py-8">
+            <div class="bg-gray-100 dark:bg-dark-bg-tertiary/50 rounded-xl p-6">
+              <div class="bg-gray-200 dark:bg-dark-bg-tertiary p-3 rounded-lg inline-flex items-center justify-center mb-3">
+                <svg class="w-6 h-6 text-gray-400 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <p class="text-sm text-text dark:text-dark-text-secondary">Aucun fichier joint à ce projet</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions du projet -->
+        <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="bg-info/10 dark:bg-dark-accent-primary/20 p-2 rounded-lg">
+              <svg class="w-5 h-5 text-info dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-text-dark dark:text-dark-text-primary">Actions disponibles</h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <a [routerLink]="['/admin/projects/editProjet', projet?._id]"
+               class="group px-4 py-3 bg-gradient-to-r from-secondary to-primary dark:from-dark-accent-secondary dark:to-dark-accent-primary text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium">
+              <div class="flex items-center justify-center space-x-2">
+                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span>Modifier</span>
+              </div>
+            </a>
+
+            <a [routerLink]="['/admin/projects/rendus']" [queryParams]="{projetId: projet?._id}"
+               class="group px-4 py-3 bg-gradient-to-r from-primary to-primary-dark dark:from-dark-accent-primary dark:to-dark-accent-secondary text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium">
+              <div class="flex items-center justify-center space-x-2">
+                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <span>Voir rendus</span>
+              </div>
+            </a>
+
+            <button (click)="deleteProjet(projet?._id)"
+                    class="group px-4 py-3 bg-gradient-to-r from-danger to-danger-dark dark:from-danger-dark dark:to-danger text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium">
+              <div class="flex items-center justify-center space-x-2">
+                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                <span>Supprimer</span>
+              </div>
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="p-6 space-y-6">
-        <!-- Progression générale -->
-        <div>
-          <div class="flex justify-between mb-2">
-            <span class="text-sm font-medium text-gray-700">Progression</span>
-            <span class="text-sm font-medium text-[#6C63FF]">{{ (projet?.etudiantsRendus?.length || 0) }}/{{ projet?.totalEtudiants || 0 }}</span>
+
+      <!-- Sidebar avec statistiques -->
+      <div class="space-y-6">
+
+        <!-- Statistiques de rendu -->
+        <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50 overflow-hidden">
+
+          <!-- Indicateur de chargement -->
+          <div *ngIf="isLoading" class="p-6">
+            <div class="animate-pulse space-y-4">
+              <div class="h-4 bg-gray-200 dark:bg-dark-bg-tertiary rounded w-3/4"></div>
+              <div class="h-4 bg-gray-200 dark:bg-dark-bg-tertiary rounded w-1/2"></div>
+              <div class="h-8 bg-gray-200 dark:bg-dark-bg-tertiary rounded"></div>
+            </div>
           </div>
-          <div class="w-full bg-gray-200 rounded-full h-2.5">
-            <div class="bg-gradient-to-r from-[#6C63FF] to-[#C77DFF] h-2.5 rounded-full" 
-                 [style.width.%]="((projet?.etudiantsRendus?.length || 0) / (projet?.totalEtudiants || 1) * 100)"></div>
+
+          <!-- Contenu des statistiques -->
+          <div *ngIf="!isLoading">
+          <div class="bg-gradient-to-r from-primary to-primary-dark dark:from-dark-accent-primary dark:to-dark-accent-secondary p-6 text-white">
+            <div class="flex items-center space-x-3">
+              <div class="bg-white/20 p-2 rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold">Statistiques</h3>
+                <p class="text-sm text-white/80">Suivi des rendus</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Progression générale -->
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-sm font-semibold text-text-dark dark:text-dark-text-primary">Progression globale</span>
+                <span class="text-sm font-bold text-primary dark:text-dark-accent-primary">
+                  {{ etudiantsRendus.length }}/{{ totalEtudiants }}
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 dark:bg-dark-bg-tertiary rounded-full h-3">
+                <div class="bg-gradient-to-r from-primary to-primary-dark dark:from-dark-accent-primary dark:to-dark-accent-secondary h-3 rounded-full transition-all duration-500"
+                     [style.width.%]="getProgressPercentage()"></div>
+              </div>
+              <div class="flex justify-between text-xs text-text dark:text-dark-text-secondary mt-2">
+                <span>{{ getProgressPercentage() }}% complété</span>
+                <span>{{ getRemainingDays() }} jours restants</span>
+              </div>
+            </div>
+
+            <!-- Cartes statistiques -->
+            <div class="grid grid-cols-1 gap-4">
+              <!-- Rendus soumis -->
+              <div class="bg-gradient-to-br from-success/10 to-success/5 dark:from-dark-accent-secondary/20 dark:to-dark-accent-secondary/10 rounded-xl p-4 border border-success/20 dark:border-dark-accent-secondary/30">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-xs font-medium text-success dark:text-dark-accent-secondary uppercase tracking-wider">Rendus</p>
+                    <p class="text-2xl font-bold text-success dark:text-dark-accent-secondary">{{ etudiantsRendus.length }}</p>
+                  </div>
+                  <div class="bg-success/20 dark:bg-dark-accent-secondary/30 p-2 rounded-lg">
+                    <svg class="w-5 h-5 text-success dark:text-dark-accent-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- En attente -->
+              <div class="bg-gradient-to-br from-warning/10 to-warning/5 dark:from-warning/20 dark:to-warning/10 rounded-xl p-4 border border-warning/20 dark:border-warning/30">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-xs font-medium text-warning dark:text-warning uppercase tracking-wider">En attente</p>
+                    <p class="text-2xl font-bold text-warning dark:text-warning">{{ totalEtudiants - etudiantsRendus.length }}</p>
+                  </div>
+                  <div class="bg-warning/20 dark:bg-warning/30 p-2 rounded-lg">
+                    <svg class="w-5 h-5 text-warning dark:text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Taux de réussite -->
+              <div class="bg-gradient-to-br from-info/10 to-info/5 dark:from-dark-accent-primary/20 dark:to-dark-accent-primary/10 rounded-xl p-4 border border-info/20 dark:border-dark-accent-primary/30">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-xs font-medium text-info dark:text-dark-accent-primary uppercase tracking-wider">Taux</p>
+                    <p class="text-2xl font-bold text-info dark:text-dark-accent-primary">{{ getProgressPercentage() }}%</p>
+                  </div>
+                  <div class="bg-info/20 dark:bg-dark-accent-primary/30 p-2 rounded-lg">
+                    <svg class="w-5 h-5 text-info dark:text-dark-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Cartes stats -->
-        <div class="grid grid-cols-2 gap-4">
-          <div class="bg-[#f0f7ff] p-4 rounded-lg border border-[#e4e7ec]">
-            <div class="text-2xl font-bold text-[#4A00E0]">{{ projet?.etudiantsRendus?.length || 0 }}</div>
-            <div class="text-xs text-gray-500">Rendus</div>
-          </div>
-          <div class="bg-[#fff5f5] p-4 rounded-lg border border-[#e4e7ec]">
-            <div class="text-2xl font-bold text-[#E02D6D]">{{ (projet?.totalEtudiants || 0) - (projet?.etudiantsRendus?.length || 0) }}</div>
-            <div class="text-xs text-gray-500">En attente</div>
-          </div>
-        </div>
+        <!-- Derniers rendus -->
+        <div class="bg-white/80 dark:bg-dark-bg-secondary/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 dark:border-dark-bg-tertiary/50">
+          <div class="p-6">
+            <div class="flex items-center space-x-3 mb-4">
+              <div class="bg-secondary/10 dark:bg-dark-accent-secondary/20 p-2 rounded-lg">
+                <svg class="w-5 h-5 text-secondary dark:text-dark-accent-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-text-dark dark:text-dark-text-primary">Derniers rendus</h3>
+            </div>
 
-        <!-- Liste rapide -->
-        <div>
-          <h4 class="text-sm font-semibold text-gray-600 mb-3">Derniers rendus</h4>
-          <div class="space-y-3">
-            <div *ngFor="let etudiant of projet?.derniersRendus || []" class="flex items-center space-x-3">
-              <div class="h-8 w-8 rounded-full bg-[#6C63FF] flex items-center justify-center text-white text-xs font-bold">
-                {{ etudiant.nom?.charAt(0) || '' }}{{ etudiant.prenom?.charAt(0) || '' }}
+            <div class="space-y-3">
+              <div *ngFor="let rendu of derniersRendus" class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-dark-bg-tertiary/50 rounded-xl">
+                <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary-dark dark:from-dark-accent-primary dark:to-dark-accent-secondary flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                  {{ getStudentInitials(rendu.etudiant) }}
+                </div>
+                <div class="flex-1">
+                  <div class="text-sm font-medium text-text-dark dark:text-dark-text-primary">
+                    {{ getStudentName(rendu.etudiant) }}
+                  </div>
+                  <div class="text-xs text-text dark:text-dark-text-secondary">
+                    {{ formatDate(rendu.dateRendu) }}
+                  </div>
+                </div>
+                <div class="bg-success/10 dark:bg-dark-accent-secondary/20 p-1.5 rounded-lg">
+                  <svg class="w-4 h-4 text-success dark:text-dark-accent-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
               </div>
-              <div class="text-sm">
-                <div class="font-medium">{{ etudiant.prenom }} {{ etudiant.nom }}</div>
-                <div class="text-xs text-gray-500">{{ formatDate(etudiant.dateRendu) }}</div>
+
+              <div *ngIf="!derniersRendus || derniersRendus.length === 0" class="text-center py-8">
+                <div class="bg-gray-100 dark:bg-dark-bg-tertiary/50 rounded-xl p-6">
+                  <div class="bg-gray-200 dark:bg-dark-bg-tertiary p-3 rounded-lg inline-flex items-center justify-center mb-3">
+                    <svg class="w-6 h-6 text-gray-400 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                  </div>
+                  <p class="text-sm text-text dark:text-dark-text-secondary">Aucun rendu pour le moment</p>
+                </div>
               </div>
-            </div>
-            <div *ngIf="!projet?.derniersRendus || projet.derniersRendus.length === 0" class="text-sm text-gray-500 italic text-center py-2">
-              Aucun rendu pour le moment
             </div>
           </div>
+          </div> <!-- Fin du contenu des statistiques -->
         </div>
       </div>
     </div>

@@ -38,7 +38,7 @@ export class ProjectEvaluationComponent implements OnInit {
 
   ngOnInit(): void {
     this.renduId = this.route.snapshot.paramMap.get('renduId') || '';
-    
+
     // Récupérer le mode d'évaluation des query params
     const mode = this.route.snapshot.queryParamMap.get('mode');
     if (mode === 'ai' || mode === 'manual') {
@@ -54,7 +54,7 @@ export class ProjectEvaluationComponent implements OnInit {
         this.evaluationForm.patchValue({ utiliserIA: storedMode === 'ai' });
       }
     }
-    
+
     if (this.renduId) {
       this.loadRendu();
     } else {
@@ -68,6 +68,10 @@ export class ProjectEvaluationComponent implements OnInit {
     this.rendusService.getRenduById(this.renduId).subscribe({
       next: (data: any) => {
         this.rendu = data;
+        // Filter out null/undefined files
+        if (this.rendu.fichiers) {
+          this.rendu.fichiers = this.rendu.fichiers.filter((fichier: any) => fichier != null && fichier !== '');
+        }
         this.isLoading = false;
       },
       error: (err: any) => {
@@ -85,19 +89,20 @@ export class ProjectEvaluationComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.evaluationMode === 'manual' && this.evaluationForm.invalid) {
-      return;
-    }
+    console.log('Submit clicked, form valid:', this.evaluationForm.valid);
+    console.log('Form values:', this.evaluationForm.value);
 
     this.isSubmitting = true;
-    
+    this.error = '';
+
     // Si mode IA, mettre à jour le formulaire pour indiquer l'utilisation de l'IA
     if (this.evaluationMode === 'ai') {
       this.evaluationForm.patchValue({ utiliserIA: true });
       this.aiProcessing = true;
     }
-    
+
     const evaluationData = this.evaluationForm.value;
+    console.log('Sending evaluation data:', evaluationData);
 
     this.rendusService.evaluateRendu(this.renduId, evaluationData).subscribe({
       next: (response: any) => {
@@ -105,7 +110,7 @@ export class ProjectEvaluationComponent implements OnInit {
         if (this.evaluationMode === 'ai' && response.evaluation) {
           const aiScores = response.evaluation.scores;
           const aiCommentaires = response.evaluation.commentaires;
-          
+
           this.evaluationForm.patchValue({
             scores: {
               structure: aiScores.structure || 0,
@@ -115,15 +120,17 @@ export class ProjectEvaluationComponent implements OnInit {
             },
             commentaires: aiCommentaires || 'Évaluation générée par IA'
           });
-          
+
           this.aiProcessing = false;
           this.isSubmitting = false;
-          
+
           // Afficher un message de succès
-          this.error = ''; // Effacer les erreurs précédentes
+          this.error = '';
           alert('Évaluation par IA réussie! Vous pouvez modifier les résultats avant de confirmer.');
         } else {
           // Si évaluation manuelle ou confirmation après IA, rediriger vers la liste des rendus
+          this.isSubmitting = false;
+          alert('Évaluation soumise avec succès!');
           this.router.navigate(['/admin/projects/rendus']);
         }
       },
@@ -139,7 +146,7 @@ export class ProjectEvaluationComponent implements OnInit {
   getScoreTotal(): number {
     const scores = this.evaluationForm.get('scores')?.value;
     if (!scores) return 0;
-    
+
     return scores.structure + scores.pratiques + scores.fonctionnalite + scores.originalite;
   }
 
@@ -148,8 +155,24 @@ export class ProjectEvaluationComponent implements OnInit {
   }
 
   annuler(): void {
+    // Confirmer avant d'annuler si des données ont été saisies
+    const formData = this.evaluationForm.value;
+    const hasData = formData.scores?.structure || formData.scores?.pratiques ||
+                   formData.scores?.fonctionnalite || formData.scores?.originalite ||
+                   formData.commentaires;
+
+    if (hasData) {
+      const confirmation = confirm('Êtes-vous sûr de vouloir annuler ? Toutes les données saisies seront perdues.');
+      if (!confirmation) {
+        return;
+      }
+    }
+
+    console.log('Navigation vers la liste des rendus...');
     this.router.navigate(['/admin/projects/rendus']);
   }
+
+
 }
 
 

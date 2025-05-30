@@ -72,8 +72,11 @@ export class ListRendusComponent implements OnInit {
     if (this.rendus && this.rendus.length > 0) {
       const groupesSet = new Set<string>();
       this.rendus.forEach((rendu) => {
-        if (rendu.etudiant?.groupe) {
-          groupesSet.add(rendu.etudiant.groupe);
+        if (rendu.etudiant) {
+          const groupeName = this.getGroupName(rendu.etudiant);
+          if (groupeName && groupeName !== 'Non spécifié') {
+            groupesSet.add(groupeName);
+          }
         }
       });
       this.groupes = Array.from(groupesSet);
@@ -97,19 +100,30 @@ export class ListRendusComponent implements OnInit {
     // Filtre par terme de recherche
     if (this.searchTerm.trim() !== '') {
       const term = this.searchTerm.toLowerCase().trim();
-      results = results.filter(
-        (rendu) =>
-          rendu.etudiant?.nom?.toLowerCase().includes(term) ||
-          rendu.etudiant?.prenom?.toLowerCase().includes(term) ||
-          rendu.projet?.titre?.toLowerCase().includes(term)
-      );
+      results = results.filter((rendu) => {
+        const etudiant = rendu.etudiant;
+        if (!etudiant) return false;
+
+        const firstName = (etudiant.firstName || etudiant.prenom || '').toLowerCase();
+        const lastName = (etudiant.lastName || etudiant.nom || '').toLowerCase();
+        const fullName = (etudiant.fullName || etudiant.name || etudiant.username || '').toLowerCase();
+        const email = (etudiant.email || '').toLowerCase();
+        const projet = (rendu.projet?.titre || '').toLowerCase();
+
+        return firstName.includes(term) ||
+               lastName.includes(term) ||
+               fullName.includes(term) ||
+               email.includes(term) ||
+               projet.includes(term);
+      });
     }
 
     // Filtre par groupe
     if (this.filtreGroupe) {
-      results = results.filter(
-        (rendu) => rendu.etudiant?.groupe === this.filtreGroupe
-      );
+      results = results.filter((rendu) => {
+        const groupeName = this.getGroupName(rendu.etudiant);
+        return groupeName === this.filtreGroupe;
+      });
     }
 
     // Filtre par projet
@@ -235,5 +249,129 @@ export class ListRendusComponent implements OnInit {
     }
 
     return filePath;
+  }
+
+  // Nouvelles méthodes pour le design moderne
+  getInitials(etudiant: any): string {
+    if (!etudiant) return '??';
+
+    // Priorité 1: firstName + lastName (si lastName existe et n'est pas vide)
+    const firstName = etudiant.firstName || '';
+    const lastName = etudiant.lastName || '';
+
+    if (firstName && lastName && lastName.trim()) {
+      return (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+    }
+
+    // Priorité 2: fullName (diviser en mots)
+    const fullName = etudiant.fullName || etudiant.name || etudiant.username || '';
+    if (fullName && fullName.trim()) {
+      const parts = fullName.trim().split(' ');
+      if (parts.length >= 2) {
+        return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+      } else {
+        // Si un seul mot, prendre les 2 premières lettres
+        return fullName.substring(0, 2).toUpperCase();
+      }
+    }
+
+    // Priorité 3: firstName seul (prendre les 2 premières lettres)
+    if (firstName && firstName.trim()) {
+      return firstName.substring(0, 2).toUpperCase();
+    }
+
+    return '??';
+  }
+
+  getGroupName(etudiant: any): string {
+    if (!etudiant) return 'Non spécifié';
+
+    // Si group est un objet (référence populée avec le modèle Group)
+    if (etudiant.group && typeof etudiant.group === 'object' && etudiant.group.name) {
+      return etudiant.group.name;
+    }
+
+    // Si group est une chaîne directe (valeur ajoutée manuellement)
+    if (etudiant.group && typeof etudiant.group === 'string' && etudiant.group.trim()) {
+      return etudiant.group.trim();
+    }
+
+    // Fallback vers d'autres champs possibles
+    if (etudiant.groupe && typeof etudiant.groupe === 'string' && etudiant.groupe.trim()) {
+      return etudiant.groupe.trim();
+    }
+
+    if (etudiant.groupName && typeof etudiant.groupName === 'string' && etudiant.groupName.trim()) {
+      return etudiant.groupName.trim();
+    }
+
+    if (etudiant.department && typeof etudiant.department === 'string' && etudiant.department.trim()) {
+      return etudiant.department.trim();
+    }
+
+    return 'Non spécifié';
+  }
+
+  getStudentName(etudiant: any): string {
+    if (!etudiant) return 'Utilisateur inconnu';
+
+    // Priorité 1: firstName + lastName (si lastName existe et n'est pas vide)
+    const firstName = etudiant.firstName || '';
+    const lastName = etudiant.lastName || '';
+
+    if (firstName && lastName && lastName.trim()) {
+      return `${firstName} ${lastName}`.trim();
+    }
+
+    // Priorité 2: fullName
+    const fullName = etudiant.fullName || etudiant.name || etudiant.username || '';
+    if (fullName && fullName.trim()) {
+      return fullName.trim();
+    }
+
+    // Priorité 3: firstName seul
+    if (firstName && firstName.trim()) {
+      return firstName.trim();
+    }
+
+    // Priorité 4: email comme fallback
+    if (etudiant.email) {
+      return etudiant.email;
+    }
+
+    return 'Utilisateur inconnu';
+  }
+
+  getEvaluatedCount(): number {
+    return this.rendus.filter(rendu => rendu.evaluation && rendu.evaluation._id).length;
+  }
+
+  getStatusIconClass(rendu: any): string {
+    if (rendu.evaluation && rendu.evaluation._id) {
+      return 'bg-success/10 dark:bg-dark-accent-secondary/10 text-success dark:text-dark-accent-secondary';
+    }
+    return 'bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning';
+  }
+
+  getStatusBadgeClass(rendu: any): string {
+    if (rendu.evaluation && rendu.evaluation._id) {
+      return 'bg-gradient-to-r from-success/20 to-success-dark/20 dark:from-dark-accent-secondary/30 dark:to-dark-accent-secondary/20 text-success-dark dark:text-dark-accent-secondary border border-success/30 dark:border-dark-accent-secondary/40';
+    }
+    return 'bg-gradient-to-r from-warning/20 to-warning/30 dark:from-warning/30 dark:to-warning/20 text-warning-dark dark:text-warning border border-warning/40 dark:border-warning/50';
+  }
+
+  getScoreColorClass(score: number): string {
+    if (score >= 16) return 'text-success dark:text-dark-accent-secondary';
+    if (score >= 12) return 'text-info dark:text-dark-accent-primary';
+    if (score >= 8) return 'text-warning dark:text-warning';
+    return 'text-danger dark:text-danger-dark';
+  }
+
+  resetFilters(): void {
+    this.filtreGroupe = '';
+    this.filtreProjet = '';
+    this.filterStatus = 'all';
+    this.searchTerm = '';
+    this.applyFilters();
   }
 }

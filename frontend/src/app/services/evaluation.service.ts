@@ -20,7 +20,7 @@ export class EvaluationService {
 
   getAllEvaluations(): Observable<EvaluationWithDetails[]> {
     const url = `${environment.urlBackend}evaluations/getev`;
-    
+
     return this.http.get<EvaluationWithDetails[]>(url).pipe(
       catchError(error => {
         console.error('Erreur HTTP lors de la récupération des évaluations:', error);
@@ -31,7 +31,7 @@ export class EvaluationService {
 
   getEvaluationById(id: string): Observable<Evaluation> {
     const url = `${environment.urlBackend}evaluations/${id}`;
-    
+
     return this.http.get<Evaluation>(url).pipe(
       catchError(error => {
         console.error('Erreur HTTP lors de la récupération de l\'évaluation:', error);
@@ -45,11 +45,23 @@ export class EvaluationService {
   // Ajouter cette méthode pour mettre à jour les groupes manquants
   updateMissingGroups(): Observable<any> {
     const url = `${environment.urlBackend}evaluations/update-missing-groups`;
-    
+
     return this.http.post<any>(url, {}).pipe(
       catchError(error => {
         console.error('Erreur HTTP lors de la mise à jour des groupes:', error);
         return throwError(() => new Error('Erreur lors de la mise à jour des groupes'));
+      })
+    );
+  }
+
+  // Méthode pour supprimer une évaluation
+  deleteEvaluation(evaluationId: string): Observable<any> {
+    const url = `${environment.urlBackend}evaluations/${evaluationId}`;
+
+    return this.http.delete<any>(url).pipe(
+      catchError(error => {
+        console.error('Erreur HTTP lors de la suppression de l\'évaluation:', error);
+        return throwError(() => new Error('Erreur lors de la suppression de l\'évaluation'));
       })
     );
   }

@@ -32,7 +32,9 @@ export class ForgotPasswordComponent {
       next: (res: any) => {
         this.message = res.message;
         this.error = '';
-        setTimeout(() => this.router.navigate(['/auth/reset-password']), 1500);
+        setTimeout(() => this.router.navigate(['/reset-password'], {
+          queryParams: { email: email }
+        }), 1500);
       },
       error: (err) => {
         this.error = err.error.message || 'Something went wrong.';

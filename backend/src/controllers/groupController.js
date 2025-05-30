@@ -30,10 +30,50 @@ exports.createGroup = async (req, res) => {
 exports.getAllGroups = async (req, res) => {
   try {
     const groups = await Group.find().populate("createdBy", "fullName email");
+    console.log('Groupes trouvés:', groups.length);
     res.json(groups);
   } catch (err) {
     res.status(500).json({
       message: "Error fetching groups",
+      error: err.message,
+    });
+  }
+};
+
+// Créer des groupes par défaut (route temporaire pour le développement)
+exports.createDefaultGroups = async (req, res) => {
+  try {
+    const defaultGroups = [
+      { name: 'Groupe A', description: 'Groupe d\'étudiants A' },
+      { name: 'Groupe B', description: 'Groupe d\'étudiants B' },
+      { name: 'Groupe C', description: 'Groupe d\'étudiants C' },
+      { name: 'Professeurs', description: 'Groupe des professeurs' },
+      { name: 'Administrateurs', description: 'Groupe des administrateurs' }
+    ];
+
+    const createdGroups = [];
+
+    for (const groupData of defaultGroups) {
+      // Vérifier si le groupe existe déjà
+      const existingGroup = await Group.findOne({ name: groupData.name });
+      if (!existingGroup) {
+        const group = new Group({
+          name: groupData.name,
+          description: groupData.description,
+          createdBy: req.user ? req.user.id : null
+        });
+        await group.save();
+        createdGroups.push(group);
+      }
+    }
+
+    res.status(201).json({
+      message: `${createdGroups.length} groupes créés avec succès`,
+      groups: createdGroups
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Erreur lors de la création des groupes par défaut",
       error: err.message,
     });
   }
