@@ -1,4 +1,5 @@
 const Planning = require("../models/planning.model");
+const Reunion = require("../models/reunion.model");
 const mongoose = require("mongoose");
 
 // Créer un planning
@@ -125,18 +126,19 @@ const deletePlanning = async (req, res) => {
       });
     }
 
-    // Vérification des droits (créateur seulement)
-    const planning = await Planning.findOneAndDelete({
-      _id: req.params.id,
-      createur: req.user.id,
-    });
+    // Le middleware verifyOwnershipOrAdmin a déjà vérifié les droits
+    // (admin OU propriétaire), donc on peut directement supprimer
+    const planning = await Planning.findByIdAndDelete(req.params.id);
 
     if (!planning) {
-      return res.status(403).json({
+      return res.status(404).json({
         success: false,
-        message: "Non autorisé ou planning introuvable",
+        message: "Planning introuvable",
       });
     }
+
+    // Supprimer toutes les réunions associées
+    await Reunion.deleteMany({ planning: req.params.id });
 
     return res.status(200).json({
       success: true,
@@ -162,13 +164,16 @@ const deletePlanning = async (req, res) => {
   }
 };
 
-// Récupérer tous les plannings (nouvelle méthode ajoutée)
+// Récupérer tous les plannings avec leurs réunions
 const getAllPlannings = async (req, res) => {
   try {
     const plannings = await Planning.find()
-      .populate("createur", "username email")
-      .populate("participants", "username email")
+      .populate("createur", "username email image")
+      .populate("participants", "username email image")
+      .populate("reunions", "titre date heureDebut heureFin")
       .sort({ dateDebut: -1 });
+
+    console.log(`Récupération de ${plannings.length} plannings avec leurs réunions`);
 
     return res.status(200).json({
       success: true,
@@ -245,12 +250,23 @@ const updatePlanning = async (req, res) => {
       });
     }
 
+    // Vérifier si l'utilisateur est le créateur ou un administrateur
+    // Pour l'instant, nous permettons à tous les utilisateurs de modifier les plannings
+    // Vous pouvez ajouter une vérification du rôle d'administrateur si nécessaire
+
+    // Commenté pour permettre à tous les utilisateurs de modifier les plannings
+    /*
     if (planning.createur.toString() !== req.user.id) {
       return res.status(403).json({
         success: false,
         message: "Non autorisé à modifier ce planning",
       });
     }
+    */
+
+    // Enregistrer l'utilisateur qui a modifié le planning
+    console.log(`Planning ${planningId} modifié par l'utilisateur ${req.user.id}`);
+
 
     // ➡️ Met à jour uniquement les champs autorisés
     if (req.body.titre) planning.titre = req.body.titre;
@@ -281,11 +297,23 @@ const updatePlanning = async (req, res) => {
         });
       }
 
+      // Supprimé la vérification qui empêche le créateur d'être participant
+      // Cela permet à l'utilisateur qui modifie d'être aussi participant
+      /*
       if (req.body.participants.includes(req.user.id.toString())) {
         return res.status(400).json({
           success: false,
           message: "Le créateur ne peut pas être participant",
         });
+      }
+      */
+
+      // S'assurer que l'utilisateur qui modifie est inclus dans les participants
+      // sauf s'il est déjà le créateur
+      if (planning.createur.toString() !== req.user.id &&
+          !req.body.participants.includes(req.user.id.toString())) {
+        req.body.participants.push(req.user.id);
+        console.log(`Utilisateur ${req.user.id} ajouté aux participants`);
       }
 
       planning.participants = req.body.participants;
@@ -329,7 +357,7 @@ const updatePlanning = async (req, res) => {
         errors,
       });
 
-      
+
     }
 
     return res.status(500).json({
@@ -338,7 +366,7 @@ const updatePlanning = async (req, res) => {
       error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
-  
+
 }
 const getPlanningsByUser = async (req, res) => {
   try {
@@ -378,6 +406,119 @@ const getPlanningsByUser = async (req, res) => {
 
 
 
+// Méthodes spécifiques aux administrateurs
+
+// Récupérer tous les plannings avec informations détaillées (admin seulement)
+const getAllPlanningsAdmin = async (req, res) => {
+  try {
+    const plannings = await Planning.find()
+      .populate('createur', 'username email role')
+      .populate('participants', 'username email role')
+      .populate('reunions')
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      data: plannings,
+      total: plannings.length,
+      message: 'Plannings récupérés avec succès (admin)'
+    });
+  } catch (error) {
+    console.error("Erreur récupération plannings admin:", error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur serveur'
+    });
+  }
+};
+
+// Mettre à jour n'importe quel planning (admin seulement)
+const updatePlanningAdmin = async (req, res) => {
+  try {
+    const planningId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(planningId)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de planning invalide",
+      });
+    }
+
+    const planning = await Planning.findById(planningId);
+    if (!planning) {
+      return res.status(404).json({
+        success: false,
+        message: "Planning introuvable",
+      });
+    }
+
+    // L'admin peut modifier tous les champs
+    const allowedFields = ['titre', 'description', 'dateDebut', 'dateFin', 'participants', 'createur'];
+    const updateData = {};
+
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    });
+
+    const updatedPlanning = await Planning.findByIdAndUpdate(
+      planningId,
+      updateData,
+      { new: true, runValidators: true }
+    ).populate('createur', 'username email')
+     .populate('participants', 'username email');
+
+    return res.status(200).json({
+      success: true,
+      data: updatedPlanning,
+      message: 'Planning mis à jour avec succès (admin)'
+    });
+  } catch (error) {
+    console.error("Erreur mise à jour planning admin:", error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur serveur'
+    });
+  }
+};
+
+// Supprimer n'importe quel planning (admin seulement)
+const forceDeletePlanning = async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de planning invalide",
+      });
+    }
+
+    const planning = await Planning.findByIdAndDelete(req.params.id);
+
+    if (!planning) {
+      return res.status(404).json({
+        success: false,
+        message: "Planning introuvable",
+      });
+    }
+
+    // Supprimer toutes les réunions associées
+    await Reunion.deleteMany({ planning: req.params.id });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Planning et réunions associées supprimés avec succès (admin)',
+      deletedId: req.params.id
+    });
+  } catch (error) {
+    console.error("Erreur suppression planning admin:", error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur serveur'
+    });
+  }
+};
+
 module.exports = {
   createPlanning,
   deletePlanning,
@@ -385,4 +526,8 @@ module.exports = {
   getPlanningById,
   updatePlanning,
   getPlanningsByUser,
+  // Méthodes admin
+  getAllPlanningsAdmin,
+  updatePlanningAdmin,
+  forceDeletePlanning,
 };

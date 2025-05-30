@@ -1,55 +1,182 @@
 import { Component, OnInit } from '@angular/core';
-import { ReunionService } from 'src/app/services/reunion.service';
 import { PlanningService } from 'src/app/services/planning.service';
-import { Reunion } from 'src/app/models/reunion.model';
 import { Planning } from 'src/app/models/planning.model';
 import { AuthuserService } from 'src/app/services/authuser.service';
-import {ActivatedRoute, Router} from "@angular/router";
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { ToastService } from 'src/app/services/toast.service';
+import {
+  trigger,
+  style,
+  animate,
+  transition,
+  query,
+  stagger,
+  keyframes,
+  state,
+} from '@angular/animations';
 
 @Component({
   selector: 'app-planning-list',
   templateUrl: './planning-list.component.html',
-  styleUrls: ['./planning-list.component.css']
+  styleUrls: ['./planning-list.component.css'],
+  animations: [
+    // Animation pour l'entrée des cartes de planning (plus fluide)
+    trigger('staggerAnimation', [
+      transition('* => *', [
+        query(
+          ':enter',
+          [
+            style({ opacity: 0, transform: 'translateY(20px) scale(0.95)' }),
+            stagger('100ms', [
+              animate(
+                '0.6s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                keyframes([
+                  style({
+                    opacity: 0,
+                    transform: 'translateY(20px) scale(0.95)',
+                    offset: 0,
+                  }),
+                  style({
+                    opacity: 0.6,
+                    transform: 'translateY(10px) scale(0.98)',
+                    offset: 0.4,
+                  }),
+                  style({
+                    opacity: 1,
+                    transform: 'translateY(0) scale(1)',
+                    offset: 1.0,
+                  }),
+                ])
+              ),
+            ]),
+          ],
+          { optional: true }
+        ),
+      ]),
+    ]),
+
+    // Animation pour le survol des cartes (plus douce)
+    trigger('cardHover', [
+      state(
+        'default',
+        style({
+          transform: 'scale(1) translateY(0)',
+          boxShadow:
+            '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        })
+      ),
+      state(
+        'hovered',
+        style({
+          transform: 'scale(1.02) translateY(-3px)',
+          boxShadow:
+            '0 15px 20px -5px rgba(0, 0, 0, 0.08), 0 8px 8px -5px rgba(0, 0, 0, 0.03)',
+        })
+      ),
+      transition('default => hovered', [
+        animate('0.4s cubic-bezier(0.25, 0.8, 0.25, 1)'),
+      ]),
+      transition('hovered => default', [
+        animate('0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'),
+      ]),
+    ]),
+
+    // Animation pour l'en-tête
+    trigger('fadeInDown', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-20px)' }),
+        animate(
+          '0.5s ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' })
+        ),
+      ]),
+    ]),
+  ],
 })
 export class PlanningListComponent implements OnInit {
   plannings: Planning[] = [];
   loading = true;
   error: string | null = null;
+  hoveredIndex: number | null = null;
 
   constructor(
     private planningService: PlanningService,
     public authService: AuthuserService,
-    private router: Router, private route: ActivatedRoute
+    private router: Router,
+    private route: ActivatedRoute,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
+    console.log('PlanningListComponent initialized');
+
+    // S'abonner aux événements de navigation pour recharger les plannings
+    this.router.events.subscribe((event) => {
+      // NavigationEnd est émis lorsque la navigation est terminée
+      if (event instanceof NavigationEnd) {
+        console.log('Navigation terminée, rechargement des plannings');
+        this.loadPlannings();
+      }
+    });
+
+    // Chargement initial des plannings
     this.loadPlannings();
   }
 
   loadPlannings(): void {
-    const userId = this.authService.getCurrentUserId();
-    if (!userId) {
-      this.error = 'Utilisateur non connecté';
-      this.loading = false;
-      return;
-    }
+    this.loading = true;
+    console.log('Loading plannings...');
 
-    this.planningService.getPlanningsByUser(userId).subscribe({
+    // Utiliser getAllPlannings au lieu de getPlanningsByUser pour afficher tous les plannings
+    this.planningService.getAllPlannings().subscribe({
       next: (response: any) => {
+        console.log('Response received:', response);
+
         if (response.success) {
-          this.plannings = response.plannings;
-          console.log(this.plannings)
+          // Récupérer les plannings
+          let plannings = response.plannings;
+
+          // Trier les plannings par nombre de réunions (ordre décroissant)
+          plannings.sort((a: any, b: any) => {
+            const reunionsA = a.reunions?.length || 0;
+            const reunionsB = b.reunions?.length || 0;
+            return reunionsB - reunionsA; // Ordre décroissant
+          });
+
+          this.plannings = plannings;
+          console.log(
+            'Plannings loaded and sorted by reunion count:',
+            this.plannings.length
+          );
+
+          if (this.plannings.length > 0) {
+            console.log('First planning:', this.plannings[0]);
+            console.log(
+              'Reunion counts:',
+              this.plannings.map((p) => ({
+                titre: p.titre,
+                reunions: p.reunions?.length || 0,
+              }))
+            );
+          }
         } else {
-          this.error = 'Erreur lors du chargement';
+          console.error('Error in response:', response);
+          this.toastService.showError(
+            'Erreur lors du chargement des plannings'
+          );
         }
+
         this.loading = false;
       },
       error: (err) => {
-        // Afficher plus de détails sur l'erreur pour le débogage
-        console.error('Erreur détaillée:', JSON.stringify(err));
-        this.error = `Erreur lors du chargement des plannings: ${err.message || err.statusText || 'Erreur inconnue'}`;
+        console.error('Error loading plannings:', err);
         this.loading = false;
-      }
+
+        const errorMessage = err.message || err.statusText || 'Erreur inconnue';
+        this.toastService.showError(
+          `Erreur lors du chargement des plannings: ${errorMessage}`
+        );
+      },
     });
   }
 
@@ -57,11 +184,29 @@ export class PlanningListComponent implements OnInit {
     if (confirm('Supprimer ce planning ?')) {
       this.planningService.deletePlanning(id).subscribe({
         next: () => {
-          this.plannings = this.plannings.filter(p => p._id !== id);
+          this.plannings = this.plannings.filter((p) => p._id !== id);
+          this.toastService.showSuccess(
+            'Le planning a été supprimé avec succès'
+          );
         },
         error: (err) => {
-          this.error = err.error?.message || 'Erreur lors de la suppression';
-        }
+          console.error('Erreur lors de la suppression du planning:', err);
+
+          // Gestion spécifique des erreurs d'autorisation
+          if (err.status === 403) {
+            this.toastService.showError(
+              "Accès refusé : vous n'avez pas les droits pour supprimer ce planning"
+            );
+          } else if (err.status === 401) {
+            this.toastService.showError(
+              'Vous devez être connecté pour supprimer un planning'
+            );
+          } else {
+            const errorMessage =
+              err.error?.message || 'Erreur lors de la suppression du planning';
+            this.toastService.showError(errorMessage, 8000);
+          }
+        },
       });
     }
   }
@@ -72,4 +217,21 @@ export class PlanningListComponent implements OnInit {
     }
   }
 
+  // Méthodes pour les animations de survol
+  onMouseEnter(index: number): void {
+    this.hoveredIndex = index;
+  }
+
+  onMouseLeave(): void {
+    this.hoveredIndex = null;
+  }
+
+  getCardState(index: number): string {
+    return this.hoveredIndex === index ? 'hovered' : 'default';
+  }
+
+  // Méthode pour le suivi des éléments dans ngFor
+  trackByFn(index: number, planning: any): string {
+    return planning._id || index.toString();
+  }
 }

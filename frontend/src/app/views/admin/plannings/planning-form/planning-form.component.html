@@ -1,111 +1,165 @@
-<section class="bg-gray-50 p-5 sm:p-6 rounded-xl">
-  <div class="mb-4">
-    <h2 class="text-lg font-medium text-gray-900">Planning Form</h2>
-    <p class="text-sm text-gray-500 mt-1">Fill in the details for the event</p>
+<div class="container mx-auto px-4 py-6 max-w-3xl">
+  <!-- En-tête avec gradient coloré -->
+  <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-t-lg p-6 text-white mb-0">
+    <h1 class="text-2xl font-bold flex items-center">
+      <i class="fas fa-calendar-plus mr-3 text-purple-200"></i>
+      Nouveau Planning
+    </h1>
+    <p class="text-purple-100 mt-2">Créez un nouveau planning pour organiser vos événements</p>
   </div>
 
-  <form [formGroup]="planningForm" (ngSubmit)="submit()" novalidate>
-    <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-      <!-- Titre -->
-      <div class="sm:col-span-3">
-        <label class="block text-sm font-medium text-gray-700">Titre</label>
-        <input
-          type="text"
-          formControlName="titre"
-          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-          [class.border-red-300]="planningForm.get('titre')?.invalid && planningForm.get('titre')?.touched"
-        />
-        <div *ngIf="planningForm.get('titre')?.invalid && planningForm.get('titre')?.touched" class="text-sm text-red-600 mt-1">
-          <span *ngIf="planningForm.get('titre')?.errors?.['required']">Titre is required</span>
-          <span *ngIf="planningForm.get('titre')?.errors?.['minlength']">At least 3 characters</span>
+  <form [formGroup]="planningForm" (ngSubmit)="submit()" novalidate class="bg-white rounded-b-lg shadow-lg p-6 border-t-0">
+    <!-- Error message -->
+    <div *ngIf="errorMessage" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+      {{ errorMessage }}
+    </div>
+
+    <div class="grid grid-cols-1 gap-6">
+      <!-- Section Informations générales -->
+      <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-lg border border-purple-200">
+        <h3 class="text-lg font-semibold text-purple-800 mb-4 flex items-center">
+          <i class="fas fa-info-circle mr-2 text-purple-600"></i>
+          Informations générales
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Titre -->
+          <div>
+            <label class="block text-sm font-medium text-purple-700 mb-2">
+              <i class="fas fa-tag mr-2 text-purple-500"></i>
+              Titre *
+            </label>
+            <input
+              type="text"
+              formControlName="titre"
+              class="mt-1 block w-full px-4 py-3 border-2 border-purple-200 rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 focus:ring-2 transition-all duration-200"
+              [class.border-red-300]="planningForm.get('titre')?.invalid && planningForm.get('titre')?.touched"
+              placeholder="Nom de votre planning..."
+            />
+            <div *ngIf="planningForm.get('titre')?.invalid && planningForm.get('titre')?.touched" class="text-red-500 text-sm mt-2 flex items-center">
+              <i class="fas fa-exclamation-circle mr-1"></i>
+              <span *ngIf="planningForm.get('titre')?.errors?.['required']">Le titre est obligatoire</span>
+              <span *ngIf="planningForm.get('titre')?.errors?.['minlength']">Au moins 3 caractères requis</span>
+            </div>
+          </div>
+
+          <!-- Lieu -->
+          <div>
+            <label class="block text-sm font-medium text-orange-700 mb-2">
+              <i class="fas fa-map-marker-alt mr-2 text-orange-500"></i>
+              Lieu / Salle
+            </label>
+            <input
+              type="text"
+              formControlName="lieu"
+              class="mt-1 block w-full px-4 py-3 border-2 border-orange-200 rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500 focus:ring-2 transition-all duration-200"
+              placeholder="Salle, bureau, lieu de l'événement..."
+            />
+          </div>
         </div>
       </div>
 
-      <!-- Lieu -->
-      <div class="sm:col-span-3">
-        <label class="block text-sm font-medium text-gray-700">Lieu</label>
-        <input
-          type="text"
-          formControlName="lieu"
-          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-        />
+      <!-- Section Période -->
+      <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-lg border border-blue-200">
+        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center">
+          <i class="fas fa-calendar-week mr-2 text-blue-600"></i>
+          Période du planning
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Date début -->
+          <div>
+            <label class="block text-sm font-medium text-green-700 mb-2">
+              <i class="fas fa-calendar-day mr-2 text-green-500"></i>
+              Date de début *
+            </label>
+            <input
+              type="date"
+              formControlName="dateDebut"
+              class="mt-1 block w-full px-4 py-3 border-2 border-green-200 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 focus:ring-2 transition-all duration-200"
+            />
+          </div>
+
+          <!-- Date fin -->
+          <div>
+            <label class="block text-sm font-medium text-red-700 mb-2">
+              <i class="fas fa-calendar-check mr-2 text-red-500"></i>
+              Date de fin *
+            </label>
+            <input
+              type="date"
+              formControlName="dateFin"
+              class="mt-1 block w-full px-4 py-3 border-2 border-red-200 rounded-lg shadow-sm focus:ring-red-500 focus:border-red-500 focus:ring-2 transition-all duration-200"
+            />
+          </div>
+        </div>
       </div>
 
-      <!-- Date début -->
-      <div class="sm:col-span-3">
-        <label class="block text-sm font-medium text-gray-700">Date de début</label>
-        <input
-          type="date"
-          formControlName="dateDebut"
-          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-        />
-      </div>
-
-      <!-- Date fin -->
-      <div class="sm:col-span-3">
-        <label class="block text-sm font-medium text-gray-700">Date de fin</label>
-        <input
-          type="date"
-          formControlName="dateFin"
-          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-        />
-      </div>
-
-      <!-- Participants -->
-      <div class="sm:col-span-6">
-        <label class="block text-sm font-medium text-gray-700">Participants</label>
+      <!-- Section Participants -->
+      <div class="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-lg border border-emerald-200">
+        <h3 class="text-lg font-semibold text-emerald-800 mb-4 flex items-center">
+          <i class="fas fa-users mr-2 text-emerald-600"></i>
+          Participants
+        </h3>
+        <label class="block text-sm font-medium text-emerald-700 mb-2">
+          <i class="fas fa-user-friends mr-2 text-emerald-500"></i>
+          Sélectionnez les participants *
+        </label>
         <select
           formControlName="participants"
           multiple
-          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+          class="mt-1 block w-full px-4 py-3 border-2 border-emerald-200 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500 focus:ring-2 transition-all duration-200 text-sm min-h-[120px]"
         >
-          <option *ngFor="let user of users$ | async" [value]="user._id">{{ user.username }}</option>
+          <option *ngFor="let user of users$ | async" [value]="user._id" class="py-2">
+            {{ user.username }}
+          </option>
         </select>
-        <div *ngIf="planningForm.get('participants')?.invalid && planningForm.get('participants')?.touched" class="text-sm text-red-600 mt-1">
-          Please select at least one participant
+        <div *ngIf="planningForm.get('participants')?.invalid && planningForm.get('participants')?.touched" class="text-red-500 text-sm mt-2 flex items-center">
+          <i class="fas fa-exclamation-circle mr-1"></i>
+          Veuillez sélectionner au moins un participant
         </div>
+        <p class="text-xs text-emerald-600 mt-2">
+          <i class="fas fa-info-circle mr-1"></i>
+          Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs participants
+        </p>
       </div>
 
-      <!-- Description -->
-      <div class="sm:col-span-6">
-        <label class="block text-sm font-medium text-gray-700">Description</label>
+      <!-- Section Description -->
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-lg border border-indigo-200">
+        <h3 class="text-lg font-semibold text-indigo-800 mb-4 flex items-center">
+          <i class="fas fa-align-left mr-2 text-indigo-600"></i>
+          Description
+        </h3>
+        <label class="block text-sm font-medium text-indigo-700 mb-2">
+          <i class="fas fa-edit mr-2 text-indigo-500"></i>
+          Décrivez votre planning
+        </label>
         <textarea
           formControlName="description"
-          class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-          rows="3"
+          class="mt-1 block w-full px-4 py-3 border-2 border-indigo-200 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 focus:ring-2 transition-all duration-200"
+          rows="4"
+          placeholder="Décrivez les objectifs, le contexte ou les détails de ce planning..."
         ></textarea>
       </div>
     </div>
 
-    <div class="mt-6 flex justify-end">
+    <!-- Boutons d'action avec design amélioré -->
+    <div class="mt-8 flex justify-end space-x-4 bg-gray-50 p-4 rounded-lg border-t border-gray-200">
       <button
-        type="submit"
-        [disabled]="planningForm.invalid || isLoading"
-        class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        type="button"
+        routerLink="/plannings"
+        class="px-6 py-3 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 flex items-center">
+        <i class="fas fa-times mr-2"></i>
+        Annuler
+      </button>
+      <button
+        type="button"
+        (click)="submit()"
+        [disabled]="isLoading || planningForm.invalid"
+        class="px-6 py-3 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center shadow-lg"
       >
-        <svg
-          *ngIf="isLoading"
-          class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
-        {{ isLoading ? 'Saving...' : 'Save Planning' }}
+        <i class="fas fa-save mr-2" *ngIf="!isLoading"></i>
+        <i class="fas fa-spinner fa-spin mr-2" *ngIf="isLoading"></i>
+        {{ isLoading ? 'Enregistrement...' : 'Créer le planning' }}
       </button>
     </div>
   </form>
-</section>
+</div>

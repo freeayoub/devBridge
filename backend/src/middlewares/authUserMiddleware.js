@@ -120,9 +120,88 @@ const verifyTokenGraphql = async (token) => {
     username: decoded.username,
   };
 };
+// Middleware pour vérifier des rôles spécifiques
+const verifyRoles = (...allowedRoles) => {
+  return (req, res, next) => {
+    try {
+      const authHeader = req.headers.authorization;
+
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "Authentification requise" });
+      }
+
+      const token = authHeader.split(' ')[1];
+
+      if (!token) {
+        return res.status(401).json({ message: "Token not provided" });
+      }
+
+      const decoded = jwt.verify(token, privatekey);
+
+      // Vérifier si le rôle de l'utilisateur est autorisé
+      if (!allowedRoles.includes(decoded.role)) {
+        return res.status(403).json({
+          message: `Accès refusé. Rôles autorisés: ${allowedRoles.join(', ')}`,
+          userRole: decoded.role
+        });
+      }
+
+      req.userId = decoded.id;
+      req.user = {
+        id: decoded.id,
+        role: decoded.role,
+        email: decoded.email,
+        username: decoded.username,
+        image: decoded.image
+      };
+
+      next();
+    } catch (error) {
+      if (error instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ message: "Invalid or expired token" });
+      }
+      return res.status(500).json({ message: "Authentication failed", error: error.message });
+    }
+  };
+};
+
+// Middleware pour vérifier si l'utilisateur est propriétaire ou admin
+const verifyOwnershipOrAdmin = (getResourceOwnerId) => {
+  return async (req, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Authentification requise" });
+      }
+
+      // Si l'utilisateur est admin, il peut tout faire
+      if (req.user.role === 'admin') {
+        return next();
+      }
+
+      // Sinon, vérifier si c'est le propriétaire
+      const resourceOwnerId = await getResourceOwnerId(req);
+
+      if (req.user.id !== resourceOwnerId.toString()) {
+        return res.status(403).json({
+          message: "Accès refusé. Vous devez être le propriétaire ou administrateur"
+        });
+      }
+
+      next();
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erreur lors de la vérification des droits",
+        error: error.message
+      });
+    }
+  };
+};
+
 module.exports = {
   verifyToken,
   verifyTokenAdmin,
   verifySecretClient,
-  verifyTokenGraphql
+  verifyTokenGraphql,
+  verifyRoles,
+  verifyOwnershipOrAdmin
 };

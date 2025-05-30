@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Observable} from "rxjs";
-import {User} from "@app/models/user.model";
-import {DataService} from "@app/services/data.service";
-import {Planning} from "@app/models/planning.model";
-import {PlanningService} from "@app/services/planning.service";
-import {Router} from "@angular/router";
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { User } from '@app/models/user.model';
+import { DataService } from '@app/services/data.service';
+
+import { PlanningService } from '@app/services/planning.service';
+import { Router } from '@angular/router';
+import { ToastService } from '@app/services/toast.service';
 
 @Component({
   selector: 'app-planning-form',
   templateUrl: './planning-form.component.html',
-  styleUrls: ['./planning-form.component.css']
+  styleUrls: ['./planning-form.component.css'],
 })
 export class PlanningFormComponent implements OnInit {
   planningForm!: FormGroup;
@@ -22,7 +23,8 @@ export class PlanningFormComponent implements OnInit {
     private fb: FormBuilder,
     private userService: DataService,
     private planningService: PlanningService,
-    private router:Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -32,7 +34,7 @@ export class PlanningFormComponent implements OnInit {
       lieu: [''],
       dateDebut: ['', Validators.required],
       dateFin: ['', Validators.required],
-      participants: [[], Validators.required]
+      participants: [[], Validators.required],
     });
   }
 
@@ -55,47 +57,80 @@ export class PlanningFormComponent implements OnInit {
         dateDebut: formValues.dateDebut,
         dateFin: formValues.dateFin,
         lieu: formValues.lieu || '',
-        participants: formValues.participants || []
+        participants: formValues.participants || [],
       };
 
       console.log('Planning data to submit:', planningData);
 
       // Call the createPlanning method to add the new planning
       this.planningService.createPlanning(planningData as any).subscribe({
-        next: (newPlanning:any) => {
+        next: (newPlanning: any) => {
           console.log('Planning created successfully:', newPlanning);
           this.isLoading = false;
+
+          // Afficher un toast de succès
+          this.toastService.showSuccess('Le planning a été créé avec succès');
+
           // Navigate to plannings list page after successful creation
           this.router.navigate(['/plannings']);
         },
-        error: (error:any) => {
+        error: (error: any) => {
           console.error('Error creating planning:', error);
-          console.error('Error details:', error.error || error.message || error);
+          console.error(
+            'Error details:',
+            error.error || error.message || error
+          );
           this.isLoading = false;
 
-          // If there's a specific error message from the server, display it
-          if (error.error && error.error.message) {
-            console.error('Server error message:', error.error.message);
-            this.errorMessage = error.error.message;
+          // Gestion spécifique des erreurs d'autorisation
+          if (error.status === 403) {
+            this.toastService.showError(
+              "Accès refusé : vous n'avez pas les droits pour créer un planning"
+            );
+          } else if (error.status === 401) {
+            this.toastService.showError(
+              'Vous devez être connecté pour créer un planning'
+            );
           } else {
-            this.errorMessage = 'Une erreur est survenue lors de la création du planning';
+            // Autres erreurs
+            const errorMessage =
+              error.error?.message ||
+              'Une erreur est survenue lors de la création du planning';
+            this.toastService.showError(errorMessage, 8000);
           }
-        }
+        },
       });
     } else {
       console.log('Form validation errors:', this.getFormValidationErrors());
+
+      // Marquer tous les champs comme "touched" pour afficher les erreurs
+      this.markFormGroupTouched();
+
+      this.toastService.showWarning(
+        'Veuillez corriger les erreurs avant de soumettre le formulaire'
+      );
     }
   }
 
   // Helper method to get form validation errors
   getFormValidationErrors() {
     const errors: any = {};
-    Object.keys(this.planningForm.controls).forEach(key => {
+    Object.keys(this.planningForm.controls).forEach((key) => {
       const control = this.planningForm.get(key);
       if (control && control.errors) {
         errors[key] = control.errors;
       }
     });
     return errors;
+  }
+
+  // Marquer tous les champs comme "touched" pour déclencher l'affichage des erreurs
+  markFormGroupTouched() {
+    Object.keys(this.planningForm.controls).forEach((key) => {
+      const control = this.planningForm.get(key);
+      if (control) {
+        control.markAsTouched();
+      }
+    });
   }
 }

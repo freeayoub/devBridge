@@ -145,6 +145,27 @@ export class AuthuserService {
   getCurrentUser(): any {
     return this.currentUserSubject.value;
   }
+
+  getCurrentUserRole(): string | null {
+    const currentUser = this.getCurrentUser();
+    if (currentUser && currentUser.role) {
+      return currentUser.role;
+    }
+
+    // Fallback: try to get role from JWT token
+    const token = this.getToken();
+    if (token) {
+      try {
+        const decodedToken = this.jwtHelper.decodeToken(token);
+        return decodedToken?.role || null;
+      } catch (error) {
+        console.error('Error decoding token for role:', error);
+        return null;
+      }
+    }
+
+    return null;
+  }
   saveToken(token: string): void {
     localStorage.setItem('token', token);
     this.initializeCurrentUser();

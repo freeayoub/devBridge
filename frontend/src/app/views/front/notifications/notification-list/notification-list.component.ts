@@ -591,16 +591,12 @@ export class NotificationListComponent implements OnInit, OnDestroy {
   ): MessageType {
     switch (type) {
       case 'IMAGE':
-      case 'image':
         return MessageType.IMAGE;
       case 'VIDEO':
-      case 'video':
         return MessageType.VIDEO;
       case 'AUDIO':
-      case 'audio':
         return MessageType.AUDIO;
       case 'FILE':
-      case 'file':
         return MessageType.FILE;
       default:
         return MessageType.FILE;

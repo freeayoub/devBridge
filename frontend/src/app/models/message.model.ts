@@ -1,42 +1,52 @@
 export interface User {
-  // Champs principaux (premier système)
+  // Identifiants
   _id: string;
   id?: string;
+
+  // Informations de base
   username: string;
   email: string;
+  firstName?: string;
+  lastName?: string;
   fullName?: string;
-  profileImage?: string;
+  name?: string;
+
+  // Profil
   image?: string | null;
-  role: string;
+  profileImage?: string;
+  profilePicture?: string;
   bio?: string;
+  role: string;
+  profession?: string;
+
+  // État et activité
   isActive: boolean;
   isOnline?: boolean;
   lastActive?: Date;
+  verified?: boolean;
+
+  // Dates
   createdAt?: Date;
   updatedAt?: Date;
-  followingCount?: number;
-  followersCount?: number;
-  postCount?: number;
-  group?: any;
-  verified?: boolean;
-  __v?: number;
+  dateOfBirth?: Date | string;
+  joinDate?: Date;
 
-  // Nouveaux champs (second système)
-  firstName?: string; // Prénom
-  lastName?: string; // Nom
-  profession?: string; // Étudiant ou Professeur
-  dateOfBirth?: Date | string; // Date de naissance
-
-  // Champs supplémentaires pour la compatibilité
-  name?: string;
-  password?: string;
+  // Informations supplémentaires
   department?: string;
   position?: string;
   phoneNumber?: string;
   address?: string;
-  profilePicture?: string;
   skills?: string[];
-  joinDate?: Date;
+  group?: any;
+
+  // Statistiques (optionnelles)
+  followingCount?: number;
+  followersCount?: number;
+  postCount?: number;
+
+  // Champs techniques
+  password?: string;
+  __v?: number;
 }
 export interface PaginatedResponse<T> {
   items: T[];
@@ -47,12 +57,20 @@ export interface PaginatedResponse<T> {
     hasNextPage: boolean;
   };
 }
+
 export interface Toast {
-  id?: number;
+  id: string;
   type: 'success' | 'error' | 'warning' | 'info';
+  title: string;
   message: string;
   duration?: number;
+  icon?: string;
+  action?: {
+    label: string;
+    handler: () => void;
+  };
 }
+
 export enum MessageType {
   TEXT = 'TEXT',
   IMAGE = 'IMAGE',
@@ -61,13 +79,6 @@ export enum MessageType {
   VIDEO = 'VIDEO',
   SYSTEM = 'SYSTEM',
   VOICE_MESSAGE = 'VOICE_MESSAGE',
-  TEXT_LOWER = 'text',
-  IMAGE_LOWER = 'image',
-  FILE_LOWER = 'file',
-  AUDIO_LOWER = 'audio',
-  VIDEO_LOWER = 'video',
-  SYSTEM_LOWER = 'system',
-  VOICE_MESSAGE_LOWER = 'voice_message',
 }
 export enum MessageStatus {
   SENDING = 'SENDING',
@@ -349,17 +360,7 @@ export type NotificationType =
   | 'MESSAGE_REACTION'
   | 'SYSTEM_ALERT';
 
-export type AttachmentType =
-  | 'IMAGE'
-  | 'FILE'
-  | 'AUDIO'
-  | 'VIDEO'
-  | 'OTHER'
-  | 'image'
-  | 'file'
-  | 'audio'
-  | 'video'
-  | 'other';
+export type AttachmentType = 'IMAGE' | 'FILE' | 'AUDIO' | 'VIDEO' | 'OTHER';
 
 // --------------------------------------------------------------------------
 // Types et interfaces pour les appels

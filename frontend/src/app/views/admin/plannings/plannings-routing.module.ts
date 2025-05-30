@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PlanningListComponent } from './planning-list/planning-list.component';
-import { PlanningFormComponent } from './planning-form/planning-form.component';
-import { PlanningCalendarComponent } from './planning-calendar/planning-calendar.component';
-import { PlanningEditComponent } from './planning-edit/planning-edit.component';
 import { PlanningDetailComponent } from './planning-detail/planning-detail.component';
+import { PlanningFormComponent } from './planning-form/planning-form.component';
+import {PlanningEditComponent} from "@app/views/front/plannings/planning-edit/planning-edit.component";
 
 const routes: Routes = [
   {
@@ -14,16 +13,14 @@ const routes: Routes = [
     path: 'nouveau', component: PlanningFormComponent
   },
   {
-    path: 'calandarPlanning', component: PlanningCalendarComponent
-  
-  },
-  {
     path: 'edit/:id', component: PlanningEditComponent
   },
   {
     path: ':id', component: PlanningDetailComponent  // <-- put this last
   }
 ];
+
+
 
 
 @NgModule({

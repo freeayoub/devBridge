@@ -3,7 +3,7 @@ export interface Planning {
     id?: string;
     titre: string;
     description?: string;
-    dateDebut: string | Date; 
+    dateDebut: string | Date;
     dateFin: string | Date;
     lieu?: string;
     createur: {
@@ -18,7 +18,16 @@ export interface Planning {
       email: string;
       image?: string;
     }[];
-    reunions?: any[]; 
+    reunions?: any[];
+  }
+
+  // Interface pour la création d'un planning
+  export interface CreatePlanningRequest {
+    titre: string;
+    description?: string;
+    dateDebut: string;
+    dateFin: string;
+    participants?: string[];
   }
 
 

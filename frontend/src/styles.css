@@ -100,18 +100,109 @@
   --bg: #0a0e17;
   --medium-bg: #111827;
   --light-bg: #1f2937;
+  --text-light: #f9fafb;
+  --text-dim: #9ca3af;
+  --text-dark: #1f2937;
+}
+
+/* Thème Bleu-Gris */
+.theme-blue-gray {
+  --accent-color: #4f5fad;
+  --accent-color-dark: #3d4a85;
+  --accent-color-light: #6d78c9;
+  --secondary-color: #3d4a85;
+  --secondary-color-dark: #2d3a75;
+  --secondary-color-light: #6d78c9;
+  --accent-transparent: rgba(79, 95, 173, 0.2);
+  --glow-effect: 0 0 10px rgba(79, 95, 173, 0.4);
+  --glow-effect-strong: 0 0 15px rgba(79, 95, 173, 0.6);
+}
+
+.dark.theme-blue-gray {
   --accent-color: #00f7ff;
   --accent-color-dark: #00c4cc;
   --accent-color-light: #7df9ff;
   --secondary-color: #9d4edd;
   --secondary-color-dark: #7b2cbf;
   --secondary-color-light: #c77dff;
-  --text-light: #f9fafb;
-  --text-dim: #9ca3af;
-  --text-dark: #1f2937;
   --accent-transparent: rgba(0, 247, 255, 0.2);
   --glow-effect: 0 0 10px rgba(0, 247, 255, 0.5);
   --glow-effect-strong: 0 0 15px rgba(0, 247, 255, 0.8);
+}
+
+/* Thème Rose */
+.theme-pink {
+  --accent-color: #ec4899;
+  --accent-color-dark: #db2777;
+  --accent-color-light: #f472b6;
+  --secondary-color: #be185d;
+  --secondary-color-dark: #9d174d;
+  --secondary-color-light: #ec4899;
+  --accent-transparent: rgba(236, 72, 153, 0.2);
+  --glow-effect: 0 0 10px rgba(236, 72, 153, 0.4);
+  --glow-effect-strong: 0 0 15px rgba(236, 72, 153, 0.6);
+}
+
+.dark.theme-pink {
+  --accent-color: #ff69b4;
+  --accent-color-dark: #ff1493;
+  --accent-color-light: #ffb6c1;
+  --secondary-color: #ff69b4;
+  --secondary-color-dark: #ff1493;
+  --secondary-color-light: #ffb6c1;
+  --accent-transparent: rgba(255, 105, 180, 0.2);
+  --glow-effect: 0 0 10px rgba(255, 105, 180, 0.5);
+  --glow-effect-strong: 0 0 15px rgba(255, 105, 180, 0.8);
+}
+
+/* Thème Cyan */
+.theme-cyan {
+  --accent-color: #06b6d4;
+  --accent-color-dark: #0891b2;
+  --accent-color-light: #22d3ee;
+  --secondary-color: #0891b2;
+  --secondary-color-dark: #0e7490;
+  --secondary-color-light: #06b6d4;
+  --accent-transparent: rgba(6, 182, 212, 0.2);
+  --glow-effect: 0 0 10px rgba(6, 182, 212, 0.4);
+  --glow-effect-strong: 0 0 15px rgba(6, 182, 212, 0.6);
+}
+
+.dark.theme-cyan {
+  --accent-color: #00ffff;
+  --accent-color-dark: #00e6e6;
+  --accent-color-light: #7fffd4;
+  --secondary-color: #00ffff;
+  --secondary-color-dark: #00e6e6;
+  --secondary-color-light: #7fffd4;
+  --accent-transparent: rgba(0, 255, 255, 0.2);
+  --glow-effect: 0 0 10px rgba(0, 255, 255, 0.5);
+  --glow-effect-strong: 0 0 15px rgba(0, 255, 255, 0.8);
+}
+
+/* Thème Violet */
+.theme-purple {
+  --accent-color: #8b5cf6;
+  --accent-color-dark: #7c3aed;
+  --accent-color-light: #a78bfa;
+  --secondary-color: #7c3aed;
+  --secondary-color-dark: #6d28d9;
+  --secondary-color-light: #8b5cf6;
+  --accent-transparent: rgba(139, 92, 246, 0.2);
+  --glow-effect: 0 0 10px rgba(139, 92, 246, 0.4);
+  --glow-effect-strong: 0 0 15px rgba(139, 92, 246, 0.6);
+}
+
+.dark.theme-purple {
+  --accent-color: #9d4edd;
+  --accent-color-dark: #7b2cbf;
+  --accent-color-light: #c77dff;
+  --secondary-color: #9d4edd;
+  --secondary-color-dark: #7b2cbf;
+  --secondary-color-light: #c77dff;
+  --accent-transparent: rgba(157, 78, 221, 0.2);
+  --glow-effect: 0 0 10px rgba(157, 78, 221, 0.5);
+  --glow-effect-strong: 0 0 15px rgba(157, 78, 221, 0.8);
 }
 
 /* Styles des champs de saisie futuristes - Mode clair */

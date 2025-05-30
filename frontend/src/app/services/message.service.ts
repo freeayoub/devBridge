@@ -561,67 +561,6 @@ export class MessageService implements OnDestroy {
   // --------------------------------------------------------------------------
 
   /**
-   * Envoie un message vocal à un utilisateur
-   * @param receiverId ID de l'utilisateur destinataire
-   * @param audioBlob Blob audio à envoyer
-   * @param conversationId ID de la conversation (optionnel)
-   * @param duration Durée de l'enregistrement en secondes (optionnel)
-   * @returns Observable avec le message envoyé
-   */
-  sendVoiceMessage(
-    receiverId: string,
-    audioBlob: Blob,
-    conversationId?: string,
-    duration?: number
-  ): Observable<Message> {
-    this.logger.debug(
-      `[MessageService] Sending voice message to user ${receiverId}, duration: ${duration}s`
-    );
-
-    // Vérifier que le blob audio est valide
-    if (!audioBlob || audioBlob.size === 0) {
-      this.logger.error('[MessageService] Invalid audio blob');
-      return throwError(() => new Error('Invalid audio blob'));
-    }
-
-    // Créer un fichier à partir du blob audio avec un nom unique
-    const timestamp = Date.now();
-    const audioFile = new File([audioBlob], `voice-message-${timestamp}.webm`, {
-      type: 'audio/webm',
-      lastModified: timestamp,
-    });
-
-    // Vérifier que le fichier a été créé correctement
-    if (!audioFile || audioFile.size === 0) {
-      this.logger.error('[MessageService] Failed to create audio file');
-      return throwError(() => new Error('Failed to create audio file'));
-    }
-
-    this.logger.debug(
-      `[MessageService] Created audio file: ${audioFile.name}, size: ${audioFile.size} bytes`
-    );
-
-    // Créer des métadonnées pour le message vocal
-    const metadata = {
-      duration: duration || 0,
-      isVoiceMessage: true,
-      timestamp: timestamp,
-    };
-
-    // Utiliser la méthode sendMessage avec le type VOICE_MESSAGE
-    // Utiliser une chaîne vide comme contenu pour éviter les problèmes de validation
-    return this.sendMessage(
-      receiverId,
-      ' ', // Espace comme contenu minimal pour passer la validation
-      audioFile,
-      MessageType.VOICE_MESSAGE,
-      conversationId,
-      undefined,
-      metadata
-    );
-  }
-
-  /**
    * Joue un fichier audio
    * @param audioUrl URL du fichier audio à jouer
    * @returns Promise qui se résout lorsque la lecture est terminée
@@ -736,187 +675,6 @@ export class MessageService implements OnDestroy {
         catchError((error) => {
           this.logger.error('Error deleting message:', error);
           return throwError(() => new Error('Failed to delete message'));
-        })
-      );
-  }
-
-  sendMessage(
-    receiverId: string,
-    content: string,
-    file?: File,
-    messageType: MessageType = MessageType.TEXT,
-    conversationId?: string,
-    replyTo?: string,
-    metadata?: any
-  ): Observable<Message> {
-    this.logger.info(
-      `[MessageService] Sending message to: ${receiverId}, hasFile: ${!!file}`
-    );
-    this.logger.debug(
-      `[MessageService] Message content: "${content?.substring(0, 50)}${
-        content?.length > 50 ? '...' : ''
-      }"`
-    );
-
-    // Vérifier l'authentification
-    const token = localStorage.getItem('token');
-    this.logger.debug(
-      `[MessageService] Authentication check before sending message: token=${!!token}`
-    );
-
-    // Utiliser le type de message fourni ou le déterminer automatiquement
-    let finalMessageType = messageType;
-
-    // Si le type n'est pas explicitement fourni et qu'il y a un fichier, déterminer le type
-    if (file) {
-      // Si le type est déjà VOICE_MESSAGE, le conserver
-      if (messageType === MessageType.VOICE_MESSAGE) {
-        finalMessageType = MessageType.VOICE_MESSAGE;
-        this.logger.debug(`[MessageService] Using explicit VOICE_MESSAGE type`);
-      }
-      // Sinon, déterminer le type en fonction du type de fichier
-      else if (messageType === MessageType.TEXT) {
-        if (file.type.startsWith('image/')) {
-          finalMessageType = MessageType.IMAGE;
-        } else if (file.type.startsWith('video/')) {
-          finalMessageType = MessageType.VIDEO;
-        } else if (file.type.startsWith('audio/')) {
-          // Vérifier si c'est un message vocal basé sur les métadonnées
-          if (metadata && metadata.isVoiceMessage) {
-            finalMessageType = MessageType.VOICE_MESSAGE;
-          } else {
-            finalMessageType = MessageType.AUDIO;
-          }
-        } else {
-          finalMessageType = MessageType.FILE;
-        }
-      }
-    }
-
-    this.logger.debug(
-      `[MessageService] Message type determined: ${finalMessageType}`
-    );
-
-    // Ajouter le type de message aux variables
-    // Utiliser directement la valeur de l'énumération sans conversion
-    const variables: any = {
-      receiverId,
-      content,
-      type: finalMessageType, // Ajouter explicitement le type de message
-    };
-
-    // Forcer le type à être une valeur d'énumération GraphQL
-    // Cela empêche Apollo de convertir la valeur en minuscules
-    if (variables.type) {
-      Object.defineProperty(variables, 'type', {
-        value: finalMessageType,
-        enumerable: true,
-        writable: false,
-      });
-    }
-
-    // Ajouter les métadonnées si elles sont fournies
-    if (metadata) {
-      variables.metadata = metadata;
-      this.logger.debug(`[MessageService] Metadata attached:`, metadata);
-    }
-
-    if (file) {
-      variables.file = file;
-      this.logger.debug(
-        `[MessageService] File attached: ${file.name}, size: ${file.size}, type: ${file.type}, messageType: ${finalMessageType}`
-      );
-    }
-    if (conversationId) {
-      variables.conversationId = conversationId;
-      this.logger.debug(
-        `[MessageService] Using existing conversation: ${conversationId}`
-      );
-    }
-    if (replyTo) {
-      variables.replyTo = replyTo;
-      this.logger.debug(`[MessageService] Replying to message: ${replyTo}`);
-    }
-
-    const context = file ? { useMultipart: true, file } : undefined;
-
-    this.logger.debug(
-      `[MessageService] Sending GraphQL mutation with variables:`,
-      variables
-    );
-
-    return this.apollo
-      .mutate<SendMessageResponse>({
-        mutation: SEND_MESSAGE_MUTATION,
-        variables,
-        context,
-      })
-      .pipe(
-        map((result) => {
-          this.logger.debug(
-            `[MessageService] ⚡ INSTANT: Message send response received`
-          );
-
-          if (!result.data?.sendMessage) {
-            this.logger.error(
-              `[MessageService] ❌ Failed to send message: No data returned`
-            );
-            throw new Error('Failed to send message');
-          }
-
-          try {
-            this.logger.debug(
-              `[MessageService] 🚀 INSTANT: Normalizing sent message`,
-              result.data.sendMessage
-            );
-            const normalizedMessage = this.normalizeMessage(
-              result.data.sendMessage
-            );
-
-            this.logger.info(
-              `[MessageService] ✅ INSTANT: Message sent successfully: ${normalizedMessage.id}`
-            );
-
-            // OPTIMISATION: Mise à jour immédiate de l'UI
-            this.zone.run(() => {
-              // Émettre immédiatement le message dans le flux
-              this.logger.debug('📡 INSTANT: Updating UI immediately');
-            });
-
-            // Rafraîchir les notifications du sender après envoi
-            setTimeout(() => {
-              this.refreshSenderNotifications();
-            }, 1000);
-
-            return normalizedMessage;
-          } catch (normalizationError) {
-            this.logger.error(
-              `[MessageService] ❌ Error normalizing message:`,
-              normalizationError
-            );
-
-            // Retourner un message minimal mais valide plutôt que de lancer une erreur
-            const minimalMessage: Message = {
-              id: result.data.sendMessage.id || 'temp-' + Date.now(),
-              content: result.data.sendMessage.content || '',
-              type: result.data.sendMessage.type || MessageType.TEXT,
-              timestamp: new Date(),
-              isRead: false,
-              sender: {
-                id: this.getCurrentUserId(),
-                username: 'You',
-              },
-            };
-
-            this.logger.info(
-              `[MessageService] Returning minimal message: ${minimalMessage.id}`
-            );
-            return minimalMessage;
-          }
-        }),
-        catchError((error) => {
-          this.logger.error(`[MessageService] Error sending message:`, error);
-          return throwError(() => new Error('Failed to send message'));
         })
       );
   }
@@ -3107,7 +2865,7 @@ export class MessageService implements OnDestroy {
               normalizedMessage.type === MessageType.VOICE_MESSAGE ||
               (normalizedMessage.attachments &&
                 normalizedMessage.attachments.some(
-                  (att) => att.type === 'audio' || att.type === 'AUDIO'
+                  (att) => att.type === 'AUDIO'
                 ))
             ) {
               this.logger.debug(
@@ -4319,6 +4077,123 @@ export class MessageService implements OnDestroy {
   }
 
   // ========================================
+  // MÉTHODE SENDMESSAGE MANQUANTE
+  // ========================================
+
+  /**
+   * Envoie un message (texte, fichier, audio, etc.)
+   * @param receiverId ID du destinataire
+   * @param content Contenu du message (texte)
+   * @param file Fichier à envoyer (optionnel)
+   * @param messageType Type de message (TEXT, AUDIO, IMAGE, etc.)
+   * @param conversationId ID de la conversation
+   * @returns Observable avec le message envoyé
+   */
+  sendMessage(
+    receiverId: string,
+    content: string,
+    file?: File,
+    messageType: any = 'TEXT',
+    conversationId?: string
+  ): Observable<Message> {
+    console.log('🚀 [MessageService] sendMessage called with:', {
+      receiverId,
+      content: content?.substring(0, 50),
+      hasFile: !!file,
+      fileName: file?.name,
+      fileType: file?.type,
+      fileSize: file?.size,
+      messageType,
+      conversationId,
+    });
+
+    if (!receiverId) {
+      const error = new Error('Receiver ID is required');
+      console.error('❌ [MessageService] sendMessage error:', error);
+      return throwError(() => error);
+    }
+
+    // Préparer les variables pour la mutation
+    const variables: any = {
+      receiverId,
+      content: content || '',
+      type: messageType,
+    };
+
+    // Ajouter l'ID de conversation si fourni
+    if (conversationId) {
+      variables.conversationId = conversationId;
+    }
+
+    // Si un fichier est fourni, l'ajouter aux variables
+    if (file) {
+      variables.file = file;
+      console.log('📁 [MessageService] Adding file to mutation:', {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+      });
+    }
+
+    console.log(
+      '📤 [MessageService] Sending mutation with variables:',
+      variables
+    );
+
+    return this.apollo
+      .mutate<SendMessageResponse>({
+        mutation: SEND_MESSAGE_MUTATION,
+        variables,
+        context: {
+          useMultipart: !!file, // Utiliser multipart si un fichier est présent
+        },
+      })
+      .pipe(
+        map((result) => {
+          console.log(
+            '✅ [MessageService] sendMessage mutation result:',
+            result
+          );
+
+          if (!result.data?.sendMessage) {
+            throw new Error('No message data received from server');
+          }
+
+          const message = result.data.sendMessage;
+          console.log('📨 [MessageService] Message sent successfully:', {
+            id: message.id,
+            type: message.type,
+            content: message.content?.substring(0, 50),
+            hasAttachments: !!message.attachments?.length,
+          });
+
+          // Normaliser le message reçu
+          const normalizedMessage = this.normalizeMessage(message);
+          console.log(
+            '🔧 [MessageService] Message normalized:',
+            normalizedMessage
+          );
+
+          return normalizedMessage;
+        }),
+        catchError((error) => {
+          console.error('❌ [MessageService] sendMessage error:', error);
+          this.logger.error('Error sending message:', error);
+
+          // Fournir un message d'erreur plus spécifique
+          let errorMessage = "Erreur lors de l'envoi du message";
+          if (error.networkError) {
+            errorMessage = 'Erreur de connexion réseau';
+          } else if (error.graphQLErrors?.length > 0) {
+            errorMessage = error.graphQLErrors[0].message || errorMessage;
+          }
+
+          return throwError(() => new Error(errorMessage));
+        })
+      );
+  }
+
+  // ========================================
   // MÉTHODES UTILITAIRES CONSOLIDÉES
   // ========================================
 
@@ -4504,7 +4379,7 @@ export class MessageService implements OnDestroy {
     // Vérifier le type du message
     if (
       message.type === MessageType.VOICE_MESSAGE ||
-      message.type === MessageType.VOICE_MESSAGE_LOWER
+      message.type === MessageType.VOICE_MESSAGE
     ) {
       return true;
     }
@@ -4794,17 +4669,7 @@ export class MessageService implements OnDestroy {
         }
       }
 
-      if (
-        messageType === MessageType.IMAGE ||
-        messageType === MessageType.IMAGE_LOWER
-      ) {
-        return `p-1 max-w-xs`;
-      } else if (
-        messageType === MessageType.FILE ||
-        messageType === MessageType.FILE_LOWER
-      ) {
-        return `${baseClass} p-3`;
-      }
+      // Les vérifications de type sont déjà faites avec les attachments ci-dessus
 
       return `${baseClass} px-4 py-3 whitespace-normal break-words min-w-[120px]`;
     } catch (error) {

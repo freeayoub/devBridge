@@ -1,0 +1,243 @@
+/* Styles pour les animations des plannings */
+
+/* Animation de pulse pour les cartes au survol */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(124, 58, 237, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+  }
+}
+
+/* Style pour l'effet de survol des cartes */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Style pour l'animation de fade-in */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Style pour l'animation de stagger */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Style pour le titre avec soulignement */
+.planning-header {
+  position: relative;
+  display: inline-block;
+}
+
+.underline-animation {
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 100%; /* S'étend de la lettre M de "Mes" jusqu'à la lettre s de "Plannings" */
+  height: 3px;
+  background: linear-gradient(90deg, #7c3aed, #3b82f6);
+  border-radius: 3px;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Animation élastique */
+}
+
+.planning-header:hover .underline-animation {
+  transform: scaleX(1.05) translateY(-1px);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.5);
+}
+
+/* Style pour le bouton d'ajout */
+.add-button {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.5s ease;
+}
+
+.add-button:hover::before {
+  left: 100%;
+}
+
+/* Effet de profondeur 3D pour les cartes */
+.grid > div {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Effet de brillance au survol (réduit pour éviter le clignotement) */
+.grid > div::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background: linear-gradient(45deg, #7c3aed, #4f46e5, #3b82f6, #7c3aed);
+  z-index: -1;
+  border-radius: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.grid > div:hover::before {
+  opacity: 0.08; /* Opacité très réduite pour éviter le clignotement */
+}
+
+/* Assurer la lisibilité du texte au survol */
+.grid > div:hover h3,
+.grid > div:hover a.hover\:text-purple-600 {
+  color: #4a5568 !important;
+  font-weight: 600;
+}
+
+/* Animation de pulsation pour attirer l'attention (désactivée pour éviter le clignotement) */
+@keyframes attention-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(124, 58, 237, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+  }
+}
+
+/* Style pour la première carte sans animation de pulsation */
+.grid > div:nth-child(1) {
+  /* Animation désactivée pour éviter le clignotement */
+  /* animation: attention-pulse 2s infinite; */
+  /* animation-delay: 1s; */
+  background: rgba(255, 255, 255, 0.95) !important; /* Fond légèrement plus clair */
+  border: 2px solid rgba(124, 58, 237, 0.1); /* Bordure subtile pour distinguer */
+}
+
+/* Améliorer la lisibilité du texte sur la première carte */
+.grid > div:nth-child(1) h3,
+.grid > div:nth-child(1) p,
+.grid > div:nth-child(1) span,
+.grid > div:nth-child(1) a {
+  color: #4a5568 !important; /* Texte foncé pour meilleur contraste */
+  font-weight: 600;
+}
+
+/* Effet de vague au clic */
+.grid > div {
+  position: relative;
+  overflow: hidden;
+}
+
+.grid > div::after {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform .5s, opacity 1s;
+}
+
+.grid > div:active::after {
+  transform: scale(0, 0);
+  opacity: .3;
+  transition: 0s;
+}
+
+/* Effet de rotation 3D très subtil pour éviter le clignotement */
+.grid > div:hover {
+  transform: rotateX(0.5deg) rotateY(0.5deg) translateY(-2px);
+}
+
+/* Style pour les titres des plannings */
+.planning-title {
+  display: block;
+  color: #2d3748;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  padding: 2px 0;
+}
+
+.planning-title:hover {
+  color: #6b46c1 !important;
+  text-decoration: none;
+}
+
+/* Style pour le lien "Voir détails" */
+.details-link {
+  position: relative;
+  transition: all 0.3s ease;
+  padding-right: 5px;
+  color: #6b46c1 !important; /* Violet plus prononcé */
+  font-weight: 600;
+}
+
+.details-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #6b46c1;
+  transition: width 0.3s ease;
+}
+
+.details-link:hover::after {
+  width: 100%;
+}
+
+/* Style pour le compteur de réunions */
+.reunion-count {
+  display: flex;
+  align-items: center;
+}
+
+.reunion-count::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #4a5568;
+  margin-right: 6px;
+}

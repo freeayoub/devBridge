@@ -1,98 +1,220 @@
 <div class="container mx-auto px-4 py-6">
-  <!-- Bouton retour -->
+  <!-- Bouton retour avec animation -->
   <button (click)="router.navigate(['/plannings'])"
-          class="mb-4 flex items-center text-purple-600 hover:text-purple-800">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+          class="back-button mb-4 flex items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
       <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
     </svg>
     Retour aux plannings
   </button>
 
-  <!-- Chargement -->
+  <!-- Chargement avec animation améliorée -->
   <div *ngIf="loading" class="text-center py-8">
-    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+    <div class="loading-spinner"></div>
+    <p class="text-purple-600 mt-3 font-medium">Chargement des détails...</p>
   </div>
 
-  <!-- Erreur -->
-  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-    {{ error }}
+  <!-- Erreur avec animation -->
+  <div *ngIf="error" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-md mb-6 animate__animated animate__fadeIn">
+    <div class="flex items-center">
+      <svg class="h-6 w-6 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <span>{{ error }}</span>
+    </div>
   </div>
 
-  <!-- Détails du planning -->
-  <div *ngIf="!loading && planning" class="bg-white rounded-lg shadow-md p-6">
-    <!-- Titre du planning -->
-    <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ planning.titre }}</h1>
-    <p class="text-gray-600 mb-4" [innerHTML]="planning.description | highlightPresence"></p>
+  <!-- Détails du planning avec design moderne -->
+  <div *ngIf="!loading && planning" class="planning-card" [@cardHover]="cardState"
+       (mouseenter)="onCardMouseEnter()" (mouseleave)="onCardMouseLeave()">
+    <!-- En-tête du planning -->
+    <div class="planning-header" [@fadeInUp]>
+      <h1 class="mb-2">{{ planning.titre }}</h1>
+      <p class="text-base" [innerHTML]="planning.description | highlightPresence"></p>
+    </div>
 
     <!-- Informations -->
-    <div class="mb-6">
-      <h2 class="text-lg font-semibold mb-3 text-gray-800">Informations</h2>
-      <div class="flex items-center mb-2">
-        <svg class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div class="planning-section" [@fadeInUp]="sectionStates.info">
+      <h2>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Informations
+      </h2>
+      <div class="info-item">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
-        <span class="text-gray-700">
+        <span>
           Du <strong>{{ planning.dateDebut | date:'mediumDate' }}</strong>
           au <strong>{{ planning.dateFin | date:'mediumDate' }}</strong>
         </span>
       </div>
 
-      <div *ngIf="planning.lieu" class="flex items-center">
-        <svg class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div *ngIf="planning.lieu" class="info-item">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
-        <span class="text-gray-700">{{ planning.lieu }}</span>
+        <span>{{ planning.lieu }}</span>
       </div>
     </div>
 
     <!-- Participants -->
-    <div class="mb-6">
-      <h2 class="text-lg font-semibold mb-3 text-gray-800">Participants</h2>
-      <div class="flex flex-wrap gap-2">
-        <div *ngFor="let participant of planning.participants" class="flex items-center bg-gray-100 rounded-full px-3 py-1">
-          <span class="text-gray-700">{{ participant.username }}</span>
+    <div class="planning-section" [@fadeInUp]="sectionStates.participants">
+      <h2>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        Participants
+      </h2>
+      <div class="participants-list">
+        <div *ngFor="let participant of planning.participants; let i = index"
+             class="participant-badge"
+             [style.animation-delay]="i * 0.1 + 's'">
+          <span>{{ participant.username }}</span>
         </div>
       </div>
     </div>
 
     <!-- Réunions associées -->
-    <div>
-      <div class="flex justify-between items-center mb-3">
-        <h2 class="text-lg font-semibold text-gray-800">Réunions associées</h2>
-        <button (click)="nouvelleReunion()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors">
-          Nouvelle Réunion
+    <div class="planning-section" [@fadeInUp]="sectionStates.reunions">
+      <div class="flex justify-between items-center mb-4">
+        <h2>
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Réunions associées
+        </h2>
+        <button (click)="nouvelleReunion()" class="btn btn-primary">
+          <span class="flex items-center">
+            <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Nouvelle Réunion
+          </span>
         </button>
       </div>
 
       <!-- Boutons Modifier et Supprimer -->
-      <div class="flex justify-end space-x-2 mb-3">
-        <button (click)="editPlanning()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-          Modifier Planning
+      <div class="flex justify-end space-x-3 mb-4">
+        <button (click)="editPlanning()" class="btn btn-secondary">
+          <span class="flex items-center">
+            <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Modifier Planning
+          </span>
         </button>
-        <button (click)="deletePlanning()" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
-          Supprimer Planning
+        <button (click)="deletePlanning()" class="btn btn-danger">
+          <span class="flex items-center">
+            <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Supprimer Planning
+          </span>
         </button>
       </div>
 
-      <!-- Calendrier -->
-      <mwl-calendar-month-view
-        [viewDate]="viewDate"
-        [events]="events"
-        (dayClicked)="handleDayClick($event.day)">
-      </mwl-calendar-month-view>
+      <!-- Statistiques des réunions -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-gradient-to-br from-purple-50 to-indigo-50 p-4 rounded-lg shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500">Total Réunions</p>
+              <p class="text-2xl font-bold text-gray-800">{{ planning.reunions?.length || 0 }}</p>
+            </div>
+            <div class="bg-purple-100 p-3 rounded-full">
+              <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-lg shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500">Période</p>
+              <p class="text-lg font-bold text-gray-800">
+                {{ planning.dateDebut | date:'shortDate' }} - {{ planning.dateFin | date:'shortDate' }}
+              </p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-full">
+              <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500">Participants</p>
+              <p class="text-2xl font-bold text-gray-800">{{ planning.participants?.length || 0 }}</p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-full">
+              <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendrier avec style amélioré -->
+      <div class="calendar-container">
+        <mwl-calendar-month-view
+          [viewDate]="viewDate"
+          [events]="events"
+          (dayClicked)="handleDayClick($event.day)">
+        </mwl-calendar-month-view>
+      </div>
 
       <!-- Détails des réunions du jour sélectionné -->
-      <div class="mt-4" *ngIf="selectedDayEvents.length > 0">
-        <hr class="my-2 border-gray-300" />
-        <h3 class="text-md font-medium text-gray-700 mb-2">
-          Détails pour le {{ selectedDate | date: 'fullDate' }}
+      <div class="day-events" *ngIf="selectedDayEvents.length > 0" [@fadeInUp]>
+        <h3>
+          <span class="flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Détails pour le {{ selectedDate | date: 'fullDate' }}
+          </span>
         </h3>
-        <ul class="space-y-2">
-          <li *ngFor="let event of selectedDayEvents" class="p-2 border rounded bg-gray-50">
-            <div><strong [innerHTML]="event.title | highlightPresence"></strong></div>
-            <div>
-              {{ event.start | date: 'shortTime' }} - {{ event.end | date: 'shortTime' }}
+        <ul class="space-y-3">
+          <li *ngFor="let event of selectedDayEvents; let i = index"
+              class="event-item bg-white p-4 rounded-lg shadow-sm border border-gray-100"
+              [style.animation-delay]="i * 0.1 + 's'">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <strong [innerHTML]="event.title | highlightPresence"></strong>
+                <div class="flex items-center text-gray-600 mt-1">
+                  <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {{ event.start | date: 'shortTime' }} - {{ event.end | date: 'shortTime' }}
+                </div>
+                <div *ngIf="event.meta?.description" class="mt-2 text-sm text-gray-500">
+                  {{ event.meta.description }}
+                </div>
+              </div>
+              <div class="flex space-x-2 ml-4">
+                <button (click)="editReunion(event.meta.id)"
+                        class="text-blue-500 hover:text-blue-700 transition-colors duration-300 p-1 rounded-full hover:bg-blue-50"
+                        title="Modifier la réunion">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                <button (click)="deleteReunion(event.meta.id); $event.stopPropagation();"
+                        class="text-red-500 hover:text-red-700 transition-colors duration-300 p-1 rounded-full hover:bg-red-50"
+                        title="Supprimer la réunion">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </li>
         </ul>
