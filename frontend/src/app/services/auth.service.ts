@@ -60,6 +60,18 @@ export class AuthService {
     });
   }
 
+  createUser(userData: any, token: string) {
+    return this.http.post(`${this.ADMIN_API}/users`, userData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  createUserWithGeneratedPassword(userData: any, token: string) {
+    return this.http.post(`${this.ADMIN_API}/users/create-with-password`, userData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
   updateUserRole(userId: string, role: string, token: string) {
     return this.http.put(
       `${this.ADMIN_API}/users/${userId}/role`,

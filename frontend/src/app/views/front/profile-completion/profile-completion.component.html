@@ -1,0 +1,305 @@
+<div class="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] dark:from-[#0f172a] dark:to-[#1e293b] py-8 px-4">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold bg-gradient-to-r from-[#4f5fad] to-[#7826b5] bg-clip-text text-transparent mb-4">
+        Complete Your Profile
+      </h1>
+      <p class="text-lg text-[#6d6870] dark:text-[#a0a0a0] mb-6">
+        Help us get to know you better! Complete your profile to unlock all features.
+      </p>
+
+      <!-- Progress Bar -->
+      <div class="max-w-md mx-auto mb-6">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9]">Progress</span>
+          <span class="text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9]">{{ progressPercentage }}%</span>
+        </div>
+        <div class="w-full bg-[#e2e8f0] dark:bg-[#2a2a2a] rounded-full h-3 overflow-hidden">
+          <div
+            class="h-full rounded-full transition-all duration-500 ease-out"
+            [style.width.%]="progressPercentage"
+            [style.background-color]="getProgressColor()">
+          </div>
+        </div>
+        <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0] mt-2">
+          {{ getMotivationalMessage() }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Main Form Card -->
+    <div class="bg-white dark:bg-[#1e1e1e] rounded-2xl shadow-xl border border-[#edf1f4] dark:border-[#2a2a2a] overflow-hidden">
+      <!-- Step Indicator -->
+      <div class="bg-gradient-to-r from-[#4f5fad] to-[#7826b5] p-6">
+        <div class="flex justify-between items-center">
+          <div class="flex space-x-4">
+            <div
+              *ngFor="let step of [1, 2, 3]"
+              class="flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all"
+              [class.bg-white]="currentStep >= step"
+              [class.text-[#4f5fad]]="currentStep >= step"
+              [class.border-white]="currentStep >= step"
+              [class.border-opacity-50]="currentStep < step"
+              [class.text-white]="currentStep < step">
+              {{ step }}
+            </div>
+          </div>
+          <div class="text-white text-sm">
+            Step {{ currentStep }} of {{ totalSteps }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="p-8">
+        <!-- Step 1: Basic Information -->
+        <div *ngIf="currentStep === 1" class="space-y-6">
+          <h3 class="text-xl font-semibold text-[#4f5fad] dark:text-[#6d78c9] mb-4">
+            Basic Information
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- First Name -->
+            <div>
+              <label class="block text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2">
+                First Name *
+              </label>
+              <input
+                type="text"
+                formControlName="firstName"
+                (input)="calculateProgress()"
+                class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+                [class.border-red-500]="isFieldInvalid('firstName')"
+                placeholder="Enter your first name">
+              <p *ngIf="getFieldError('firstName')" class="text-red-500 text-sm mt-1">
+                {{ getFieldError('firstName') }}
+              </p>
+            </div>
+
+            <!-- Last Name -->
+            <div>
+              <label class="block text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2">
+                Last Name *
+              </label>
+              <input
+                type="text"
+                formControlName="lastName"
+                (input)="calculateProgress()"
+                class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+                [class.border-red-500]="isFieldInvalid('lastName')"
+                placeholder="Enter your last name">
+              <p *ngIf="getFieldError('lastName')" class="text-red-500 text-sm mt-1">
+                {{ getFieldError('lastName') }}
+              </p>
+            </div>
+
+            <!-- Date of Birth -->
+            <div>
+              <label class="block text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2">
+                Date of Birth *
+              </label>
+              <input
+                type="date"
+                formControlName="dateOfBirth"
+                (change)="calculateProgress()"
+                class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+                [class.border-red-500]="isFieldInvalid('dateOfBirth')">
+              <p *ngIf="getFieldError('dateOfBirth')" class="text-red-500 text-sm mt-1">
+                {{ getFieldError('dateOfBirth') }}
+              </p>
+            </div>
+
+            <!-- Phone Number -->
+            <div>
+              <label class="block text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2">
+                Phone Number *
+              </label>
+              <input
+                type="tel"
+                formControlName="phoneNumber"
+                (input)="calculateProgress()"
+                class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+                [class.border-red-500]="isFieldInvalid('phoneNumber')"
+                placeholder="Enter your phone number">
+              <p *ngIf="getFieldError('phoneNumber')" class="text-red-500 text-sm mt-1">
+                {{ getFieldError('phoneNumber') }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Professional Information -->
+        <div *ngIf="currentStep === 2" class="space-y-6">
+          <h3 class="text-xl font-semibold text-[#4f5fad] dark:text-[#6d78c9] mb-4">
+            Professional Information
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Department -->
+            <div>
+              <label class="block text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2">
+                Department *
+              </label>
+              <input
+                type="text"
+                formControlName="department"
+                (input)="calculateProgress()"
+                class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+                [class.border-red-500]="isFieldInvalid('department')"
+                placeholder="e.g., Computer Science, Marketing">
+              <p *ngIf="getFieldError('department')" class="text-red-500 text-sm mt-1">
+                {{ getFieldError('department') }}
+              </p>
+            </div>
+
+            <!-- Position -->
+            <div>
+              <label class="block text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2">
+                Position
+              </label>
+              <input
+                type="text"
+                formControlName="position"
+                (input)="calculateProgress()"
+                class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+                placeholder="e.g., Student, Professor, Developer">
+            </div>
+          </div>
+
+          <!-- Bio -->
+          <div>
+            <label class="block text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2">
+              Bio *
+            </label>
+            <textarea
+              formControlName="bio"
+              (input)="calculateProgress()"
+              rows="4"
+              class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all resize-none"
+              [class.border-red-500]="isFieldInvalid('bio')"
+              placeholder="Tell us about yourself, your interests, and goals..."></textarea>
+            <p *ngIf="getFieldError('bio')" class="text-red-500 text-sm mt-1">
+              {{ getFieldError('bio') }}
+            </p>
+          </div>
+
+          <!-- Skills -->
+          <div>
+            <label class="block text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2">
+              Skills
+            </label>
+            <input
+              type="text"
+              formControlName="skills"
+              (input)="calculateProgress()"
+              class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+              placeholder="e.g., JavaScript, Python, Project Management (comma separated)">
+            <p class="text-xs text-[#6d6870] dark:text-[#a0a0a0] mt-1">
+              Separate skills with commas
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3: Additional Information & Profile Picture -->
+        <div *ngIf="currentStep === 3" class="space-y-6">
+          <h3 class="text-xl font-semibold text-[#4f5fad] dark:text-[#6d78c9] mb-4">
+            Final Touches
+          </h3>
+
+          <!-- Address -->
+          <div>
+            <label class="block text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2">
+              Address
+            </label>
+            <input
+              type="text"
+              formControlName="address"
+              (input)="calculateProgress()"
+              class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+              placeholder="Enter your address">
+          </div>
+
+          <!-- Profile Picture -->
+          <div>
+            <label class="block text-sm font-medium text-[#4f5fad] dark:text-[#6d78c9] mb-2">
+              Profile Picture
+            </label>
+            <div class="flex items-center space-x-4">
+              <div class="flex-shrink-0">
+                <img
+                  [src]="previewUrl || currentUser?.profileImage || 'assets/images/default-profile.png'"
+                  alt="Profile preview"
+                  class="w-20 h-20 rounded-full object-cover border-2 border-[#4f5fad] dark:border-[#6d78c9]">
+              </div>
+              <div class="flex-1">
+                <input
+                  type="file"
+                  (change)="onFileSelected($event)"
+                  accept="image/*"
+                  class="w-full px-4 py-3 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all">
+                <p class="text-xs text-[#6d6870] dark:text-[#a0a0a0] mt-1">
+                  Upload a profile picture to help others recognize you
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between items-center mt-8 pt-6 border-t border-[#edf1f4] dark:border-[#2a2a2a]">
+          <div>
+            <button
+              *ngIf="currentStep > 1"
+              type="button"
+              (click)="previousStep()"
+              class="px-6 py-3 text-[#4f5fad] dark:text-[#6d78c9] border border-[#4f5fad] dark:border-[#6d78c9] rounded-lg hover:bg-[#4f5fad] hover:text-white dark:hover:bg-[#6d78c9] dark:hover:text-white transition-all">
+              Previous
+            </button>
+          </div>
+
+          <div class="flex space-x-4">
+            <button
+              type="button"
+              (click)="skipForNow()"
+              class="px-6 py-3 text-[#6d6870] dark:text-[#a0a0a0] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-all">
+              Skip for now
+            </button>
+
+            <button
+              *ngIf="currentStep < totalSteps"
+              type="button"
+              (click)="nextStep()"
+              class="px-6 py-3 bg-gradient-to-r from-[#4f5fad] to-[#7826b5] text-white rounded-lg hover:from-[#3d4a85] hover:to-[#6a1b9a] transition-all">
+              Next
+            </button>
+
+            <button
+              *ngIf="currentStep === totalSteps"
+              type="submit"
+              [disabled]="isLoading"
+              class="px-8 py-3 bg-gradient-to-r from-[#4f5fad] to-[#7826b5] text-white rounded-lg hover:from-[#3d4a85] hover:to-[#6a1b9a] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+              <span *ngIf="!isLoading">Complete Profile</span>
+              <span *ngIf="isLoading" class="flex items-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Completing...
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div *ngIf="message" class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+          <p class="text-green-800 dark:text-green-200">{{ message }}</p>
+        </div>
+
+        <div *ngIf="error" class="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p class="text-red-800 dark:text-red-200">{{ error }}</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

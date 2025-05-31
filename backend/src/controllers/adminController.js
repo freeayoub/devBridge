@@ -1,5 +1,8 @@
 const User = require("../models/User");
 const Group = require("../models/Group");
+const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+const { sendAccountCredentialsEmail } = require("../utils/sendEmail");
 
 // GET /api/admin/users
 exports.getAllUsers = async (req, res) => {
@@ -13,6 +16,82 @@ exports.getAllUsers = async (req, res) => {
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// POST /api/admin/users - Create new user
+exports.createUser = async (req, res) => {
+  try {
+    const { fullName, email, role = "student" } = req.body;
+
+    // Validation
+    if (!fullName || !email) {
+      return res.status(400).json({
+        message: "Full name and email are required"
+      });
+    }
+
+    if (!["student", "teacher", "admin"].includes(role)) {
+      return res.status(400).json({
+        message: "Invalid role. Must be student, teacher, or admin"
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({
+        message: "User with this email already exists"
+      });
+    }
+
+    // Generate a random password
+    const generatedPassword = crypto.randomBytes(8).toString('hex');
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+    // Create new user
+    const newUser = new User({
+      fullName,
+      email,
+      password: hashedPassword,
+      role,
+      verified: true, // Admin-created users are automatically verified
+      isActive: true,
+      isOnline: false,
+      profileImage: process.env.DEFAULT_IMAGE || 'uploads/default.png'
+    });
+
+    await newUser.save();
+
+    // Get the created user without sensitive data
+    const createdUser = await User.findById(newUser._id)
+      .select("-password -verificationCode -resetCode")
+      .populate("group", "name description");
+
+    console.log(`User created successfully by admin: ${email}`);
+    console.log(`Generated password: ${generatedPassword}`); // For development - remove in production
+
+    // Send account credentials email
+    try {
+      await sendAccountCredentialsEmail(email, fullName, generatedPassword, role);
+      console.log(`Account credentials email sent successfully to ${email}`);
+    } catch (emailError) {
+      console.error(`Failed to send credentials email to ${email}:`, emailError);
+      // Don't fail the user creation if email fails, just log the error
+    }
+
+    res.status(201).json({
+      message: "User created successfully and credentials have been sent to their email",
+      user: createdUser,
+      emailSent: true
+    });
+
+  } catch (err) {
+    console.error("Error creating user:", err);
+    res.status(500).json({
+      message: "Failed to create user",
+      error: err.message
+    });
   }
 };
 

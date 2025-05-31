@@ -17,6 +17,7 @@ export class DashboardComponent implements OnInit {
   currentUser: any = null;
   searchTerm = '';
   filteredUsers: any[] = [];
+  showCreateUserModal = false;
 
   constructor(
     private authService: AuthService,
@@ -225,5 +226,18 @@ export class DashboardComponent implements OnInit {
 
   showUserDetails(userId: string) {
     this.router.navigate(['/admin/userdetails', userId]);
+  }
+
+  openCreateUserModal() {
+    this.showCreateUserModal = true;
+  }
+
+  onModalClose() {
+    this.showCreateUserModal = false;
+  }
+
+  onUserCreated(newUser: any) {
+    this.users.unshift(newUser);
+    this.applyFilters();
   }
 }

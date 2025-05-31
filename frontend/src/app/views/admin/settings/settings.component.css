@@ -1,0 +1,331 @@
+/* Admin Settings Component Styles */
+
+.settings-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #edf1f4 0%, #f8fafc 100%);
+}
+
+.dark .settings-container {
+  background: linear-gradient(135deg, #121212 0%, #1a1a1a 100%);
+}
+
+/* Tab Navigation Styles */
+.tab-nav {
+  border-bottom: 1px solid #edf1f4;
+}
+
+.dark .tab-nav {
+  border-bottom-color: #2a2a2a;
+}
+
+.tab-button {
+  position: relative;
+  padding: 1rem 0.25rem;
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  color: #6d6870;
+}
+
+.dark .tab-button {
+  color: #a0a0a0;
+}
+
+.tab-button:hover {
+  color: #4f5fad;
+}
+
+.dark .tab-button:hover {
+  color: #6d78c9;
+}
+
+.tab-button.active {
+  color: #4f5fad;
+  border-bottom-color: #4f5fad;
+}
+
+.dark .tab-button.active {
+  color: #6d78c9;
+  border-bottom-color: #6d78c9;
+}
+
+/* Form Styles */
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #bdc6cc;
+  border-radius: 0.5rem;
+  background-color: white;
+  color: #6d6870;
+  transition: all 0.2s ease;
+}
+
+.dark .form-input {
+  border-color: #2a2a2a;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #4f5fad;
+  box-shadow: 0 0 0 2px rgba(79, 95, 173, 0.2);
+}
+
+.dark .form-input:focus {
+  border-color: #6d78c9;
+  box-shadow: 0 0 0 2px rgba(109, 120, 201, 0.2);
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-slider {
+  width: 2.75rem;
+  height: 1.5rem;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.dark .toggle-slider {
+  background-color: #374151;
+}
+
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: white;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-input:checked + .toggle-slider {
+  background-color: #4f5fad;
+}
+
+.dark .toggle-input:checked + .toggle-slider {
+  background-color: #6d78c9;
+}
+
+.toggle-input:checked + .toggle-slider::after {
+  transform: translateX(1.25rem);
+}
+
+/* Button Styles */
+.btn-primary {
+  background: linear-gradient(135deg, #3d4a85 0%, #4f5fad 100%);
+  color: white;
+  padding: 0.625rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.dark .btn-primary {
+  background: linear-gradient(135deg, #4f5fad 0%, #6d78c9 100%);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 4px 12px rgba(79, 95, 173, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background-color: rgba(79, 95, 173, 0.1);
+  color: #4f5fad;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.dark .btn-secondary {
+  background-color: rgba(109, 120, 201, 0.1);
+  color: #6d78c9;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(79, 95, 173, 0.2);
+}
+
+.dark .btn-secondary:hover {
+  background-color: rgba(109, 120, 201, 0.2);
+}
+
+/* Card Styles */
+.settings-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(237, 241, 244, 0.5);
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .settings-card {
+  background-color: #1e1e1e;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border-color: #2a2a2a;
+}
+
+.settings-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3d4a85 0%, #4f5fad 100%);
+}
+
+.dark .settings-card::before {
+  background: linear-gradient(90deg, #6d78c9 0%, #4f5fad 100%);
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Loading States */
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 1rem;
+  }
+  
+  .tab-nav {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .tab-button {
+    flex-shrink: 0;
+    margin-right: 2rem;
+  }
+}
+
+/* Focus States */
+.form-input:focus,
+.btn-primary:focus,
+.btn-secondary:focus {
+  outline: 2px solid #4f5fad;
+  outline-offset: 2px;
+}
+
+.dark .form-input:focus,
+.dark .btn-primary:focus,
+.dark .btn-secondary:focus {
+  outline-color: #6d78c9;
+}
+
+/* Success/Error States */
+.input-success {
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* Tooltip Styles */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+}

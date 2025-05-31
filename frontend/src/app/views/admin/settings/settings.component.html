@@ -1,0 +1,316 @@
+<!-- Admin Settings Page -->
+<div class="container-fluid p-4 md:p-6 bg-[#edf1f4] dark:bg-[#121212] min-h-screen relative">
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"></div>
+    <div class="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-gradient-to-tl from-[#4f5fad]/5 to-transparent dark:from-[#6d78c9]/3 dark:to-transparent blur-3xl"></div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="relative z-10">
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+      <div>
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent mb-2">
+          System Settings
+        </h1>
+        <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0]">
+          Configure system-wide settings and preferences
+        </p>
+      </div>
+      
+      <!-- Quick Actions -->
+      <div class="flex items-center gap-3 mt-4 md:mt-0">
+        <button
+          (click)="exportSettings()"
+          class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] hover:bg-[#f8fafc] dark:hover:bg-[#1a1a1a] transition-colors"
+        >
+          <i class="fas fa-download mr-2"></i>Export Settings
+        </button>
+        
+        <label class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] hover:bg-[#f8fafc] dark:hover:bg-[#1a1a1a] transition-colors cursor-pointer">
+          <i class="fas fa-upload mr-2"></i>Import Settings
+          <input type="file" accept=".json" (change)="importSettings($event)" class="hidden" />
+        </label>
+      </div>
+    </div>
+
+    <!-- Settings Tabs -->
+    <div class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative">
+      <!-- Decorative gradient top border -->
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"></div>
+
+      <!-- Tab Navigation -->
+      <div class="border-b border-[#edf1f4] dark:border-[#2a2a2a]">
+        <nav class="flex space-x-8 px-6" aria-label="Tabs">
+          <button
+            *ngFor="let tab of [
+              { id: 'system', label: 'System', icon: 'fas fa-cog' },
+              { id: 'email', label: 'Email', icon: 'fas fa-envelope' },
+              { id: 'security', label: 'Security', icon: 'fas fa-shield-alt' },
+              { id: 'backup', label: 'Backup', icon: 'fas fa-database' }
+            ]"
+            (click)="setActiveTab(tab.id)"
+            [class.border-[#4f5fad]]="activeTab === tab.id"
+            [class.text-[#4f5fad]]="activeTab === tab.id"
+            [class.border-transparent]="activeTab !== tab.id"
+            [class.text-[#6d6870]]="activeTab !== tab.id"
+            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors hover:text-[#4f5fad] dark:hover:text-[#6d78c9] flex items-center"
+          >
+            <i [class]="tab.icon + ' mr-2'"></i>
+            {{ tab.label }}
+          </button>
+        </nav>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="p-6">
+        <!-- System Settings Tab -->
+        <div *ngIf="activeTab === 'system'" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Basic Settings -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-semibold text-[#4f5fad] dark:text-[#6d78c9]">Basic Settings</h3>
+              
+              <div>
+                <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-2">Site Name</label>
+                <input
+                  type="text"
+                  [(ngModel)]="systemSettings.siteName"
+                  class="w-full px-3 py-2 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] transition-all"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-2">Site Description</label>
+                <textarea
+                  [(ngModel)]="systemSettings.siteDescription"
+                  rows="3"
+                  class="w-full px-3 py-2 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] transition-all"
+                ></textarea>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-2">Default User Role</label>
+                <select
+                  [(ngModel)]="systemSettings.defaultUserRole"
+                  class="w-full px-3 py-2 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] transition-all"
+                >
+                  <option value="student">Student</option>
+                  <option value="teacher">Teacher</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- System Controls -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-semibold text-[#4f5fad] dark:text-[#6d78c9]">System Controls</h3>
+              
+              <!-- Toggle Settings -->
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0]">Maintenance Mode</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="systemSettings.maintenanceMode"
+                      class="sr-only peer"
+                    />
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#4f5fad]/20 dark:peer-focus:ring-[#6d78c9]/20 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#4f5fad] dark:peer-checked:bg-[#6d78c9]"></div>
+                  </label>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0]">Allow Registration</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="systemSettings.allowRegistration"
+                      class="sr-only peer"
+                    />
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#4f5fad]/20 dark:peer-focus:ring-[#6d78c9]/20 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#4f5fad] dark:peer-checked:bg-[#6d78c9]"></div>
+                  </label>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0]">Email Verification Required</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="systemSettings.emailVerificationRequired"
+                      class="sr-only peer"
+                    />
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#4f5fad]/20 dark:peer-focus:ring-[#6d78c9]/20 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#4f5fad] dark:peer-checked:bg-[#6d78c9]"></div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Quick Actions -->
+              <div class="pt-4 space-y-2">
+                <button
+                  (click)="clearCache()"
+                  class="w-full px-3 py-2 text-sm font-medium rounded-lg bg-[#4f5fad]/10 text-[#4f5fad] hover:bg-[#4f5fad]/20 transition-colors"
+                >
+                  <i class="fas fa-broom mr-2"></i>Clear System Cache
+                </button>
+                
+                <button
+                  (click)="restartSystem()"
+                  class="w-full px-3 py-2 text-sm font-medium rounded-lg bg-[#ff6b69]/10 text-[#ff6b69] hover:bg-[#ff6b69]/20 transition-colors"
+                >
+                  <i class="fas fa-power-off mr-2"></i>Restart System
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save Button -->
+          <div class="flex justify-end pt-6 border-t border-[#edf1f4] dark:border-[#2a2a2a]">
+            <button
+              (click)="saveSettings('System')"
+              [disabled]="saving"
+              class="px-6 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#4f5fad] dark:to-[#6d78c9] hover:shadow-lg transition-all disabled:opacity-50"
+            >
+              <i *ngIf="!saving" class="fas fa-save mr-2"></i>
+              <i *ngIf="saving" class="fas fa-spinner fa-spin mr-2"></i>
+              {{ saving ? 'Saving...' : 'Save System Settings' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Email Settings Tab -->
+        <div *ngIf="activeTab === 'email'" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- SMTP Configuration -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-semibold text-[#4f5fad] dark:text-[#6d78c9]">SMTP Configuration</h3>
+              
+              <div>
+                <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-2">SMTP Host</label>
+                <input
+                  type="text"
+                  [(ngModel)]="emailSettings.smtpHost"
+                  placeholder="smtp.gmail.com"
+                  class="w-full px-3 py-2 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] transition-all"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-2">SMTP Port</label>
+                <input
+                  type="number"
+                  [(ngModel)]="emailSettings.smtpPort"
+                  class="w-full px-3 py-2 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] transition-all"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-2">Username</label>
+                <input
+                  type="text"
+                  [(ngModel)]="emailSettings.smtpUsername"
+                  class="w-full px-3 py-2 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] transition-all"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-2">Password</label>
+                <input
+                  type="password"
+                  [(ngModel)]="emailSettings.smtpPassword"
+                  class="w-full px-3 py-2 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] transition-all"
+                />
+              </div>
+            </div>
+
+            <!-- Email Settings -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-semibold text-[#4f5fad] dark:text-[#6d78c9]">Email Settings</h3>
+              
+              <div>
+                <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-2">From Email</label>
+                <input
+                  type="email"
+                  [(ngModel)]="emailSettings.fromEmail"
+                  placeholder="noreply@devbridge.com"
+                  class="w-full px-3 py-2 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] transition-all"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-2">From Name</label>
+                <input
+                  type="text"
+                  [(ngModel)]="emailSettings.fromName"
+                  class="w-full px-3 py-2 rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] transition-all"
+                />
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0]">Use Secure Connection</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="emailSettings.smtpSecure"
+                    class="sr-only peer"
+                  />
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#4f5fad]/20 dark:peer-focus:ring-[#6d78c9]/20 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#4f5fad] dark:peer-checked:bg-[#6d78c9]"></div>
+                </label>
+              </div>
+
+              <!-- Test Email Actions -->
+              <div class="pt-4 space-y-2">
+                <button
+                  (click)="testEmailConnection()"
+                  class="w-full px-3 py-2 text-sm font-medium rounded-lg bg-[#4f5fad]/10 text-[#4f5fad] hover:bg-[#4f5fad]/20 transition-colors"
+                >
+                  <i class="fas fa-plug mr-2"></i>Test Connection
+                </button>
+                
+                <button
+                  (click)="sendTestEmail()"
+                  class="w-full px-3 py-2 text-sm font-medium rounded-lg bg-[#00d4aa]/10 text-[#00d4aa] hover:bg-[#00d4aa]/20 transition-colors"
+                >
+                  <i class="fas fa-paper-plane mr-2"></i>Send Test Email
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save Button -->
+          <div class="flex justify-end pt-6 border-t border-[#edf1f4] dark:border-[#2a2a2a]">
+            <button
+              (click)="saveSettings('Email')"
+              [disabled]="saving"
+              class="px-6 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#4f5fad] dark:to-[#6d78c9] hover:shadow-lg transition-all disabled:opacity-50"
+            >
+              <i *ngIf="!saving" class="fas fa-save mr-2"></i>
+              <i *ngIf="saving" class="fas fa-spinner fa-spin mr-2"></i>
+              {{ saving ? 'Saving...' : 'Save Email Settings' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Security Settings Tab -->
+        <div *ngIf="activeTab === 'security'" class="space-y-6">
+          <!-- Security content will be added here -->
+          <div class="text-center py-12">
+            <i class="fas fa-shield-alt text-4xl text-[#4f5fad] dark:text-[#6d78c9] mb-4"></i>
+            <h3 class="text-lg font-semibold text-[#4f5fad] dark:text-[#6d78c9] mb-2">Security Settings</h3>
+            <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0]">Configure security policies and access controls</p>
+          </div>
+        </div>
+
+        <!-- Backup Settings Tab -->
+        <div *ngIf="activeTab === 'backup'" class="space-y-6">
+          <!-- Backup content will be added here -->
+          <div class="text-center py-12">
+            <i class="fas fa-database text-4xl text-[#4f5fad] dark:text-[#6d78c9] mb-4"></i>
+            <h3 class="text-lg font-semibold text-[#4f5fad] dark:text-[#6d78c9] mb-2">Backup & Restore</h3>
+            <p class="text-sm text-[#6d6870] dark:text-[#a0a0a0]">Manage system backups and data recovery</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

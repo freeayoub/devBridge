@@ -5,6 +5,7 @@ import { FrontLayoutComponent } from './front-layout/front-layout.component';
 import { AuthAdminLayoutComponent } from './auth-admin-layout/auth-admin-layout.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { SharedModule } from '../shared/shared.module';
 
 
 
@@ -17,7 +18,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     RouterModule,
-    FormsModule
+    FormsModule,
+    SharedModule
   ]
 })
 export class LayoutsModule { }

@@ -15,6 +15,7 @@ import { ConnectionStatusModule } from './components/connection-status/connectio
 import { GraphqlStatusModule } from './components/graphql-status/graphql-status.module';
 import { VoiceMessageModule } from './components/voice-message/voice-message.module';
 import { SharedModule } from './shared/shared.module';
+
 // Factory simplifiée sans injection de JwtHelperService
 export function jwtOptionsFactory() {
   return {

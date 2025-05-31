@@ -3,6 +3,7 @@ const router = express.Router();
 const { auth, authorizeRoles } = require("../middlewares/auth");
 const {
   getAllUsers,
+  createUser,
   updateUserRole,
   updateUserGroup,
   toggleUserActivation,
@@ -11,6 +12,9 @@ const User = require("../models/User"); // ✅ required
 
 // GET all users
 router.get("/users", auth, authorizeRoles("admin"), getAllUsers);
+
+// POST create new user
+router.post("/users", auth, authorizeRoles("admin"), createUser);
 
 // Update user role
 router.put("/users/:id/role", auth, authorizeRoles("admin"), updateUserRole);

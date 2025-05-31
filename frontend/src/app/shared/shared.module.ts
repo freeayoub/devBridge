@@ -6,10 +6,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AiChatbotComponent } from './components/ai-chatbot/ai-chatbot.component';
+import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 
 @NgModule({
   declarations: [
-    AiChatbotComponent
+    AiChatbotComponent,
+    ToastContainerComponent
   ],
   imports: [
     CommonModule,
@@ -20,6 +22,7 @@ import { AiChatbotComponent } from './components/ai-chatbot/ai-chatbot.component
   ],
   exports: [
     AiChatbotComponent,
+    ToastContainerComponent,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,

@@ -1,0 +1,90 @@
+<!-- Modal Backdrop -->
+<div class="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm z-40"></div>
+
+<!-- Modal Content -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-xl w-full max-w-md relative">
+    <!-- Modal Header -->
+    <div class="p-6 border-b border-[#edf1f4]/50 dark:border-[#2a2a2a]">
+      <h3 class="text-xl font-bold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent">
+        Create New User
+      </h3>
+      <button 
+        (click)="close()"
+        class="absolute top-4 right-4 text-[#6d6870] dark:text-[#a0a0a0] hover:text-[#4f5fad] dark:hover:text-[#6d78c9] transition-colors"
+      >
+        <i class="fas fa-times text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6">
+      <!-- Password Info Message -->
+      <div class="mb-6 p-4 bg-[#4f5fad]/10 dark:bg-[#6d78c9]/5 rounded-lg">
+        <p class="text-sm text-[#4f5fad] dark:text-[#6d78c9]">
+          <i class="fas fa-info-circle mr-2"></i>
+          A secure password will be automatically generated and sent to the user's email address.
+        </p>
+      </div>
+
+      <form [formGroup]="createUserForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- Full Name -->
+        <div>
+          <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-1">
+            Full Name
+          </label>
+          <input
+            type="text"
+            formControlName="fullName"
+            class="w-full px-3 py-2 text-sm rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+            [ngClass]="{'border-[#ff6b69] dark:border-[#ff8785] focus:border-[#ff6b69] dark:focus:border-[#ff8785] focus:ring-[#ff6b69]/20 dark:focus:ring-[#ff8785]/20': createUserForm.get('fullName')?.invalid && createUserForm.get('fullName')?.touched}"
+          />
+          <div *ngIf="createUserForm.get('fullName')?.invalid && createUserForm.get('fullName')?.touched" class="mt-1 text-xs text-[#ff6b69] dark:text-[#ff8785]">
+            Full name is required
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            formControlName="email"
+            class="w-full px-3 py-2 text-sm rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+            [ngClass]="{'border-[#ff6b69] dark:border-[#ff8785] focus:border-[#ff6b69] dark:focus:border-[#ff8785] focus:ring-[#ff6b69]/20 dark:focus:ring-[#ff8785]/20': createUserForm.get('email')?.invalid && createUserForm.get('email')?.touched}"
+          />
+          <div *ngIf="createUserForm.get('email')?.invalid && createUserForm.get('email')?.touched" class="mt-1 text-xs text-[#ff6b69] dark:text-[#ff8785]">
+            Please enter a valid email address
+          </div>
+        </div>
+
+        <!-- Role -->
+        <div>
+          <label class="block text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] mb-1">
+            Role
+          </label>
+          <select
+            formControlName="role"
+            class="w-full px-3 py-2 text-sm rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-[#6d6870] dark:text-[#e0e0e0] focus:outline-none focus:border-[#4f5fad] dark:focus:border-[#6d78c9] focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all"
+          >
+            <option *ngFor="let role of roles" [value]="role">
+              {{ role | titlecase }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="createUserForm.invalid || loading"
+          class="w-full px-4 py-2.5 text-sm rounded-lg bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] text-white font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#4f5fad]/20 dark:focus:ring-[#6d78c9]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        >
+          <i *ngIf="loading" class="fas fa-spinner fa-spin mr-2"></i>
+          {{ loading ? 'Creating...' : 'Create User' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div> 

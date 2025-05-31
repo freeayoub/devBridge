@@ -1,0 +1,74 @@
+/* Toast Container Styles */
+.toast-item {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.toast-item.removing {
+  animation: slideOutRight 0.3s ease-in;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Toast Type Styles */
+.toast-success {
+  @apply bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200;
+}
+
+.toast-success i {
+  @apply text-green-600 dark:text-green-400;
+}
+
+.toast-error {
+  @apply bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200;
+}
+
+.toast-error i {
+  @apply text-red-600 dark:text-red-400;
+}
+
+.toast-warning {
+  @apply bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200;
+}
+
+.toast-warning i {
+  @apply text-yellow-600 dark:text-yellow-400;
+}
+
+.toast-info {
+  @apply bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200;
+}
+
+.toast-info i {
+  @apply text-blue-600 dark:text-blue-400;
+}
+
+/* Hover effects */
+.toast-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Close button styles */
+.toast-item button {
+  @apply hover:bg-black/10 dark:hover:bg-white/10 rounded-full p-1 transition-colors;
+}

@@ -1,0 +1,34 @@
+<!-- Toast Container -->
+<div class="fixed top-4 right-4 z-50 space-y-2">
+  <div
+    *ngFor="let toast of toasts; trackBy: trackByToastId"
+    class="toast-item transform transition-all duration-300 ease-in-out"
+    [ngClass]="getToastClass(toast.type)"
+  >
+    <div class="flex items-start p-4 rounded-lg shadow-lg backdrop-blur-sm border max-w-sm">
+      <!-- Icon -->
+      <div class="flex-shrink-0 mr-3">
+        <i [ngClass]="getToastIcon(toast.type)" class="text-lg"></i>
+      </div>
+      
+      <!-- Content -->
+      <div class="flex-1 min-w-0">
+        <div *ngIf="toast.title" class="text-sm font-medium mb-1">
+          {{ toast.title }}
+        </div>
+        <div class="text-sm">
+          {{ toast.message }}
+        </div>
+      </div>
+      
+      <!-- Close button -->
+      <button
+        type="button"
+        (click)="removeToast(toast.id)"
+        class="flex-shrink-0 ml-3 text-sm opacity-70 hover:opacity-100 transition-opacity"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+</div>
