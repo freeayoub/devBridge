@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ElementRef } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { Router } from '@angular/router';
@@ -18,11 +18,32 @@ export class DashboardComponent implements OnInit {
   searchTerm = '';
   filteredUsers: any[] = [];
   showCreateUserModal = false;
+  showExportDropdown = false;
+
+  // Enhanced statistics
+  stats = {
+    totalUsers: 0,
+    activeUsers: 0,
+    inactiveUsers: 0,
+    verifiedUsers: 0,
+    onlineUsers: 0,
+    recentRegistrations: 0,
+    studentsCount: 0,
+    teachersCount: 0,
+    adminsCount: 0,
+    usersThisMonth: 0,
+    usersThisWeek: 0,
+    averageUsersPerDay: 0
+  };
+
+  recentActivities: any[] = [];
+  systemAlerts: any[] = [];
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private elementRef: ElementRef
   ) {}
 
   ngOnInit(): void {
@@ -51,6 +72,9 @@ export class DashboardComponent implements OnInit {
       next: (res: any) => {
         this.users = res;
         this.filteredUsers = [...this.users];
+        this.calculateStatistics();
+        this.generateRecentActivities();
+        this.checkSystemAlerts();
         this.loading = false;
       },
       error: (err) => {
@@ -219,6 +243,140 @@ export class DashboardComponent implements OnInit {
     return this.users.filter((u) => u.isActive === false).length;
   }
 
+  calculateStatistics(): void {
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    this.stats = {
+      totalUsers: this.users.length,
+      activeUsers: this.users.filter(u => u.isActive !== false).length,
+      inactiveUsers: this.users.filter(u => u.isActive === false).length,
+      verifiedUsers: this.users.filter(u => u.verified === true).length,
+      onlineUsers: this.users.filter(u => u.isOnline === true).length,
+      studentsCount: this.users.filter(u => u.role === 'student').length,
+      teachersCount: this.users.filter(u => u.role === 'teacher').length,
+      adminsCount: this.users.filter(u => u.role === 'admin').length,
+      recentRegistrations: this.users.filter(u => {
+        const createdAt = new Date(u.createdAt);
+        return createdAt >= oneWeekAgo;
+      }).length,
+      usersThisWeek: this.users.filter(u => {
+        const createdAt = new Date(u.createdAt);
+        return createdAt >= oneWeekAgo;
+      }).length,
+      usersThisMonth: this.users.filter(u => {
+        const createdAt = new Date(u.createdAt);
+        return createdAt >= oneMonthAgo;
+      }).length,
+      averageUsersPerDay: this.users.length > 0 ? Math.round(this.users.length / 30) : 0
+    };
+  }
+
+  generateRecentActivities(): void {
+    this.recentActivities = [];
+
+    // Get recent user registrations
+    const recentUsers = this.users
+      .filter(u => u.createdAt)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5);
+
+    recentUsers.forEach(user => {
+      this.recentActivities.push({
+        type: 'registration',
+        message: `New user registered: ${user.fullName || user.username}`,
+        time: this.getTimeAgo(user.createdAt),
+        icon: 'fas fa-user-plus',
+        color: 'text-green-600'
+      });
+    });
+
+    // Get recently activated/deactivated users
+    const recentlyModified = this.users
+      .filter(u => u.updatedAt && u.updatedAt !== u.createdAt)
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+      .slice(0, 3);
+
+    recentlyModified.forEach(user => {
+      const action = user.isActive ? 'activated' : 'deactivated';
+      this.recentActivities.push({
+        type: 'status_change',
+        message: `User ${action}: ${user.fullName || user.username}`,
+        time: this.getTimeAgo(user.updatedAt),
+        icon: user.isActive ? 'fas fa-user-check' : 'fas fa-user-slash',
+        color: user.isActive ? 'text-green-600' : 'text-red-600'
+      });
+    });
+
+    // Sort all activities by time
+    this.recentActivities.sort((a, b) => {
+      // This is a simplified sort - in a real app you'd want proper timestamp comparison
+      return 0;
+    });
+
+    // Limit to 8 most recent activities
+    this.recentActivities = this.recentActivities.slice(0, 8);
+  }
+
+  checkSystemAlerts(): void {
+    this.systemAlerts = [];
+
+    // Check for unverified users
+    const unverifiedCount = this.users.filter(u => !u.verified).length;
+    if (unverifiedCount > 0) {
+      this.systemAlerts.push({
+        type: 'warning',
+        message: `${unverifiedCount} users need email verification`,
+        icon: 'fas fa-exclamation-triangle',
+        color: 'text-yellow-600'
+      });
+    }
+
+    // Check for inactive users
+    const inactiveCount = this.stats.inactiveUsers;
+    if (inactiveCount > this.stats.activeUsers * 0.3) {
+      this.systemAlerts.push({
+        type: 'info',
+        message: `High number of inactive users (${inactiveCount})`,
+        icon: 'fas fa-info-circle',
+        color: 'text-blue-600'
+      });
+    }
+
+    // Check for admin count
+    if (this.stats.adminsCount < 2) {
+      this.systemAlerts.push({
+        type: 'warning',
+        message: 'Consider adding more administrators',
+        icon: 'fas fa-user-shield',
+        color: 'text-orange-600'
+      });
+    }
+
+    // Check for recent growth
+    if (this.stats.recentRegistrations > 10) {
+      this.systemAlerts.push({
+        type: 'success',
+        message: `${this.stats.recentRegistrations} new users this week!`,
+        icon: 'fas fa-chart-line',
+        color: 'text-green-600'
+      });
+    }
+  }
+
+  getTimeAgo(dateString: string): string {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return `${Math.floor(diffInSeconds / 2592000)}mo ago`;
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/admin/login']);
@@ -239,5 +397,63 @@ export class DashboardComponent implements OnInit {
   onUserCreated(newUser: any) {
     this.users.unshift(newUser);
     this.applyFilters();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    const exportDropdown = this.elementRef.nativeElement.querySelector('[data-export-dropdown]');
+
+    if (this.showExportDropdown && exportDropdown && !exportDropdown.contains(target)) {
+      this.showExportDropdown = false;
+    }
+  }
+
+  toggleExportDropdown() {
+    this.showExportDropdown = !this.showExportDropdown;
+  }
+
+  exportUsers(format: string) {
+    this.showExportDropdown = false;
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.toastService.showError('Authentication token not found');
+      return;
+    }
+
+    // Use current search term to export filtered results
+    const searchFilter = this.searchTerm.trim();
+
+    this.toastService.showInfo(`Preparing ${format.toUpperCase()} export...`);
+
+    this.authService.exportUsers(format, searchFilter, token).subscribe({
+      next: (blob: Blob) => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+
+        // Generate filename with timestamp
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const filename = `users-export-${timestamp}.${format}`;
+        link.download = filename;
+
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Clean up
+        window.URL.revokeObjectURL(url);
+
+        const userCount = searchFilter ? this.filteredUsers.length : this.users.length;
+        this.toastService.showSuccess(`Successfully exported ${userCount} users as ${format.toUpperCase()}`);
+      },
+      error: (err) => {
+        console.error('Export error:', err);
+        this.toastService.showError(err.error?.message || `Failed to export users as ${format.toUpperCase()}`);
+      }
+    });
   }
 }

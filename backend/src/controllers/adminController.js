@@ -3,6 +3,9 @@ const Group = require("../models/Group");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const { sendAccountCredentialsEmail } = require("../utils/sendEmail");
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const path = require('path');
+const fs = require('fs');
 
 // GET /api/admin/users
 exports.getAllUsers = async (req, res) => {
@@ -194,6 +197,127 @@ exports.updateUserGroup = async (req, res) => {
       user: updatedUser,
     });
   } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// GET /api/admin/users/export - Export users to file
+exports.exportUsers = async (req, res) => {
+  try {
+    const { format = 'csv', search = '' } = req.query;
+
+    console.log("Export request by:", req.user);
+    console.log("Export format:", format);
+    console.log("Search filter:", search);
+
+    // Build query based on search filter
+    let query = {};
+    if (search) {
+      query = {
+        $or: [
+          { fullName: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+          { username: { $regex: search, $options: 'i' } },
+          { role: { $regex: search, $options: 'i' } }
+        ]
+      };
+    }
+
+    // Get users data
+    const users = await User.find(query)
+      .select("-password -verificationCode -resetCode")
+      .populate("group", "name description")
+      .sort({ createdAt: -1 });
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: "No users found to export" });
+    }
+
+    // Prepare data for export
+    const exportData = users.map(user => ({
+      id: user._id,
+      fullName: user.fullName || '',
+      username: user.username || '',
+      email: user.email || '',
+      role: user.role || '',
+      group: user.group ? user.group.name : '',
+      isActive: user.isActive ? 'Active' : 'Inactive',
+      verified: user.verified ? 'Yes' : 'No',
+      isOnline: user.isOnline ? 'Online' : 'Offline',
+      createdAt: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '',
+      lastActive: user.lastActive ? new Date(user.lastActive).toLocaleDateString() : 'Never'
+    }));
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+
+    if (format === 'json') {
+      // Export as JSON
+      const filename = `users-export-${timestamp}.json`;
+
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+      return res.json({
+        exportInfo: {
+          totalUsers: exportData.length,
+          exportDate: new Date().toISOString(),
+          exportedBy: req.user.email || req.user.username
+        },
+        users: exportData
+      });
+    } else {
+      // Export as CSV (default)
+      const filename = `users-export-${timestamp}.csv`;
+      const tempFilePath = path.join(__dirname, '../../temp', filename);
+
+      // Ensure temp directory exists
+      const tempDir = path.dirname(tempFilePath);
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      // Define CSV headers
+      const csvWriter = createCsvWriter({
+        path: tempFilePath,
+        header: [
+          { id: 'id', title: 'ID' },
+          { id: 'fullName', title: 'Full Name' },
+          { id: 'username', title: 'Username' },
+          { id: 'email', title: 'Email' },
+          { id: 'role', title: 'Role' },
+          { id: 'group', title: 'Group' },
+          { id: 'isActive', title: 'Status' },
+          { id: 'verified', title: 'Verified' },
+          { id: 'isOnline', title: 'Online Status' },
+          { id: 'createdAt', title: 'Created Date' },
+          { id: 'lastActive', title: 'Last Active' }
+        ]
+      });
+
+      // Write CSV file
+      await csvWriter.writeRecords(exportData);
+
+      // Send file as download
+      res.download(tempFilePath, filename, (err) => {
+        if (err) {
+          console.error('Error sending file:', err);
+          if (!res.headersSent) {
+            res.status(500).json({ message: "Error downloading file" });
+          }
+        }
+
+        // Clean up temp file after download
+        setTimeout(() => {
+          if (fs.existsSync(tempFilePath)) {
+            fs.unlinkSync(tempFilePath);
+            console.log(`Temp file ${filename} cleaned up`);
+          }
+        }, 5000);
+      });
+    }
+
+  } catch (err) {
+    console.error("Export users error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };

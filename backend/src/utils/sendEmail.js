@@ -432,6 +432,244 @@ exports.sendWelcomeEmail = async (email, userName) => {
   }
 };
 
+// Send reunion notification to participants
+exports.sendReunionNotification = async (email, reunionData, createur) => {
+  if (!transporter) {
+    console.log(`[MOCK EMAIL] Reunion notification would be sent to ${email}`);
+    console.log(`[MOCK EMAIL] Reunion: ${reunionData.titre} on ${reunionData.date}`);
+    return;
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const content = `
+    <div class="message">
+      <p>🎉 <strong>Nouvelle réunion programmée!</strong></p>
+      <p>Vous avez été invité(e) à participer à une réunion organisée par <strong>${createur.username}</strong>.</p>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #f8f9ff 0%, #e8e9ff 100%); border-radius: 12px; padding: 25px; margin: 30px 0;">
+      <h3 style="color: #4f5fad; margin-bottom: 20px; text-align: center;">📅 Détails de la réunion</h3>
+
+      <div style="background: white; border-radius: 8px; padding: 20px; margin: 15px 0; border-left: 4px solid #4f5fad;">
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Titre:</strong>
+          <div style="color: #4f5fad; font-size: 18px; font-weight: 600; margin-top: 5px;">${reunionData.titre}</div>
+        </div>
+
+        ${reunionData.description ? `
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Description:</strong>
+          <div style="color: #5a6c7d; margin-top: 5px;">${reunionData.description}</div>
+        </div>
+        ` : ''}
+
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Date:</strong>
+          <div style="color: #27ae60; font-weight: 600; margin-top: 5px;">${formatDate(reunionData.date)}</div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Heure:</strong>
+          <div style="color: #e74c3c; font-weight: 600; margin-top: 5px;">${reunionData.heureDebut} - ${reunionData.heureFin}</div>
+        </div>
+
+        ${reunionData.lieu ? `
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Lieu:</strong>
+          <div style="color: #8e44ad; margin-top: 5px;">${reunionData.lieu}</div>
+        </div>
+        ` : ''}
+
+        ${reunionData.lienVisio ? `
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Lien de visioconférence:</strong>
+          <div style="margin-top: 5px;">
+            <a href="${reunionData.lienVisio}" style="color: #3498db; text-decoration: none; background: #ecf0f1; padding: 8px 12px; border-radius: 4px; display: inline-block;">${reunionData.lienVisio}</a>
+          </div>
+        </div>
+        ` : ''}
+
+        <div>
+          <strong style="color: #2c3e50;">Organisateur:</strong>
+          <div style="color: #34495e; margin-top: 5px;">${createur.username} (${createur.email})</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #e8f5e8; border: 1px solid #c3e6c3; border-radius: 8px; padding: 20px; margin: 20px 0;">
+      <h4 style="color: #27ae60; margin-bottom: 10px;">📝 Informations importantes</h4>
+      <ul style="color: #2d5a2d; margin: 0; padding-left: 20px;">
+        <li>Veuillez confirmer votre présence auprès de l'organisateur</li>
+        <li>Ajoutez cet événement à votre calendrier</li>
+        <li>Préparez les documents nécessaires à l'avance</li>
+        <li>En cas d'empêchement, prévenez l'organisateur</li>
+      </ul>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <p style="color: #5a6c7d; margin-bottom: 20px;">Nous vous attendons avec impatience!</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"DevBridge Réunions" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `📅 Nouvelle réunion: ${reunionData.titre} - ${formatDate(reunionData.date)}`,
+      html: getEmailTemplate("Invitation à une réunion", content, "Voir dans DevBridge", process.env.FRONTEND_URL || "http://localhost:4200/reunions"),
+    });
+    console.log(`Reunion notification email sent to ${email}`);
+  } catch (error) {
+    console.error(`Failed to send reunion notification email to ${email}:`, error);
+    throw error;
+  }
+};
+
+// Send reunion update notification to participants
+exports.sendReunionUpdateNotification = async (email, reunionData, createur, changes) => {
+  if (!transporter) {
+    console.log(`[MOCK EMAIL] Reunion update notification would be sent to ${email}`);
+    console.log(`[MOCK EMAIL] Reunion: ${reunionData.titre} - Changes: ${Object.keys(changes).join(', ')}`);
+    return;
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const formatChanges = (changes) => {
+    const changeLabels = {
+      titre: 'Titre',
+      description: 'Description',
+      date: 'Date',
+      heureDebut: 'Heure de début',
+      heureFin: 'Heure de fin',
+      lieu: 'Lieu',
+      lienVisio: 'Lien de visioconférence'
+    };
+
+    return Object.keys(changes).map(key => {
+      const label = changeLabels[key] || key;
+      const oldValue = changes[key].old;
+      const newValue = changes[key].new;
+
+      if (key === 'date') {
+        return `<li><strong>${label}:</strong> ${formatDate(oldValue)} → ${formatDate(newValue)}</li>`;
+      }
+
+      return `<li><strong>${label}:</strong> ${oldValue || 'Non défini'} → ${newValue || 'Non défini'}</li>`;
+    }).join('');
+  };
+
+  const content = `
+    <div class="message">
+      <p>🔄 <strong>Réunion mise à jour!</strong></p>
+      <p>La réunion "<strong>${reunionData.titre}</strong>" organisée par <strong>${createur.username}</strong> a été modifiée.</p>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-radius: 12px; padding: 25px; margin: 30px 0;">
+      <h3 style="color: #f57c00; margin-bottom: 20px; text-align: center;">⚠️ Modifications apportées</h3>
+
+      <div style="background: white; border-radius: 8px; padding: 20px; margin: 15px 0; border-left: 4px solid #f57c00;">
+        <ul style="color: #5a6c7d; margin: 0; padding-left: 20px;">
+          ${formatChanges(changes)}
+        </ul>
+      </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #f8f9ff 0%, #e8e9ff 100%); border-radius: 12px; padding: 25px; margin: 30px 0;">
+      <h3 style="color: #4f5fad; margin-bottom: 20px; text-align: center;">📅 Détails actuels de la réunion</h3>
+
+      <div style="background: white; border-radius: 8px; padding: 20px; margin: 15px 0; border-left: 4px solid #4f5fad;">
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Titre:</strong>
+          <div style="color: #4f5fad; font-size: 18px; font-weight: 600; margin-top: 5px;">${reunionData.titre}</div>
+        </div>
+
+        ${reunionData.description ? `
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Description:</strong>
+          <div style="color: #5a6c7d; margin-top: 5px;">${reunionData.description}</div>
+        </div>
+        ` : ''}
+
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Date:</strong>
+          <div style="color: #27ae60; font-weight: 600; margin-top: 5px;">${formatDate(reunionData.date)}</div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Heure:</strong>
+          <div style="color: #e74c3c; font-weight: 600; margin-top: 5px;">${reunionData.heureDebut} - ${reunionData.heureFin}</div>
+        </div>
+
+        ${reunionData.lieu ? `
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Lieu:</strong>
+          <div style="color: #8e44ad; margin-top: 5px;">${reunionData.lieu}</div>
+        </div>
+        ` : ''}
+
+        ${reunionData.lienVisio ? `
+        <div style="margin-bottom: 15px;">
+          <strong style="color: #2c3e50;">Lien de visioconférence:</strong>
+          <div style="margin-top: 5px;">
+            <a href="${reunionData.lienVisio}" style="color: #3498db; text-decoration: none; background: #ecf0f1; padding: 8px 12px; border-radius: 4px; display: inline-block;">${reunionData.lienVisio}</a>
+          </div>
+        </div>
+        ` : ''}
+
+        <div>
+          <strong style="color: #2c3e50;">Organisateur:</strong>
+          <div style="color: #34495e; margin-top: 5px;">${createur.username} (${createur.email})</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 20px 0;">
+      <h4 style="color: #856404; margin-bottom: 10px;">📝 Action requise</h4>
+      <ul style="color: #856404; margin: 0; padding-left: 20px;">
+        <li>Vérifiez votre disponibilité pour les nouvelles informations</li>
+        <li>Mettez à jour votre calendrier avec les nouvelles données</li>
+        <li>Contactez l'organisateur si vous avez des questions</li>
+        <li>Confirmez votre présence si nécessaire</li>
+      </ul>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <p style="color: #5a6c7d; margin-bottom: 20px;">Merci de prendre note de ces modifications!</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"DevBridge Réunions" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `🔄 Réunion modifiée: ${reunionData.titre} - ${formatDate(reunionData.date)}`,
+      html: getEmailTemplate("Réunion mise à jour", content, "Voir dans DevBridge", process.env.FRONTEND_URL || "http://localhost:4200/reunions"),
+    });
+    console.log(`Reunion update notification email sent to ${email}`);
+  } catch (error) {
+    console.error(`Failed to send reunion update notification email to ${email}:`, error);
+    throw error;
+  }
+};
+
 // Function to preview email templates (for testing)
 exports.getEmailPreview = (type, code = "123456", userName = "John Doe") => {
   let content = "";

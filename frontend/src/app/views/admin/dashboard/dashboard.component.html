@@ -139,10 +139,10 @@
       </div>
     </div>
 
-    <!-- Stats Cards -->
+    <!-- Enhanced Stats Cards -->
     <div
       *ngIf="!loading && filteredUsers.length > 0"
-      class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
     >
       <!-- Total Users Card -->
       <div
@@ -169,7 +169,10 @@
               <div
                 class="mt-1 text-2xl font-semibold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent"
               >
-                {{ users.length }}
+                {{ stats.totalUsers }}
+              </div>
+              <div class="text-xs text-[#6d6870] dark:text-[#a0a0a0] mt-1">
+                +{{ stats.usersThisWeek }} this week
               </div>
             </div>
             <div class="ml-4 relative">
@@ -235,7 +238,7 @@
                     ></div>
                   </div>
                   <span class="text-[#2a5a03] dark:text-[#afcf75] font-medium"
-                    >{{ getActiveCount() }} Active</span
+                    >{{ stats.activeUsers }} Active</span
                   >
                 </div>
                 <div class="flex items-center">
@@ -243,7 +246,7 @@
                     class="w-2 h-2 rounded-full bg-[#ff6b69] dark:bg-[#ff8785] mr-1.5"
                   ></div>
                   <span class="text-[#ff6b69] dark:text-[#ff8785] font-medium"
-                    >{{ getInactiveCount() }} Inactive</span
+                    >{{ stats.inactiveUsers }} Inactive</span
                   >
                 </div>
               </div>
@@ -271,7 +274,7 @@
               <div
                 class="bg-gradient-to-r from-[#2a5a03] to-[#afcf75] dark:from-[#2a5a03] dark:to-[#afcf75] h-2.5 relative"
                 [style.width.%]="
-                  users.length ? (getActiveCount() / users.length) * 100 : 0
+                  stats.totalUsers ? (stats.activeUsers / stats.totalUsers) * 100 : 0
                 "
               >
                 <div
@@ -281,7 +284,7 @@
               <div
                 class="bg-gradient-to-r from-[#ff6b69] to-[#ff8785] dark:from-[#ff6b69] dark:to-[#ff8785] h-2.5 relative"
                 [style.width.%]="
-                  users.length ? (getInactiveCount() / users.length) * 100 : 0
+                  stats.totalUsers ? (stats.inactiveUsers / stats.totalUsers) * 100 : 0
                 "
               >
                 <div
@@ -321,7 +324,7 @@
                     class="w-2 h-2 rounded-full bg-[#4a89ce] dark:bg-[#4a89ce] mr-1.5"
                   ></div>
                   <span class="text-[#4a89ce] dark:text-[#4a89ce] font-medium"
-                    >{{ getStudentCount() }} Students</span
+                    >{{ stats.studentsCount }} Students</span
                   >
                 </div>
                 <div class="flex items-center">
@@ -329,7 +332,7 @@
                     class="w-2 h-2 rounded-full bg-[#7826b5] dark:bg-[#7826b5] mr-1.5"
                   ></div>
                   <span class="text-[#7826b5] dark:text-[#7826b5] font-medium"
-                    >{{ getTeacherCount() }} Teachers</span
+                    >{{ stats.teachersCount }} Teachers</span
                   >
                 </div>
                 <div class="flex items-center">
@@ -337,7 +340,7 @@
                     class="w-2 h-2 rounded-full bg-[#4f5fad] dark:bg-[#6d78c9] mr-1.5"
                   ></div>
                   <span class="text-[#4f5fad] dark:text-[#6d78c9] font-medium"
-                    >{{ getAdminCount() }} Admins</span
+                    >{{ stats.adminsCount }} Admins</span
                   >
                 </div>
               </div>
@@ -365,7 +368,7 @@
               <div
                 class="bg-gradient-to-r from-[#4a89ce] to-[#4a89ce] dark:from-[#4a89ce] dark:to-[#4a89ce] h-2.5 relative"
                 [style.width.%]="
-                  users.length ? (getStudentCount() / users.length) * 100 : 0
+                  stats.totalUsers ? (stats.studentsCount / stats.totalUsers) * 100 : 0
                 "
               >
                 <div
@@ -375,7 +378,7 @@
               <div
                 class="bg-gradient-to-r from-[#7826b5] to-[#7826b5] dark:from-[#7826b5] dark:to-[#7826b5] h-2.5 relative"
                 [style.width.%]="
-                  users.length ? (getTeacherCount() / users.length) * 100 : 0
+                  stats.totalUsers ? (stats.teachersCount / stats.totalUsers) * 100 : 0
                 "
               >
                 <div
@@ -385,7 +388,7 @@
               <div
                 class="bg-gradient-to-r from-[#4f5fad] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#6d78c9] h-2.5 relative"
                 [style.width.%]="
-                  users.length ? (getAdminCount() / users.length) * 100 : 0
+                  stats.totalUsers ? (stats.adminsCount / stats.totalUsers) * 100 : 0
                 "
               >
                 <div
@@ -400,6 +403,228 @@
             <span>Students</span>
             <span>Teachers</span>
             <span>Admins</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Online Users Card -->
+      <div
+        class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative group hover:shadow-lg dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1"
+      >
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#00ff9d] to-[#00d4aa]"
+        ></div>
+
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="flex-1">
+              <div
+                class="text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] uppercase tracking-wider"
+              >
+                Online Users
+              </div>
+              <div
+                class="mt-1 text-2xl font-semibold bg-gradient-to-r from-[#00ff9d] to-[#00d4aa] bg-clip-text text-transparent"
+              >
+                {{ stats.onlineUsers }}
+              </div>
+              <div class="text-xs text-[#6d6870] dark:text-[#a0a0a0] mt-1">
+                Currently active
+              </div>
+            </div>
+            <div class="ml-4 relative">
+              <div
+                class="absolute inset-0 bg-[#00ff9d]/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-150"
+              ></div>
+              <div
+                class="relative z-10 bg-[#edf1f4]/80 dark:bg-[#2a2a2a]/80 rounded-full p-2.5 backdrop-blur-sm group-hover:scale-110 transition-transform duration-300"
+              >
+                <i class="fas fa-circle text-[#00ff9d] text-lg relative">
+                  <div class="absolute inset-0 bg-[#00ff9d] rounded-full animate-ping opacity-75"></div>
+                </i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verified Users Card -->
+      <div
+        class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative group hover:shadow-lg dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1"
+      >
+        <div
+          class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4a89ce] to-[#6c5ce7]"
+        ></div>
+
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="flex-1">
+              <div
+                class="text-sm font-medium text-[#6d6870] dark:text-[#a0a0a0] uppercase tracking-wider"
+              >
+                Verified Users
+              </div>
+              <div
+                class="mt-1 text-2xl font-semibold bg-gradient-to-r from-[#4a89ce] to-[#6c5ce7] bg-clip-text text-transparent"
+              >
+                {{ stats.verifiedUsers }}
+              </div>
+              <div class="text-xs text-[#6d6870] dark:text-[#a0a0a0] mt-1">
+                {{ ((stats.verifiedUsers / stats.totalUsers) * 100) | number:'1.0-0' }}% verified
+              </div>
+            </div>
+            <div class="ml-4 relative">
+              <div
+                class="absolute inset-0 bg-[#4a89ce]/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-150"
+              ></div>
+              <div
+                class="relative z-10 bg-[#edf1f4]/80 dark:bg-[#2a2a2a]/80 rounded-full p-2.5 backdrop-blur-sm group-hover:scale-110 transition-transform duration-300"
+              >
+                <i class="fas fa-shield-alt text-[#4a89ce] text-lg"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Stats Section -->
+    <div
+      *ngIf="!loading && filteredUsers.length > 0"
+      class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8"
+    >
+      <!-- Recent Activity Card -->
+      <div
+        class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative"
+      >
+        <div
+          class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad]"
+        ></div>
+
+        <div class="p-6">
+          <h3
+            class="text-lg font-semibold bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] bg-clip-text text-transparent mb-4 flex items-center"
+          >
+            <i class="fas fa-clock mr-2"></i>
+            Recent Activity
+          </h3>
+
+          <div class="space-y-3 max-h-64 overflow-y-auto">
+            <div
+              *ngFor="let activity of recentActivities"
+              class="flex items-start space-x-3 p-2 rounded-lg hover:bg-[#f8fafc] dark:hover:bg-[#1a1a1a] transition-colors"
+            >
+              <div class="flex-shrink-0">
+                <i [class]="activity.icon + ' ' + activity.color + ' text-sm'"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-[#6d6870] dark:text-[#e0e0e0] truncate">
+                  {{ activity.message }}
+                </p>
+                <p class="text-xs text-[#a0a0a0] dark:text-[#6d6870]">
+                  {{ activity.time }}
+                </p>
+              </div>
+            </div>
+
+            <div
+              *ngIf="recentActivities.length === 0"
+              class="text-center py-8 text-[#a0a0a0] dark:text-[#6d6870]"
+            >
+              <i class="fas fa-history text-2xl mb-2"></i>
+              <p class="text-sm">No recent activity</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Alerts Card -->
+      <div
+        class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative"
+      >
+        <div
+          class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#ff6b69] to-[#ff8785]"
+        ></div>
+
+        <div class="p-6">
+          <h3
+            class="text-lg font-semibold bg-gradient-to-r from-[#ff6b69] to-[#ff8785] bg-clip-text text-transparent mb-4 flex items-center"
+          >
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            System Alerts
+          </h3>
+
+          <div class="space-y-3 max-h-64 overflow-y-auto">
+            <div
+              *ngFor="let alert of systemAlerts"
+              class="flex items-start space-x-3 p-3 rounded-lg border border-opacity-20"
+              [ngClass]="{
+                'border-yellow-300 bg-yellow-50 dark:bg-yellow-900/10': alert.type === 'warning',
+                'border-blue-300 bg-blue-50 dark:bg-blue-900/10': alert.type === 'info',
+                'border-green-300 bg-green-50 dark:bg-green-900/10': alert.type === 'success'
+              }"
+            >
+              <div class="flex-shrink-0">
+                <i [class]="alert.icon + ' ' + alert.color + ' text-sm'"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm text-[#6d6870] dark:text-[#e0e0e0]">
+                  {{ alert.message }}
+                </p>
+              </div>
+            </div>
+
+            <div
+              *ngIf="systemAlerts.length === 0"
+              class="text-center py-8 text-[#a0a0a0] dark:text-[#6d6870]"
+            >
+              <i class="fas fa-check-circle text-2xl mb-2 text-green-500"></i>
+              <p class="text-sm">All systems normal</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats Card -->
+      <div
+        class="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden backdrop-blur-sm border border-[#edf1f4]/50 dark:border-[#2a2a2a] relative"
+      >
+        <div
+          class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#7826b5] to-[#a855f7]"
+        ></div>
+
+        <div class="p-6">
+          <h3
+            class="text-lg font-semibold bg-gradient-to-r from-[#7826b5] to-[#a855f7] bg-clip-text text-transparent mb-4 flex items-center"
+          >
+            <i class="fas fa-chart-bar mr-2"></i>
+            Quick Stats
+          </h3>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-[#6d6870] dark:text-[#e0e0e0]">This Month</span>
+              <span class="text-sm font-semibold text-[#7826b5]">+{{ stats.usersThisMonth }}</span>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-[#6d6870] dark:text-[#e0e0e0]">This Week</span>
+              <span class="text-sm font-semibold text-[#7826b5]">+{{ stats.usersThisWeek }}</span>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-[#6d6870] dark:text-[#e0e0e0]">Avg/Day</span>
+              <span class="text-sm font-semibold text-[#7826b5]">{{ stats.averageUsersPerDay }}</span>
+            </div>
+
+            <div class="pt-3 border-t border-[#edf1f4] dark:border-[#2a2a2a]">
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-[#6d6870] dark:text-[#e0e0e0]">Active Rate</span>
+                <span class="text-sm font-semibold text-green-600">
+                  {{ ((stats.activeUsers / stats.totalUsers) * 100) | number:'1.0-0' }}%
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -424,13 +649,51 @@
           <i class="fas fa-users-cog mr-2"></i>
           User Management
         </h6>
-        <button
-          (click)="openCreateUserModal()"
-          class="px-4 py-2 text-sm rounded-lg bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] text-white hover:opacity-90 font-medium flex items-center justify-center transition-all"
-        >
-          <i class="fas fa-user-plus mr-2"></i>
-          Create User
-        </button>
+        <div class="flex items-center gap-3">
+          <!-- Export Button with Dropdown -->
+          <div class="relative" data-export-dropdown>
+            <button
+              (click)="toggleExportDropdown()"
+              class="px-4 py-2 text-sm rounded-lg border border-[#bdc6cc] dark:border-[#2a2a2a] bg-white dark:bg-[#1e1e1e] text-[#6d6870] dark:text-[#e0e0e0] hover:bg-[#f8fafc] dark:hover:bg-[#1a1a1a] font-medium flex items-center justify-center transition-all"
+            >
+              <i class="fas fa-file-export mr-2"></i>
+              Export Users
+              <i class="fas fa-chevron-down ml-2 text-xs"></i>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div
+              *ngIf="showExportDropdown"
+              class="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1e1e1e] border border-[#edf1f4] dark:border-[#2a2a2a] rounded-lg shadow-lg z-50"
+            >
+              <div class="py-2">
+                <button
+                  (click)="exportUsers('csv')"
+                  class="w-full px-4 py-2 text-left text-sm text-[#6d6870] dark:text-[#e0e0e0] hover:bg-[#f8fafc] dark:hover:bg-[#1a1a1a] flex items-center"
+                >
+                  <i class="fas fa-file-csv mr-2 text-green-600"></i>
+                  Export as CSV
+                </button>
+                <button
+                  (click)="exportUsers('json')"
+                  class="w-full px-4 py-2 text-left text-sm text-[#6d6870] dark:text-[#e0e0e0] hover:bg-[#f8fafc] dark:hover:bg-[#1a1a1a] flex items-center"
+                >
+                  <i class="fas fa-file-code mr-2 text-blue-600"></i>
+                  Export as JSON
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Create User Button -->
+          <button
+            (click)="openCreateUserModal()"
+            class="px-4 py-2 text-sm rounded-lg bg-gradient-to-r from-[#3d4a85] to-[#4f5fad] dark:from-[#6d78c9] dark:to-[#4f5fad] text-white hover:opacity-90 font-medium flex items-center justify-center transition-all"
+          >
+            <i class="fas fa-user-plus mr-2"></i>
+            Create User
+          </button>
+        </div>
       </div>
       <div class="overflow-x-auto">
         <table

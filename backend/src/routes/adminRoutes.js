@@ -7,11 +7,15 @@ const {
   updateUserRole,
   updateUserGroup,
   toggleUserActivation,
+  exportUsers,
 } = require("../controllers/adminController");
 const User = require("../models/User"); // ✅ required
 
 // GET all users
 router.get("/users", auth, authorizeRoles("admin"), getAllUsers);
+
+// GET export users
+router.get("/users/export", auth, authorizeRoles("admin"), exportUsers);
 
 // POST create new user
 router.post("/users", auth, authorizeRoles("admin"), createUser);

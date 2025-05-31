@@ -113,6 +113,19 @@ export class AuthService {
     return this.getUserRole() === 'admin';
   }
 
+  exportUsers(format: string = 'csv', search: string = '', token: string) {
+    const params = new URLSearchParams();
+    params.append('format', format);
+    if (search) {
+      params.append('search', search);
+    }
+
+    return this.http.get(`${this.ADMIN_API}/users/export?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      responseType: 'blob'
+    });
+  }
+
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
